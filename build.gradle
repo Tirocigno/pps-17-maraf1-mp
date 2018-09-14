@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'scala'
 }
 
 group 'it.unibo.pps'
@@ -7,10 +8,19 @@ version '0.0'
 
 sourceCompatibility = 1.8
 
+ext {
+    scalaBinaryVersion = '2.12'
+    scalaMinorVersion = '6'
+    scalaVersion = "$scalaBinaryVersion.$scalaMinorVersion"
+}
+
 repositories {
+    mavenLocal()
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation "org.scala-lang:scala-library:$scalaVersion"
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
