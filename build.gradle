@@ -12,6 +12,8 @@ ext {
     scalaBinaryVersion = '2.12'
     scalaMinorVersion = '6'
     scalaVersion = "$scalaBinaryVersion.$scalaMinorVersion"
+
+    scalaTestVersion = "3.0.5"
 }
 
 repositories {
@@ -21,6 +23,9 @@ repositories {
 }
 
 dependencies {
+
     implementation "org.scala-lang:scala-library:$scalaVersion"
     testImplementation group: 'junit', name: 'junit', version: '4.12'
+
+    testImplementation "org.scalatest:scalatest_2.12:$scalaTestVersion"
 }
