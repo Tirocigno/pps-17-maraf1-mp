@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="Gradle 1" modules="maraf1-mp_main,maraf1-mp_test">
+    <profile name="Gradle 1" modules="maraf1mp_main,maraf1mp_test">
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />
       <parameters>

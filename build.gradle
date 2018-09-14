@@ -3,7 +3,7 @@ plugins {
     id 'scala'
 }
 
-group 'it.unibo.pps'
+group 'it.unibo.pps2017'
 version '0.0'
 
 sourceCompatibility = 1.8
@@ -13,6 +13,7 @@ ext {
     scalaMinorVersion = '6'
     scalaVersion = "$scalaBinaryVersion.$scalaMinorVersion"
 
+    //Version for ScalaTest library
     scalaTestVersion = "3.0.5"
 }
 
@@ -25,7 +26,8 @@ repositories {
 dependencies {
 
     implementation "org.scala-lang:scala-library:$scalaVersion"
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+
+    testImplementation "junit:junit:4.12"
 
     testImplementation "org.scalatest:scalatest_2.12:$scalaTestVersion"
 }
