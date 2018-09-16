@@ -10,6 +10,6 @@ package object cards {
 
   val defaultSeed: Seed = Sword
   val otherSeed: Seed = Club
-  val defaultValue: Int = 5
-  val otherValue: Int = 2
+  val minorValue: Int = 5
+  val majorValue: Int = 2
 }
