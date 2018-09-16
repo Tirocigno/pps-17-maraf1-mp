@@ -17,7 +17,7 @@ sealed trait Card {
   def cardValue: Int
 
   /**
-    * This method is used to compare two cards.
+    * This method is used to check if the value on a card is greater than the on on another.
     *
     * @param otherCard the other card to compare.
     * @return true if the value on the card is greater than the other one, false otherwise.
@@ -29,6 +29,15 @@ sealed trait Card {
     case CardImpl(_, otherValue) if otherValue > minValue && cardValue < minValue => true
     case CardImpl(_, otherValue) if otherValue > minValue && cardValue > minValue => cardValue > otherValue
   }
+
+  /**
+    * This method is used to check if the value on a card is lower than the on on another.
+    *
+    * @param otherCard the other card to compare
+    * @return true if the value on the card is lower than the other one, false otherwise.
+    */
+  //noinspection ScalaStyle
+  def <(otherCard: Card): Boolean = ! >(otherCard)
 }
 
 /**
