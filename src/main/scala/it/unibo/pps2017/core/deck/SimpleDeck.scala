@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.core.deck
 
-import it.unibo.pps2017.core.deck.cards.Card
+import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 
 /**
   * Trait to implement a simple deck used in a game.
@@ -23,6 +23,16 @@ trait SimpleDeck {
     * @return a sequence containing four hands of cards.
     */
   def distribute(): Seq[CardsHand]
+}
+
+/**
+  * Companion object for SimpleDeck trait.
+  */
+object SimpleDeck {
+  def apply(): SimpleDeck = {
+    val cardList = Seed.values.toStream.flatMap(seed => Stream.range(1, 10).map(CardImpl(seed, _)))
+    new SimpleDeckImpl(cardList)
+  }
 }
 
 
