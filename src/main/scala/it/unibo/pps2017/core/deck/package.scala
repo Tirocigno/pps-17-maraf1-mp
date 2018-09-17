@@ -7,7 +7,7 @@ import scala.util.Random
 
 package object deck {
 
-  val maxCardRangeValue: Int = 10
+  val maxCardRangeValue: Int = 11
   val minCardRangeValue: Int = 1
   val defaultDeckSize: Int = 40;
 
