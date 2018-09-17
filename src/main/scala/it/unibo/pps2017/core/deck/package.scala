@@ -3,8 +3,6 @@ package it.unibo.pps2017.core
 
 import it.unibo.pps2017.core.deck.cards.Card
 
-import scala.util.Random
-
 package object deck {
 
   val maxCardRangeValue: Int = 11
@@ -21,7 +19,10 @@ package object deck {
     *
     * @param cardSequence the card sequence to shuffle.
     */
-  implicit class RandomizeCardSequence(var cardSequence: Seq[Card]) {
-    def shuffle(): Unit = cardSequence = Random.shuffle(cardSequence)
+  implicit class RichCardSequence(var cardSequence: Seq[Card]) {
+
+    def compareSequence(otherSequence: Seq[Card])(compare: (Seq[Card], Seq[Card]) => Boolean): Boolean =
+      compare(cardSequence, otherSequence)
   }
+
 }

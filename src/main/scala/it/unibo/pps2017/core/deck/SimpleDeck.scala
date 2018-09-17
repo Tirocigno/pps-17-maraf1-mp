@@ -3,6 +3,8 @@ package it.unibo.pps2017.core.deck
 
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 
+import scala.util.Random
+
 /**
   * Trait to implement a simple deck used in a game.
   * A Deck is a collection of 40 different cards that can be shuffled, split in
@@ -41,7 +43,7 @@ object SimpleDeck {
 
 private class SimpleDeckImpl(override var cardList: Seq[Card]) extends SimpleDeck {
 
-  override def shuffle(): Unit = cardList.shuffle()
+  override def shuffle(): Unit = cardList = Random.shuffle(cardList)
 
   override def distribute(): Seq[CardsHand] = ???
 }
