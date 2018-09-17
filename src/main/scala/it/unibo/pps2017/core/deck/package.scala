@@ -7,6 +7,9 @@ import scala.util.Random
 
 package object deck {
 
+  val maxCardRangeValue: Int = 10
+  val minCardRangeValue: Int = 1
+
   /**
     * Alias for a card hand.
     */
