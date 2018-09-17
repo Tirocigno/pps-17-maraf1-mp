@@ -29,10 +29,13 @@ trait SimpleDeck {
   * Companion object for SimpleDeck trait.
   */
 object SimpleDeck {
+
   def apply(): SimpleDeck = {
-    val cardList = Seed.values.toStream.flatMap(seed => Stream.range(1, 10).map(CardImpl(seed, _)))
-    new SimpleDeckImpl(cardList)
+    new SimpleDeckImpl(generateDefaultCardsList())
   }
+
+  def generateDefaultCardsList(): Seq[Card] =
+    Seed.values.toStream.flatMap(seed => Stream.range(minCardRangeValue, maxCardRangeValue).map(CardImpl(seed, _)))
 }
 
 
