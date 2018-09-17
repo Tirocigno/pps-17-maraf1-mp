@@ -1,8 +1,6 @@
 
 package it.unibo.pps2017.core.deck
 
-import it.unibo.pps2017.core.deck.cards.Card
-
 /**
   * Trait to implement a simple deck used in a game.
   * A Deck is a collection of 40 different cards that can be shuffled, split in
@@ -20,5 +18,5 @@ trait SimpleDeck {
     *
     * @return
     */
-  def distribute(): Seq[Iterable[Card]]
+  def distribute(): Seq[CardsHand]
 }
