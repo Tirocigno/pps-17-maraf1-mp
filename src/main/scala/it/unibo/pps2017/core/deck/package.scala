@@ -9,6 +9,7 @@ package object deck {
 
   val maxCardRangeValue: Int = 10
   val minCardRangeValue: Int = 1
+  val defaultDeckSize: Int = 40;
 
   /**
     * Alias for a card hand.
