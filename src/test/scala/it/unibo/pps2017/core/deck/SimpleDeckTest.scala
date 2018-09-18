@@ -23,6 +23,17 @@ class SimpleDeckTest extends FunSuite {
   }
 
   /**
+    * Check if any card is duplicated inside any hand.
+    *
+    * @param hands the sequence of hands.
+    * @return true if all the cards aren't duplicated in any hand, false otherwise.
+    */
+  private[this] def isNoneCardDuplicatedInHands(hands: Seq[CardsHand]): Boolean =
+    hands.forall(hand => hand.forall(
+      card => !hands.filterNot(_.equals(hand)).flatten.contains(card)
+    ))
+
+  /**
     * Test to check the size of the default deck.
     */
   test("Size of Default deck") {
@@ -46,4 +57,17 @@ class SimpleDeckTest extends FunSuite {
     val otherCardSeq = SimpleDeck().cardList
     assert(baseDeck.cardList.compareSequence(otherCardSeq)(isOrderDifferent))
   }
+
+  test("Hand distribution size") {
+    assert(SimpleDeck().distribute().size == expectedHandsNumber)
+  }
+
+  test("Each collection contains exactly 10 cards") {
+    assert(SimpleDeck().distribute().count(_.size == handSize) == expectedHandsNumber)
+  }
+
+  test("No card is duplicated inside any hand") {
+    assert(isNoneCardDuplicatedInHands(SimpleDeck().distribute()))
+  }
+
 }
