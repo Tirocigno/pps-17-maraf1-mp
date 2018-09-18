@@ -8,6 +8,8 @@ package object deck {
   val maxCardRangeValue: Int = 11
   val minCardRangeValue: Int = 1
   val defaultDeckSize: Int = 40
+  val handSize: Int = 10
+  val expectedHandsNumber: Int = 4
 
   /**
     * Alias for a card hand.
