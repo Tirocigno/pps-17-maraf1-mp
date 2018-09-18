@@ -32,13 +32,13 @@ trait SimpleDeck {
   */
 object SimpleDeck {
 
-  def apply(): SimpleDeck = {
-    new SimpleDeckImpl(generateDefaultCardsList())
-  }
-
   def generateDefaultCardsList(): Seq[Card] =
     Seed.values.toStream
       .flatMap(seed => Stream.range(minCardRangeValue, maxCardRangeValue).map(CardImpl(seed, _)))
+
+  def apply(): SimpleDeck = {
+    new SimpleDeckImpl(generateDefaultCardsList())
+  }
 }
 
 
