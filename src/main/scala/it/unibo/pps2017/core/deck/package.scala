@@ -15,6 +15,10 @@ package object deck {
     * Alias for a card hand.
     */
   type CardsHand = Iterable[Card]
+  type TeamStatus = (Int, Int, Int)
+
+  def TeamStatus(teamNumber: Int, scoreEarned: Int, thirdOfScoreEarned: Int): TeamStatus =
+    (teamNumber, scoreEarned, thirdOfScoreEarned)
 
   /**
     * Implicit class to randomize a Sequence of cards.
