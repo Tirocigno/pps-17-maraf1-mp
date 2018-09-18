@@ -7,7 +7,7 @@ package object deck {
 
   val maxCardRangeValue: Int = 11
   val minCardRangeValue: Int = 1
-  val defaultDeckSize: Int = 40;
+  val defaultDeckSize: Int = 40
 
   /**
     * Alias for a card hand.
@@ -23,6 +23,15 @@ package object deck {
 
     def compareSequence(otherSequence: Seq[Card])(compare: (Seq[Card], Seq[Card]) => Boolean): Boolean =
       compare(cardSequence, otherSequence)
+  }
+
+  object SeqExtractor {
+    def unapply[A](seq: Seq[A]): Option[(A, Seq[A])] = if (seq.nonEmpty) {
+      Some((seq.head, seq.tail))
+    }
+    else {
+      None
+    }
   }
 
 }
