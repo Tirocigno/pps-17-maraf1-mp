@@ -37,7 +37,8 @@ object SimpleDeck {
   }
 
   def generateDefaultCardsList(): Seq[Card] =
-    Seed.values.toStream.flatMap(seed => Stream.range(minCardRangeValue, maxCardRangeValue).map(CardImpl(seed, _)))
+    Seed.values.toStream
+      .flatMap(seed => Stream.range(minCardRangeValue, maxCardRangeValue).map(CardImpl(seed, _)))
 }
 
 
