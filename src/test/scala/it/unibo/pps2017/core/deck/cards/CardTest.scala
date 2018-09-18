@@ -33,4 +33,22 @@ class CardTest extends FunSuite {
     assert(lowCard < greatCard)
   }
 
+  test("Test equals") {
+    val baseCard = CardImpl(defaultSeed, majorValue)
+    val otherCard = CardImpl(defaultSeed, majorValue)
+    assert(baseCard equals otherCard)
+  }
+
+  test("Test equals with different value") {
+    val baseCard = CardImpl(defaultSeed, majorValue)
+    val otherCard = CardImpl(defaultSeed, minorValue)
+    assert(!(baseCard equals otherCard))
+  }
+
+  test("Test equals with different seed") {
+    val baseCard = CardImpl(defaultSeed, majorValue)
+    val otherCard = CardImpl(otherSeed, minorValue)
+    assert(!(baseCard equals otherCard))
+  }
+
 }
