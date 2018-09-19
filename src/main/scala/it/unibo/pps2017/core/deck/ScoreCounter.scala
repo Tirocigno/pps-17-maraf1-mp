@@ -31,12 +31,18 @@ sealed trait ScoreCounter {
 
 /**
   * This private class is used to hide the score computation from the scoreCounter trait.
-  * The card which has value 2,3 or betwee
   */
 private class ScoreTracker {
 
   var currentScore: Int = 0
 
+  /**
+    * Increase currentScore with the value of the card parameter.
+    * The cards, which has value 2,3 or between 7 and 10, increase the score of one point, the ones with 1 as value
+    * increase the score of three points; all the other cards doesn't increase the score.
+    *
+    * @param card the card to register.
+    */
   def registerCardScore(card: Card): Unit = card match {
     case CardImpl(_, cardValue) if cardValue == aceValue => currentScore += aceScore
     case CardImpl(_, cardValue) if cardValue < lowerCardValue || cardValue > upperCardValue =>
@@ -44,6 +50,11 @@ private class ScoreTracker {
   }
 }
 
+/**
+  * Implementation of ScoreCounter trait.
+  *
+  * @param teamScores a pair of ScoreTracker object, one for each team in the game.
+  */
 class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) extends ScoreCounter {
 
   private[this] var lastSetWinner: Int = FirstTeam
