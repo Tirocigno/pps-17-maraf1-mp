@@ -10,6 +10,14 @@ package object deck {
   val defaultDeckSize: Int = 40
   val handSize: Int = 10
   val expectedHandsNumber: Int = 4
+  val FirstTeam: Int = 0
+  val SecondTeam: Int = 0
+  val aceValue: Int = 1
+  val lowerCardValue: Int = 3
+  val upperCardValue: Int = 7
+  val aceScore: Int = 3
+  val defaultCardScore: Int = 1
+
 
   /**
     * Alias for a card hand.
