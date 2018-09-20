@@ -41,7 +41,7 @@ sealed trait ScoreCounter {
   * Companion object for the ScoreCounter Trait.
   */
 object ScoreCounter {
-  def apply: ScoreCounter = new ScoreCounterImpl(new ScoreTracker, new ScoreTracker)
+  def apply(): ScoreCounter = new ScoreCounterImpl(new ScoreTracker, new ScoreTracker)
 }
 
 /**
@@ -74,15 +74,15 @@ private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) ext
 
   private[this] var lastSetWinner: Int = FirstTeam
 
-  private[this] def matchTeam[A](argument: A)(apply: ScoreTracker => Unit): Unit = lastSetWinner match {
+  private[this] def matchTeam[A](apply: (ScoreTracker, A) => Unit)(argument: A): Unit = lastSetWinner match {
     case FirstTeam => apply(teamScores._1, argument)
-    case FirstTeam => apply(teamScores._2, argument)
+    case SecondTeam => apply(teamScores._2, argument)
   }
 
   private[this] def updateLastSetWinner(setWinner: Int): Unit = lastSetWinner = setWinner
 
   private[this] def registerCardScore(playedCard: Card): Unit =
-    matchTeam(playedCard)(_ registerCardScore playedCard)
+    matchTeam((team, card: Card) => team registerCardScore card)(playedCard)
 
   override def scores: (Int, Int) = (teamScores._1.currentScore / 3, teamScores._2.currentScore / 3)
 
@@ -91,7 +91,7 @@ private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) ext
     registerCardScore(playedCard)
   }
 
-  override def finishSet(): Unit = matchTeam()(_.currentScore += aceScore)
+  override def finishSet(): Unit = matchTeam((team, value: Int) => team.currentScore += value)(aceScore)
 
 }
 

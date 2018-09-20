@@ -8,4 +8,9 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ScoreCounterTest extends FunSuite {
 
+  test("Creation of a ScoreCounter object") {
+    val scoreCounter: ScoreCounter = ScoreCounter()
+    assert(scoreCounter.scores == (0, 0))
+  }
+
 }
