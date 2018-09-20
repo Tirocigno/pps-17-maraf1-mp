@@ -1,12 +1,14 @@
-plugins {
-    id 'java'
-    id 'scala'
-}
+
+
+apply plugin:  'java'
+apply plugin:  'scala'
+
 
 group 'it.unibo.pps2017'
 version '0.2.1'
 
 sourceCompatibility = 1.8
+
 
 ext {
     scalaBinaryVersion = '2.12'
@@ -14,7 +16,7 @@ ext {
     scalaVersion = "$scalaBinaryVersion.$scalaMinorVersion"
 
     //Version for ScalaTest library
-    scalaTestVersion = "3.0.5"
+    scalaTestVersion = "3.0.1"
 }
 
 repositories {
@@ -23,11 +25,52 @@ repositories {
     jcenter()
 }
 
+buildscript {
+    dependencies {
+        classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.1.0"
+    }
+}
+
+apply plugin: 'org.scoverage'
+apply plugin: 'com.github.maiflai.scalatest'
+
+// this makes the scala classes builds alongside the java ones
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['src/main/scala', 'src/main/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+}
+
 dependencies {
 
     implementation "org.scala-lang:scala-library:$scalaVersion"
 
     testImplementation "junit:junit:4.12"
 
+    testImplementation "org.pegdown:pegdown:1.5.0"
+
     testImplementation "org.scalatest:scalatest_2.12:$scalaTestVersion"
+
+    scoverage 'org.scoverage:scalac-scoverage-plugin_2.12:1.3.1'
+    scoverage 'org.scoverage:scalac-scoverage-runtime_2.12:1.3.1'
 }
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.3.0"
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.22"
+    }
+}
+
+defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
+
