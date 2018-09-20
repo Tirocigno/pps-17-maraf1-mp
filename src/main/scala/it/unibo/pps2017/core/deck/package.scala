@@ -13,9 +13,8 @@ package object deck {
   val FirstTeam: Int = 0
   val SecondTeam: Int = 0
   val aceValue: Int = 1
-  val lowerCardValue: Int = 3
+  val lowerCardValue: Int = 4
   val upperCardValue: Int = 7
-  val nullValueCard: Int = 5
   val aceScore: Int = 3
   val defaultCardScore: Int = 1
 

@@ -62,6 +62,7 @@ private class ScoreTracker {
     case CardImpl(_, cardValue) if cardValue == aceValue => currentScore += aceScore
     case CardImpl(_, cardValue) if cardValue < lowerCardValue || cardValue > upperCardValue =>
       currentScore += defaultCardScore
+    case _ =>
   }
 }
 
