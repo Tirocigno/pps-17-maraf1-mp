@@ -1,7 +1,12 @@
 
 package it.unibo.pps2017.core
 
+import java.util
+
 import it.unibo.pps2017.core.deck.cards.Card
+
+import scala.collection.JavaConverters._
+import scala.language.implicitConversions
 
 package object deck {
 
@@ -23,6 +28,9 @@ package object deck {
     * Alias for a card hand.
     */
   type CardsHand = Iterable[Card]
+
+  implicit def scalaToJavaHandConversion(seq: Seq[CardsHand]): util.List[util.Collection[Card]] =
+    seq.toStream.map(_.asJavaCollection).asJava
 
   /**
     * Implicit class to randomize a Sequence of cards.
