@@ -19,14 +19,29 @@ sealed trait ScoreCounter {
     * Register the score of a card earned by a team and set the team as last set winner.
     *
     * @param playedCard the card played.
-    * @param player     the index of the team which earned the cards.
+    * @param team       the index of the team which earned the cards.
     */
-  def registerPlayedCard(playedCard: Card, player: Int): Unit
+  def registerPlayedCard(playedCard: Card, team: Int): Unit
 
   /**
     * Finish a game and register an additional score to the team who won the last set.
     */
   def finishSet(): Unit
+
+  /**
+    * Register the scores of all the cards played in a set.
+    *
+    * @param cardPlayedSeq the card sequence played in a set.
+    * @param team          the index of team which earned the cards.
+    */
+  def registerSetPlayedCards(cardPlayedSeq: Seq[Card], team: Int): Unit = cardPlayedSeq foreach (registerPlayedCard(_, team))
+}
+
+/**
+  * Companion object for the ScoreCounter Trait.
+  */
+object ScoreCounter {
+  def apply: ScoreCounter = new ScoreCounterImpl(new ScoreTracker, new ScoreTracker)
 }
 
 /**
@@ -55,7 +70,7 @@ private class ScoreTracker {
   *
   * @param teamScores a pair of ScoreTracker object, one for each team in the game.
   */
-class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) extends ScoreCounter {
+private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) extends ScoreCounter {
 
   private[this] var lastSetWinner: Int = FirstTeam
 
