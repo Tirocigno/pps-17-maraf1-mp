@@ -18,12 +18,34 @@ public class MainController {
 	ImageView secondCard;
 	
 	@FXML
+	ImageView thirdCard;
+	
+	@FXML
+	ImageView fourthCard;
+	
+	@FXML
+	ImageView fifthCard;
+	
+	@FXML
+	ImageView sixthCard;
+	
+	@FXML
+	ImageView seventhCard;
+	
+	@FXML
+	ImageView eighthCard;
+	
+	@FXML
+	ImageView ninthCard;
+	
+	@FXML
+	ImageView tenthCard;
+	
+	@FXML
 	Button button;
 
 	
 	public void getNumber(ActionEvent e) {
 
-		firstCard.setVisible(true);
-		secondCard.setVisible(true); 
 	}
 }
