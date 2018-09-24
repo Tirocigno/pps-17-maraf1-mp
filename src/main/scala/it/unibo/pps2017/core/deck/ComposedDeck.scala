@@ -7,7 +7,7 @@ import it.unibo.pps2017.core.deck.cards.Card
 
 import scala.collection.JavaConverters._
 
-class DecoratedDeck(val simpleDeck: SimpleDeck, val scoreCounter: ScoreCounter) extends GameDeck {
+class ComposedDeck(val simpleDeck: SimpleDeck, val scoreCounter: ScoreCounter) extends GameDeck {
 
   override def shuffle(): Unit = simpleDeck shuffle()
 
