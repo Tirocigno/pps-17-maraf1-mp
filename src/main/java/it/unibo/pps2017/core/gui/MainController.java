@@ -9,7 +9,7 @@ import javafx.scene.image.ImageView;
 public class MainController {
 
 	@FXML
-	ImageView immagine;
+	ImageView wallpaper;
 	
 	@FXML
 	ImageView firstCard;
@@ -19,9 +19,11 @@ public class MainController {
 	
 	@FXML
 	Button button;
+
 	
 	public void getNumber(ActionEvent e) {
+
 		firstCard.setVisible(true);
-		secondCard.setVisible(true);
+		secondCard.setVisible(true); 
 	}
 }
