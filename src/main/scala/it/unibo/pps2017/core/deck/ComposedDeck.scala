@@ -20,7 +20,7 @@ class ComposedDeck(val simpleDeck: SimpleDeck, val scoreCounter: ScoreCounter) e
 
   override def shuffle(): Unit = simpleDeck shuffle()
 
-  override def computeSetScore(): (Int, Int) = scoreCounter.scores
+  override def computeSetScore(): (Int, Int) = scoreCounter.computeSetScore()
 
   override def registerTurnPlayedCards(playedCards: util.List[Card], teamIndex: Int): Unit =
     scoreCounter.registerSetPlayedCards(playedCards.asScala, teamIndex)
