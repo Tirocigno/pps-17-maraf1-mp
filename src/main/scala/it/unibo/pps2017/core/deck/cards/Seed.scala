@@ -17,4 +17,11 @@ object Seed {
 
   case object Club extends Seed
 
+  /**
+    * This method is used to get all the available seeds
+    *
+    * @return a Iterable containing all the available seeds.
+    */
+  def values: Iterable[Seed] = Iterable(Sword, Cup, Coin, Club)
+
 }

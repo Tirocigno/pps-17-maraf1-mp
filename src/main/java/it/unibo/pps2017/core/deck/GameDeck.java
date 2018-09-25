@@ -39,5 +39,5 @@ public interface GameDeck {
      * @param playedCards a Collection containing the four card played in a turn.
      * @param teamIndex   the index of the team which earned those cards.
      */
-    void registerTurnPlayedCards(final Collection<Card> playedCards, final int teamIndex);
+    void registerTurnPlayedCards(final List<Card> playedCards, final int teamIndex);
 }

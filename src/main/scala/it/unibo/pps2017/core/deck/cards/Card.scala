@@ -38,6 +38,13 @@ sealed trait Card {
     */
   //noinspection ScalaStyle
   def <(otherCard: Card): Boolean = ! >(otherCard)
+
+  override def equals(obj: Any): Boolean = obj match {
+    case CardImpl(seed, value) if cardSeed.equals(seed) && cardValue == value => true
+    case _ => false
+  }
+
+  override def hashCode(): Int = super.hashCode()
 }
 
 /**
