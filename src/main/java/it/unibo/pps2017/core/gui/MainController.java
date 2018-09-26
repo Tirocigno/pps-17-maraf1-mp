@@ -65,12 +65,12 @@ public class MainController {
 
 	
 	/**
-	 * This metod permits to view the command that principal user selected.
+	 * This method permits to view the command that principal user selected.
 	 * Possibilities: busso, striscio, volo
 	 * 
 	 * @param buttonPressed button pressed from principal user
 	 */
-	public void signalMyCommands(ActionEvent buttonPressed) {
+	public void signalMyCommands(final ActionEvent buttonPressed) {
 		if (buttonPressed.getSource().equals(bussoButton)) {
 			bussoNotify.setVisible(true);
 		} else if (buttonPressed.getSource().equals(striscioButton)) {
