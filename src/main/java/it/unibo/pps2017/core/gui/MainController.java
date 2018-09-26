@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 
 public class MainController {
 
@@ -44,11 +43,40 @@ public class MainController {
 	
 	@FXML
 	Button button;
+	
+	@FXML
+	Button bussoButton;
+	
+	@FXML
+	Button voloButton;
+	
+	@FXML
+	Button striscioButton;
 
+	@FXML
+	ImageView bussoNotify;
+	
+	@FXML
+	ImageView striscioNotify;
+	
+	@FXML
+	ImageView voloNotify;
 
 
 	
-	public void getNumber(ActionEvent e) {
-		
+	/**
+	 * This metod permits to view the command that principal user selected.
+	 * Possibilities: busso, striscio, volo
+	 * 
+	 * @param buttonPressed button pressed from principal user
+	 */
+	public void signalMyCommands(ActionEvent buttonPressed) {
+		if (buttonPressed.getSource().equals(bussoButton)) {
+			bussoNotify.setVisible(true);
+		} else if (buttonPressed.getSource().equals(striscioButton)) {
+			striscioNotify.setVisible(true);
+		} else {
+			voloNotify.setVisible(true);
+		}	
 	}
 }
