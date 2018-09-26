@@ -3,10 +3,12 @@ package it.unibo.pps2017.core.game
 import java.util
 
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
-import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Sword}
+import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Cup, Sword}
+import it.unibo.pps2017.core.game.MatchManager.{MAX_HAND_CARDS, TEAM_MEMBERS_LIMIT}
 import it.unibo.pps2017.core.player.Controller
 import org.scalatest.FunSuite
 
+import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 class MatchManagerTest extends FunSuite {
@@ -17,17 +19,18 @@ class MatchManagerTest extends FunSuite {
   test("testAddPlayer") {
     val game = MatchManager()
 
-    val firstTeamName = game.team1.name
+
+    val firstTeamName = game.firstTeam().name
 
 
     game.addPlayer(Player())
-    assert(game.players.length == 1)
+    assert(game.getPlayers.length == 1)
 
     val notFoundedTeamName = "TEST"
     game.addPlayer(Player(), notFoundedTeamName)
 
     game.addPlayer(Player(), firstTeamName)
-    assert(game.players.length == 2)
+    assert(game.getPlayers.length == 2)
   }
 
 
@@ -37,16 +40,16 @@ class MatchManagerTest extends FunSuite {
   test("testAddMoreOfTwoPlayerToATeam") {
     val game = MatchManager()
 
-    val firstTeamName = game.team1.name
+    val firstTeamName = game.firstTeam().name
 
     game.addPlayer(Player(), firstTeamName)
     game.addPlayer(Player(), firstTeamName)
 
-    assert(game.players.length == MatchManager.TEAM_MEMBERS_LIMIT)
-    assert(game.team1.numberOfMembers == MatchManager.TEAM_MEMBERS_LIMIT)
+    assert(game.getPlayers.length == TEAM_MEMBERS_LIMIT)
+    assert(game.firstTeam().numberOfMembers == TEAM_MEMBERS_LIMIT)
 
     game.addPlayer(Player(), firstTeamName)
-    assert(game.team1.numberOfMembers == MatchManager.TEAM_MEMBERS_LIMIT)
+    assert(game.firstTeam().numberOfMembers == TEAM_MEMBERS_LIMIT)
   }
 
   /**
@@ -60,18 +63,78 @@ class MatchManagerTest extends FunSuite {
     team.addPlayer(Player())
     team.addPlayer(Player())
 
-    assert(team.numberOfMembers == MatchManager.TEAM_MEMBERS_LIMIT)
+    assert(team.numberOfMembers == TEAM_MEMBERS_LIMIT)
 
     assertThrows[FullTeamException] {
       team.addPlayer(Player())
     }
 
-    assert(team.numberOfMembers == MatchManager.TEAM_MEMBERS_LIMIT)
+    assert(team.numberOfMembers == TEAM_MEMBERS_LIMIT)
+
+  }
+
+  /**
+    * Checking the correctness of isFull method in the Team class.
+    */
+  test("TestFullTeam") {
+    val team = Team("TeamOne")
+    team.addPlayer(Player())
+
+    assert(!team.isFull)
+
+    team.addPlayer(Player())
+
+    assert(team.isFull)
+  }
+
+
+  test("gameStartingTest") {
+    val player1 = Player()
+    val player2 = Player()
+    val team1 = Team("TeamOne")
+    team1.addPlayer(player1)
+    team1.addPlayer(player2)
+
+    val player3 = Player()
+    val player4 = Player()
+    val team2 = Team("TeamTwo")
+    team2.addPlayer(player3)
+    team2.addPlayer(player4)
+
+    val game = MatchManager(team1, team2)
+
+    assert(player1.hand.size() == MAX_HAND_CARDS)
+    assert(player2.hand.size() == MAX_HAND_CARDS)
+    assert(player3.hand.size() == MAX_HAND_CARDS)
+    assert(player4.hand.size() == MAX_HAND_CARDS)
+
+  }
+
+
+
+  test("isCardOkTest") {
+    val player = Player()
+
+    val team1 = Team("TeamOne")
+    team1.addPlayer(Player())
+    team1.addPlayer(Player())
+
+    val team2 = Team("TeamTwo")
+    team2.addPlayer(Player())
+    team2.addPlayer(player)
+
+    val game = MatchManager(team1, team2)
+
+
+    game.isCardOk(CardImpl(Cup, 4))
 
   }
 
 }
 
 case class Player(name: String = "Random" + Random.nextInt(1000)) extends Controller {
-  override def getHand: util.Set[Card] = new util.HashSet[Card](util.Arrays.asList(CardImpl(Sword, 2), CardImpl(Coin, 4)))
+  var hand: util.Set[Card] = _
+  override def getHand: util.Set[Card] = hand
+
+  override def setHand(hand: util.Set[Card]): Unit = this.hand = hand
 }

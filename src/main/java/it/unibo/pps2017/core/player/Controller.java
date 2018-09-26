@@ -7,4 +7,6 @@ import java.util.Set;
 public interface Controller {
 
     Set<Card> getHand();
+
+    void setHand(Set<Card> hand);
 }

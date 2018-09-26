@@ -24,6 +24,11 @@ case class GameCycle(team1: Team,
 
   private var tokenIndex: Int = 0
 
+  /**
+    * Return a player and update the index to the next.
+    * @return
+    *         The player how had to play his card.
+    */
   def next(): Controller = {
     val current: Int = tokenIndex
     tokenIndex = getNextIndex
@@ -32,12 +37,39 @@ case class GameCycle(team1: Team,
   }
 
 
+  /**
+    * Set the first player in the current hand.
+    * @param player
+    *         The player who have to open the hand.
+    */
   def setFirst(player: Controller): Unit = tokenIndex = queue.indexOf(player)
 
+  /**
+    * Return the player who have to play his card.
+    * @return
+    *        The player who have to play his card.
+    */
   def getCurrent: Controller = queue(tokenIndex)
 
+  /**
+    * Return the next player in the queue.
+    * @return
+    *         the next player in the queue.
+    */
   def getNext: Controller = queue(getNextIndex)
 
+  /**
+    * Return a sequence of all the players in the game.
+    * @return
+    *         a sequence of all the players in the game.
+    */
+  def getPlayers: Seq[Controller] = queue
+
+  /**
+    * Calculate the next index for the queue. If it's end, the index will reset.
+    * @return
+    *         The next player index in the queue.
+    */
   private def getNextIndex: Int = (tokenIndex + 1) % MatchManager.MAX_PLAYER_NUMBER
 
 }

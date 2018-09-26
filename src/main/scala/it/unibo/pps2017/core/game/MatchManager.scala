@@ -1,23 +1,26 @@
 package it.unibo.pps2017.core.game
 
+import java.util
 import java.util.stream
 
+import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
 import it.unibo.pps2017.core.deck.cards.{Card, Seed}
 import it.unibo.pps2017.core.game.MatchManager._
 import it.unibo.pps2017.core.player.Controller
 
-import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-case class MatchManager(players: mutable.ListBuffer[Controller] = mutable.ListBuffer(),
-                        team1: Team = Team("Team1"),
-                        team2: Team = Team("Team2")) extends Match {
+class MatchManager(team1: Team = Team("Team1"),
+                   team2: Team = Team("Team2")) extends Match {
 
   var currentBriscola: Seed = _
   var currentSuit: Seed = _
   var gameCycle: GameCycle = _
+  var deck: GameDeck = ComposedDeck()
 
+
+  if (team1.isFull && team2.isFull) onFullTable()
 
   /**
     * Add a player to the match.
@@ -30,7 +33,6 @@ case class MatchManager(players: mutable.ListBuffer[Controller] = mutable.ListBu
   override def addPlayer(newPlayer: Controller, team: String = RANDOM_TEAM): Unit = {
     try {
       addPlayerToTeam(newPlayer, team)
-      players += newPlayer
     } catch {
       case teamNotFoundException: TeamNotFoundException => println("EXCEPTION /" + teamNotFoundException.message)
       case fullTeamException: FullTeamException => println("EXCEPTION /" + fullTeamException.message)
@@ -89,18 +91,30 @@ case class MatchManager(players: mutable.ListBuffer[Controller] = mutable.ListBu
     throw TeamNotFoundException("Team '" + teamName + "' not found in this match")
   }
 
-  private def onFullTable(): Unit = {}
+  private def onFullTable(): Unit = {
+    gameCycle = GameCycle(team1, team2)
+    startGame()
+  }
 
   /**
     * Starting the game.
     */
-  override def startGame(): Unit = ???
+  override def startGame(): Unit = {
+    playSet()
+  }
 
   /**
     * Check if all operations concerning the previous set are closed.
     * If it's all right, it shuffle the deck and start a new set.
     */
-  override def playSet(): Unit = ???
+  override def playSet(): Unit = {
+    deck.shuffle()
+    var i: Int = 0
+    deck.distribute().forEach(hand => {
+      getPlayers(i).setHand(new util.HashSet(hand))
+      i += 1
+    })
+  }
 
   /**
     * Setting the briscola for the current set.
@@ -121,19 +135,43 @@ case class MatchManager(players: mutable.ListBuffer[Controller] = mutable.ListBu
     * False otherwise.
     */
   override def isCardOk(card: Card): Boolean = {
-
-    if (card.cardSeed == currentSuit) {
-      return true
-    }
+    if (card.cardSeed == currentSuit) return true
 
     val playerHand: stream.Stream[Card] = gameCycle.getCurrent.getHand.stream()
-    playerHand.filter(_.cardSeed == currentSuit)
 
-    if (playerHand.count() == 0) {
-      return true
-    }
+    if (playerHand.filter(_.cardSeed == currentSuit).count() == 0) return true
 
     false
+  }
+
+  /**
+    * Return the first team.
+    *
+    * @return
+    * the first team.
+    */
+  def firstTeam(): Team = team1
+
+  /**
+    * Return the second team.
+    *
+    * @return
+    * the second team.
+    */
+  def secondTeam(): Team = team2
+
+  /**
+    * Return the players in the match.
+    * If the game is started return the game queue, otherwise, before all the members
+    * of the first team and then the players of the second
+    *
+    * @return
+    * players in the match.
+    */
+  def getPlayers: Seq[Controller] = {
+    if (gameCycle != null) return gameCycle.queue
+
+    team1.getMembers ++ team2.getMembers
   }
 }
 
@@ -167,11 +205,45 @@ case class Team(var name: String,
   }
 
 
+  /**
+    * Return the first player of the team.
+    *
+    * @return
+    * the first player of the team.
+    */
   def firstMember: Option[Controller] = members.headOption
 
+  /**
+    * Return the second player of the team.
+    *
+    * @return
+    * the second player of the team.
+    */
   def secondMember: Option[Controller] = members.lastOption
 
+  /**
+    * Return the actual number of players in the team.
+    *
+    * @return
+    * the number of players in the team.
+    */
   def numberOfMembers: Int = members.length
+
+  /**
+    * Return the members of the team.
+    *
+    * @return
+    * the members of the team
+    */
+  def getMembers: Seq[Controller] = members
+
+  /**
+    * Return TRUE if the team has reach two members, FALSE otherwise.
+    *
+    * @return
+    * TRUE if the team has reach two members, FALSE otherwise.
+    */
+  def isFull: Boolean = numberOfMembers == MatchManager.TEAM_MEMBERS_LIMIT
 }
 
 final case class FullTeamException(message: String = "The team has reached the maximum number of players",
@@ -187,6 +259,11 @@ object MatchManager {
   val RANDOM_TEAM: String = "RANDOM_TEAM"
   val TEAM_MEMBERS_LIMIT: Int = 2
   val MAX_PLAYER_NUMBER: Int = 4
+  val MAX_HAND_CARDS: Int = 10
+
+  def apply(team1: Team, team2: Team) = new MatchManager(team1, team2)
+
+  def apply() = new MatchManager()
 }
 
 
