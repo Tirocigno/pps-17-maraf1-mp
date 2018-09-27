@@ -6,11 +6,11 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
-public class Main extends Application {
+public class PlayGameView extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("PlayGame.fxml"));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setResizable(false);

@@ -14,7 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
-public class MainController {
+public class PlayGameController {
 
 	private static final String COMMANDS_PATH = "src/main/java/it/unibo/pps2017/core/gui/commands/";
 	private static final String FORMAT = ".png";
