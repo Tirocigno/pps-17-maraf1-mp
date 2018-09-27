@@ -19,10 +19,6 @@ plugins {
     id 'org.scoverage' version '2.3.0'
     id 'com.github.maiflai.scalatest' version '0.22'
 }
-/*apply plugin: 'java'
-apply plugin: 'scala'
-apply plugin: 'org.scoverage'
-apply plugin: 'com.github.maiflai.scalatest'*/
 
 //group and version.
 group 'it.unibo.pps2017'
@@ -112,6 +108,8 @@ dependencies {
     scoverage "org.scoverage:scalac-scoverage-plugin_2.12:$sCoveragePluginVersion"
     scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
 }
+
+defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
 
 
 
