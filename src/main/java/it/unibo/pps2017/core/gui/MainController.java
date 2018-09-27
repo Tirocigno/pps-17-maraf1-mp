@@ -8,6 +8,7 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
@@ -73,7 +74,11 @@ public class MainController {
 
 	@FXML
 	ImageView userFourCommand;
+	
+	@FXML 
+	Label timerLabel;
 
+	
 	/**
 	 * This method permits to view the command that principal user selected.
 	 * Possibilities: busso, striscio, volo
@@ -130,5 +135,6 @@ public class MainController {
 			createTimeline(userFourCommand, userCommand);
 		}
 	}
+
 
 }
