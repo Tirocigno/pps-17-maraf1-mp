@@ -222,21 +222,21 @@
             <Font name="System Bold" size="15.0" />
          </font>
       </Button>
-      <ImageView fx:id="userOneField" fitHeight="106.0" fitWidth="67.0" layoutX="481.0" layoutY="345.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="user1Field" fitHeight="106.0" fitWidth="67.0" layoutX="481.0" layoutY="345.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@cards/emptyFieldMyTurn.png" />
+            <Image url="@cards/emptyField.png" />
          </image></ImageView>
-      <ImageView fx:id="userTwoField" fitHeight="106.0" fitWidth="67.0" layoutX="600.0" layoutY="225.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="user2Field" fitHeight="106.0" fitWidth="67.0" layoutX="600.0" layoutY="225.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@cards/emptyField.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="userThreeField" fitHeight="106.0" fitWidth="67.0" layoutX="481.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="user3Field" fitHeight="106.0" fitWidth="67.0" layoutX="481.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@cards/emptyField.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="userFourField" fitHeight="106.0" fitWidth="67.0" layoutX="360.0" layoutY="225.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="user4Field" fitHeight="106.0" fitWidth="67.0" layoutX="360.0" layoutY="225.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@cards/emptyField.png" />
          </image>

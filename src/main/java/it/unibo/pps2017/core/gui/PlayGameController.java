@@ -16,10 +16,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
-public class PlayGameController {
+public class PlayGameController implements PlayGame {
 
 	private static final String COMMANDS_PATH = "src/main/java/it/unibo/pps2017/core/gui/commands/";
+	private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
+	private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
 	private static final String FORMAT = ".png";
+	private static final int TOTAL_HAND_CARDS = 10;
 
 	@FXML
 	ImageView wallpaper;
@@ -79,16 +82,16 @@ public class PlayGameController {
 	ImageView userFourCommand;
 
 	@FXML
-	ImageView userOneField;
+	ImageView user1Field;
 
 	@FXML
-	ImageView userTwoField;
+	ImageView user2Field;
 
 	@FXML
-	ImageView userThreeField;
+	ImageView user3Field;
 
 	@FXML
-	ImageView userFourField;
+	ImageView user4Field;
 
 	@FXML
 	Label timer;
@@ -96,13 +99,20 @@ public class PlayGameController {
 	List<ImageView> userCards;
 
 	private List<String> firstUserCards;
+	private List<User> users;
 
 	public PlayGameController() {
-		
-		/* Simulo il fatto di avere la mia lista di carte. Quando questa mi verra' passata dal controller
-		 * eliminero' tutto cio'
+
+		/*
+		 * Simulo il fatto di avere la mia lista di carte. Quando questa mi verra'
+		 * passata dal controller eliminero' tutto cio'
 		 */
 		this.firstUserCards = new ArrayList<>();
+		this.users = new ArrayList<>();
+		this.users.add(new User("User1"));
+		this.users.add(new User("User2"));
+		this.users.add(new User("User3"));
+		this.users.add(new User("User4"));
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10spade.png");
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9spade.png");
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8spade.png");
@@ -116,8 +126,8 @@ public class PlayGameController {
 	}
 
 	/**
-	 * This method permits to view the command that principal user selected.
-	 * Possibilities: busso, striscio, volo
+	 * This method permits to view the command that first user selected.
+	 * Possibilities: busso, striscio, volo.
 	 * 
 	 * @param buttonPressed
 	 *            button pressed from principal user
@@ -129,8 +139,6 @@ public class PlayGameController {
 		File file = new File(COMMANDS_PATH + command + FORMAT);
 		Image image = new Image(file.toURI().toString());
 		createTimeline(currentUserCommand, image);
-		System.out.println(file);
-
 		/*
 		 * per vedere che funziona getCommand(new User("User4"), new Command("busso"));
 		 */
@@ -142,32 +150,17 @@ public class PlayGameController {
 	 */
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
 		getCardsFirstUser(firstUserCards);
-
+		cleanField(new User("User4")); // simulo che tocchi all'utente 4
 	}
 
-	/**
-	 * Method to create the animation for user's command
-	 * 
-	 * @param currentUser
-	 *            the user called command
-	 * @param command
-	 *            the command selected by user
-	 */
-	public void createTimeline(final ImageView currentUser, final Image command) {
+	private void createTimeline(final ImageView currentUser, final Image command) {
 		Timeline timeline = new Timeline(
 				new KeyFrame(Duration.ZERO, new KeyValue(currentUser.imageProperty(), command)),
 				new KeyFrame(Duration.seconds(2), new KeyValue(currentUser.imageProperty(), null)));
 		timeline.play();
 	}
 
-	/**
-	 * Method called by Controller to notify GUI of user's command and show it
-	 * 
-	 * @param user
-	 *            the user called command
-	 * @param command
-	 *            the command selected by user
-	 */
+	@Override
 	public void getCommand(final User user, final Command command) {
 		File file = new File(COMMANDS_PATH + command.getCommand() + user.getUser() + FORMAT);
 		Image userCommand = new Image(file.toURI().toString());
@@ -182,7 +175,7 @@ public class PlayGameController {
 	}
 
 	/**
-	 * Method to show which card is pressed and throw in field
+	 * Method to show which card is pressed by first user and throw it in field.
 	 * 
 	 * @param clickedCard
 	 */
@@ -191,22 +184,22 @@ public class PlayGameController {
 		@SuppressWarnings("deprecation")
 		File file = new File(playedCard.getImage().impl_getUrl().substring(5));
 		Image userCommand = new Image(file.toURI().toString());
-		userOneField.setImage(userCommand);
+		user1Field.setImage(userCommand);
 		playedCard.setVisible(false);
+		/*
+		 * qui dovro' chiamare un metodo del controller che gli dica quale carta e'
+		 * stata giocata cosi' lui puo' eliminarla dalla lista dell'utente che l'ha
+		 * giocata
+		 */
 
 	}
 
-	/**
-	 * Method to show the first hand of first user
-	 * @param firstUserCards path's list of user hand
-	 */
+	@Override
 	public void getCardsFirstUser(final List<String> firstUserCards) {
 
-		for (int i = 0; i < 10; i++) {
-			
+		for (int i = 0; i < TOTAL_HAND_CARDS; i++) {
 			File file = new File(firstUserCards.get(i));
 			Image userCard = new Image(file.toURI().toString());
-
 			switch (i) {
 			case 0:
 				firstCard.setImage(userCard);
@@ -229,8 +222,43 @@ public class PlayGameController {
 			case 9:
 				tenthCard.setImage(userCard);
 			}
-
 		}
+	}
+
+	@Override
+	public void cleanField(final User user) {
+
+		/*
+		 * Prima metto tutti i terreni neri, poi all'utente che deve cominciare lo
+		 * imposto giallo
+		 */
+		Image emptyField = getImageFromPath(EMPTY_FIELD);
+		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
+		user1Field.setImage(emptyField);
+		user2Field.setImage(emptyField);
+		user3Field.setImage(emptyField);
+		user4Field.setImage(emptyField);
+
+		switch (user.getUser()) {
+		case "User1":
+			user1Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User2":
+			user2Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User3":
+			user3Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User4":
+			user4Field.setImage(emptyFieldMyTurn);
+			break;
+		}
+	}
+
+	private Image getImageFromPath(final String path) {
+		File file = new File(path);
+		Image image = new Image(file.toURI().toString());
+		return image;
 	}
 
 }
