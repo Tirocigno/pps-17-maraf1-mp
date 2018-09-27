@@ -204,8 +204,10 @@ class MatchManager(team1: Team = Team("Team1"),
     deck.distribute().forEach(hand => {
       getPlayers(i).setHand(new util.HashSet(hand))
       if (firstHand) {
-        if (isFirstPlayer(hand)) nextHandStarter = getPlayers(i)
-        firstHand = false
+        if (isFirstPlayer(hand)) {
+          nextHandStarter = getPlayers(i)
+          firstHand = false
+        }
       }
       i += 1
     })
