@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
 public class MainController {
@@ -75,8 +76,20 @@ public class MainController {
 	@FXML
 	ImageView userFourCommand;
 	
+	@FXML
+	ImageView userOneField;
+	
+	@FXML
+	ImageView userTwoField;
+	
+	@FXML
+	ImageView userThreeField;
+	
+	@FXML
+	ImageView userFourField;
+	
 	@FXML 
-	Label timerLabel;
+	Label timer;
 
 	
 	/**
@@ -135,6 +148,19 @@ public class MainController {
 			createTimeline(userFourCommand, userCommand);
 		}
 	}
+	
+	/**
+	 * Method to show which card is pressed
+	 * @param clickedCard
+	 */
+	public void clickedCard(final MouseEvent clickedCard) {
+		ImageView txt=(ImageView) clickedCard.getSource();
+		System.out.println("Premuta carta " + txt.getId());
+		// TODO capire il seme e il valore della carta cliccata 
+	}
+	
+	
+
 
 
 }
