@@ -4,12 +4,26 @@ import java.util
 import java.util.stream
 
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
-import it.unibo.pps2017.core.deck.cards.Seed.Seed
-import it.unibo.pps2017.core.deck.cards.{Card, Seed}
+import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Cup, Seed}
+import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.game.MatchManager._
 import it.unibo.pps2017.core.player.Controller
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable
+
+
+object MatchManager {
+  val RANDOM_TEAM: String = "RANDOM_TEAM"
+  val TEAM_MEMBERS_LIMIT: Int = 2
+  val MAX_PLAYER_NUMBER: Int = 4
+  val MAX_HAND_CARDS: Int = 10
+  val FOUR_OF_COIN: Card = CardImpl(Coin, 4)
+
+  def apply(team1: Team, team2: Team) = new MatchManager(team1, team2)
+
+  def apply() = new MatchManager()
+}
+
 
 class MatchManager(team1: Team = Team("Team1"),
                    team2: Team = Team("Team2")) extends Match {
@@ -18,6 +32,9 @@ class MatchManager(team1: Team = Team("Team1"),
   var currentSuit: Seed = _
   var gameCycle: GameCycle = _
   var deck: GameDeck = ComposedDeck()
+  var firstHand: Boolean = true
+  var cardsOnTable: Map[Card, Controller] = _
+  var nextHandStarter: Controller = _
 
 
   if (team1.isFull && team2.isFull) onFullTable()
@@ -92,7 +109,7 @@ class MatchManager(team1: Team = Team("Team1"),
   }
 
   private def onFullTable(): Unit = {
-    gameCycle = GameCycle(team1, team2)
+    gameCycle = GameCycle(team1, team2, onHandStart)
     startGame()
   }
 
@@ -108,11 +125,14 @@ class MatchManager(team1: Team = Team("Team1"),
     * If it's all right, it shuffle the deck and start a new set.
     */
   override def playSet(): Unit = {
-    deck.shuffle()
-    var i: Int = 0
-    deck.distribute().forEach(hand => {
-      getPlayers(i).setHand(new util.HashSet(hand))
-      i += 1
+    (10 to 1).toStream foreach (_ => {
+      prepareSet()
+
+      //TODO
+      //setBriscola(nextHandStarter.onChoiceBriscola())
+
+
+      cardsOnTable = gameCycle.handTurning(nextHandStarter)
     })
   }
 
@@ -173,78 +193,46 @@ class MatchManager(team1: Team = Team("Team1"),
 
     team1.getMembers ++ team2.getMembers
   }
-}
 
-
-/**
-  * This class manage a Team. Identified by a name and a list of members.
-  *
-  * @param name
-  * Name of the team
-  * @param members
-  * Members of the team. Limited at max 2.
-  */
-case class Team(var name: String,
-                private var members: ListBuffer[Controller] = ListBuffer()) {
 
   /**
-    * Add a player to the team.
-    *
-    * @param newPlayer
-    * The player who join the team.
-    * @throws it.unibo.pps2017.core.game.FullTeamException
-    * If the team has already 2 members.
+    * Prepare le table, shuffle the deck and distribute the cards to all players.
     */
-  @throws(classOf[FullTeamException])
-  def addPlayer(newPlayer: Controller): Unit = {
-    if (members.length >= TEAM_MEMBERS_LIMIT) {
-      throw FullTeamException()
-    }
-
-    members += newPlayer
+  private def prepareSet(): Unit = {
+    deck.shuffle()
+    var i: Int = 0
+    deck.distribute().forEach(hand => {
+      getPlayers(i).setHand(new util.HashSet(hand))
+      if (firstHand) {
+        if (isFirstPlayer(hand)) nextHandStarter = getPlayers(i)
+        firstHand = false
+      }
+      i += 1
+    })
   }
 
+  /**
+    * Search the Four of coin in the hand.
+    * If found it return TRUE, otherwise FALSE.
+    *
+    * @param hand
+    * Full player hand.
+    * @return
+    * TRUE if found in the hand the four of coin, FALSE otherwise.
+    */
+  private def isFirstPlayer(hand: util.Collection[Card]): Boolean = hand.contains(FOUR_OF_COIN)
+
 
   /**
-    * Return the first player of the team.
-    *
-    * @return
-    * the first player of the team.
+    * On first card playing event.
+    * @param card
+    *   first card played.
     */
-  def firstMember: Option[Controller] = members.headOption
-
-  /**
-    * Return the second player of the team.
-    *
-    * @return
-    * the second player of the team.
-    */
-  def secondMember: Option[Controller] = members.lastOption
-
-  /**
-    * Return the actual number of players in the team.
-    *
-    * @return
-    * the number of players in the team.
-    */
-  def numberOfMembers: Int = members.length
-
-  /**
-    * Return the members of the team.
-    *
-    * @return
-    * the members of the team
-    */
-  def getMembers: Seq[Controller] = members
-
-  /**
-    * Return TRUE if the team has reach two members, FALSE otherwise.
-    *
-    * @return
-    * TRUE if the team has reach two members, FALSE otherwise.
-    */
-  def isFull: Boolean = numberOfMembers == MatchManager.TEAM_MEMBERS_LIMIT
+  private def onHandStart(card: Card): Unit = {
+    currentSuit = card.cardSeed
+  }
 }
+
 
 final case class FullTeamException(message: String = "The team has reached the maximum number of players",
                                    private val cause: Throwable = None.orNull)
@@ -253,18 +241,6 @@ final case class FullTeamException(message: String = "The team has reached the m
 final case class TeamNotFoundException(message: String = "Team not found in this match",
                                        private val cause: Throwable = None.orNull)
   extends Exception(message, cause)
-
-
-object MatchManager {
-  val RANDOM_TEAM: String = "RANDOM_TEAM"
-  val TEAM_MEMBERS_LIMIT: Int = 2
-  val MAX_PLAYER_NUMBER: Int = 4
-  val MAX_HAND_CARDS: Int = 10
-
-  def apply(team1: Team, team2: Team) = new MatchManager(team1, team2)
-
-  def apply() = new MatchManager()
-}
 
 
 

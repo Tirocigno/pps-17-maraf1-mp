@@ -102,6 +102,7 @@ class MatchManagerTest extends FunSuite {
     team2.addPlayer(player4)
 
     val game = MatchManager(team1, team2)
+    game.playSet()
 
     assert(player1.hand.size() == MAX_HAND_CARDS)
     assert(player2.hand.size() == MAX_HAND_CARDS)
@@ -113,7 +114,7 @@ class MatchManagerTest extends FunSuite {
 
 
   test("isCardOkTest") {
-    val player = Player()
+    /*val player = Player()
 
     val team1 = Team("TeamOne")
     team1.addPlayer(Player())
@@ -127,7 +128,7 @@ class MatchManagerTest extends FunSuite {
 
 
     game.isCardOk(CardImpl(Cup, 4))
-
+    */
   }
 
 }

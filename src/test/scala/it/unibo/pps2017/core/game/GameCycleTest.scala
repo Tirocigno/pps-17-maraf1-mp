@@ -15,12 +15,12 @@ class GameCycleTest extends FunSuite {
     val team2 = Team("Team2", ListBuffer(Player(), Player()))
 
     assertThrows[TeamNotReadyException] {
-      GameCycle(team1, team2)
+      GameCycle(team1, team2, null)
     }
 
     team1.addPlayer(Player())
     team1.addPlayer(Player())
-    val cycle = GameCycle(team1, team2)
+    val cycle = GameCycle(team1, team2, null)
     val queue: Seq[Controller] = cycle.queue
 
     cycle.setFirst(queue(1))
@@ -36,4 +36,7 @@ class GameCycleTest extends FunSuite {
     assert(cycle.getCurrent == queue(2))
     assert(cycle.getNext == queue(3))
   }
+
+
+
 }
