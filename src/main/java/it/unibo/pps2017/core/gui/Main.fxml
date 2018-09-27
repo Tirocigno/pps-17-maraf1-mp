@@ -262,20 +262,9 @@
             <Font name="System Bold" size="15.0" />
          </font>
       </Button>
-      <ImageView fx:id="bussoNotify" fitHeight="150.0" fitWidth="200.0" layoutX="440.0" layoutY="310.0" pickOnBounds="true" preserveRatio="true" visible="false">
-         <image>
-            <Image url="@images/busso.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="striscioNotify" fitHeight="150.0" fitWidth="200.0" layoutX="440.0" layoutY="310.0" pickOnBounds="true" preserveRatio="true" visible="false">
-         <image>
-            <Image url="@images/striscio.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="voloNotify" fitHeight="150.0" fitWidth="200.0" layoutX="440.0" layoutY="310.0" pickOnBounds="true" preserveRatio="true" visible="false">
-         <image>
-            <Image url="@images/volo.png" />
-         </image>
-      </ImageView>
+      <ImageView fx:id="currentUserCommand" fitHeight="106.0" fitWidth="154.0" layoutX="460.0" layoutY="360.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="userFourCommand" fitHeight="89.0" fitWidth="132.0" layoutX="80.0" layoutY="281.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="userTwoCommand" fitHeight="89.0" fitWidth="132.0" layoutX="850.0" layoutY="281.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="userThreeCommand" fitHeight="106.0" fitWidth="154.0" layoutX="460.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </Pane>
