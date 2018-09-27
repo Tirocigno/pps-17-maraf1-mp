@@ -10,7 +10,7 @@ public class PlayGameView extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("PlayGame.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("PlayGameView.fxml"));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setResizable(false);

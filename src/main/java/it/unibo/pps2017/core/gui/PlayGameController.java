@@ -1,6 +1,8 @@
 package it.unibo.pps2017.core.gui;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -23,37 +25,37 @@ public class PlayGameController {
 	ImageView wallpaper;
 
 	@FXML
-	ImageView firstCard;
+	ImageView firstCard = new ImageView();
 
 	@FXML
-	ImageView secondCard;
+	ImageView secondCard = new ImageView();
 
 	@FXML
-	ImageView thirdCard;
+	ImageView thirdCard = new ImageView();
 
 	@FXML
-	ImageView fourthCard;
+	ImageView fourthCard = new ImageView();
 
 	@FXML
-	ImageView fifthCard;
+	ImageView fifthCard = new ImageView();
 
 	@FXML
-	ImageView sixthCard;
+	ImageView sixthCard = new ImageView();
 
 	@FXML
-	ImageView seventhCard;
+	ImageView seventhCard = new ImageView();
 
 	@FXML
-	ImageView eighthCard;
+	ImageView eighthCard = new ImageView();
 
 	@FXML
-	ImageView ninthCard;
+	ImageView ninthCard = new ImageView();
 
 	@FXML
-	ImageView tenthCard;
+	ImageView tenthCard = new ImageView();
 
 	@FXML
-	Button button;
+	Button buttonStart;
 
 	@FXML
 	Button bussoButton;
@@ -75,23 +77,44 @@ public class PlayGameController {
 
 	@FXML
 	ImageView userFourCommand;
-	
+
 	@FXML
 	ImageView userOneField;
-	
+
 	@FXML
 	ImageView userTwoField;
-	
+
 	@FXML
 	ImageView userThreeField;
-	
+
 	@FXML
 	ImageView userFourField;
-	
-	@FXML 
+
+	@FXML
 	Label timer;
 
-	
+	List<ImageView> userCards;
+
+	private List<String> firstUserCards;
+
+	public PlayGameController() {
+		
+		/* Simulo il fatto di avere la mia lista di carte. Quando questa mi verra' passata dal controller
+		 * eliminero' tutto cio'
+		 */
+		this.firstUserCards = new ArrayList<>();
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/7spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/6spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/5spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/4spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2spade.png");
+		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1spade.png");
+	}
+
 	/**
 	 * This method permits to view the command that principal user selected.
 	 * Possibilities: busso, striscio, volo
@@ -106,11 +129,20 @@ public class PlayGameController {
 		File file = new File(COMMANDS_PATH + command + FORMAT);
 		Image image = new Image(file.toURI().toString());
 		createTimeline(currentUserCommand, image);
+		System.out.println(file);
 
 		/*
-		 * per vedere che funziona 
-		 * getCommand(new User("User4"), new Command("busso"));
+		 * per vedere che funziona getCommand(new User("User4"), new Command("busso"));
 		 */
+	}
+
+	/*
+	 * metodo temporaneo che eliminero' quando ricevero' la lista delle carte dal
+	 * controller
+	 */
+	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
+		getCardsFirstUser(firstUserCards);
+
 	}
 
 	/**
@@ -148,19 +180,57 @@ public class PlayGameController {
 			createTimeline(userFourCommand, userCommand);
 		}
 	}
-	
+
 	/**
-	 * Method to show which card is pressed
+	 * Method to show which card is pressed and throw in field
+	 * 
 	 * @param clickedCard
 	 */
 	public void clickedCard(final MouseEvent clickedCard) {
-		ImageView txt=(ImageView) clickedCard.getSource();
-		System.out.println("Premuta carta " + txt.getId());
-		// TODO capire il seme e il valore della carta cliccata 
+		ImageView playedCard = (ImageView) clickedCard.getSource();
+		@SuppressWarnings("deprecation")
+		File file = new File(playedCard.getImage().impl_getUrl().substring(5));
+		Image userCommand = new Image(file.toURI().toString());
+		userOneField.setImage(userCommand);
+		playedCard.setVisible(false);
+
 	}
-	
-	
 
+	/**
+	 * Method to show the first hand of first user
+	 * @param firstUserCards path's list of user hand
+	 */
+	public void getCardsFirstUser(final List<String> firstUserCards) {
 
+		for (int i = 0; i < 10; i++) {
+			
+			File file = new File(firstUserCards.get(i));
+			Image userCard = new Image(file.toURI().toString());
+
+			switch (i) {
+			case 0:
+				firstCard.setImage(userCard);
+			case 1:
+				secondCard.setImage(userCard);
+			case 2:
+				thirdCard.setImage(userCard);
+			case 3:
+				fourthCard.setImage(userCard);
+			case 4:
+				fifthCard.setImage(userCard);
+			case 5:
+				sixthCard.setImage(userCard);
+			case 6:
+				seventhCard.setImage(userCard);
+			case 7:
+				eighthCard.setImage(userCard);
+			case 8:
+				ninthCard.setImage(userCard);
+			case 9:
+				tenthCard.setImage(userCard);
+			}
+
+		}
+	}
 
 }
