@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/maraf1mp.iml" filepath="$PROJECT_DIR$/.idea/modules/maraf1mp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/maraf1mp_main.iml" filepath="$PROJECT_DIR$/.idea/modules/maraf1mp_main.iml" group="maraf1mp" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/maraf1mp_test.iml" filepath="$PROJECT_DIR$/.idea/modules/maraf1mp_test.iml" group="maraf1mp" />
+    </modules>
+  </component>
+</project>
