@@ -1,9 +1,28 @@
 
+//Script for sCoverage task.
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.3.0"
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.22"
+    }
+}
 //List of plugins to apply.
-apply plugin: 'java'
+
+plugins {
+    id 'java'
+    id 'scala'
+    id 'org.scoverage' version '2.3.0'
+    id 'com.github.maiflai.scalatest' version '0.22'
+}
+/*apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'org.scoverage'
-apply plugin: 'com.github.maiflai.scalatest'
+apply plugin: 'com.github.maiflai.scalatest'*/
 
 //group and version.
 group 'it.unibo.pps2017'
@@ -94,17 +113,5 @@ dependencies {
     scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
 }
 
-//Script for sCoverage task.
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.3.0"
-        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.22"
-    }
-}
 
 
