@@ -125,7 +125,7 @@ class MatchManager(team1: Team = Team("Team1"),
     * If it's all right, it shuffle the deck and start a new set.
     */
   override def playSet(): Unit = {
-    (10 to 1).toStream foreach (_ => {
+    (1 to 10).toStream foreach (_ => {
       prepareSet()
 
       //TODO
