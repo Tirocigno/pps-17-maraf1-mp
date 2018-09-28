@@ -2,7 +2,13 @@ package it.unibo.pps2017.core.gui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -98,6 +104,11 @@ public class PlayGameController implements PlayGame {
 
 	List<ImageView> userCards;
 
+	/*
+	 * in questa mappa avro' l'indice della carta e il suo path, mi serve per capire
+	 * quando gioco una carta quale e' e dirlo al controller
+	 */
+	private Map<Integer, String> indexOfMyCards;
 	private List<String> firstUserCards;
 	private List<User> users;
 
@@ -123,6 +134,8 @@ public class PlayGameController implements PlayGame {
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3spade.png");
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2spade.png");
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1spade.png");
+
+		indexOfMyCards = new HashMap<>();
 	}
 
 	/**
@@ -180,26 +193,40 @@ public class PlayGameController implements PlayGame {
 	 * @param clickedCard
 	 */
 	public void clickedCard(final MouseEvent clickedCard) {
+		/* prendo il riferimento alla carta cliccata */
 		ImageView playedCard = (ImageView) clickedCard.getSource();
 		@SuppressWarnings("deprecation")
+		/* creo una nuova immagine della carta cliccata da posizionare in mezzo al campo */
 		File file = new File(playedCard.getImage().impl_getUrl().substring(5));
 		Image userCommand = new Image(file.toURI().toString());
+		/* visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano */
 		user1Field.setImage(userCommand);
 		playedCard.setVisible(false);
+		
 		/*
-		 * qui dovro' chiamare un metodo del controller che gli dica quale carta e'
-		 * stata giocata cosi' lui puo' eliminarla dalla lista dell'utente che l'ha
-		 * giocata
+		 * CONTROLLER
+		 * qui chiamo un metodo del controller e gli passo l'indice della carta selezionata
+		 * dall'utente e giocata
 		 */
+
+		@SuppressWarnings("unused")
+		int indexCardSelected;
+		String pathOfImageSelected = file.toURI().toString();
+		indexCardSelected =	getIndexOfCardSelected(pathOfImageSelected);
 
 	}
 
 	@Override
 	public void getCardsFirstUser(final List<String> firstUserCards) {
 
+		
 		for (int i = 0; i < TOTAL_HAND_CARDS; i++) {
 			File file = new File(firstUserCards.get(i));
 			Image userCard = new Image(file.toURI().toString());
+			
+			/* mi salvo le carte in ordine nella mappa */
+			indexOfMyCards.put(i, firstUserCards.get(i));
+
 			switch (i) {
 			case 0:
 				firstCard.setImage(userCard);
@@ -260,5 +287,21 @@ public class PlayGameController implements PlayGame {
 		Image image = new Image(file.toURI().toString());
 		return image;
 	}
+	
+	private int getIndexOfCardSelected(final String path) {
+		
+		int cardIndex = 0;
+		
+		for (final Entry<Integer, String> entry : indexOfMyCards.entrySet()) {
+			   if (path.contains(entry.getValue())) {
+				   cardIndex = entry.getKey();
+			   }
+		}
+		return cardIndex;
+
+		
+	}
+	
+
 
 }
