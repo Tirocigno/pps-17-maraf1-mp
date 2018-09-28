@@ -135,7 +135,7 @@ public class PlayGameController implements PlayGame {
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2spade.png");
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1spade.png");
 
-		indexOfMyCards = new HashMap<>();
+		this.indexOfMyCards = new HashMap<>();
 	}
 
 	/**
@@ -149,8 +149,7 @@ public class PlayGameController implements PlayGame {
 	public void signalMyCommands(final ActionEvent buttonPressed) throws InterruptedException {
 		Button button = (Button) buttonPressed.getSource();
 		String command = button.getText().toLowerCase();
-		File file = new File(COMMANDS_PATH + command + FORMAT);
-		Image image = new Image(file.toURI().toString());
+		Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
 		createTimeline(currentUserCommand, image);
 		/*
 		 * per vedere che funziona getCommand(new User("User4"), new Command("busso"));
@@ -175,8 +174,9 @@ public class PlayGameController implements PlayGame {
 
 	@Override
 	public void getCommand(final User user, final Command command) {
-		File file = new File(COMMANDS_PATH + command.getCommand() + user.getUser() + FORMAT);
-		Image userCommand = new Image(file.toURI().toString());
+
+		Image userCommand = getImageFromPath(COMMANDS_PATH + command.getCommand() + user.getUser() + FORMAT);
+
 		switch (user.getUser()) {
 		case "User2":
 			createTimeline(userTwoCommand, userCommand);
@@ -193,37 +193,33 @@ public class PlayGameController implements PlayGame {
 	 * @param clickedCard
 	 */
 	public void clickedCard(final MouseEvent clickedCard) {
-		/* prendo il riferimento alla carta cliccata */
+		/* prendo il riferimento alla carta cliccata e ricavo il path */
 		ImageView playedCard = (ImageView) clickedCard.getSource();
 		@SuppressWarnings("deprecation")
-		/* creo una nuova immagine della carta cliccata da posizionare in mezzo al campo */
-		File file = new File(playedCard.getImage().impl_getUrl().substring(5));
-		Image userCommand = new Image(file.toURI().toString());
+		String path = getCleanPath(playedCard.getImage().impl_getUrl());
+		String pathOfImageSelected = getCleanPath(path);
+		Image userCommand = getImageFromPath(pathOfImageSelected);
+
 		/* visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano */
-		user1Field.setImage(userCommand);
+		this.user1Field.setImage(userCommand);
 		playedCard.setVisible(false);
-		
+
 		/*
-		 * CONTROLLER
-		 * qui chiamo un metodo del controller e gli passo l'indice della carta selezionata
-		 * dall'utente e giocata
+		 * CONTROLLER qui chiamo un metodo del controller e gli passo l'indice della
+		 * carta selezionata dall'utente e giocata
 		 */
 
-		@SuppressWarnings("unused")
-		int indexCardSelected;
-		String pathOfImageSelected = file.toURI().toString();
-		indexCardSelected =	getIndexOfCardSelected(pathOfImageSelected);
+		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
+		System.out.println(indexCardSelected);
 
 	}
 
 	@Override
 	public void getCardsFirstUser(final List<String> firstUserCards) {
 
-		
 		for (int i = 0; i < TOTAL_HAND_CARDS; i++) {
-			File file = new File(firstUserCards.get(i));
-			Image userCard = new Image(file.toURI().toString());
-			
+
+			Image userCard = getImageFromPath(firstUserCards.get(i));
 			/* mi salvo le carte in ordine nella mappa */
 			indexOfMyCards.put(i, firstUserCards.get(i));
 
@@ -282,26 +278,29 @@ public class PlayGameController implements PlayGame {
 		}
 	}
 
+	/* Metodo per creare un'immagine dato un path */
 	private Image getImageFromPath(final String path) {
 		File file = new File(path);
 		Image image = new Image(file.toURI().toString());
 		return image;
 	}
-	
+
+	/* Metodo per recuperare l'indice della carta cliccata */
 	private int getIndexOfCardSelected(final String path) {
-		
 		int cardIndex = 0;
-		
 		for (final Entry<Integer, String> entry : indexOfMyCards.entrySet()) {
-			   if (path.contains(entry.getValue())) {
-				   cardIndex = entry.getKey();
-			   }
+			if (path.contains(entry.getValue())) {
+				cardIndex = entry.getKey();
+			}
 		}
 		return cardIndex;
-
-		
 	}
-	
 
+	/* Metodo per pulire il path ricavato dalla ImageView */
+	private String getCleanPath(final String path) {
+		int index = path.indexOf("src");
+		String pathOfImageSelected = path.substring(index, path.length());
+		return pathOfImageSelected;
+	}
 
 }
