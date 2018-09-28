@@ -35,4 +35,14 @@ public interface PlayGame {
 	 */
 	void cleanField(final User user);
 
+	/**
+	 * This method is called to show the played card from player.
+	 * 
+	 * @param user
+	 *            user that has played the card
+	 * @param cardPath
+	 *            played card's path
+	 */
+	void showOpponentPlayedCard(final User user, String cardPath);
+
 }
