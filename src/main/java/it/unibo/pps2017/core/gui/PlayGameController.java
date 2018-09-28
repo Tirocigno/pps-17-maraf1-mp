@@ -29,37 +29,31 @@ public class PlayGameController implements PlayGame {
 	private static final int TOTAL_HAND_CARDS = 10;
 
 	@FXML
-	ImageView wallpaper;
+	ImageView wallpaper = new ImageView();
 
 	@FXML
-	ImageView firstCard = new ImageView();
+	ImageView firstCard = new ImageView(), secondCard = new ImageView(), thirdCard = new ImageView(),
+			fourthCard = new ImageView(), fifthCard = new ImageView(), sixthCard = new ImageView(),
+			seventhCard = new ImageView(), eighthCard = new ImageView(), ninthCard = new ImageView(),
+			tenthCard = new ImageView();
 
 	@FXML
-	ImageView secondCard = new ImageView();
+	ImageView firstCardUser2 = new ImageView(), secondCardUser2 = new ImageView(), thirdCardUser2 = new ImageView(),
+			fourthCardUser2 = new ImageView(), fifthCardUser2 = new ImageView(), sixthCardUser2 = new ImageView(),
+			seventhCardUser2 = new ImageView(), eighthCardUser2 = new ImageView(), ninthCardUser2 = new ImageView(),
+			tenthCardUser2 = new ImageView();
 
 	@FXML
-	ImageView thirdCard = new ImageView();
+	ImageView firstCardUser3 = new ImageView(), secondCardUser3 = new ImageView(), thirdCardUser3 = new ImageView(),
+			fourthCardUser3 = new ImageView(), fifthCardUser3 = new ImageView(), sixthCardUser3 = new ImageView(),
+			seventhCardUser3 = new ImageView(), eighthCardUser3 = new ImageView(), ninthCardUser3 = new ImageView(),
+			tenthCardUser3 = new ImageView();
 
 	@FXML
-	ImageView fourthCard = new ImageView();
-
-	@FXML
-	ImageView fifthCard = new ImageView();
-
-	@FXML
-	ImageView sixthCard = new ImageView();
-
-	@FXML
-	ImageView seventhCard = new ImageView();
-
-	@FXML
-	ImageView eighthCard = new ImageView();
-
-	@FXML
-	ImageView ninthCard = new ImageView();
-
-	@FXML
-	ImageView tenthCard = new ImageView();
+	ImageView firstCardUser4 = new ImageView(), secondCardUser4 = new ImageView(), thirdCardUser4 = new ImageView(),
+			fourthCardUser4 = new ImageView(), fifthCardUser4 = new ImageView(), sixthCardUser4 = new ImageView(),
+			seventhCardUser4 = new ImageView(), eighthCardUser4 = new ImageView(), ninthCardUser4 = new ImageView(),
+			tenthCardUser4 = new ImageView();
 
 	@FXML
 	Button buttonStart;
@@ -110,6 +104,10 @@ public class PlayGameController implements PlayGame {
 	private List<String> firstUserCards;
 	private List<User> users;
 
+	private List<ImageView> cardsUser2;
+	private List<ImageView> cardsUser3;
+	private List<ImageView> cardsUser4;
+
 	public PlayGameController() {
 
 		/*
@@ -122,6 +120,7 @@ public class PlayGameController implements PlayGame {
 		this.users.add(new User("User2"));
 		this.users.add(new User("User3"));
 		this.users.add(new User("User4"));
+
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10spade.png");
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9spade.png");
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8spade.png");
@@ -134,6 +133,10 @@ public class PlayGameController implements PlayGame {
 		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1spade.png");
 
 		this.indexOfMyCards = new HashMap<>();
+		this.cardsUser2 = new ArrayList<>();
+		this.cardsUser3 = new ArrayList<>();
+		this.cardsUser4 = new ArrayList<>();
+
 	}
 
 	/**
@@ -149,9 +152,6 @@ public class PlayGameController implements PlayGame {
 		String command = button.getText().toLowerCase();
 		Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
 		createTimeline(currentUserCommand, image);
-		/*
-		 * per vedere che funziona getCommand(new User("User4"), new Command("busso"));
-		 */
 	}
 
 	/*
@@ -160,7 +160,7 @@ public class PlayGameController implements PlayGame {
 	 */
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
 		getCardsFirstUser(firstUserCards);
-		cleanField(new User("User4")); // simulo che tocchi all'utente 4
+		cleanField(new User("User1")); // simulo che tocchi all'utente 1
 	}
 
 	private void createTimeline(final ImageView currentUser, final Image command) {
@@ -173,6 +173,7 @@ public class PlayGameController implements PlayGame {
 	@Override
 	public void getCommand(final User user, final Command command) {
 
+		/* CONTROLLER CHE ME LO CHIAMA*/
 		Image userCommand = getImageFromPath(COMMANDS_PATH + command.getCommand() + user.getUser() + FORMAT);
 
 		switch (user.getUser()) {
@@ -191,6 +192,7 @@ public class PlayGameController implements PlayGame {
 	 * @param clickedCard
 	 */
 	public void clickedCard(final MouseEvent clickedCard) {
+
 		/* prendo il riferimento alla carta cliccata e ricavo il path */
 		ImageView playedCard = (ImageView) clickedCard.getSource();
 		@SuppressWarnings("deprecation")
@@ -203,24 +205,28 @@ public class PlayGameController implements PlayGame {
 		playedCard.setVisible(false);
 
 		/*
-		 * CONTROLLER qui chiamo un metodo del controller e gli passo l'indice della
+		 * CONTROLLER DA CHIAMARE: qui chiamo un metodo del controller e gli passo l'indice della
 		 * carta selezionata dall'utente e giocata
 		 */
 
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
 		System.out.println(indexCardSelected);
+
 	}
 
 	@Override
 	public void getCardsFirstUser(final List<String> firstUserCards) {
 
-		for (int i = 0; i < TOTAL_HAND_CARDS; i++) {
+		/* CONTROLLER CHE ME LO CHIAMA*/
+		initializePlayersHand();
 
-			Image userCard = getImageFromPath(firstUserCards.get(i));
+		for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
+
+			Image userCard = getImageFromPath(firstUserCards.get(cardIndex));
 			/* mi salvo le carte in ordine nella mappa */
-			indexOfMyCards.put(i, firstUserCards.get(i));
+			indexOfMyCards.put(cardIndex, firstUserCards.get(cardIndex));
 
-			switch (i) {
+			switch (cardIndex) {
 			case 0:
 				firstCard.setImage(userCard);
 			case 1:
@@ -248,6 +254,8 @@ public class PlayGameController implements PlayGame {
 	@Override
 	public void cleanField(final User user) {
 
+		
+		/* CONTROLLER CHE ME LO CHIAMA*/
 		/*
 		 * Prima metto tutti i terreni neri, poi all'utente che deve cominciare lo
 		 * imposto giallo
@@ -317,6 +325,75 @@ public class PlayGameController implements PlayGame {
 			break;
 		}
 
+		deleteCardFromHand(new User("User2"));
+
+	}
+
+	private void deleteCardFromHand(final User user) {
+		switch (user.getUser()) {
+		case "User2":
+			deleteCard(cardsUser2);
+			break;
+		case "User3":
+			deleteCard(cardsUser3);
+			break;
+		case "User4":
+			deleteCard(cardsUser4);
+			break;
+		}
+
+	}
+
+	private void deleteCard(final List<ImageView> cardsUser) {
+		if (cardsUser.size() - 1 >= 0) {
+			cardsUser.get(cardsUser.size() - 1).setVisible(false);
+			cardsUser.remove(cardsUser.size() - 1);
+		}
+	}
+
+	private void createCardsListUser2() {
+		this.cardsUser2.add(firstCardUser2);
+		this.cardsUser2.add(secondCardUser2);
+		this.cardsUser2.add(thirdCardUser2);
+		this.cardsUser2.add(fourthCardUser2);
+		this.cardsUser2.add(fifthCardUser2);
+		this.cardsUser2.add(sixthCardUser2);
+		this.cardsUser2.add(seventhCardUser2);
+		this.cardsUser2.add(eighthCardUser2);
+		this.cardsUser2.add(ninthCardUser2);
+		this.cardsUser2.add(tenthCardUser2);
+	}
+
+	private void createCardsListUser3() {
+		this.cardsUser3.add(firstCardUser3);
+		this.cardsUser3.add(secondCardUser3);
+		this.cardsUser3.add(thirdCardUser3);
+		this.cardsUser3.add(fourthCardUser3);
+		this.cardsUser3.add(fifthCardUser3);
+		this.cardsUser3.add(sixthCardUser3);
+		this.cardsUser3.add(seventhCardUser3);
+		this.cardsUser3.add(eighthCardUser3);
+		this.cardsUser3.add(ninthCardUser3);
+		this.cardsUser3.add(tenthCardUser3);
+	}
+
+	private void createCardsListUser4() {
+		this.cardsUser4.add(firstCardUser4);
+		this.cardsUser4.add(secondCardUser4);
+		this.cardsUser4.add(thirdCardUser4);
+		this.cardsUser4.add(fourthCardUser4);
+		this.cardsUser4.add(fifthCardUser4);
+		this.cardsUser4.add(sixthCardUser4);
+		this.cardsUser4.add(seventhCardUser4);
+		this.cardsUser4.add(eighthCardUser4);
+		this.cardsUser4.add(ninthCardUser4);
+		this.cardsUser4.add(tenthCardUser4);
+	}
+
+	private void initializePlayersHand() {
+		createCardsListUser2();
+		createCardsListUser3();
+		createCardsListUser4();
 	}
 
 }
