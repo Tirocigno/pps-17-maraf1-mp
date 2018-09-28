@@ -43,6 +43,6 @@ public interface PlayGame {
 	 * @param cardPath
 	 *            played card's path
 	 */
-	void showOpponentPlayedCard(final User user, String cardPath);
+	void showOtherPlayersPlayedCard(final User user, String cardPath);
 
 }

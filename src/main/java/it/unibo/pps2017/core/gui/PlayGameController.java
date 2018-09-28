@@ -219,6 +219,7 @@ public class PlayGameController implements PlayGame {
 
 		/* CONTROLLER CHE ME LO CHIAMA*/
 		initializePlayersHand();
+		initializeCommands();
 
 		for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
 
@@ -309,7 +310,7 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void showOpponentPlayedCard(final User user, final String cardPath) {
+	public void showOtherPlayersPlayedCard(final User user, final String cardPath) {
 
 		Image cardPlayed = getImageFromPath(cardPath);
 
@@ -325,7 +326,8 @@ public class PlayGameController implements PlayGame {
 			break;
 		}
 
-		deleteCardFromHand(new User("User2"));
+		/* dopo aver mostrato la carta ne devo eliminare una dalla mano dell'utente */
+		deleteCardFromHand(user); 
 
 	}
 
@@ -341,7 +343,6 @@ public class PlayGameController implements PlayGame {
 			deleteCard(cardsUser4);
 			break;
 		}
-
 	}
 
 	private void deleteCard(final List<ImageView> cardsUser) {
@@ -351,6 +352,16 @@ public class PlayGameController implements PlayGame {
 		}
 	}
 
+	
+	
+	/* Inizializzo le liste con tutte le carte degli altri utenti e poi le mostro */
+	
+	private void initializePlayersHand() {
+		createCardsListUser2();
+		createCardsListUser3();
+		createCardsListUser4();
+	}
+	
 	private void createCardsListUser2() {
 		this.cardsUser2.add(firstCardUser2);
 		this.cardsUser2.add(secondCardUser2);
@@ -362,6 +373,7 @@ public class PlayGameController implements PlayGame {
 		this.cardsUser2.add(eighthCardUser2);
 		this.cardsUser2.add(ninthCardUser2);
 		this.cardsUser2.add(tenthCardUser2);
+		this.showOtherPlayersHand(cardsUser2);
 	}
 
 	private void createCardsListUser3() {
@@ -375,6 +387,7 @@ public class PlayGameController implements PlayGame {
 		this.cardsUser3.add(eighthCardUser3);
 		this.cardsUser3.add(ninthCardUser3);
 		this.cardsUser3.add(tenthCardUser3);
+		this.showOtherPlayersHand(cardsUser3);
 	}
 
 	private void createCardsListUser4() {
@@ -388,12 +401,18 @@ public class PlayGameController implements PlayGame {
 		this.cardsUser4.add(eighthCardUser4);
 		this.cardsUser4.add(ninthCardUser4);
 		this.cardsUser4.add(tenthCardUser4);
+		this.showOtherPlayersHand(cardsUser4);
+	}
+	
+	private void showOtherPlayersHand(final List<ImageView> playerHand) {
+		for (final ImageView playerCard : playerHand) {
+			playerCard.setVisible(true);
+		}
 	}
 
-	private void initializePlayersHand() {
-		createCardsListUser2();
-		createCardsListUser3();
-		createCardsListUser4();
+	private void initializeCommands() {
+		bussoButton.setVisible(true);
+		striscioButton.setVisible(true);
+		voloButton.setVisible(true);
 	}
-
 }
