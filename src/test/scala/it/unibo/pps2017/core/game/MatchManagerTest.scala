@@ -2,13 +2,11 @@ package it.unibo.pps2017.core.game
 
 import java.util
 
-import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
-import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Cup, Sword}
+import it.unibo.pps2017.core.deck.cards.Card
 import it.unibo.pps2017.core.game.MatchManager.{MAX_HAND_CARDS, TEAM_MEMBERS_LIMIT}
 import it.unibo.pps2017.core.player.Controller
 import org.scalatest.FunSuite
 
-import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 class MatchManagerTest extends FunSuite {
@@ -112,25 +110,12 @@ class MatchManagerTest extends FunSuite {
   }
 
 
+  //TODO
+  /*test("handTakerTest") {
+    val game = MatchManager()
 
-  test("isCardOkTest") {
-    /*val player = Player()
-
-    val team1 = Team("TeamOne")
-    team1.addPlayer(Player())
-    team1.addPlayer(Player())
-
-    val team2 = Team("TeamTwo")
-    team2.addPlayer(Player())
-    team2.addPlayer(player)
-
-    val game = MatchManager(team1, team2)
-
-
-    game.isCardOk(CardImpl(Cup, 4))
-    */
-  }
-
+    game.currentSuit = Coin
+  }*/
 }
 
 case class Player(name: String = "Random" + Random.nextInt(1000)) extends Controller {

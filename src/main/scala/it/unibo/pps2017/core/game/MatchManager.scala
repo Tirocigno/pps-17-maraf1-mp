@@ -3,12 +3,13 @@ package it.unibo.pps2017.core.game
 import java.util
 import java.util.stream
 
-import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
-import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Cup, Seed}
+import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
+import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.game.MatchManager._
 import it.unibo.pps2017.core.player.Controller
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 
@@ -28,12 +29,26 @@ object MatchManager {
 class MatchManager(team1: Team = Team("Team1"),
                    team2: Team = Team("Team2")) extends Match {
 
+  implicit def defineTaker(hand: mutable.Map[Card, Controller]): Controller = {
+    var max: Card = hand.keys.head
+
+    hand.keys.foreach(card => {
+      if (card.cardSeed == currentBriscola && (max < card || max.cardValue == card.cardValue)) {
+        max = card
+      } else if (max.cardSeed != currentBriscola && card.cardSeed == currentSuit && max < card) {
+        max = card
+      }
+    })
+
+    hand(max)
+  }
+
   var currentBriscola: Seed = _
   var currentSuit: Seed = _
   var gameCycle: GameCycle = _
   var deck: GameDeck = ComposedDeck()
   var firstHand: Boolean = true
-  var cardsOnTable: Map[Card, Controller] = _
+  val cardsOnTable: mutable.Map[Card, Controller] = mutable.HashMap()
   var nextHandStarter: Controller = _
 
 
@@ -132,7 +147,10 @@ class MatchManager(team1: Team = Team("Team1"),
       //setBriscola(nextHandStarter.onChoiceBriscola())
 
 
-      cardsOnTable = gameCycle.handTurning(nextHandStarter)
+      cardsOnTable ++= gameCycle.handTurning(nextHandStarter)
+
+
+      onHandEnd(cardsOnTable)
     })
   }
 
@@ -233,7 +251,37 @@ class MatchManager(team1: Team = Team("Team1"),
   private def onHandStart(card: Card): Unit = {
     currentSuit = card.cardSeed
   }
+
+
+  /**
+    * Hand end state.
+    * Add the current cards in the table to the relative team deck and clear the table.
+    * @param lastTaker
+    *   The player who take the hand.
+    */
+  private def onHandEnd(lastTaker: Controller): Unit = {
+    deck.registerTurnPlayedCards(new util.ArrayList(cardsOnTable.asJava.keySet()), getTeamIndexOfPlayer(lastTaker))
+
+    cardsOnTable.clear()
+  }
+
+  /**
+    * Return the team's index of the player.
+    *   0 if is in the first team, 1 otherwise.
+    * @param player
+    *     researched player.
+    * @return
+    *     team index.
+    */
+  private def getTeamIndexOfPlayer(player: Controller): Int = {
+    if (team1.getMembers.contains(player))  return 0
+
+    1
+  }
+
 }
+
+
 
 
 final case class FullTeamException(message: String = "The team has reached the maximum number of players",
