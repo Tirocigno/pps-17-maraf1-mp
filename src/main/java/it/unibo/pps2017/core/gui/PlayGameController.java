@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -28,6 +25,7 @@ public class PlayGameController implements PlayGame {
 	private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
 	private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
 	private static final String FORMAT = ".png";
+	private static final String START_PATH = "src";
 	private static final int TOTAL_HAND_CARDS = 10;
 
 	@FXML
@@ -211,7 +209,6 @@ public class PlayGameController implements PlayGame {
 
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
 		System.out.println(indexCardSelected);
-
 	}
 
 	@Override
@@ -298,9 +295,28 @@ public class PlayGameController implements PlayGame {
 
 	/* Metodo per pulire il path ricavato dalla ImageView */
 	private String getCleanPath(final String path) {
-		int index = path.indexOf("src");
+		int index = path.indexOf(START_PATH);
 		String pathOfImageSelected = path.substring(index, path.length());
 		return pathOfImageSelected;
+	}
+
+	@Override
+	public void showOpponentPlayedCard(final User user, final String cardPath) {
+
+		Image cardPlayed = getImageFromPath(cardPath);
+
+		switch (user.getUser()) {
+		case "User2":
+			user2Field.setImage(cardPlayed);
+			break;
+		case "User3":
+			user3Field.setImage(cardPlayed);
+			break;
+		case "User4":
+			user4Field.setImage(cardPlayed);
+			break;
+		}
+
 	}
 
 }
