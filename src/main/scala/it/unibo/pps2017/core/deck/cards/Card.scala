@@ -37,7 +37,10 @@ sealed trait Card {
     * @return true if the value on the card is lower than the other one, false otherwise.
     */
   //noinspection ScalaStyle
-  def <(otherCard: Card): Boolean = ! >(otherCard)
+  def <(otherCard: Card): Boolean = otherCard match {
+    case CardImpl(_, otherValue) if cardValue == otherValue => false
+    case _ => ! >(otherCard)
+  }
 
   override def equals(obj: Any): Boolean = obj match {
     case CardImpl(seed, value) if cardSeed.equals(seed) && cardValue == value => true
