@@ -36,6 +36,16 @@ public interface PlayGame {
 	void cleanField(final User user);
 
 	/**
+	 * This method is called every time to select the current player that must plays
+	 * the card. His empty field will become yellow instead of black to signal that
+	 * is his turn.
+	 * 
+	 * @param user
+	 *            current player that must plays the card.
+	 */
+	void setCurrentPlayer(final User user);
+
+	/**
 	 * This method is called to show the played card from player.
 	 * 
 	 * @param user
