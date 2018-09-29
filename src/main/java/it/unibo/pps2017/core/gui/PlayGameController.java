@@ -179,10 +179,13 @@ public class PlayGameController implements PlayGame {
 		switch (user.getUser()) {
 		case "User2":
 			createTimeline(userTwoCommand, userCommand);
+			break;
 		case "User3":
 			createTimeline(userThreeCommand, userCommand);
+			break;
 		case "User4":
 			createTimeline(userFourCommand, userCommand);
+			break;
 		}
 	}
 

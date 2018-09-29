@@ -5,28 +5,37 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="657.0" prefWidth="1052.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.PlayGameController">
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.PlayGameController">
    <children>
-      <ImageView fx:id="wallpaper" fitHeight="706.0" fitWidth="1051.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@images/wall.jpg" />
-         </image>
-      </ImageView>
-      <BorderPane layoutX="22.0" layoutY="32.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="618.0" prefWidth="1006.0">
+      <Pane prefHeight="687.0" prefWidth="1036.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ImageView fx:id="wallpaper" fitHeight="1500.0" fitWidth="1500.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/wall.jpg" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <bottom>
-            <HBox alignment="BOTTOM_CENTER" prefHeight="124.0" prefWidth="1030.0" BorderPane.alignment="BOTTOM_CENTER">
+            <HBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <ImageView fx:id="firstCard" fitHeight="108.0" fitWidth="77.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="secondCard" fitHeight="108.0" fitWidth="75.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets />
-                     </HBox.margin></ImageView>
+                     </HBox.margin>
+                  </ImageView>
                   <ImageView fx:id="thirdCard" fitHeight="108.0" fitWidth="77.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="fourthCard" fitHeight="124.0" fitWidth="74.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="fifthCard" fitHeight="124.0" fitWidth="74.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
@@ -39,7 +48,7 @@
             </HBox>
          </bottom>
          <left>
-            <VBox prefHeight="463.0" prefWidth="91.0" BorderPane.alignment="CENTER">
+            <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <ImageView fx:id="firstCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
                      <image>
@@ -151,105 +160,133 @@
             </VBox>
          </right>
          <top>
-            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <AnchorPane BorderPane.alignment="CENTER">
                <children>
-                  <ImageView fx:id="tenthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="ninthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="eighthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="seventhCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="sixthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="fifthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="fourthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="thirdCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="secondCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="firstCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/back.png" />
-                     </image>
-                  </ImageView>
+                  <Label fx:id="timer" layoutY="40.0" text="TIMER" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <ImageView fx:id="tenthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="ninthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="eighthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="seventhCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="sixthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="fifthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="fourthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="thirdCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="secondCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="firstCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/back.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+                  <Button fx:id="buttonStart" mnemonicParsing="false" onAction="#distributedCards" text="Inizia" />
                </children>
-            </HBox>
+            </AnchorPane>
          </top>
+         <center>
+            <GridPane BorderPane.alignment="CENTER">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <ImageView fx:id="userThreeCommand" fitHeight="106.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                  <ImageView fx:id="userTwoCommand" fitHeight="89.0" fitWidth="132.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+                  <ImageView fx:id="userFourCommand" fitHeight="89.0" fitWidth="132.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="4" />
+                  <ImageView fx:id="user1Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6">
+                     <image>
+                        <Image url="@cards/emptyField.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="user3Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+                     <image>
+                        <Image url="@cards/emptyField.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="user2Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="4">
+                     <image>
+                        <Image url="@cards/emptyField.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="user4Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+                     <image>
+                        <Image url="@cards/emptyField.png" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="bussoButton" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Busso" visible="false" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="striscioButton" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Striscio" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="voloButton" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Volo" visible="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="8">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+                  <ImageView fx:id="currentUserCommand" fitHeight="106.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+               </children>
+            </GridPane>
+         </center>
       </BorderPane>
-      <Button fx:id="bussoButton" layoutX="180.0" layoutY="480.0" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Busso" visible="false">
-         <font>
-            <Font name="System Bold" size="15.0" />
-         </font>
-      </Button>
-      <Button fx:id="voloButton" layoutX="770.0" layoutY="480.0" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Volo" visible="false">
-         <font>
-            <Font name="System Bold" size="15.0" />
-         </font>
-      </Button>
-      <Button fx:id="striscioButton" layoutX="475.0" layoutY="480.0" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Striscio" visible="false">
-         <font>
-            <Font name="System Bold" size="15.0" />
-         </font>
-      </Button>
-      <ImageView fx:id="user1Field" fitHeight="106.0" fitWidth="67.0" layoutX="481.0" layoutY="345.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@cards/emptyField.png" />
-         </image></ImageView>
-      <ImageView fx:id="user2Field" fitHeight="106.0" fitWidth="67.0" layoutX="600.0" layoutY="225.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@cards/emptyField.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="user3Field" fitHeight="106.0" fitWidth="67.0" layoutX="481.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@cards/emptyField.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="user4Field" fitHeight="106.0" fitWidth="67.0" layoutX="360.0" layoutY="225.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@cards/emptyField.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="currentUserCommand" fitHeight="106.0" fitWidth="154.0" layoutX="460.0" layoutY="360.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="userFourCommand" fitHeight="89.0" fitWidth="132.0" layoutX="80.0" layoutY="281.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="userTwoCommand" fitHeight="89.0" fitWidth="132.0" layoutX="850.0" layoutY="281.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="userThreeCommand" fitHeight="106.0" fitWidth="154.0" layoutX="460.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true" />
-      <Label fx:id="timer" layoutX="20.0" layoutY="20.0" text="TIMER" textFill="WHITE">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <Button fx:id="buttonStart" layoutX="117.0" layoutY="18.0" mnemonicParsing="false" onAction="#distributedCards" text="Inizia" />
    </children>
-</Pane>
+</AnchorPane>
