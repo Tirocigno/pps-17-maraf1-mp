@@ -121,16 +121,16 @@ public class PlayGameController implements PlayGame {
 		this.users.add(new User("User3"));
 		this.users.add(new User("User4"));
 
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/7spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/6spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/5spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/4spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2spade.png");
-		firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/7spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/6spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/5spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/4spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1spade.png");
 
 		this.indexOfMyCards = new HashMap<>();
 		this.cardsUser2 = new ArrayList<>();
@@ -229,25 +229,25 @@ public class PlayGameController implements PlayGame {
 
 			switch (cardIndex) {
 			case 0:
-				firstCard.setImage(userCard);
+				this.firstCard.setImage(userCard);
 			case 1:
-				secondCard.setImage(userCard);
+				this.secondCard.setImage(userCard);
 			case 2:
-				thirdCard.setImage(userCard);
+				this.thirdCard.setImage(userCard);
 			case 3:
-				fourthCard.setImage(userCard);
+				this.fourthCard.setImage(userCard);
 			case 4:
-				fifthCard.setImage(userCard);
+				this.fifthCard.setImage(userCard);
 			case 5:
-				sixthCard.setImage(userCard);
+				this.sixthCard.setImage(userCard);
 			case 6:
-				seventhCard.setImage(userCard);
+				this.seventhCard.setImage(userCard);
 			case 7:
-				eighthCard.setImage(userCard);
+				this.eighthCard.setImage(userCard);
 			case 8:
-				ninthCard.setImage(userCard);
+				this.ninthCard.setImage(userCard);
 			case 9:
-				tenthCard.setImage(userCard);
+				this.tenthCard.setImage(userCard);
 			}
 		}
 	}
@@ -262,23 +262,23 @@ public class PlayGameController implements PlayGame {
 		 */
 		Image emptyField = getImageFromPath(EMPTY_FIELD);
 		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-		user1Field.setImage(emptyField);
-		user2Field.setImage(emptyField);
-		user3Field.setImage(emptyField);
-		user4Field.setImage(emptyField);
+		this.user1Field.setImage(emptyField);
+		this.user2Field.setImage(emptyField);
+		this.user3Field.setImage(emptyField);
+		this.user4Field.setImage(emptyField);
 
 		switch (user.getUser()) {
 		case "User1":
-			user1Field.setImage(emptyFieldMyTurn);
+			this.user1Field.setImage(emptyFieldMyTurn);
 			break;
 		case "User2":
-			user2Field.setImage(emptyFieldMyTurn);
+			this.user2Field.setImage(emptyFieldMyTurn);
 			break;
 		case "User3":
-			user3Field.setImage(emptyFieldMyTurn);
+			this.user3Field.setImage(emptyFieldMyTurn);
 			break;
 		case "User4":
-			user4Field.setImage(emptyFieldMyTurn);
+			this.user4Field.setImage(emptyFieldMyTurn);
 			break;
 		}
 	}
@@ -290,16 +290,16 @@ public class PlayGameController implements PlayGame {
 		switch (user.getUser()) {
 
 		case "User1":
-			user1Field.setImage(emptyFieldMyTurn);
+			this.user1Field.setImage(emptyFieldMyTurn);
 			break;
 		case "User2":
-			user2Field.setImage(emptyFieldMyTurn);
+			this.user2Field.setImage(emptyFieldMyTurn);
 			break;
 		case "User3":
-			user3Field.setImage(emptyFieldMyTurn);
+			this.user3Field.setImage(emptyFieldMyTurn);
 			break;
 		case "User4":
-			user4Field.setImage(emptyFieldMyTurn);
+			this.user4Field.setImage(emptyFieldMyTurn);
 			break;
 		}
 	}
@@ -336,13 +336,13 @@ public class PlayGameController implements PlayGame {
 
 		switch (user.getUser()) {
 		case "User2":
-			user2Field.setImage(cardPlayed);
+			this.user2Field.setImage(cardPlayed);
 			break;
 		case "User3":
-			user3Field.setImage(cardPlayed);
+			this.user3Field.setImage(cardPlayed);
 			break;
 		case "User4":
-			user4Field.setImage(cardPlayed);
+			this.user4Field.setImage(cardPlayed);
 			break;
 		}
 
@@ -429,9 +429,9 @@ public class PlayGameController implements PlayGame {
 	}
 
 	private void initializeCommands() {
-		bussoButton.setVisible(true);
-		striscioButton.setVisible(true);
-		voloButton.setVisible(true);
+		this.bussoButton.setVisible(true);
+		this.striscioButton.setVisible(true);
+		this.voloButton.setVisible(true);
 	}
 
 	
