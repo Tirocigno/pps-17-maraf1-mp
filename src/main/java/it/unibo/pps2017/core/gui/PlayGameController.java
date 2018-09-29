@@ -173,7 +173,7 @@ public class PlayGameController implements PlayGame {
 	@Override
 	public void getCommand(final User user, final Command command) {
 
-		/* CONTROLLER CHE ME LO CHIAMA*/
+		/* CONTROLLER CHE ME LO CHIAMA */
 		Image userCommand = getImageFromPath(COMMANDS_PATH + command.getCommand() + user.getUser() + FORMAT);
 
 		switch (user.getUser()) {
@@ -205,8 +205,8 @@ public class PlayGameController implements PlayGame {
 		playedCard.setVisible(false);
 
 		/*
-		 * CONTROLLER DA CHIAMARE: qui chiamo un metodo del controller e gli passo l'indice della
-		 * carta selezionata dall'utente e giocata
+		 * CONTROLLER DA CHIAMARE: qui chiamo un metodo del controller e gli passo
+		 * l'indice della carta selezionata dall'utente e giocata
 		 */
 
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
@@ -217,7 +217,7 @@ public class PlayGameController implements PlayGame {
 	@Override
 	public void getCardsFirstUser(final List<String> firstUserCards) {
 
-		/* CONTROLLER CHE ME LO CHIAMA*/
+		/* CONTROLLER CHE ME LO CHIAMA */
 		initializePlayersHand();
 		initializeCommands();
 
@@ -255,8 +255,7 @@ public class PlayGameController implements PlayGame {
 	@Override
 	public void cleanField(final User user) {
 
-		
-		/* CONTROLLER CHE ME LO CHIAMA*/
+		/* CONTROLLER CHE ME LO CHIAMA */
 		/*
 		 * Prima metto tutti i terreni neri, poi all'utente che deve cominciare lo
 		 * imposto giallo
@@ -269,6 +268,27 @@ public class PlayGameController implements PlayGame {
 		user4Field.setImage(emptyField);
 
 		switch (user.getUser()) {
+		case "User1":
+			user1Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User2":
+			user2Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User3":
+			user3Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User4":
+			user4Field.setImage(emptyFieldMyTurn);
+			break;
+		}
+	}
+	
+	@Override
+	public void setCurrentPlayer(final User user) {
+		/* CONTROLLER CHE ME LO CHIAMA */
+		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
+		switch (user.getUser()) {
+
 		case "User1":
 			user1Field.setImage(emptyFieldMyTurn);
 			break;
@@ -327,7 +347,7 @@ public class PlayGameController implements PlayGame {
 		}
 
 		/* dopo aver mostrato la carta ne devo eliminare una dalla mano dell'utente */
-		deleteCardFromHand(user); 
+		deleteCardFromHand(user);
 
 	}
 
@@ -352,16 +372,14 @@ public class PlayGameController implements PlayGame {
 		}
 	}
 
-	
-	
 	/* Inizializzo le liste con tutte le carte degli altri utenti e poi le mostro */
-	
+
 	private void initializePlayersHand() {
 		createCardsListUser2();
 		createCardsListUser3();
 		createCardsListUser4();
 	}
-	
+
 	private void createCardsListUser2() {
 		this.cardsUser2.add(firstCardUser2);
 		this.cardsUser2.add(secondCardUser2);
@@ -403,7 +421,7 @@ public class PlayGameController implements PlayGame {
 		this.cardsUser4.add(tenthCardUser4);
 		this.showOtherPlayersHand(cardsUser4);
 	}
-	
+
 	private void showOtherPlayersHand(final List<ImageView> playerHand) {
 		for (final ImageView playerCard : playerHand) {
 			playerCard.setVisible(true);
@@ -415,4 +433,6 @@ public class PlayGameController implements PlayGame {
 		striscioButton.setVisible(true);
 		voloButton.setVisible(true);
 	}
+
+	
 }
