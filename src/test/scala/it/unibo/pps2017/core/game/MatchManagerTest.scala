@@ -2,11 +2,13 @@ package it.unibo.pps2017.core.game
 
 import java.util
 
-import it.unibo.pps2017.core.deck.cards.Card
+import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
+import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup}
 import it.unibo.pps2017.core.game.MatchManager.{MAX_HAND_CARDS, TEAM_MEMBERS_LIMIT}
 import it.unibo.pps2017.core.player.Controller
 import org.scalatest.FunSuite
 
+import scala.collection.mutable
 import scala.util.Random
 
 class MatchManagerTest extends FunSuite {
@@ -110,16 +112,60 @@ class MatchManagerTest extends FunSuite {
   }
 
 
-  //TODO
-  /*test("handTakerTest") {
+  test("handTakerTestWithDifferentSuitAndBriscola") {
     val game = MatchManager()
 
+    val player1 = Player()
+    val player2 = Player()
+    val player3 = Player()
+    val player4 = Player()
+
     game.currentSuit = Coin
-  }*/
+    game.currentBriscola = Cup
+
+    println(player1, player2, player3, player4)
+
+    var cards: mutable.ListBuffer[(Card, Controller)] = mutable.ListBuffer(CardImpl(Coin, 8) -> player1, CardImpl(Coin, 7) -> player2,
+      CardImpl(Club, 1) -> player3, CardImpl(Coin, 6) -> player4)
+
+    assert(game.defineTaker(cards) == player1)
+
+    cards = mutable.ListBuffer(CardImpl(Coin, 10) -> player1, CardImpl(Coin, 10) -> player2,
+        CardImpl(Club, 1) -> player3, CardImpl(Coin, 2) -> player4)
+
+    assert(game.defineTaker(cards) == player4)
+
+    //TODO Capire il lancio dell'eccezione sul 4 di denara
+    //cards = mutable.Map(CardImpl(Coin, 10) -> player1, CardImpl(Coin, 4) -> player2,
+     // CardImpl(Club, 1) -> player3, CardImpl(Coin, 6) -> player4)
+
+    //assert(game.defineTaker(cards) == player2)
+
+    cards = mutable.ListBuffer(CardImpl(Coin, 7) -> player1, CardImpl(Coin, 5) -> player2,
+      CardImpl(Club, 4) -> player3, CardImpl(Cup, 6) -> player4)
+
+    assert(game.defineTaker(cards) == player4)
+
+    cards = mutable.ListBuffer(CardImpl(Coin, 1) -> player1, CardImpl(Cup, 5) -> player2,
+      CardImpl(Cup, 1) -> player3, CardImpl(Cup, 10) -> player4)
+
+    assert(game.defineTaker(cards) == player3)
+
+    cards = mutable.ListBuffer(CardImpl(Cup, 2) -> player1, CardImpl(Cup, 1) -> player2,
+      CardImpl(Cup, 3) -> player3, CardImpl(Coin, 3) -> player4)
+
+    assert(game.defineTaker(cards) == player3)
+
+    cards = mutable.ListBuffer(CardImpl(Cup, 8) -> player1, CardImpl(Cup, 5) -> player2,
+      CardImpl(Cup, 6) -> player3, CardImpl(Club, 3) -> player4)
+
+    assert(game.defineTaker(cards) == player1)
+  }
 }
 
 case class Player(name: String = "Random" + Random.nextInt(1000)) extends Controller {
   var hand: util.Set[Card] = _
+
   override def getHand: util.Set[Card] = hand
 
   override def setHand(hand: util.Set[Card]): Unit = this.hand = hand

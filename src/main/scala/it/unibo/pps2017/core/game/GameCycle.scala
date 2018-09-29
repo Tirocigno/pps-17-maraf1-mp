@@ -4,7 +4,7 @@ import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
 import it.unibo.pps2017.core.deck.cards.Seed.{Cup, Seed}
 import it.unibo.pps2017.core.player.Controller
 
-import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 
 /**
@@ -51,9 +51,9 @@ case class GameCycle(team1: Team,
     * A sequence with all the player. From the first to the last.
     */
   //TODO Not full implemented
-  def handTurning(first: Controller): Map[Card, Controller] = {
+  def handTurning(first: Controller): List[(Card, Controller)] = {
     setFirst(first)
-    val playedCards: mutable.Map[Card, Controller] = mutable.HashMap()
+    val playedCards: ListBuffer[(Card, Controller)] = ListBuffer()
 
     (1 to 4).toStream foreach (turn => {
       val currentPlayer = next()
@@ -65,7 +65,7 @@ case class GameCycle(team1: Team,
       playedCards += (playedCard -> currentPlayer)
     })
 
-    playedCards.toMap
+    playedCards.toList
   }
 
 

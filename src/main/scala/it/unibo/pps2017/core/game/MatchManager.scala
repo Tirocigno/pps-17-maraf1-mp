@@ -29,30 +29,44 @@ object MatchManager {
 class MatchManager(team1: Team = Team("Team1"),
                    team2: Team = Team("Team2")) extends Match {
 
-  implicit def defineTaker(hand: mutable.Map[Card, Controller]): Controller = {
-    var max: Card = hand.keys.head
-
-    hand.keys.foreach(card => {
-      if (card.cardSeed == currentBriscola && (max < card || max.cardValue == card.cardValue)) {
-        max = card
-      } else if (max.cardSeed != currentBriscola && card.cardSeed == currentSuit && max < card) {
-        max = card
-      }
-    })
-
-    hand(max)
-  }
-
   var currentBriscola: Seed = _
   var currentSuit: Seed = _
   var gameCycle: GameCycle = _
   var deck: GameDeck = ComposedDeck()
   var firstHand: Boolean = true
-  val cardsOnTable: mutable.Map[Card, Controller] = mutable.HashMap()
+  val cardsOnTable: mutable.ListBuffer[(Card, Controller)] = mutable.ListBuffer()
   var nextHandStarter: Controller = _
 
 
   if (team1.isFull && team2.isFull) onFullTable()
+
+
+  /**
+    * Found the taker in a List of cards.
+    * @param hand
+    *   List of played cards with the player who have threw the card.
+    * @return
+    *   The hand taker.
+    */
+  implicit def defineTaker(hand: mutable.ListBuffer[(Card, Controller)]): Controller = {
+    var max: Card = hand.head._1
+
+    hand foreach(tuple => {
+      val card = tuple._1
+      if (card.cardSeed == currentBriscola) {
+        if (max.cardSeed != currentBriscola) {
+          max = card
+        } else if (max < card) {
+          max = card
+        }
+      } else if (max.cardSeed != currentBriscola && card.cardSeed == currentSuit && max < card) {
+        max = card
+      }
+    })
+
+    hand.filter(_._1 == max).head._2
+  }
+
 
   /**
     * Add a player to the match.
@@ -260,7 +274,7 @@ class MatchManager(team1: Team = Team("Team1"),
     *   The player who take the hand.
     */
   private def onHandEnd(lastTaker: Controller): Unit = {
-    deck.registerTurnPlayedCards(new util.ArrayList(cardsOnTable.asJava.keySet()), getTeamIndexOfPlayer(lastTaker))
+    deck.registerTurnPlayedCards(cardsOnTable.map(_._1).toList.asJava, getTeamIndexOfPlayer(lastTaker))
 
     cardsOnTable.clear()
   }
