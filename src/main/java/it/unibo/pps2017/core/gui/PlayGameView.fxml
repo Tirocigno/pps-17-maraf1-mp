@@ -48,116 +48,124 @@
             </HBox>
          </bottom>
          <left>
-            <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane prefWidth="85.0">
                <children>
-                  <ImageView fx:id="firstCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="secondCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="thirdCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="fourthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="fifthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="sixthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="seventhCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="eighthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="ninthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="tenthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
+                  <VBox AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0">
+                     <children>
+                        <ImageView fx:id="firstCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="secondCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="thirdCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="fourthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="fifthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="sixthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="seventhCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="eighthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="ninthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="tenthCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
+            </AnchorPane>
          </left>
          <right>
-            <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <AnchorPane BorderPane.alignment="CENTER">
                <children>
-                  <ImageView fx:id="tenthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="ninthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="eighthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="seventhCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="sixthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="fifthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="fourthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="thirdCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="secondCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="firstCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                     <image>
-                        <Image url="@cards/backReverse.png" />
-                     </image>
-                  </ImageView>
+                  <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="41.0" AnchorPane.rightAnchor="0.0">
+                     <children>
+                        <ImageView fx:id="tenthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="ninthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="eighthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="seventhCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="sixthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="fifthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="fourthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="thirdCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="secondCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="firstCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@cards/backReverse.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
+            </AnchorPane>
          </right>
          <top>
             <AnchorPane BorderPane.alignment="CENTER">
