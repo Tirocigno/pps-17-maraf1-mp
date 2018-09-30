@@ -8,17 +8,17 @@ import java.util.Set;
 
 public interface Controller {
 
-    Map<String,List<Card>> getAllHands();
+    Map<Player,List<Card>> getAllHands();
 
-    List<Card> getPlayerHand(String player);
+    List<Card> getPlayerHand(Player player);
 
     void setHands(List<Card> hand);
 
     boolean isCardOk(Card c);
 
-    void setTurn(String player);
+    void setTurn(Player player);
 
-    void addPlayer(Controller player);
+    void addPlayer(Player player);
 
     void cleanField();
 
