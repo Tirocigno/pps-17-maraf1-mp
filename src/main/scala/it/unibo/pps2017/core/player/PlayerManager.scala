@@ -7,12 +7,9 @@ import it.unibo.pps2017.core.game.Match
 
 abstract class PlayerManager(model:Match) extends Controller{
 
-  //var cardsHand : List[List[Card]]
   var allCardsInHand = Map[String, List[Card]]()
   allCardsInHand += ("User1" -> null, "User2" -> null, "User3" -> null, "User4" -> null)
   var playerTurn : String
-
- // var cardsPlayed : List[Card]
 
   override def getAllHands: Map[String,List[Card]] =  allCardsInHand
 
@@ -46,9 +43,8 @@ abstract class PlayerManager(model:Match) extends Controller{
 
 
   override def getRandCard: Card = {
-    val rand = scala.util.Random
-    //model.getRandCardToPlay(allCardsInHand.get(playerTurn))
-    //allCardsInHand.get(indexTurn)(rand.nextInt(10))//10 numero di carte in mano
+    //Card card = model.getRandCardToPlay(allCardsInHand.get(playerTurn))
+    //gui.playedCard(card)
     null
   }
 
