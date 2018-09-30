@@ -18,23 +18,9 @@ public interface Controller {
 
     void setTurn(String player);
 
-   // int getCardIndex(Card c);
-
-   // void playCard(Card c);
-
-    //  boolean isFirstPlayedCard(Card c);
-
-   // boolean isLastPlayedCard(Card c);
-
     void addPlayer(Controller player);
 
     void cleanField();
-
-   // int indexNextTurn();
-
-   // Set<Card> getInitCards();
-
-   // void setInitCards(Set<Card> cards);
 
     Card getRandCard();
 
