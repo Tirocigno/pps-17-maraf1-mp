@@ -2,12 +2,13 @@ package it.unibo.pps2017.core.player
 
 import java.util
 
-import it.unibo.pps2017.core.deck.cards.{Card, Seed}
+import it.unibo.pps2017.core.deck.cards.Card
 import it.unibo.pps2017.core.game.Match
 
 abstract class PlayerManager(model:Match) extends Controller{
 
   var allCardsInHand = Map[Player, List[Card]]()
+  //var players = List[Player](PlayerImpl("P1"),PlayerImpl("P2"),PlayerImpl("P3"),PlayerImpl("P4"))
   //allCardsInHand += ("User1" -> null, "User2" -> null, "User3" -> null, "User4" -> null)
   var playerTurn : Player
 
@@ -18,6 +19,13 @@ abstract class PlayerManager(model:Match) extends Controller{
     */
   override def getAllHands: Map[Player,List[Card]] =  allCardsInHand
 
+  /**
+    * Returns the cards in hand of a specific player
+    *
+    * @param player  the player
+    * @return the cards that the player has
+    */
+  override def getPlayerHand(player: Player): Option[List[Card]] = allCardsInHand.get(player)
 
   /**
     * Called initially when the cards are shuffled and distributed to
@@ -26,16 +34,19 @@ abstract class PlayerManager(model:Match) extends Controller{
     * @param hand  list of all the cards
     */
   override def setHands(hand: util.List[Card]): Unit = {
+      var j = 0
+      var players : Seq[Player] = allCardsInHand.keySet.toSeq
+      var allCardsPath : List[String] = null
 
+      for(i <- 0 to 40){
+        if(i==10 || i==20 || i==30) j+1
+        allCardsInHand(players(j)) += hand(i)
+        var card : Card = hand(i)
+
+        allCardsPath += "src/main/java/it/unibo/pps2017/core/gui/cards/" + card.cardValue + card.cardSeed +".png"
+      }
+      //gui.setCardsPath(allCardsPath)
   }
-
-  /**
-    * Returns the cards in hand of a specific player
-    *
-    * @param player  the player
-    * @return the cards that the player has
-    */
-  override def getPlayerHand(player: Player): Option[List[Card]] = allCardsInHand.get(player)
 
   /**
     * Check if the selected and played card can be played
