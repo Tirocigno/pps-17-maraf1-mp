@@ -152,15 +152,13 @@ public class PlayGameController implements PlayGame {
 	 * @throws InterruptedException
 	 */
 	public void signalMyCommands(final ActionEvent buttonPressed) throws InterruptedException {
-		/* QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA
-		 * SE E' IL MIO TURNO OPPURE NO.
+		/*
+		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
+		 * OPPURE NO.
 		 * 
-		 * if (myTurn) {
-		 * } else {
-		 * 	non devo far nulla anche se l'utente clicca
-		 * }
-		 */	
-		
+		 * if (myTurn) { } else { non devo far nulla anche se l'utente clicca }
+		 */
+
 		Button button = (Button) buttonPressed.getSource();
 		String command = button.getText().toLowerCase();
 		Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
@@ -173,7 +171,7 @@ public class PlayGameController implements PlayGame {
 	 */
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
 		getCardsFirstUser(firstUserCards);
-		cleanField(new User("User1"), false); // simulo che tocchi all'utente 1
+		setCurrentPlayer(new User("User1"), false); // simulo che tocchi all'utente 1
 	}
 
 	private void createTimeline(final ImageView imageViewToShow, final Image imageCreateFromFile) {
@@ -208,16 +206,14 @@ public class PlayGameController implements PlayGame {
 	 * @param clickedCard
 	 */
 	public void clickedCard(final MouseEvent clickedCard) {
-		
-		/* QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA
-		 * SE E' IL MIO TURNO OPPURE NO.
+
+		/*
+		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
+		 * OPPURE NO.
 		 * 
-		 * if (myTurn) {
-		 * } else {
-		 * 	non devo far nulla anche se l'utente clicca
-		 * }
-		 */	
-		
+		 * if (myTurn) { } else { non devo far nulla anche se l'utente clicca }
+		 */
+
 		/* prendo il riferimento alla carta cliccata e ricavo il path */
 		ImageView playedCard = (ImageView) clickedCard.getSource();
 		@SuppressWarnings("deprecation")
@@ -245,6 +241,7 @@ public class PlayGameController implements PlayGame {
 		/* CONTROLLER CHE ME LO CHIAMA */
 		initializePlayersHand();
 		initializeCommands();
+		this.indexOfMyCards.clear(); // svuoto la mappa per i turni successivi
 
 		for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
 
@@ -274,62 +271,6 @@ public class PlayGameController implements PlayGame {
 			case 9:
 				this.tenthCard.setImage(userCard);
 			}
-		}
-	}
-
-	@Override
-	public void cleanField(final User user, final boolean isLastCatch) {
-
-		/* CONTROLLER CHE ME LO CHIAMA */
-		/*
-		 * Prima metto tutti i terreni neri, poi all'utente che deve cominciare lo
-		 * imposto giallo
-		 */
-		Image emptyField = getImageFromPath(EMPTY_FIELD);
-		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-		this.user1Field.setImage(emptyField);
-		this.user2Field.setImage(emptyField);
-		this.user3Field.setImage(emptyField);
-		this.user4Field.setImage(emptyField);
-
-		if (isLastCatch) {
-			/* mostrare punteggio di questa mano */
-		} else {
-			switch (user.getUser()) {
-			case "User1":
-				this.user1Field.setImage(emptyFieldMyTurn);
-				break;
-			case "User2":
-				this.user2Field.setImage(emptyFieldMyTurn);
-				break;
-			case "User3":
-				this.user3Field.setImage(emptyFieldMyTurn);
-				break;
-			case "User4":
-				this.user4Field.setImage(emptyFieldMyTurn);
-				break;
-			}
-		}	
-	}
-
-	@Override
-	public void setCurrentPlayer(final User user) {
-		/* CONTROLLER CHE ME LO CHIAMA */
-		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-		switch (user.getUser()) {
-
-		case "User1":
-			this.user1Field.setImage(emptyFieldMyTurn);
-			break;
-		case "User2":
-			this.user2Field.setImage(emptyFieldMyTurn);
-			break;
-		case "User3":
-			this.user3Field.setImage(emptyFieldMyTurn);
-			break;
-		case "User4":
-			this.user4Field.setImage(emptyFieldMyTurn);
-			break;
 		}
 	}
 
@@ -463,14 +404,59 @@ public class PlayGameController implements PlayGame {
 		this.voloButton.setVisible(true);
 	}
 
+
+	private void cleanField() {
+		Image emptyField = getImageFromPath(EMPTY_FIELD);
+		this.user1Field.setImage(emptyField);
+		this.user2Field.setImage(emptyField);
+		this.user3Field.setImage(emptyField);
+		this.user4Field.setImage(emptyField);
+	}
+	
+
 	@Override
-	public void showAnimationEndMatch() {
-		/**
+	public void setCurrentPlayer(final User user, boolean partialTurnIsEnded) {
+		
+		/* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
+		if (partialTurnIsEnded) {
+			cleanField();
+		}
+
+		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
+		switch (user.getUser()) {
+
+		case "User1":
+			this.user1Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User2":
+			this.user2Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User3":
+			this.user3Field.setImage(emptyFieldMyTurn);
+			break;
+		case "User4":
+			this.user4Field.setImage(emptyFieldMyTurn);
+			break;
+		}
+	}
+
+	@Override
+	public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam) {
+
+		cleanField();
+		/* Mostro i punteggi del turno parziale appena conclusosi,
+		 * da vedere se con un'immagine o con una semplice label	
+		 */
+	}
+
+	@Override
+	public void showAnimationEndMatch(final int scoreMyTeam, final int scoreOpponentTeam) {
+		/*
 		 * TODO per adesso ho caricato un'immagine 'game over' Poi bisognera' mostrare i
-		 * risultati
+		 * risultati passati come parametro
 		 */
 		Image imageEnd = getImageFromPath(END_MATCH);
-		gameOverImage.setVisible(true);
+		this.gameOverImage.setVisible(true);
 		createTimeline(gameOverImage, imageEnd);
 	}
 }

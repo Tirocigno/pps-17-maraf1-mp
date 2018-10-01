@@ -24,18 +24,26 @@ public interface PlayGame {
 	void getCommand(final User user, final Command command);
 
 	/**
-	 * This method is called when the last user has throw his card or at the
-	 * beginning of the game. Clean the field from four played cards and replace the
-	 * ImageView with the basic image for all users except who has take the last
-	 * turn (or who takes four of denara in first turn). His field will be replaced
-	 * by the special field card (yellow instead of black). If boolean is true,
-	 * means that ten turns are over and will show an image with the scores.
+	 * This method is called when the turn is over: all four players has been played
+	 * ten cards.
 	 * 
-	 * @param user
-	 *            user that will be start next turn.
-	 * @param isLastCatch
+	 * @param actualScoreMyTeam
+	 *            actual score of my team.
+	 * @param actualScoreOpponentTeam
+	 *            actual score of my opponent team.
 	 */
-	void cleanField(final User user, final boolean isLastCatch);
+	void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam);
+
+	/**
+	 * This method is called to show the animation for end match and to show the
+	 * result.
+	 * 
+	 * @param scoreMyTeam
+	 *            end score of my team.
+	 * @param scoreOpponentTeam
+	 *            end score of opponent team.
+	 */
+	void showAnimationEndMatch(final int scoreMyTeam, final int scoreOpponentTeam);
 
 	/**
 	 * This method is called every time to select the current player that must plays
@@ -44,8 +52,10 @@ public interface PlayGame {
 	 * 
 	 * @param user
 	 *            current player that must plays the card.
+	 * @param partialTurnEnded
+	 *            true if the partial turn is ended, false otherwise.
 	 */
-	void setCurrentPlayer(final User user);
+	void setCurrentPlayer(final User user, boolean partialTurnEnded);
 
 	/**
 	 * This method is called to show the played card from player.
@@ -56,11 +66,5 @@ public interface PlayGame {
 	 *            played card's path.
 	 */
 	void showOtherPlayersPlayedCard(final User user, String cardPath);
-
-	/**
-	 * This method is called to show the animation for end match and to show the
-	 * result.
-	 */
-	void showAnimationEndMatch();
 
 }
