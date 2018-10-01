@@ -164,7 +164,7 @@ public class PlayGameController implements PlayGame {
 	 */
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
 		getCardsFirstUser(firstUserCards);
-		cleanField(new User("User1")); // simulo che tocchi all'utente 1
+		cleanField(new User("User1"), false); // simulo che tocchi all'utente 1
 	}
 
 	private void createTimeline(final ImageView imageViewToShow, final Image imageCreateFromFile) {
@@ -259,7 +259,7 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void cleanField(final User user) {
+	public void cleanField(final User user, final boolean isLastCatch) {
 
 		/* CONTROLLER CHE ME LO CHIAMA */
 		/*
@@ -273,20 +273,24 @@ public class PlayGameController implements PlayGame {
 		this.user3Field.setImage(emptyField);
 		this.user4Field.setImage(emptyField);
 
-		switch (user.getUser()) {
-		case "User1":
-			this.user1Field.setImage(emptyFieldMyTurn);
-			break;
-		case "User2":
-			this.user2Field.setImage(emptyFieldMyTurn);
-			break;
-		case "User3":
-			this.user3Field.setImage(emptyFieldMyTurn);
-			break;
-		case "User4":
-			this.user4Field.setImage(emptyFieldMyTurn);
-			break;
-		}
+		if (isLastCatch) {
+			/* mostrare punteggio di questa mano */
+		} else {
+			switch (user.getUser()) {
+			case "User1":
+				this.user1Field.setImage(emptyFieldMyTurn);
+				break;
+			case "User2":
+				this.user2Field.setImage(emptyFieldMyTurn);
+				break;
+			case "User3":
+				this.user3Field.setImage(emptyFieldMyTurn);
+				break;
+			case "User4":
+				this.user4Field.setImage(emptyFieldMyTurn);
+				break;
+			}
+		}	
 	}
 
 	@Override
