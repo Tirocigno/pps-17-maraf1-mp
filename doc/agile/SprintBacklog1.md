@@ -8,6 +8,7 @@
 |**Project setup**|||||
 | |Project creation and initialization| Naldini | 1 | 0|
 | |Gradle configuration| Naldini | 1 | 0|
+| |GitFlow configuration| Naldini | 1 | 0|
 | |Additional plugins an dependencies configuration| Naldini | 5 | 0|
 |**Agile investigation**|||||
 | |Agile process study| Jakova | 2 | ?|
