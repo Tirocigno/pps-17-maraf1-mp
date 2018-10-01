@@ -292,6 +292,11 @@
                      </font>
                   </Button>
                   <ImageView fx:id="currentUserCommand" fitHeight="106.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+                  <ImageView fx:id="gameOverImage" fitHeight="237.0" fitWidth="285.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
+                     <image>
+                        <Image url="@images/gameOver1.png" />
+                     </image>
+                  </ImageView>
                </children>
             </GridPane>
          </center>

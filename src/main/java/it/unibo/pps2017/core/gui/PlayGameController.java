@@ -24,6 +24,7 @@ public class PlayGameController implements PlayGame {
 	private static final String COMMANDS_PATH = "src/main/java/it/unibo/pps2017/core/gui/commands/";
 	private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
 	private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
+	private static final String END_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/gameOver1.png";
 	private static final String FORMAT = ".png";
 	private static final String START_PATH = "src";
 	private static final int TOTAL_HAND_CARDS = 10;
@@ -90,6 +91,9 @@ public class PlayGameController implements PlayGame {
 
 	@FXML
 	ImageView user4Field;
+
+	@FXML
+	ImageView gameOverImage = new ImageView();
 
 	@FXML
 	Label timer;
@@ -163,10 +167,10 @@ public class PlayGameController implements PlayGame {
 		cleanField(new User("User1")); // simulo che tocchi all'utente 1
 	}
 
-	private void createTimeline(final ImageView currentUser, final Image command) {
+	private void createTimeline(final ImageView imageViewToShow, final Image imageCreateFromFile) {
 		Timeline timeline = new Timeline(
-				new KeyFrame(Duration.ZERO, new KeyValue(currentUser.imageProperty(), command)),
-				new KeyFrame(Duration.seconds(2), new KeyValue(currentUser.imageProperty(), null)));
+				new KeyFrame(Duration.ZERO, new KeyValue(imageViewToShow.imageProperty(), imageCreateFromFile)),
+				new KeyFrame(Duration.seconds(2), new KeyValue(imageViewToShow.imageProperty(), null)));
 		timeline.play();
 	}
 
@@ -195,7 +199,6 @@ public class PlayGameController implements PlayGame {
 	 * @param clickedCard
 	 */
 	public void clickedCard(final MouseEvent clickedCard) {
-
 		/* prendo il riferimento alla carta cliccata e ricavo il path */
 		ImageView playedCard = (ImageView) clickedCard.getSource();
 		@SuppressWarnings("deprecation")
@@ -285,7 +288,7 @@ public class PlayGameController implements PlayGame {
 			break;
 		}
 	}
-	
+
 	@Override
 	public void setCurrentPlayer(final User user) {
 		/* CONTROLLER CHE ME LO CHIAMA */
@@ -437,5 +440,14 @@ public class PlayGameController implements PlayGame {
 		this.voloButton.setVisible(true);
 	}
 
-	
+	@Override
+	public void showAnimationEndMatch() {
+		/**
+		 * TODO per adesso ho caricato un'immagine 'game over' Poi bisognera' mostrare i
+		 * risultati
+		 */
+		Image imageEnd = getImageFromPath(END_MATCH);
+		gameOverImage.setVisible(true);
+		createTimeline(gameOverImage, imageEnd);
+	}
 }
