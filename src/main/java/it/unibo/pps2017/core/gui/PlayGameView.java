@@ -11,9 +11,14 @@ public class PlayGameView extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("PlayGameView.fxml"));
+			
 			Scene scene = new Scene(root);
+			
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
+			primaryStage.setFullScreen(true);
+			primaryStage.setMinHeight(685);
+			primaryStage.setMinWidth(900);
 			primaryStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
