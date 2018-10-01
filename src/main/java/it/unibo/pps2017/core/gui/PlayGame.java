@@ -27,13 +27,15 @@ public interface PlayGame {
 	 * This method is called when the last user has throw his card or at the
 	 * beginning of the game. Clean the field from four played cards and replace the
 	 * ImageView with the basic image for all users except who has take the last
-	 * turn (or who takes four of denara). His field will be replaced by the special
-	 * field card (yellow instead of black).
+	 * turn (or who takes four of denara in first turn). His field will be replaced
+	 * by the special field card (yellow instead of black). If boolean is true,
+	 * means that ten turns are over and will show an image with the scores.
 	 * 
 	 * @param user
 	 *            user that will be start next turn.
+	 * @param isLastCatch
 	 */
-	void cleanField(final User user);
+	void cleanField(final User user, final boolean isLastCatch);
 
 	/**
 	 * This method is called every time to select the current player that must plays
@@ -49,15 +51,15 @@ public interface PlayGame {
 	 * This method is called to show the played card from player.
 	 * 
 	 * @param user
-	 *            user that has played the card
+	 *            user that has played the card.
 	 * @param cardPath
-	 *            played card's path
+	 *            played card's path.
 	 */
 	void showOtherPlayersPlayedCard(final User user, String cardPath);
 
 	/**
 	 * This method is called to show the animation for end match and to show the
-	 * result
+	 * result.
 	 */
 	void showAnimationEndMatch();
 
