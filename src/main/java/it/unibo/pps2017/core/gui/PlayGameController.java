@@ -152,6 +152,15 @@ public class PlayGameController implements PlayGame {
 	 * @throws InterruptedException
 	 */
 	public void signalMyCommands(final ActionEvent buttonPressed) throws InterruptedException {
+		/* QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA
+		 * SE E' IL MIO TURNO OPPURE NO.
+		 * 
+		 * if (myTurn) {
+		 * } else {
+		 * 	non devo far nulla anche se l'utente clicca
+		 * }
+		 */	
+		
 		Button button = (Button) buttonPressed.getSource();
 		String command = button.getText().toLowerCase();
 		Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
@@ -199,6 +208,16 @@ public class PlayGameController implements PlayGame {
 	 * @param clickedCard
 	 */
 	public void clickedCard(final MouseEvent clickedCard) {
+		
+		/* QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA
+		 * SE E' IL MIO TURNO OPPURE NO.
+		 * 
+		 * if (myTurn) {
+		 * } else {
+		 * 	non devo far nulla anche se l'utente clicca
+		 * }
+		 */	
+		
 		/* prendo il riferimento alla carta cliccata e ricavo il path */
 		ImageView playedCard = (ImageView) clickedCard.getSource();
 		@SuppressWarnings("deprecation")
