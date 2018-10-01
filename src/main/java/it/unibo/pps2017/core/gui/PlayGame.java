@@ -55,4 +55,10 @@ public interface PlayGame {
 	 */
 	void showOtherPlayersPlayedCard(final User user, String cardPath);
 
+	/**
+	 * This method is called to show the animation for end match and to show the
+	 * result
+	 */
+	void showAnimationEndMatch();
+
 }
