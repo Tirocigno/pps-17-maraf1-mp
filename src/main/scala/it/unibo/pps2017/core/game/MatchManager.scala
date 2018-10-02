@@ -7,10 +7,11 @@ import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.Controller
+import it.unibo.pps2017.core.player.{Controller, Player}
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
+import scala.collection.{immutable, mutable}
+import scala.util.Random
 
 
 object MatchManager {
@@ -19,6 +20,12 @@ object MatchManager {
   val MAX_PLAYER_NUMBER: Int = 4
   val MAX_HAND_CARDS: Int = 10
   val FOUR_OF_COIN: Card = CardImpl(Coin, 4)
+  val MAX_SCORE: Int = 41
+  val ACE_VALUE: Int = 1
+  val TWO_VALUE: Int = 2
+  val THREE_VALUE: Int = 3
+  val REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA: Int = 3
+  val EXTRA_POINTS_FOR_MARAFFA: Int = 3
 
   def apply(team1: Team, team2: Team) = new MatchManager(team1, team2)
 
@@ -29,37 +36,41 @@ object MatchManager {
 class MatchManager(team1: Team = Team("Team1"),
                    team2: Team = Team("Team2")) extends Match {
 
-  var currentBriscola: Seed = _
-  var currentSuit: Seed = _
+  var currentBriscola: Option[Seed] = None
+  var currentSuit: Option[Seed] = None
   var gameCycle: GameCycle = _
   var deck: GameDeck = ComposedDeck()
   var firstHand: Boolean = true
-  val cardsOnTable: mutable.ListBuffer[(Card, Controller)] = mutable.ListBuffer()
-  var nextHandStarter: Controller = _
+  val cardsOnTable: mutable.ListBuffer[(Card, Player)] = mutable.ListBuffer()
+  var nextHandStarter: Option[Player] = None
+  var hasMaraffa: Option[Team] = None
 
 
-  if (team1.isFull && team2.isFull) onFullTable()
+  if (team1.isFull && team2.isFull) {
+    onFullTable()
+  }
 
 
   /**
     * Found the taker in a List of cards.
+    *
     * @param hand
-    *   List of played cards with the player who have threw the card.
+    * List of played cards with the player who have threw the card.
     * @return
-    *   The hand taker.
+    * The hand taker.
     */
-  implicit def defineTaker(hand: mutable.ListBuffer[(Card, Controller)]): Controller = {
+  implicit def defineTaker(hand: mutable.ListBuffer[(Card, Player)]): Player = {
     var max: Card = hand.head._1
 
-    hand foreach(tuple => {
+    hand foreach (tuple => {
       val card = tuple._1
-      if (card.cardSeed == currentBriscola) {
-        if (max.cardSeed != currentBriscola) {
+      if (card.cardSeed == currentBriscola.get) {
+        if (max.cardSeed != currentBriscola.get) {
           max = card
         } else if (max < card) {
           max = card
         }
-      } else if (max.cardSeed != currentBriscola && card.cardSeed == currentSuit && max < card) {
+      } else if (max.cardSeed != currentBriscola.get && card.cardSeed == currentSuit.get && max < card) {
         max = card
       }
     })
@@ -76,7 +87,7 @@ class MatchManager(team1: Team = Team("Team1"),
     * @param team
     * Team name to add the player. Not specify for random imputation.
     */
-  override def addPlayer(newPlayer: Controller, team: String = RANDOM_TEAM): Unit = {
+  override def addPlayer(newPlayer: Player, team: String = RANDOM_TEAM): Unit = {
     try {
       addPlayerToTeam(newPlayer, team)
     } catch {
@@ -100,7 +111,7 @@ class MatchManager(team1: Team = Team("Team1"),
     */
   @throws(classOf[FullTeamException])
   @throws(classOf[TeamNotFoundException])
-  private def addPlayerToTeam(player: Controller, teamName: String = RANDOM_TEAM): Unit = {
+  private def addPlayerToTeam(player: Player, teamName: String = RANDOM_TEAM): Unit = {
     if (teamName.equals(RANDOM_TEAM)) {
       try {
         team1.addPlayer(player)
@@ -138,7 +149,7 @@ class MatchManager(team1: Team = Team("Team1"),
   }
 
   private def onFullTable(): Unit = {
-    gameCycle = GameCycle(team1, team2, onHandStart)
+    gameCycle = GameCycle(team1, team2, onFirstCardOfHand)
     startGame()
   }
 
@@ -146,6 +157,14 @@ class MatchManager(team1: Team = Team("Team1"),
     * Starting the game.
     */
   override def startGame(): Unit = {
+    firstHand = true
+    startSet()
+  }
+
+  /**
+    * Reset variables and start the set.
+    */
+  private def startSet(): Unit = {
     playSet()
   }
 
@@ -154,18 +173,118 @@ class MatchManager(team1: Team = Team("Team1"),
     * If it's all right, it shuffle the deck and start a new set.
     */
   override def playSet(): Unit = {
-    (1 to 10).toStream foreach (_ => {
-      prepareSet()
+    prepareSet()
 
-      //TODO
-      //setBriscola(nextHandStarter.onChoiceBriscola())
+    nextHandStarter match {
+      case Some(player) => setBriscola(player.onSetBriscola())
+      case None => throw new Exception("FirstPlayerOfTheHand Not Found")
+    }
 
+    startHand()
+  }
 
-      cardsOnTable ++= gameCycle.handTurning(nextHandStarter)
-
-
-      onHandEnd(cardsOnTable)
+  /**
+    * Prepare le table, shuffle the deck and distribute the cards to all players.
+    */
+  private def prepareSet(): Unit = {
+    deck.shuffle()
+    var i: Int = 0
+    deck.distribute().forEach(hand => {
+      getPlayers(i).setHand(hand.asScala.toSet)
+      if (firstHand) {
+        if (isFirstPlayer(hand)) {
+          nextHandStarter = Some(getPlayers(i))
+          firstHand = false
+        }
+      }
+      i += 1
     })
+  }
+
+
+  private def onCardPlayed(card: Card): Unit = {
+    if (gameCycle.isFirst) onFirstCardOfHand(card)
+
+    cardsOnTable += ((card, gameCycle.getCurrent))
+
+    if (!gameCycle.isLast) {
+      gameCycle.next().onMyTurn()
+    } else {
+      onHandEnd(cardsOnTable)
+    }
+  }
+
+
+  private def startHand(): Unit = {
+    nextHandStarter match {
+      case Some(player) => gameCycle.setFirst(player)
+      case None => throw new Exception("FirstPlayerOfTheHand Not Found")
+    }
+    gameCycle.getCurrent.onMyTurn()
+  }
+
+  private def onHandEnd(lastTaker: Player): Unit = {
+    deck.registerTurnPlayedCards(cardsOnTable.map(_._1).toList.asJava, getTeamIndexOfPlayer(lastTaker))
+
+    nextHandStarter = Some(lastTaker)
+    currentSuit = None
+    cardsOnTable.clear()
+
+
+    nextHandStarter match {
+      case Some(player) => if (player.getHand().isEmpty) onSetEnd()
+      case None => throw new Exception("FirstPlayerOfTheHand Not Found")
+    }
+  }
+
+  /**
+    * On first card playing event.
+    *
+    * @param card
+    * first card played.
+    */
+  private def onFirstCardOfHand(card: Card): Unit = {
+    val currentHand: Set[Card] = gameCycle.getCurrent.getHand()
+    if (card.cardValue == ACE_VALUE && currentHand.size == MAX_HAND_CARDS) {
+      if (currentHand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
+        .count(c => c.cardValue == ACE_VALUE || c.cardValue == TWO_VALUE || c.cardValue == THREE_VALUE) == REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA) {
+        hasMaraffa = Some(getTeamOfPlayer(gameCycle.getCurrent))
+      }
+    }
+    currentSuit = Option(card.cardSeed)
+  }
+
+
+  /**
+    * Hand end state.
+    * Add the current cards in the table to the relative team deck and clear the table.
+    */
+  private def onSetEnd(): Unit = {
+    currentBriscola = None
+    nextHandStarter = None
+
+    val setScore = deck.computeSetScore()
+
+    hasMaraffa match {
+      case Some(team) =>
+        if (team1 == team) {
+          team1.addPoints(setScore._1.toInt + EXTRA_POINTS_FOR_MARAFFA)
+          team2.addPoints(setScore._2.toInt)
+        } else {
+          team1.addPoints(setScore._1.toInt)
+          team2.addPoints(setScore._2.toInt + EXTRA_POINTS_FOR_MARAFFA)
+        }
+      case None =>
+        team1.addPoints(setScore._1)
+        team2.addPoints(setScore._2)
+    }
+
+    hasMaraffa = None
+
+    getGameWinner match {
+      case Some(team) => notifyWinner(team)
+      case None => startSet()
+    }
   }
 
   /**
@@ -174,7 +293,7 @@ class MatchManager(team1: Team = Team("Team1"),
     * @param seed
     * Current briscola's seed.
     */
-  override def setBriscola(seed: Seed.Seed): Unit = currentBriscola = seed
+  override def setBriscola(seed: Seed.Seed): Unit = currentBriscola = Option(seed)
 
   /**
     * Check if the played card is accepted.
@@ -186,14 +305,45 @@ class MatchManager(team1: Team = Team("Team1"),
     * True if the card's suit is correct.
     * False otherwise.
     */
-  override def isCardOk(card: Card): Boolean = {
-    if (card.cardSeed == currentSuit) return true
+  override def isCardOk(card: Card): Boolean = currentSuit match {
+    case Some(seed) =>
+      if (seed == card.cardSeed) {
+        onCardPlayed(card)
+        return true
+      }
 
-    val playerHand: stream.Stream[Card] = gameCycle.getCurrent.getHand.stream()
+      val playerHand: Seq[Card] = gameCycle.getCurrent.getHand().toStream
 
-    if (playerHand.filter(_.cardSeed == currentSuit).count() == 0) return true
+      if (!playerHand.exists(_.cardSeed == seed)) {
+        onCardPlayed(card)
+        return true
+      }
 
-    false
+      false
+    case None =>
+      onCardPlayed(card)
+      true
+  }
+
+  /**
+    * Play a random card in the hand of the player.
+    *
+    * @param player
+    * Reference player.
+    * @return
+    * A random card among those that the player can drop.
+    */
+  override def forcePlay(player: Player): Card = {
+    currentSuit match {
+      case Some(seed) =>
+        val rightCards: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().filter(_.cardSeed == seed).toList
+
+        rightCards(Random.nextInt(rightCards.size))
+      case None =>
+        val playerHand: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().toList
+
+        playerHand(Random.nextInt(playerHand.size))
+    }
   }
 
   /**
@@ -220,30 +370,12 @@ class MatchManager(team1: Team = Team("Team1"),
     * @return
     * players in the match.
     */
-  def getPlayers: Seq[Controller] = {
+  def getPlayers: Seq[Player] = {
     if (gameCycle != null) return gameCycle.queue
 
     team1.getMembers ++ team2.getMembers
   }
 
-
-  /**
-    * Prepare le table, shuffle the deck and distribute the cards to all players.
-    */
-  private def prepareSet(): Unit = {
-    deck.shuffle()
-    var i: Int = 0
-    deck.distribute().forEach(hand => {
-      getPlayers(i).setHand(new util.HashSet(hand))
-      if (firstHand) {
-        if (isFirstPlayer(hand)) {
-          nextHandStarter = getPlayers(i)
-          firstHand = false
-        }
-      }
-      i += 1
-    })
-  }
 
   /**
     * Search the Four of coin in the hand.
@@ -258,44 +390,56 @@ class MatchManager(team1: Team = Team("Team1"),
 
 
   /**
-    * On first card playing event.
-    * @param card
-    *   first card played.
-    */
-  private def onHandStart(card: Card): Unit = {
-    currentSuit = card.cardSeed
-  }
-
-
-  /**
-    * Hand end state.
-    * Add the current cards in the table to the relative team deck and clear the table.
-    * @param lastTaker
-    *   The player who take the hand.
-    */
-  private def onHandEnd(lastTaker: Controller): Unit = {
-    deck.registerTurnPlayedCards(cardsOnTable.map(_._1).toList.asJava, getTeamIndexOfPlayer(lastTaker))
-
-    cardsOnTable.clear()
-  }
-
-  /**
     * Return the team's index of the player.
-    *   0 if is in the first team, 1 otherwise.
+    * 0 if is in the first team, 1 otherwise.
+    *
     * @param player
-    *     researched player.
+    * researched player.
     * @return
-    *     team index.
+    * team index.
     */
-  private def getTeamIndexOfPlayer(player: Controller): Int = {
-    if (team1.getMembers.contains(player))  return 0
+  private def getTeamIndexOfPlayer(player: Player): Int = {
+    if (team1.getMembers.contains(player)) return 0
 
     1
   }
 
+  /**
+    * Return the player's team.
+    * @param player
+    * researched player.
+    * @return
+    *   The team.
+    */
+  private def getTeamOfPlayer(player: Player): Team = getTeamIndexOfPlayer(player) match {
+    case 0 => team1
+    case 1 => team2
+  }
+
+  /**
+    * Check if one of the teams has win the game.
+    *
+    * @return
+    * return the game winner team.
+    */
+  private def getGameWinner: Option[Team] = {
+    if (team1.getScore() >= MAX_SCORE) return Some(team1)
+
+    if (team2.getScore() >= MAX_SCORE) return Some(team2)
+
+    None
+  }
+
+  /**
+    * Notify the winner.
+    *
+    * @param team
+    * winning team.
+    */
+  private def notifyWinner(team: Team): Unit = ???
+
+
 }
-
-
 
 
 final case class FullTeamException(message: String = "The team has reached the maximum number of players",

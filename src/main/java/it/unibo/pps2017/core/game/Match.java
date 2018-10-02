@@ -4,6 +4,7 @@ package it.unibo.pps2017.core.game;
 import it.unibo.pps2017.core.deck.cards.Card;
 import it.unibo.pps2017.core.deck.cards.Seed;
 import it.unibo.pps2017.core.player.Controller;
+import it.unibo.pps2017.core.player.Player;
 
 public interface Match {
 
@@ -14,7 +15,7 @@ public interface Match {
      * @param team
      *  Team name to add the player. Not specify for random imputation.
      */
-    void addPlayer(Controller newPlayer, String team);
+    void addPlayer(Player newPlayer, String team);
 
     /**
      * Starting the game.
@@ -45,4 +46,13 @@ public interface Match {
      *  False otherwise.
      */
     boolean isCardOk(Card card);
+
+    /**
+     * Play a random card in the hand of the player.
+     * @param player
+     *  Reference player.
+     * @return
+     *  A random card among those that the player can drop.
+     */
+    Card forcePlay(Player player);
 }

@@ -1,7 +1,7 @@
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.Controller
+import it.unibo.pps2017.core.player.{Controller, Player}
 
 import scala.collection.mutable.ListBuffer
 
@@ -14,7 +14,8 @@ import scala.collection.mutable.ListBuffer
   * Members of the team. Limited at max 2.
   */
 case class Team(var name: String,
-                private var members: ListBuffer[Controller] = ListBuffer()) {
+                private var members: ListBuffer[Player] = ListBuffer(),
+                private var score: Int = 0) {
 
   /**
     * Add a player to the team.
@@ -25,7 +26,7 @@ case class Team(var name: String,
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
-  def addPlayer(newPlayer: Controller): Unit = {
+  def addPlayer(newPlayer: Player): Unit = {
     if (members.length >= TEAM_MEMBERS_LIMIT) {
       throw FullTeamException()
     }
@@ -40,7 +41,7 @@ case class Team(var name: String,
     * @return
     * the first player of the team.
     */
-  def firstMember: Option[Controller] = members.headOption
+  def firstMember: Option[Player] = members.headOption
 
   /**
     * Return the second player of the team.
@@ -48,7 +49,7 @@ case class Team(var name: String,
     * @return
     * the second player of the team.
     */
-  def secondMember: Option[Controller] = members.lastOption
+  def secondMember: Option[Player] = members.lastOption
 
   /**
     * Return the actual number of players in the team.
@@ -64,7 +65,24 @@ case class Team(var name: String,
     * @return
     * the members of the team
     */
-  def getMembers: Seq[Controller] = members
+  def getMembers: Seq[Player] = members
+
+  /**
+    * Add set's point to the team score.
+    *
+    * @param score
+    * Set's points.
+    */
+  def addPoints(score: Int): Unit = this.score += score
+
+  /**
+    * Return the current team's score.
+    *
+    * @return
+    * the current team's score.
+    */
+  def getScore(): Int = score
+
 
   /**
     * Return TRUE if the team has reach two members, FALSE otherwise.

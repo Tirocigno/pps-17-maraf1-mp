@@ -3,9 +3,9 @@ package it.unibo.pps2017.core.game
 import java.util
 
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
-import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup}
+import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.game.MatchManager.{MAX_HAND_CARDS, TEAM_MEMBERS_LIMIT}
-import it.unibo.pps2017.core.player.Controller
+import it.unibo.pps2017.core.player.{Controller, Player, PlayerImpl}
 import org.scalatest.FunSuite
 
 import scala.collection.mutable
@@ -23,13 +23,13 @@ class MatchManagerTest extends FunSuite {
     val firstTeamName = game.firstTeam().name
 
 
-    game.addPlayer(Player())
+    game.addPlayer(PlayerImpl("1"))
     assert(game.getPlayers.length == 1)
 
     val notFoundedTeamName = "TEST"
-    game.addPlayer(Player(), notFoundedTeamName)
+    game.addPlayer(PlayerImpl("2"), notFoundedTeamName)
 
-    game.addPlayer(Player(), firstTeamName)
+    game.addPlayer(PlayerImpl("3"), firstTeamName)
     assert(game.getPlayers.length == 2)
   }
 
@@ -42,13 +42,13 @@ class MatchManagerTest extends FunSuite {
 
     val firstTeamName = game.firstTeam().name
 
-    game.addPlayer(Player(), firstTeamName)
-    game.addPlayer(Player(), firstTeamName)
+    game.addPlayer(PlayerImpl("1"), firstTeamName)
+    game.addPlayer(PlayerImpl("2"), firstTeamName)
 
     assert(game.getPlayers.length == TEAM_MEMBERS_LIMIT)
     assert(game.firstTeam().numberOfMembers == TEAM_MEMBERS_LIMIT)
 
-    game.addPlayer(Player(), firstTeamName)
+    game.addPlayer(PlayerImpl("3"), firstTeamName)
     assert(game.firstTeam().numberOfMembers == TEAM_MEMBERS_LIMIT)
   }
 
@@ -60,13 +60,13 @@ class MatchManagerTest extends FunSuite {
 
     assert(team.numberOfMembers == 0)
 
-    team.addPlayer(Player())
-    team.addPlayer(Player())
+    team.addPlayer(PlayerImpl("1"))
+    team.addPlayer(PlayerImpl("2"))
 
     assert(team.numberOfMembers == TEAM_MEMBERS_LIMIT)
 
     assertThrows[FullTeamException] {
-      team.addPlayer(Player())
+      team.addPlayer(PlayerImpl("3"))
     }
 
     assert(team.numberOfMembers == TEAM_MEMBERS_LIMIT)
@@ -78,25 +78,25 @@ class MatchManagerTest extends FunSuite {
     */
   test("TestFullTeam") {
     val team = Team("TeamOne")
-    team.addPlayer(Player())
+    team.addPlayer(PlayerImpl("1"))
 
     assert(!team.isFull)
 
-    team.addPlayer(Player())
+    team.addPlayer(PlayerImpl("2"))
 
     assert(team.isFull)
   }
 
 
   test("gameStartingTest") {
-    val player1 = Player()
-    val player2 = Player()
+    val player1 = PlayerImpl("1")
+    val player2 = PlayerImpl("2")
     val team1 = Team("TeamOne")
     team1.addPlayer(player1)
     team1.addPlayer(player2)
 
-    val player3 = Player()
-    val player4 = Player()
+    val player3 = PlayerImpl("3")
+    val player4 = PlayerImpl("4")
     val team2 = Team("TeamTwo")
     team2.addPlayer(player3)
     team2.addPlayer(player4)
@@ -104,10 +104,10 @@ class MatchManagerTest extends FunSuite {
     val game = MatchManager(team1, team2)
 
 
-    assert(player1.hand.size() == MAX_HAND_CARDS)
-    assert(player2.hand.size() == MAX_HAND_CARDS)
-    assert(player3.hand.size() == MAX_HAND_CARDS)
-    assert(player4.hand.size() == MAX_HAND_CARDS)
+    assert(player1.getHand().size == MAX_HAND_CARDS)
+    assert(player2.getHand().size == MAX_HAND_CARDS)
+    assert(player3.getHand().size == MAX_HAND_CARDS)
+    assert(player4.getHand().size == MAX_HAND_CARDS)
 
   }
 
@@ -115,17 +115,17 @@ class MatchManagerTest extends FunSuite {
   test("handTakerTestWithDifferentSuitAndBriscola") {
     val game = MatchManager()
 
-    val player1 = Player()
-    val player2 = Player()
-    val player3 = Player()
-    val player4 = Player()
+    val player1 = PlayerImpl("1")
+    val player2 = PlayerImpl("2")
+    val player3 = PlayerImpl("3")
+    val player4 = PlayerImpl("4")
 
-    game.currentSuit = Coin
-    game.currentBriscola = Cup
+    game.currentSuit = Option(Coin)
+    game.currentBriscola = Option(Cup)
 
     println(player1, player2, player3, player4)
 
-    var cards: mutable.ListBuffer[(Card, Controller)] = mutable.ListBuffer(CardImpl(Coin, 8) -> player1, CardImpl(Coin, 7) -> player2,
+    var cards: mutable.ListBuffer[(Card, Player)] = mutable.ListBuffer(CardImpl(Coin, 8) -> player1, CardImpl(Coin, 7) -> player2,
       CardImpl(Club, 1) -> player3, CardImpl(Coin, 6) -> player4)
 
     assert(game.defineTaker(cards) == player1)
@@ -161,12 +161,19 @@ class MatchManagerTest extends FunSuite {
 
     assert(game.defineTaker(cards) == player1)
   }
-}
 
-case class Player(name: String = "Random" + Random.nextInt(1000)) extends Controller {
-  var hand: util.Set[Card] = _
+  test("PlayAcceptableRandomCard") {
+    val game = MatchManager()
 
-  override def getHand: util.Set[Card] = hand
+    val player = PlayerImpl("1")
+    game.addPlayer(player)
 
-  override def setHand(hand: util.Set[Card]): Unit = this.hand = hand
+    player.setHand(Set(CardImpl(Coin, 1), CardImpl(Coin, 2), CardImpl(Cup, 5), CardImpl(Sword, 6), CardImpl(Sword, 3), CardImpl(Sword, 2)))
+
+    game.currentSuit = Option(Coin)
+
+    val acceptableCards: Set[Card] = Set(CardImpl(Coin, 1), CardImpl(Coin, 2))
+
+    assert(acceptableCards.contains(game.forcePlay(player)))
+  }
 }

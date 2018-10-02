@@ -1,10 +1,9 @@
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
-import it.unibo.pps2017.core.deck.cards.Seed.{Cup, Seed}
-import it.unibo.pps2017.core.player.Controller
+import it.unibo.pps2017.core.deck.cards._
+import it.unibo.pps2017.core.player.Player
 
-import scala.collection.mutable.ListBuffer
+
 
 
 /**
@@ -24,10 +23,11 @@ case class GameCycle(team1: Team,
     throw TeamNotReadyException()
   }
 
-  val queue: Seq[Controller] = Seq[Controller](team1.firstMember.get,
+  val queue: Seq[Player] = Seq[Player](team1.firstMember.get,
     team2.firstMember.get, team1.secondMember.get, team2.secondMember.get)
 
   private var tokenIndex: Int = 0
+  private var firstPlayer: Option[Player] = None
 
   /**
     * Return a player and update the index to the next.
@@ -35,37 +35,10 @@ case class GameCycle(team1: Team,
     * @return
     * The player who must play his card.
     */
-  def next(): Controller = {
-    val current: Int = tokenIndex
+  def next(): Player = {
     tokenIndex = getNextIndex
 
-    queue(current)
-  }
-
-  /**
-    * Return a classic hand turning, from the first player to the last.
-    *
-    * @param first
-    * the first player to start the hand.
-    * @return
-    * A sequence with all the player. From the first to the last.
-    */
-  //TODO Not full implemented
-  def handTurning(first: Controller): List[(Card, Controller)] = {
-    setFirst(first)
-    val playedCards: ListBuffer[(Card, Controller)] = ListBuffer()
-
-    (1 to 4).toStream foreach (turn => {
-      val currentPlayer = next()
-      //TODO
-      //activePlayer.onMyTurn()
-      val playedCard = CardImpl(Cup, 1)
-      if (turn == 1) onHandStart(playedCard)
-
-      playedCards += (playedCard -> currentPlayer)
-    })
-
-    playedCards.toList
+    queue(tokenIndex)
   }
 
 
@@ -75,7 +48,40 @@ case class GameCycle(team1: Team,
     * @param player
     * The player who have to open the hand.
     */
-  def setFirst(player: Controller): Unit = tokenIndex = queue.indexOf(player)
+  def setFirst(player: Player): Unit = {
+    tokenIndex = queue.indexOf(player)
+    firstPlayer = Option(player)
+  }
+
+  /**
+    * Return TRUE if the player is the first of the current turn, FALSE otherwise.
+    *
+    * @return
+    * TRUE if the player is the first of the current turn, FALSE otherwise.
+    */
+  def isFirst: Boolean = {
+    firstPlayer match {
+      case Some(first) =>
+        first == getCurrent
+      case None =>
+        false
+    }
+  }
+
+  /**
+    * Return TRUE if the player is the last of the current turn, FALSE otherwise.
+    *
+    * @return
+    * TRUE if the player is the last of the current turn, FALSE otherwise.
+    */
+  def isLast: Boolean = {
+    firstPlayer match {
+      case Some(first) =>
+        getCurrent == getPrevOf(first)
+      case None =>
+        false
+    }
+  }
 
   /**
     * Return the player who have to play his card.
@@ -83,7 +89,7 @@ case class GameCycle(team1: Team,
     * @return
     * The player who have to play his card.
     */
-  def getCurrent: Controller = queue(tokenIndex)
+  def getCurrent: Player = queue(tokenIndex)
 
   /**
     * Return the next player in the queue.
@@ -91,7 +97,7 @@ case class GameCycle(team1: Team,
     * @return
     * the next player in the queue.
     */
-  def getNext: Controller = queue(getNextIndex)
+  def getNext: Player = queue(getNextIndex)
 
   /**
     * Return a sequence of all the players in the game.
@@ -99,7 +105,7 @@ case class GameCycle(team1: Team,
     * @return
     * a sequence of all the players in the game.
     */
-  def getPlayers: Seq[Controller] = queue
+  def getPlayers: Seq[Player] = queue
 
   /**
     * Calculate the next index for the queue. If it's end, the index will reset.
@@ -108,6 +114,20 @@ case class GameCycle(team1: Team,
     * The next player index in the queue.
     */
   private def getNextIndex: Int = (tokenIndex + 1) % MatchManager.MAX_PLAYER_NUMBER
+
+  /**
+    * Calculate the previous element of the queue.
+    *
+    * @param player
+    * Reference element.
+    * @return
+    * The previous player.
+    */
+  private def getPrevOf(player: Player): Player = {
+    val prevIndex: Int = (MatchManager.MAX_PLAYER_NUMBER + (getPlayers.indexOf(player) - 1)) % MatchManager.MAX_PLAYER_NUMBER
+
+    getPlayers(prevIndex)
+  }
 
 }
 
