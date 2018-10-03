@@ -1,15 +1,12 @@
 package it.unibo.pps2017.core.game
 
-import java.util
-
-import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
+import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
 import it.unibo.pps2017.core.game.MatchManager.{MAX_HAND_CARDS, TEAM_MEMBERS_LIMIT}
-import it.unibo.pps2017.core.player.{Controller, Player, PlayerImpl}
+import it.unibo.pps2017.core.player.{Player, PlayerImpl}
 import org.scalatest.FunSuite
 
 import scala.collection.mutable
-import scala.util.Random
 
 class MatchManagerTest extends FunSuite {
 
@@ -130,16 +127,15 @@ class MatchManagerTest extends FunSuite {
 
     assert(game.defineTaker(cards) == player1)
 
-    cards = mutable.ListBuffer(CardImpl(Coin, 10) -> player1, CardImpl(Coin, 10) -> player2,
+    cards = mutable.ListBuffer(CardImpl(Coin, 10) -> player1, CardImpl(Coin, 9) -> player2,
         CardImpl(Club, 1) -> player3, CardImpl(Coin, 2) -> player4)
 
     assert(game.defineTaker(cards) == player4)
 
-    //TODO Capire il lancio dell'eccezione sul 4 di denara
-    //cards = mutable.Map(CardImpl(Coin, 10) -> player1, CardImpl(Coin, 4) -> player2,
-     // CardImpl(Club, 1) -> player3, CardImpl(Coin, 6) -> player4)
+    cards = mutable.ListBuffer(CardImpl(Coin, 10) -> player1, CardImpl(Coin, 1) -> player2,
+      CardImpl(Club, 1) -> player3, CardImpl(Coin, 6) -> player4)
 
-    //assert(game.defineTaker(cards) == player2)
+    assert(game.defineTaker(cards) == player2)
 
     cards = mutable.ListBuffer(CardImpl(Coin, 7) -> player1, CardImpl(Coin, 5) -> player2,
       CardImpl(Club, 4) -> player3, CardImpl(Cup, 6) -> player4)

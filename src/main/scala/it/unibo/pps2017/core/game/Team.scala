@@ -1,7 +1,7 @@
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.{Controller, Player}
+import it.unibo.pps2017.core.player.Player
 
 import scala.collection.mutable.ListBuffer
 
@@ -81,7 +81,7 @@ case class Team(var name: String,
     * @return
     * the current team's score.
     */
-  def getScore(): Int = score
+  def getScore: Int = score
 
 
   /**

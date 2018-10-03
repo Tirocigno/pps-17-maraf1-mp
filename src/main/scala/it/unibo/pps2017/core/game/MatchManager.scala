@@ -1,16 +1,15 @@
 package it.unibo.pps2017.core.game
 
 import java.util
-import java.util.stream
 
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.{Controller, Player}
+import it.unibo.pps2017.core.player.Player
 
 import scala.collection.JavaConverters._
-import scala.collection.{immutable, mutable}
+import scala.collection.mutable
 import scala.util.Random
 
 
@@ -44,6 +43,8 @@ class MatchManager(team1: Team = Team("Team1"),
   val cardsOnTable: mutable.ListBuffer[(Card, Player)] = mutable.ListBuffer()
   var nextHandStarter: Option[Player] = None
   var hasMaraffa: Option[Team] = None
+  var setEnd: Boolean = false
+  var gameEnd: Boolean = false
 
 
   if (team1.isFull && team2.isFull) {
@@ -148,8 +149,12 @@ class MatchManager(team1: Team = Team("Team1"),
     throw TeamNotFoundException("Team '" + teamName + "' not found in this match")
   }
 
+  /**
+    * Notify the full table status.
+    * Create the cycle and start the game.
+    */
   private def onFullTable(): Unit = {
-    gameCycle = GameCycle(team1, team2, onFirstCardOfHand)
+    gameCycle = GameCycle(team1, team2)
     startGame()
   }
 
@@ -179,14 +184,13 @@ class MatchManager(team1: Team = Team("Team1"),
       case Some(player) => setBriscola(player.onSetBriscola())
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
     }
-
-    startHand()
   }
 
   /**
-    * Prepare le table, shuffle the deck and distribute the cards to all players.
+    * Prepare the table, shuffle the deck and distribute cards to all players.
     */
   private def prepareSet(): Unit = {
+    setEnd = false
     deck.shuffle()
     var i: Int = 0
     deck.distribute().forEach(hand => {
@@ -201,7 +205,12 @@ class MatchManager(team1: Team = Team("Team1"),
     })
   }
 
-
+  /**
+    * On the event card played.
+    *
+    * @param card
+    * played card.
+    */
   private def onCardPlayed(card: Card): Unit = {
     if (gameCycle.isFirst) onFirstCardOfHand(card)
 
@@ -215,6 +224,10 @@ class MatchManager(team1: Team = Team("Team1"),
   }
 
 
+  /**
+    * Start the hand.
+    * Set the first player and it notify him.
+    */
   private def startHand(): Unit = {
     nextHandStarter match {
       case Some(player) => gameCycle.setFirst(player)
@@ -223,6 +236,15 @@ class MatchManager(team1: Team = Team("Team1"),
     gameCycle.getCurrent.onMyTurn()
   }
 
+
+  /**
+    * On the hand finish.
+    * Add the cards to the last taker team
+    * and reset some variables.
+    *
+    * @param lastTaker
+    * The hand taker.
+    */
   private def onHandEnd(lastTaker: Player): Unit = {
     deck.registerTurnPlayedCards(cardsOnTable.map(_._1).toList.asJava, getTeamIndexOfPlayer(lastTaker))
 
@@ -245,21 +267,38 @@ class MatchManager(team1: Team = Team("Team1"),
     */
   private def onFirstCardOfHand(card: Card): Unit = {
     val currentHand: Set[Card] = gameCycle.getCurrent.getHand()
-    if (card.cardValue == ACE_VALUE && currentHand.size == MAX_HAND_CARDS) {
-      if (currentHand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
-        .count(c => c.cardValue == ACE_VALUE || c.cardValue == TWO_VALUE || c.cardValue == THREE_VALUE) == REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA) {
-        hasMaraffa = Some(getTeamOfPlayer(gameCycle.getCurrent))
-      }
+    if (currentHand.size == MAX_HAND_CARDS && currentBriscola.get == card.cardSeed && card.cardValue == ACE_VALUE) {
+      hasMaraffa = checkMaraffa(currentHand, gameCycle.getCurrent)
     }
     currentSuit = Option(card.cardSeed)
   }
 
+  /**
+    * Check if the player have the Marafona in his hand.
+    *
+    * @param hand
+    * player's hand.
+    * @param player
+    * current player.
+    * @return
+    * Team of the player if he has the Marafona, None otherwise.
+    */
+  private def checkMaraffa(hand: Set[Card], player: Player): Option[Team] = {
+    if (hand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
+      .count(c => c.cardValue == ACE_VALUE || c.cardValue == TWO_VALUE || c.cardValue == THREE_VALUE) == REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA) {
+      Some(getTeamOfPlayer(player))
+    }
+
+    None
+  }
 
   /**
-    * Hand end state.
-    * Add the current cards in the table to the relative team deck and clear the table.
+    * Set end state.
+    * Reset variables and check for a winner.
+    * If there isn't a winner start a new set.
     */
   private def onSetEnd(): Unit = {
+    setEnd = true
     currentBriscola = None
     nextHandStarter = None
 
@@ -293,7 +332,11 @@ class MatchManager(team1: Team = Team("Team1"),
     * @param seed
     * Current briscola's seed.
     */
-  override def setBriscola(seed: Seed.Seed): Unit = currentBriscola = Option(seed)
+  override def setBriscola(seed: Seed.Seed): Unit = {
+    currentBriscola = Option(seed)
+
+    startHand()
+  }
 
   /**
     * Check if the played card is accepted.
@@ -344,6 +387,21 @@ class MatchManager(team1: Team = Team("Team1"),
 
         playerHand(Random.nextInt(playerHand.size))
     }
+  }
+
+
+  /**
+    * If set is end return the score of teams, and a true if the game is end, false otherwise.
+    *
+    * @return
+    * If set is end return the score of teams, and a true if the game is end, false otherwise.
+    */
+  override def isSetEnd: Option[(Int, Int, Boolean)] = {
+    if (setEnd) {
+      Some((team1.getScore, team2.getScore, gameEnd))
+    }
+
+    None
   }
 
   /**
@@ -406,10 +464,11 @@ class MatchManager(team1: Team = Team("Team1"),
 
   /**
     * Return the player's team.
+    *
     * @param player
     * researched player.
     * @return
-    *   The team.
+    * The team.
     */
   private def getTeamOfPlayer(player: Player): Team = getTeamIndexOfPlayer(player) match {
     case 0 => team1
@@ -423,20 +482,22 @@ class MatchManager(team1: Team = Team("Team1"),
     * return the game winner team.
     */
   private def getGameWinner: Option[Team] = {
-    if (team1.getScore() >= MAX_SCORE) return Some(team1)
+    if (team1.getScore >= MAX_SCORE && team1.getScore > team2.getScore) return Some(team1)
 
-    if (team2.getScore() >= MAX_SCORE) return Some(team2)
+    if (team2.getScore >= MAX_SCORE && team2.getScore > team1.getScore) return Some(team2)
 
     None
   }
 
+
   /**
-    * Notify the winner.
+    * Notify winner.
     *
     * @param team
-    * winning team.
+    * Team winning.
     */
-  private def notifyWinner(team: Team): Unit = ???
+  //TODO
+  def notifyWinner(team: Team): Unit = gameEnd = true
 
 
 }

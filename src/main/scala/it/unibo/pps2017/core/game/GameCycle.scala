@@ -1,6 +1,5 @@
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.core.deck.cards._
 import it.unibo.pps2017.core.player.Player
 
 
@@ -15,8 +14,7 @@ import it.unibo.pps2017.core.player.Player
   * The other team.
   */
 case class GameCycle(team1: Team,
-                     team2: Team,
-                     onHandStart: Card => Unit) {
+                     team2: Team) {
 
 
   if (team1.numberOfMembers != MatchManager.TEAM_MEMBERS_LIMIT || team2.numberOfMembers != MatchManager.TEAM_MEMBERS_LIMIT) {
