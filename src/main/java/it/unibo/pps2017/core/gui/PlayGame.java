@@ -34,8 +34,8 @@ public interface PlayGame {
 	 * @param endedMatch
 	 *            true if game is ended, false otherwise.
 	 */
-	void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam, final boolean endedMatch);
-
+	void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam,
+			final boolean endedMatch);
 
 	/**
 	 * This method is called every time to select the current player that must plays
@@ -58,5 +58,13 @@ public interface PlayGame {
 	 *            played card's path.
 	 */
 	void showOtherPlayersPlayedCard(final Player player, final String cardPath);
+
+	/**
+	 * This method is called to inform view of the chosen briscola.
+	 * 
+	 * @param briscola
+	 *            chosen briscola from other player.
+	 */
+	void getBriscolaChosen(final String briscola);
 
 }

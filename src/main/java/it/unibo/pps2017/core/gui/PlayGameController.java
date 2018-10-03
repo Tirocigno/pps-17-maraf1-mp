@@ -81,7 +81,7 @@ public class PlayGameController implements PlayGame {
 	ImageView gameOverImage = new ImageView();
 
 	@FXML
-	Label timer, score, chooseBriscolaLabel;
+	Label timer, score, briscolaLabel;
 
 	List<ImageView> userCards;
 
@@ -128,6 +128,9 @@ public class PlayGameController implements PlayGame {
 
 	}
 
+	
+	
+	
 	/**
 	 * This method permits to view the command that first user selected.
 	 * Possibilities: busso, striscio, volo.
@@ -151,44 +154,6 @@ public class PlayGameController implements PlayGame {
 		createTimeline(currentUserCommand, image);
 	}
 
-	/**
-	 * This method permits to catch briscola selected by player.
-	 * 
-	 * @param buttonPressed
-	 *            button pressed (cup, sword, club or coin) from principal player
-	 * @throws InterruptedException
-	 */
-	public void selectBriscola(final ActionEvent buttonPressed) throws InterruptedException {
-		Button button = (Button) buttonPressed.getSource();
-		@SuppressWarnings("unused")
-		String briscola = button.getText();
-
-		/*
-		 * CHIAMO UN METODO DEL CONTROLLER PER DIRE LA BRISCOLA CHE HO SCELTO
-		 * 
-		 * c.setMyBriscola(briscola);
-		 */
-
-		hideBriscolaCommands();
-		initializeCommands();
-	}
-
-	/*
-	 * metodo temporaneo che eliminero' quando ricevero' la lista delle carte dal
-	 * controller
-	 */
-	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
-		getCardsFirstPlayer(firstPlayerCards);
-		setCurrentPlayer(new Player("User1"), false); // simulo che tocchi all'utente 1
-	}
-
-	private void createTimeline(final ImageView imageViewToShow, final Image imageCreateFromFile) {
-		Timeline timeline = new Timeline(
-				new KeyFrame(Duration.ZERO, new KeyValue(imageViewToShow.imageProperty(), imageCreateFromFile)),
-				new KeyFrame(Duration.seconds(2), new KeyValue(imageViewToShow.imageProperty(), null)));
-		timeline.play();
-	}
-
 	@Override
 	public void getCommand(final Player player, final Command command) {
 
@@ -207,6 +172,63 @@ public class PlayGameController implements PlayGame {
 			break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * This method permits to catch briscola selected by player.
+	 * 
+	 * @param buttonPressed
+	 *            button pressed (cup, sword, club or coin) from principal player
+	 * @throws InterruptedException
+	 */
+	public void selectBriscola(final ActionEvent buttonPressed) throws InterruptedException {
+		Button button = (Button) buttonPressed.getSource();
+		String briscola = button.getText();
+
+		/*
+		 * CHIAMO UN METODO DEL CONTROLLER PER DIRE LA BRISCOLA CHE HO SCELTO
+		 * 
+		 * c.setMyBriscola(briscola);
+		 */
+
+		hideBriscolaCommands();
+		getBriscolaChosen(briscola);
+		initializeCommands();
+	}
+	
+	@Override
+	public void getBriscolaChosen(final String briscola) {
+		this.briscolaLabel.setText("Briscola chosen: " + briscola);
+		this.briscolaLabel.setVisible(true);
+	}
+	
+	
+	
+	
+	
+	
+	
+
+	/*
+	 * metodo temporaneo che eliminero' quando ricevero' la lista delle carte dal
+	 * controller
+	 */
+	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
+		getCardsFirstPlayer(firstPlayerCards);
+		setCurrentPlayer(new Player("User1"), false); // simulo che tocchi all'utente 1
+	}
+
+
+
+	
 
 	/**
 	 * Method to show which card is pressed by first user and throw it in field.
@@ -307,30 +329,7 @@ public class PlayGameController implements PlayGame {
 		}
 	}
 
-	/* Metodo per creare un'immagine dato un path */
-	private Image getImageFromPath(final String path) {
-		File file = new File(path);
-		Image image = new Image(file.toURI().toString());
-		return image;
-	}
-
-	/* Metodo per recuperare l'indice della carta cliccata */
-	private int getIndexOfCardSelected(final String path) {
-		int cardIndex = 0;
-		for (final Entry<Integer, String> entry : indexOfMyCards.entrySet()) {
-			if (path.contains(entry.getValue())) {
-				cardIndex = entry.getKey();
-			}
-		}
-		return cardIndex;
-	}
-
-	/* Metodo per pulire il path ricavato dalla ImageView */
-	private String getCleanPath(final String path) {
-		int index = path.indexOf(START_PATH);
-		String pathOfImageSelected = path.substring(index, path.length());
-		return pathOfImageSelected;
-	}
+	
 
 	@Override
 	public void showOtherPlayersPlayedCard(final Player player, final String cardPath) {
@@ -353,6 +352,137 @@ public class PlayGameController implements PlayGame {
 		deleteCardFromHand(player);
 
 	}
+
+
+	
+
+	@Override
+	public void setCurrentPlayer(final Player user, boolean partialTurnIsEnded) {
+
+		/* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
+		if (partialTurnIsEnded) {
+			cleanField();
+		}
+
+		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
+		switch (user.getPlayer()) {
+
+		case PLAYER_1:
+			this.user1Field.setImage(emptyFieldMyTurn);
+			break;
+		case PLAYER_2:
+			this.user2Field.setImage(emptyFieldMyTurn);
+			break;
+		case PLAYER_3:
+			this.user3Field.setImage(emptyFieldMyTurn);
+			break;
+		case PLAYER_4:
+			this.user4Field.setImage(emptyFieldMyTurn);
+			break;
+		}
+	}
+
+	@Override
+	public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam,
+			boolean endedMatch) {
+
+		cleanField();
+		this.briscolaLabel.setVisible(false); // finito un turno nascondo la label con la briscola perche' verra' riscelta
+		showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
+	}
+
+	
+	
+	
+	
+	
+	
+	private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
+		this.score.setText("Score: " + scoreFirstTeam + "-" + scoreSecondTeam);
+		this.score.setVisible(true);
+		createLabelScaleTransition(this.score, endedMatch);
+	}
+
+	private void createLabelScaleTransition(final Label score, final boolean endedMatch) {
+		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.score);
+		scoreTransition.setFromX(START_ANIMATION_POSITION);
+		scoreTransition.setFromY(START_ANIMATION_POSITION);
+		scoreTransition.setToX(END_ANIMATION_POSITION);
+		scoreTransition.setToY(END_ANIMATION_POSITION);
+		scoreTransition.play();
+
+		scoreTransition.setOnFinished(endScore -> {
+			if (endedMatch) {
+				Image finalImage;
+				boolean winMatch = false; // da sostituire con la funzione del controller
+				// chiamo metodo controller che mi dice se ho vinto
+				if (winMatch) {
+					finalImage = getImageFromPath(WIN_MATCH);
+					createImageScaleTransition(finalImage);
+				} else {
+					finalImage = getImageFromPath(LOSE_MATCH);
+					createImageScaleTransition(finalImage);
+				}
+			}
+			this.score.setText("");
+		});
+	}
+
+	private void createImageScaleTransition(final Image image) {
+		this.gameOverImage.setImage(image);
+		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.gameOverImage);
+		scoreTransition.setToX(END_ANIMATION_POSITION + 1);
+		scoreTransition.setToY(END_ANIMATION_POSITION + 1);
+		scoreTransition.play();
+		scoreTransition.setOnFinished(endScore -> {
+			this.gameOverImage.setVisible(false);
+		});
+	}
+
+	private void showBriscolaCommands() {
+		this.coinButton.setVisible(true);
+		this.clubButton.setVisible(true);
+		this.cupButton.setVisible(true);
+		this.swordButton.setVisible(true);
+		this.briscolaLabel.setText("Choose your briscola");
+		this.briscolaLabel.setVisible(true);
+	}
+	
+	private void hideBriscolaCommands() {
+		this.coinButton.setVisible(false);
+		this.clubButton.setVisible(false);
+		this.cupButton.setVisible(false);
+		this.swordButton.setVisible(false);
+		this.briscolaLabel.setVisible(false);
+	}
+	
+	private void createTimeline(final ImageView imageViewToShow, final Image imageCreateFromFile) {
+		Timeline timeline = new Timeline(
+				new KeyFrame(Duration.ZERO, new KeyValue(imageViewToShow.imageProperty(), imageCreateFromFile)),
+				new KeyFrame(Duration.seconds(2), new KeyValue(imageViewToShow.imageProperty(), null)));
+		timeline.play();
+	}
+	
+	private void showOtherPlayersHand(final List<ImageView> playerHand) {
+		for (final ImageView playerCard : playerHand) {
+			playerCard.setVisible(true);
+		}
+	}
+
+	private void initializeCommands() {
+		this.bussoButton.setVisible(true);
+		this.striscioButton.setVisible(true);
+		this.voloButton.setVisible(true);
+	}
+
+	private void cleanField() {
+		Image emptyField = getImageFromPath(EMPTY_FIELD);
+		this.user1Field.setImage(emptyField);
+		this.user2Field.setImage(emptyField);
+		this.user3Field.setImage(emptyField);
+		this.user4Field.setImage(emptyField);
+	}
+	
 
 	private void deleteCardFromHand(final Player player) {
 		switch (player.getPlayer()) {
@@ -424,116 +554,31 @@ public class PlayGameController implements PlayGame {
 		this.cardsPlayer4.add(tenthCardUser4);
 		this.showOtherPlayersHand(cardsPlayer4);
 	}
-
-	private void showOtherPlayersHand(final List<ImageView> playerHand) {
-		for (final ImageView playerCard : playerHand) {
-			playerCard.setVisible(true);
-		}
+	
+	/* Metodo per creare un'immagine dato un path */
+	private Image getImageFromPath(final String path) {
+		File file = new File(path);
+		Image image = new Image(file.toURI().toString());
+		return image;
 	}
 
-	private void initializeCommands() {
-		this.bussoButton.setVisible(true);
-		this.striscioButton.setVisible(true);
-		this.voloButton.setVisible(true);
-	}
-
-	private void cleanField() {
-		Image emptyField = getImageFromPath(EMPTY_FIELD);
-		this.user1Field.setImage(emptyField);
-		this.user2Field.setImage(emptyField);
-		this.user3Field.setImage(emptyField);
-		this.user4Field.setImage(emptyField);
-	}
-
-	@Override
-	public void setCurrentPlayer(final Player user, boolean partialTurnIsEnded) {
-
-		/* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
-		if (partialTurnIsEnded) {
-			cleanField();
-		}
-
-		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-		switch (user.getPlayer()) {
-
-		case PLAYER_1:
-			this.user1Field.setImage(emptyFieldMyTurn);
-			break;
-		case PLAYER_2:
-			this.user2Field.setImage(emptyFieldMyTurn);
-			break;
-		case PLAYER_3:
-			this.user3Field.setImage(emptyFieldMyTurn);
-			break;
-		case PLAYER_4:
-			this.user4Field.setImage(emptyFieldMyTurn);
-			break;
-		}
-	}
-
-	@Override
-	public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam,
-			boolean endedMatch) {
-
-		cleanField();
-		showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
-	}
-
-	private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
-		this.score.setText("Score: " + scoreFirstTeam + "-" + scoreSecondTeam);
-		this.score.setVisible(true);
-		createLabelScaleTransition(this.score, endedMatch);
-	}
-
-	private void createLabelScaleTransition(final Label score, final boolean endedMatch) {
-		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.score);
-		scoreTransition.setFromX(START_ANIMATION_POSITION);
-		scoreTransition.setFromY(START_ANIMATION_POSITION);
-		scoreTransition.setToX(END_ANIMATION_POSITION);
-		scoreTransition.setToY(END_ANIMATION_POSITION);
-		scoreTransition.play();
-
-		scoreTransition.setOnFinished(endScore -> {
-			if (endedMatch) {
-				Image finalImage;
-				boolean winMatch = false; // da sostituire con la funzione del controller
-				// chiamo metodo controller che mi dice se ho vinto
-				if (winMatch) {
-					finalImage = getImageFromPath(WIN_MATCH);
-					createImageScaleTransition(finalImage);
-				} else {
-					finalImage = getImageFromPath(LOSE_MATCH);
-					createImageScaleTransition(finalImage);
-				}
+	/* Metodo per recuperare l'indice della carta cliccata */
+	private int getIndexOfCardSelected(final String path) {
+		int cardIndex = 0;
+		for (final Entry<Integer, String> entry : indexOfMyCards.entrySet()) {
+			if (path.contains(entry.getValue())) {
+				cardIndex = entry.getKey();
 			}
-			this.score.setText("");
-		});
+		}
+		return cardIndex;
 	}
 
-	private void createImageScaleTransition(final Image image) {
-		this.gameOverImage.setImage(image);
-		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.gameOverImage);
-		scoreTransition.setToX(END_ANIMATION_POSITION + 1);
-		scoreTransition.setToY(END_ANIMATION_POSITION + 1);
-		scoreTransition.play();
-		scoreTransition.setOnFinished(endScore -> {
-			this.gameOverImage.setVisible(false);
-		});
-	}
-
-	private void showBriscolaCommands() {
-		this.coinButton.setVisible(true);
-		this.clubButton.setVisible(true);
-		this.cupButton.setVisible(true);
-		this.swordButton.setVisible(true);
-		this.chooseBriscolaLabel.setVisible(true);
+	/* Metodo per pulire il path ricavato dalla ImageView */
+	private String getCleanPath(final String path) {
+		int index = path.indexOf(START_PATH);
+		String pathOfImageSelected = path.substring(index, path.length());
+		return pathOfImageSelected;
 	}
 	
-	private void hideBriscolaCommands() {
-		this.coinButton.setVisible(false);
-		this.clubButton.setVisible(false);
-		this.cupButton.setVisible(false);
-		this.swordButton.setVisible(false);
-		this.chooseBriscolaLabel.setVisible(false);
-	}
+	
 }
