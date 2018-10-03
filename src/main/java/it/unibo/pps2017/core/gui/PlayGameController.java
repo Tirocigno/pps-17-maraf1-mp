@@ -62,40 +62,13 @@ public class PlayGameController implements PlayGame {
 			tenthCardUser4 = new ImageView();
 
 	@FXML
-	Button buttonStart;
+	Button buttonStart, bussoButton, voloButton, striscioButton;
 
 	@FXML
-	Button bussoButton;
+	ImageView currentUserCommand, userTwoCommand, userThreeCommand, userFourCommand;
 
 	@FXML
-	Button voloButton;
-
-	@FXML
-	Button striscioButton;
-
-	@FXML
-	ImageView currentUserCommand;
-
-	@FXML
-	ImageView userTwoCommand;
-
-	@FXML
-	ImageView userThreeCommand;
-
-	@FXML
-	ImageView userFourCommand;
-
-	@FXML
-	ImageView user1Field;
-
-	@FXML
-	ImageView user2Field;
-
-	@FXML
-	ImageView user3Field;
-
-	@FXML
-	ImageView user4Field;
+	ImageView user1Field, user2Field, user3Field, user4Field;
 
 	@FXML
 	ImageView gameOverImage = new ImageView();
