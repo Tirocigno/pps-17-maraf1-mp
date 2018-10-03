@@ -103,16 +103,16 @@ public class PlayGameController implements PlayGame {
 		this.users.add(new User("User3"));
 		this.users.add(new User("User4"));
 
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/7spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/6spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/5spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/4spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2spade.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1spade.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10Sword.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9Club.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8Coin.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/7Cup.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/6Coin.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/5Coin.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/4Coin.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3Club.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2Coin.png");
+		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1Sword.png");
 
 		this.indexOfMyCards = new HashMap<>();
 		this.cardsUser2 = new ArrayList<>();
