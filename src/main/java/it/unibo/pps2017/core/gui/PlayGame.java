@@ -31,19 +31,11 @@ public interface PlayGame {
 	 *            actual score of my team.
 	 * @param actualScoreOpponentTeam
 	 *            actual score of my opponent team.
+	 * @param endedMatch
+	 *            true if game is ended, false otherwise
 	 */
-	void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam);
+	void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam, boolean endedMatch);
 
-	/**
-	 * This method is called to show the animation for end match and to show the
-	 * result.
-	 * 
-	 * @param scoreMyTeam
-	 *            end score of my team.
-	 * @param scoreOpponentTeam
-	 *            end score of opponent team.
-	 */
-	void showAnimationEndMatch(final int scoreMyTeam, final int scoreOpponentTeam);
 
 	/**
 	 * This method is called every time to select the current player that must plays

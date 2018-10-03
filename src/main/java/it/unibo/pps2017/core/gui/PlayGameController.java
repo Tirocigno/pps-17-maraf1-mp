@@ -27,6 +27,8 @@ public class PlayGameController implements PlayGame {
 	private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
 	private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
 	private static final String END_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/gameOver1.png";
+	private static final String WIN_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/win.png";
+	private static final String LOSE_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/lose.png";
 	private static final int DURATION_ANIMATION = 3;
 	private static final int START_ANIMATION_POSITION = 1;
 	private static final int END_ANIMATION_POSITION = 2;
@@ -238,7 +240,7 @@ public class PlayGameController implements PlayGame {
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
 		System.out.println(indexCardSelected);
 
-		showAnimationEndMatch(2, 3);
+		cleanFieldEndTotalTurn(5, 13, true);
 
 	}
 
@@ -446,38 +448,25 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam) {
+	public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam, boolean endedMatch) {
 
-		cleanField();
-		showScore(actualScoreMyTeam, actualScoreOpponentTeam);
+		//cleanField();
+		showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
 		/*
 		 * Mostro i punteggi del turno parziale appena conclusosi
 		 */
 	}
 
-	@Override
-	public void showAnimationEndMatch(final int scoreMyTeam, final int scoreOpponentTeam) {
-
-		// mostro il punteggio finale
-		showScore(scoreMyTeam, scoreOpponentTeam);
-
-		/*
-		 * mostro l'immagine di vittoria o sconfitta Image imageEnd =
-		 * getImageFromPath(END_MATCH); gameOverImage.setImage(imageEnd);
-		 * this.gameOverImage.setVisible(true);
-		 * 
-		 * ScaleTransition trans = new ScaleTransition(Duration.seconds(2),
-		 * gameOverImage); trans.setToX(2); trans.setToY(2); trans.play();
-		 * 
-		 * trans.setOnFinished(e -> { System.out.println("Finito");
-		 * this.gameOverImage.setVisible(false); });
-		 */
-	}
-
-	private void showScore(int scoreFirstTeam, int scoreSecondTeam) {
+	private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
 
 		this.score.setText("Punteggio: " + scoreFirstTeam + "-" + scoreSecondTeam);
 		this.score.setVisible(true);
+		createLabelScaleTransition(this.score, endedMatch);
+		
+	}
+	
+	private void createLabelScaleTransition(final Label score, final boolean endedMatch) {
+		
 		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.score);
 		scoreTransition.setFromX(START_ANIMATION_POSITION);
 		scoreTransition.setFromY(START_ANIMATION_POSITION);
@@ -486,7 +475,32 @@ public class PlayGameController implements PlayGame {
 		scoreTransition.play();
 
 		scoreTransition.setOnFinished(endScore -> {
+			if (endedMatch) {
+				Image finalImage;
+				boolean winMatch = false; // da sostituire con la funzione del controller
+				// chiamo metodo controller che mi dice se ho vinto
+				if (winMatch) {
+					finalImage = getImageFromPath(WIN_MATCH);
+					createImageScaleTransition(finalImage);
+				} else {
+					finalImage = getImageFromPath(LOSE_MATCH);
+					createImageScaleTransition(finalImage);
+				}
+			}
 			this.score.setText("");
-		});
+		}); 
+	}
+	
+private void createImageScaleTransition(final Image image) {
+	
+		this.gameOverImage.setImage(image);
+		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.gameOverImage);
+		scoreTransition.setToX(END_ANIMATION_POSITION+1);
+		scoreTransition.setToY(END_ANIMATION_POSITION+1);
+		scoreTransition.play();
+
+		scoreTransition.setOnFinished(endScore -> {
+			this.gameOverImage.setVisible(false);
+		}); 
 	}
 }

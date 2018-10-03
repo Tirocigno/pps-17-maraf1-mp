@@ -292,11 +292,7 @@
                      </font>
                   </Button>
                   <ImageView fx:id="currentUserCommand" fitHeight="106.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
-                  <ImageView fx:id="gameOverImage" fitHeight="237.0" fitWidth="285.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
-                     <image>
-                        <Image url="@images/gameOver1.png" />
-                     </image>
-                  </ImageView>
+                  <ImageView fx:id="gameOverImage" fitHeight="237.0" fitWidth="285.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
                   <Label fx:id="score" alignment="CENTER" contentDisplay="CENTER" style="-fx-background-color: black;" textFill="WHITE" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
                      <font>
                         <Font name="Charter Bold" size="24.0" />
