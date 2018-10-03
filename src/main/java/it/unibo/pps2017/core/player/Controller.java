@@ -26,5 +26,7 @@ public interface Controller {
 
     void totalPoints(Integer pointsTeam1, Integer pointsTeam2);
 
+    void isPlayerTurn(Player player);
+
    // boolean timeExpired();
 }

@@ -1,17 +1,14 @@
 package it.unibo.pps2017.core.player
 
-import java.util
 
 import it.unibo.pps2017.core.deck.cards.Card
 import it.unibo.pps2017.core.game.Match
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ListBuffer,Seq}
 
 
 abstract class PlayerManager(model:Match) extends Controller{
 
   var allCardsInHand = Map[Player, ListBuffer[Card]]()
-  //var players = List[Player](PlayerImpl("P1"),PlayerImpl("P2"),PlayerImpl("P3"),PlayerImpl("P4"))
-  //allCardsInHand += ("User1" -> null, "User2" -> null, "User3" -> null, "User4" -> null)
   var playerTurn : Player
   var totHandsSet : Int = 0
   var players : Seq[Player]
@@ -42,6 +39,7 @@ abstract class PlayerManager(model:Match) extends Controller{
   override def isCardOk(cardIndex: Int): Boolean = {
     var playedCard: Card = playerTurn.getCardAtIndex(cardIndex)
     if(model.isCardOk(playedCard)){
+      val cardPath = "src/main/java/it/unibo/pps2017/core/gui/cards/" + playedCard.cardValue + playedCard.cardSeed +".png"
       //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
       playerTurn.getFuture().failed
       true
@@ -56,7 +54,7 @@ abstract class PlayerManager(model:Match) extends Controller{
     */
   override def setTurn(player: Player): Unit = {
     playerTurn = player
-    //gui.setCurrentPlayer(playerTurn)
+    //gui.setCurrentPlayer(playerTurn, model.isPartialTurnFinished())
   }
 
   /**
@@ -66,6 +64,7 @@ abstract class PlayerManager(model:Match) extends Controller{
     */
   override def addPlayer(player: Player): Unit = {
     allCardsInHand += (player -> ListBuffer[Card]())
+    players :+ player
     //model.addPlayer(player,"User1")
   }
 
@@ -87,7 +86,7 @@ abstract class PlayerManager(model:Match) extends Controller{
     * @return the 'almost' random card
     */
   override def getRandCard: Card = {
-    //Card card = model.getRandCardToPlay(allCardsInHand.get(playerTurn))
+    //Card card = model.forcePlay(playerTurn)
     //gui.playedCard(card)
     null
   }
@@ -110,8 +109,14 @@ abstract class PlayerManager(model:Match) extends Controller{
     * @param pointsTeam2  the points of the second team
     */
   override def totalPoints(pointsTeam1: Integer, pointsTeam2: Integer): Unit = {
-    //gui.showTotalPoints(pointsTeam1,pointsTeam2)
+    //gui.showAnimationEndMatch(pointsTeam1,pointsTeam2)
   }
+
+  /**
+    * To check if it's player's turn or not
+    * @param player the player
+    */
+  override def isPlayerTurn(player: Player): Unit = playerTurn.equals(player)
 
   //override def timeExpired(): Boolean = ???
 }

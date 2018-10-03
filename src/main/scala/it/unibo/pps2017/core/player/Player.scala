@@ -81,16 +81,18 @@ abstract case class PlayerImpl(override val userName: String) extends Player {
   override def getHand(): Set[Card] = cardList
 
   override def getFuture(): Future[String] = timer
+
   override def onMyTurn(): Unit = {
       controller.setTurn(this)
 
     timer = Future {
+      //controller.updateTimer()
       Thread.sleep(10000)
       "Nothing played"
     }
 
     timer.onComplete {
-      case Success(value) => //model.getRandomCardToPlay()
+      case Success(value) => //controller.getRandCard()
       case Failure(e) => e.printStackTrace
     }
   }
