@@ -34,7 +34,7 @@ public interface PlayGame {
 	 * @param endedMatch
 	 *            true if game is ended, false otherwise
 	 */
-	void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam, boolean endedMatch);
+	void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam, final boolean endedMatch);
 
 
 	/**
@@ -47,7 +47,7 @@ public interface PlayGame {
 	 * @param partialTurnEnded
 	 *            true if the partial turn is ended, false otherwise.
 	 */
-	void setCurrentPlayer(final User user, boolean partialTurnEnded);
+	void setCurrentPlayer(final User user, final boolean partialTurnEnded);
 
 	/**
 	 * This method is called to show the played card from player.
@@ -57,6 +57,6 @@ public interface PlayGame {
 	 * @param cardPath
 	 *            played card's path.
 	 */
-	void showOtherPlayersPlayedCard(final User user, String cardPath);
+	void showOtherPlayersPlayedCard(final User user, final String cardPath);
 
 }
