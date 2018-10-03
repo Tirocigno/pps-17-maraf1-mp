@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ScaleTransition;
@@ -26,7 +25,6 @@ public class PlayGameController implements PlayGame {
 	private static final String COMMANDS_PATH = "src/main/java/it/unibo/pps2017/core/gui/commands/";
 	private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
 	private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
-	private static final String END_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/gameOver1.png";
 	private static final String WIN_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/win.png";
 	private static final String LOSE_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/lose.png";
 	private static final int DURATION_ANIMATION = 3;
@@ -163,7 +161,7 @@ public class PlayGameController implements PlayGame {
 		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
 		 * OPPURE NO.
 		 * 
-		 * if (myTurn) { } else { non devo far nulla anche se l'utente clicca }
+		 * if (myTurn) { metto quelle 4 righe } else { non devo far nulla anche se l'utente clicca }
 		 */
 
 		Button button = (Button) buttonPressed.getSource();
@@ -218,7 +216,7 @@ public class PlayGameController implements PlayGame {
 		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
 		 * OPPURE NO.
 		 * 
-		 * if (myTurn) { } else { non devo far nulla anche se l'utente clicca }
+		 * if (myTurn) { tutte queste righe } else { non devo far nulla anche se l'utente clicca }
 		 */
 
 		/* prendo il riferimento alla carta cliccata e ricavo il path */
@@ -240,7 +238,7 @@ public class PlayGameController implements PlayGame {
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
 		System.out.println(indexCardSelected);
 
-		cleanFieldEndTotalTurn(5, 13, true);
+		//cleanFieldEndTotalTurn(5, 13, true);
 
 	}
 
@@ -448,25 +446,20 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam, boolean endedMatch) {
+	public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam,
+			boolean endedMatch) {
 
-		//cleanField();
+		cleanField();
 		showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
-		/*
-		 * Mostro i punteggi del turno parziale appena conclusosi
-		 */
 	}
 
 	private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
-
 		this.score.setText("Punteggio: " + scoreFirstTeam + "-" + scoreSecondTeam);
 		this.score.setVisible(true);
 		createLabelScaleTransition(this.score, endedMatch);
-		
 	}
-	
+
 	private void createLabelScaleTransition(final Label score, final boolean endedMatch) {
-		
 		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.score);
 		scoreTransition.setFromX(START_ANIMATION_POSITION);
 		scoreTransition.setFromY(START_ANIMATION_POSITION);
@@ -488,19 +481,17 @@ public class PlayGameController implements PlayGame {
 				}
 			}
 			this.score.setText("");
-		}); 
+		});
 	}
-	
-private void createImageScaleTransition(final Image image) {
-	
+
+	private void createImageScaleTransition(final Image image) {
 		this.gameOverImage.setImage(image);
 		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.gameOverImage);
-		scoreTransition.setToX(END_ANIMATION_POSITION+1);
-		scoreTransition.setToY(END_ANIMATION_POSITION+1);
+		scoreTransition.setToX(END_ANIMATION_POSITION + 1);
+		scoreTransition.setToY(END_ANIMATION_POSITION + 1);
 		scoreTransition.play();
-
 		scoreTransition.setOnFinished(endScore -> {
 			this.gameOverImage.setVisible(false);
-		}); 
+		});
 	}
 }
