@@ -10,13 +10,11 @@ public interface Controller {
 
     Map<Player,List<Card>> getAllHands();
 
-    List<Card> getPlayerHand(Player player);
-
-    void setHands(List<Card> hand);
-
-    boolean isCardOk(Card c);
+    boolean isCardOk(int cardIndex);
 
     void setTurn(Player player);
+
+    void incSetHands();
 
     void addPlayer(Player player);
 
