@@ -88,41 +88,42 @@ public class PlayGameController implements PlayGame {
 	 * quando gioco una carta quale e' e dirlo al controller
 	 */
 	private Map<Integer, String> indexOfMyCards;
-	private List<String> firstUserCards;
+	private List<String> firstPlayerCards;
 	private List<Player> players;
 
-	private List<ImageView> cardsUser2;
-	private List<ImageView> cardsUser3;
-	private List<ImageView> cardsUser4;
+	private List<ImageView> cardsPlayer2;
+	private List<ImageView> cardsPlayer3;
+	private List<ImageView> cardsPlayer4;
 
 	public PlayGameController() {
+		
 
 		/*
 		 * Simulo il fatto di avere la mia lista di carte. Quando questa mi verra'
 		 * passata dal controller eliminero' tutto cio'
 		 */
-		this.firstUserCards = new ArrayList<>();
+		this.firstPlayerCards = new ArrayList<>();
 		this.players = new ArrayList<>();
 		this.players.add(new Player(PLAYER_1));
 		this.players.add(new Player(PLAYER_2));
 		this.players.add(new Player(PLAYER_3));
 		this.players.add(new Player(PLAYER_4));
 
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10Sword.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9Club.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8Coin.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/7Cup.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/6Coin.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/5Coin.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/4Coin.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3Club.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2Coin.png");
-		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1Sword.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10Sword.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9Club.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8Coin.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/7Cup.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/6Coin.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/5Coin.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/4Coin.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3Club.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2Coin.png");
+		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1Sword.png");
 
 		this.indexOfMyCards = new HashMap<>();
-		this.cardsUser2 = new ArrayList<>();
-		this.cardsUser3 = new ArrayList<>();
-		this.cardsUser4 = new ArrayList<>();
+		this.cardsPlayer2 = new ArrayList<>();
+		this.cardsPlayer3 = new ArrayList<>();
+		this.cardsPlayer4 = new ArrayList<>();
 
 	}
 
@@ -153,7 +154,7 @@ public class PlayGameController implements PlayGame {
 	 * controller
 	 */
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
-		getCardsFirstUser(firstUserCards);
+		getCardsFirstPlayer(firstPlayerCards);
 		setCurrentPlayer(new Player("User1"), false); // simulo che tocchi all'utente 1
 	}
 
@@ -221,7 +222,7 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void getCardsFirstUser(final List<String> firstUserCards) {
+	public void getCardsFirstPlayer(final List<String> firstUserCards) {
 
 		/* CONTROLLER CHE ME LO CHIAMA */
 		initializePlayersHand();
@@ -285,11 +286,11 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void showOtherPlayersPlayedCard(final Player user, final String cardPath) {
+	public void showOtherPlayersPlayedCard(final Player player, final String cardPath) {
 
 		Image cardPlayed = getImageFromPath(cardPath);
 
-		switch (user.getPlayer()) {
+		switch (player.getPlayer()) {
 		case PLAYER_2:
 			this.user2Field.setImage(cardPlayed);
 			break;
@@ -302,20 +303,20 @@ public class PlayGameController implements PlayGame {
 		}
 
 		/* dopo aver mostrato la carta ne devo eliminare una dalla mano dell'utente */
-		deleteCardFromHand(user);
+		deleteCardFromHand(player);
 
 	}
 
-	private void deleteCardFromHand(final Player user) {
-		switch (user.getPlayer()) {
+	private void deleteCardFromHand(final Player player) {
+		switch (player.getPlayer()) {
 		case PLAYER_2:
-			deleteCard(cardsUser2);
+			deleteCard(cardsPlayer2);
 			break;
 		case PLAYER_3:
-			deleteCard(cardsUser3);
+			deleteCard(cardsPlayer3);
 			break;
 		case PLAYER_4:
-			deleteCard(cardsUser4);
+			deleteCard(cardsPlayer4);
 			break;
 		}
 	}
@@ -336,45 +337,45 @@ public class PlayGameController implements PlayGame {
 	}
 
 	private void createCardsListUser2() {
-		this.cardsUser2.add(firstCardUser2);
-		this.cardsUser2.add(secondCardUser2);
-		this.cardsUser2.add(thirdCardUser2);
-		this.cardsUser2.add(fourthCardUser2);
-		this.cardsUser2.add(fifthCardUser2);
-		this.cardsUser2.add(sixthCardUser2);
-		this.cardsUser2.add(seventhCardUser2);
-		this.cardsUser2.add(eighthCardUser2);
-		this.cardsUser2.add(ninthCardUser2);
-		this.cardsUser2.add(tenthCardUser2);
-		this.showOtherPlayersHand(cardsUser2);
+		this.cardsPlayer2.add(firstCardUser2);
+		this.cardsPlayer2.add(secondCardUser2);
+		this.cardsPlayer2.add(thirdCardUser2);
+		this.cardsPlayer2.add(fourthCardUser2);
+		this.cardsPlayer2.add(fifthCardUser2);
+		this.cardsPlayer2.add(sixthCardUser2);
+		this.cardsPlayer2.add(seventhCardUser2);
+		this.cardsPlayer2.add(eighthCardUser2);
+		this.cardsPlayer2.add(ninthCardUser2);
+		this.cardsPlayer2.add(tenthCardUser2);
+		this.showOtherPlayersHand(cardsPlayer2);
 	}
 
 	private void createCardsListUser3() {
-		this.cardsUser3.add(firstCardUser3);
-		this.cardsUser3.add(secondCardUser3);
-		this.cardsUser3.add(thirdCardUser3);
-		this.cardsUser3.add(fourthCardUser3);
-		this.cardsUser3.add(fifthCardUser3);
-		this.cardsUser3.add(sixthCardUser3);
-		this.cardsUser3.add(seventhCardUser3);
-		this.cardsUser3.add(eighthCardUser3);
-		this.cardsUser3.add(ninthCardUser3);
-		this.cardsUser3.add(tenthCardUser3);
-		this.showOtherPlayersHand(cardsUser3);
+		this.cardsPlayer3.add(firstCardUser3);
+		this.cardsPlayer3.add(secondCardUser3);
+		this.cardsPlayer3.add(thirdCardUser3);
+		this.cardsPlayer3.add(fourthCardUser3);
+		this.cardsPlayer3.add(fifthCardUser3);
+		this.cardsPlayer3.add(sixthCardUser3);
+		this.cardsPlayer3.add(seventhCardUser3);
+		this.cardsPlayer3.add(eighthCardUser3);
+		this.cardsPlayer3.add(ninthCardUser3);
+		this.cardsPlayer3.add(tenthCardUser3);
+		this.showOtherPlayersHand(cardsPlayer3);
 	}
 
 	private void createCardsListUser4() {
-		this.cardsUser4.add(firstCardUser4);
-		this.cardsUser4.add(secondCardUser4);
-		this.cardsUser4.add(thirdCardUser4);
-		this.cardsUser4.add(fourthCardUser4);
-		this.cardsUser4.add(fifthCardUser4);
-		this.cardsUser4.add(sixthCardUser4);
-		this.cardsUser4.add(seventhCardUser4);
-		this.cardsUser4.add(eighthCardUser4);
-		this.cardsUser4.add(ninthCardUser4);
-		this.cardsUser4.add(tenthCardUser4);
-		this.showOtherPlayersHand(cardsUser4);
+		this.cardsPlayer4.add(firstCardUser4);
+		this.cardsPlayer4.add(secondCardUser4);
+		this.cardsPlayer4.add(thirdCardUser4);
+		this.cardsPlayer4.add(fourthCardUser4);
+		this.cardsPlayer4.add(fifthCardUser4);
+		this.cardsPlayer4.add(sixthCardUser4);
+		this.cardsPlayer4.add(seventhCardUser4);
+		this.cardsPlayer4.add(eighthCardUser4);
+		this.cardsPlayer4.add(ninthCardUser4);
+		this.cardsPlayer4.add(tenthCardUser4);
+		this.showOtherPlayersHand(cardsPlayer4);
 	}
 
 	private void showOtherPlayersHand(final List<ImageView> playerHand) {

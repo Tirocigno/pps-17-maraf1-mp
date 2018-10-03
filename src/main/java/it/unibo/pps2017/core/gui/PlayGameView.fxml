@@ -31,11 +31,7 @@
             <HBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <ImageView fx:id="firstCard" fitHeight="108.0" fitWidth="77.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
-                  <ImageView fx:id="secondCard" fitHeight="108.0" fitWidth="75.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </ImageView>
+                  <ImageView fx:id="secondCard" fitHeight="108.0" fitWidth="75.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="thirdCard" fitHeight="124.0" fitWidth="74.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="fourthCard" fitHeight="124.0" fitWidth="74.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="fifthCard" fitHeight="124.0" fitWidth="74.0" onMouseClicked="#clickedCard" pickOnBounds="true" preserveRatio="true" />
