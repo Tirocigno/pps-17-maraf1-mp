@@ -173,14 +173,7 @@ public class PlayGameController implements PlayGame {
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	/**
 	 * This method permits to catch briscola selected by player.
@@ -210,12 +203,6 @@ public class PlayGameController implements PlayGame {
 		this.briscolaLabel.setVisible(true);
 	}
 	
-	
-	
-	
-	
-	
-	
 
 	/*
 	 * metodo temporaneo che eliminero' quando ricevero' la lista delle carte dal
@@ -226,10 +213,7 @@ public class PlayGameController implements PlayGame {
 		setCurrentPlayer(new Player("User1"), false); // simulo che tocchi all'utente 1
 	}
 
-
-
 	
-
 	/**
 	 * Method to show which card is pressed by first user and throw it in field.
 	 * 
@@ -353,9 +337,6 @@ public class PlayGameController implements PlayGame {
 
 	}
 
-
-	
-
 	@Override
 	public void setCurrentPlayer(final Player user, boolean partialTurnIsEnded) {
 
@@ -390,12 +371,6 @@ public class PlayGameController implements PlayGame {
 		this.briscolaLabel.setVisible(false); // finito un turno nascondo la label con la briscola perche' verra' riscelta
 		showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
 	}
-
-	
-	
-	
-	
-	
 	
 	private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
 		this.score.setText("Score: " + scoreFirstTeam + "-" + scoreSecondTeam);
