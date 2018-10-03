@@ -37,7 +37,6 @@ public class PlayGameController implements PlayGame {
 	private static final String PLAYER_2 = "Player2";
 	private static final String PLAYER_3 = "Player3";
 	private static final String PLAYER_4 = "Player4";
-	
 
 	@FXML
 	ImageView wallpaper = new ImageView();
@@ -70,6 +69,9 @@ public class PlayGameController implements PlayGame {
 	Button buttonStart, bussoButton, voloButton, striscioButton;
 
 	@FXML
+	Button coinButton, cupButton, clubButton, swordButton;
+
+	@FXML
 	ImageView currentUserCommand, userTwoCommand, userThreeCommand, userFourCommand;
 
 	@FXML
@@ -79,7 +81,7 @@ public class PlayGameController implements PlayGame {
 	ImageView gameOverImage = new ImageView();
 
 	@FXML
-	Label timer, score;
+	Label timer, score, chooseBriscolaLabel;
 
 	List<ImageView> userCards;
 
@@ -96,7 +98,6 @@ public class PlayGameController implements PlayGame {
 	private List<ImageView> cardsPlayer4;
 
 	public PlayGameController() {
-		
 
 		/*
 		 * Simulo il fatto di avere la mia lista di carte. Quando questa mi verra'
@@ -140,13 +141,36 @@ public class PlayGameController implements PlayGame {
 		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
 		 * OPPURE NO.
 		 * 
-		 * if (myTurn) { metto quelle 4 righe } else { non devo far nulla anche se l'utente clicca }
+		 * if (myTurn) { metto quelle 4 righe } else { non devo far nulla anche se
+		 * l'utente clicca }
 		 */
 
 		Button button = (Button) buttonPressed.getSource();
 		String command = button.getText().toLowerCase();
 		Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
 		createTimeline(currentUserCommand, image);
+	}
+
+	/**
+	 * This method permits to catch briscola selected by player.
+	 * 
+	 * @param buttonPressed
+	 *            button pressed (cup, sword, club or coin) from principal player
+	 * @throws InterruptedException
+	 */
+	public void selectBriscola(final ActionEvent buttonPressed) throws InterruptedException {
+		Button button = (Button) buttonPressed.getSource();
+		@SuppressWarnings("unused")
+		String briscola = button.getText();
+
+		/*
+		 * CHIAMO UN METODO DEL CONTROLLER PER DIRE LA BRISCOLA CHE HO SCELTO
+		 * 
+		 * c.setMyBriscola(briscola);
+		 */
+
+		hideBriscolaCommands();
+		initializeCommands();
 	}
 
 	/*
@@ -195,7 +219,8 @@ public class PlayGameController implements PlayGame {
 		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
 		 * OPPURE NO.
 		 * 
-		 * if (myTurn) { tutte queste righe } else { non devo far nulla anche se l'utente clicca }
+		 * if (myTurn) { tutte queste righe } else { non devo far nulla anche se
+		 * l'utente clicca }
 		 */
 
 		/* prendo il riferimento alla carta cliccata e ricavo il path */
@@ -217,7 +242,7 @@ public class PlayGameController implements PlayGame {
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
 		System.out.println(indexCardSelected);
 
-		//cleanFieldEndTotalTurn(5, 13, true);
+		// cleanFieldEndTotalTurn(5, 13, true);
 
 	}
 
@@ -225,8 +250,8 @@ public class PlayGameController implements PlayGame {
 	public void getCardsFirstPlayer(final List<String> firstUserCards) {
 
 		/* CONTROLLER CHE ME LO CHIAMA */
-		initializePlayersHand();
-		initializeCommands();
+		initializePlayersHand(); // mostro il retro delle carte degli altri giocatori
+
 		this.indexOfMyCards.clear(); // svuoto la mappa per i turni successivi
 
 		for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
@@ -257,6 +282,28 @@ public class PlayGameController implements PlayGame {
 			case 9:
 				this.tenthCard.setImage(userCard);
 			}
+		}
+
+		/*
+		 * Dopo che mi sono state date le dieci carte, chiamo un metodo del controller
+		 * che mi torni un bool per capire se devo fare io le briscole oppure no. Se
+		 * si', allora chiamo un mio metodo privato che mi permetta di scegliere la
+		 * briscola, altrimenti non faccio nulla ma dovro' ricevere sempre dal
+		 * controller la briscola scelta dagli altri
+		 * 
+		 * 
+		 * boolean isMyTurnBriscola = controller.isMyTurnToChooseBriscola(Player player);
+		 * 
+		 * if (isMyTurnBriscola) { 
+		 * 	showBriscolaCommands(); 
+		 * } else { 
+		 * 	initializeCommands();
+		 * }
+		 * 
+		 */
+
+		if (true) {
+			showBriscolaCommands();
 		}
 	}
 
@@ -433,7 +480,7 @@ public class PlayGameController implements PlayGame {
 	}
 
 	private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
-		this.score.setText("Punteggio: " + scoreFirstTeam + "-" + scoreSecondTeam);
+		this.score.setText("Score: " + scoreFirstTeam + "-" + scoreSecondTeam);
 		this.score.setVisible(true);
 		createLabelScaleTransition(this.score, endedMatch);
 	}
@@ -472,5 +519,21 @@ public class PlayGameController implements PlayGame {
 		scoreTransition.setOnFinished(endScore -> {
 			this.gameOverImage.setVisible(false);
 		});
+	}
+
+	private void showBriscolaCommands() {
+		this.coinButton.setVisible(true);
+		this.clubButton.setVisible(true);
+		this.cupButton.setVisible(true);
+		this.swordButton.setVisible(true);
+		this.chooseBriscolaLabel.setVisible(true);
+	}
+	
+	private void hideBriscolaCommands() {
+		this.coinButton.setVisible(false);
+		this.clubButton.setVisible(false);
+		this.cupButton.setVisible(false);
+		this.swordButton.setVisible(false);
+		this.chooseBriscolaLabel.setVisible(false);
 	}
 }
