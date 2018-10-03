@@ -144,7 +144,7 @@ public class PlayGameController implements PlayGame {
 		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
 		 * OPPURE NO.
 		 * 
-		 * if (myTurn) { metto quelle 4 righe } else { non devo far nulla anche se
+		 * if (isMyTurn(Player player)) { metto quelle 4 righe } else { non devo far nulla anche se
 		 * l'utente clicca }
 		 */
 
@@ -152,6 +152,11 @@ public class PlayGameController implements PlayGame {
 		String command = button.getText().toLowerCase();
 		Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
 		createTimeline(currentUserCommand, image);
+		
+		/*
+		 * CHIAMO UN METODO DEL CONTROLLER E GLI DICO CHE HO CLICCATO IL COMANDO X
+		 * c.setCommandFromPlayer(Command command, Player player)
+		 */
 	}
 
 	@Override
@@ -225,7 +230,7 @@ public class PlayGameController implements PlayGame {
 		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
 		 * OPPURE NO.
 		 * 
-		 * if (myTurn) { tutte queste righe } else { non devo far nulla anche se
+		 * if (c.myTurn(Player player)) { tutte queste righe } else { non devo far nulla anche se
 		 * l'utente clicca }
 		 */
 
@@ -243,6 +248,8 @@ public class PlayGameController implements PlayGame {
 		/*
 		 * CONTROLLER DA CHIAMARE: qui chiamo un metodo del controller e gli passo
 		 * l'indice della carta selezionata dall'utente e giocata
+		 * c.setPlayedCard(indexCardSelected)
+		 * 
 		 */
 
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
