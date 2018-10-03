@@ -21,7 +21,7 @@ public interface PlayGame {
 	 * @param command
 	 *            command selected by user.
 	 */
-	void getCommand(final User user, final Command command);
+	void getCommand(final Player user, final Command command);
 
 	/**
 	 * This method is called when the turn is over: all four players has been played
@@ -47,7 +47,7 @@ public interface PlayGame {
 	 * @param partialTurnEnded
 	 *            true if the partial turn is ended, false otherwise.
 	 */
-	void setCurrentPlayer(final User user, final boolean partialTurnEnded);
+	void setCurrentPlayer(final Player user, final boolean partialTurnEnded);
 
 	/**
 	 * This method is called to show the played card from player.
@@ -57,6 +57,6 @@ public interface PlayGame {
 	 * @param cardPath
 	 *            played card's path.
 	 */
-	void showOtherPlayersPlayedCard(final User user, final String cardPath);
+	void showOtherPlayersPlayedCard(final Player user, final String cardPath);
 
 }

@@ -33,6 +33,11 @@ public class PlayGameController implements PlayGame {
 	private static final String FORMAT = ".png";
 	private static final String START_PATH = "src";
 	private static final int TOTAL_HAND_CARDS = 10;
+	private static final String PLAYER_1 = "Player1";
+	private static final String PLAYER_2 = "Player2";
+	private static final String PLAYER_3 = "Player3";
+	private static final String PLAYER_4 = "Player4";
+	
 
 	@FXML
 	ImageView wallpaper = new ImageView();
@@ -84,7 +89,7 @@ public class PlayGameController implements PlayGame {
 	 */
 	private Map<Integer, String> indexOfMyCards;
 	private List<String> firstUserCards;
-	private List<User> users;
+	private List<Player> players;
 
 	private List<ImageView> cardsUser2;
 	private List<ImageView> cardsUser3;
@@ -97,11 +102,11 @@ public class PlayGameController implements PlayGame {
 		 * passata dal controller eliminero' tutto cio'
 		 */
 		this.firstUserCards = new ArrayList<>();
-		this.users = new ArrayList<>();
-		this.users.add(new User("User1"));
-		this.users.add(new User("User2"));
-		this.users.add(new User("User3"));
-		this.users.add(new User("User4"));
+		this.players = new ArrayList<>();
+		this.players.add(new Player(PLAYER_1));
+		this.players.add(new Player(PLAYER_2));
+		this.players.add(new Player(PLAYER_3));
+		this.players.add(new Player(PLAYER_4));
 
 		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10Sword.png");
 		this.firstUserCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9Club.png");
@@ -149,7 +154,7 @@ public class PlayGameController implements PlayGame {
 	 */
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
 		getCardsFirstUser(firstUserCards);
-		setCurrentPlayer(new User("User1"), false); // simulo che tocchi all'utente 1
+		setCurrentPlayer(new Player("User1"), false); // simulo che tocchi all'utente 1
 	}
 
 	private void createTimeline(final ImageView imageViewToShow, final Image imageCreateFromFile) {
@@ -160,19 +165,19 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void getCommand(final User user, final Command command) {
+	public void getCommand(final Player player, final Command command) {
 
 		/* CONTROLLER CHE ME LO CHIAMA */
-		Image userCommand = getImageFromPath(COMMANDS_PATH + command.getCommand() + user.getUser() + FORMAT);
+		Image userCommand = getImageFromPath(COMMANDS_PATH + command.getCommand() + player.getPlayer() + FORMAT);
 
-		switch (user.getUser()) {
-		case "User2":
+		switch (player.getPlayer()) {
+		case PLAYER_2:
 			createTimeline(userTwoCommand, userCommand);
 			break;
-		case "User3":
+		case PLAYER_3:
 			createTimeline(userThreeCommand, userCommand);
 			break;
-		case "User4":
+		case PLAYER_4:
 			createTimeline(userFourCommand, userCommand);
 			break;
 		}
@@ -280,18 +285,18 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void showOtherPlayersPlayedCard(final User user, final String cardPath) {
+	public void showOtherPlayersPlayedCard(final Player user, final String cardPath) {
 
 		Image cardPlayed = getImageFromPath(cardPath);
 
-		switch (user.getUser()) {
-		case "User2":
+		switch (user.getPlayer()) {
+		case PLAYER_2:
 			this.user2Field.setImage(cardPlayed);
 			break;
-		case "User3":
+		case PLAYER_3:
 			this.user3Field.setImage(cardPlayed);
 			break;
-		case "User4":
+		case PLAYER_4:
 			this.user4Field.setImage(cardPlayed);
 			break;
 		}
@@ -301,15 +306,15 @@ public class PlayGameController implements PlayGame {
 
 	}
 
-	private void deleteCardFromHand(final User user) {
-		switch (user.getUser()) {
-		case "User2":
+	private void deleteCardFromHand(final Player user) {
+		switch (user.getPlayer()) {
+		case PLAYER_2:
 			deleteCard(cardsUser2);
 			break;
-		case "User3":
+		case PLAYER_3:
 			deleteCard(cardsUser3);
 			break;
-		case "User4":
+		case PLAYER_4:
 			deleteCard(cardsUser4);
 			break;
 		}
@@ -393,7 +398,7 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void setCurrentPlayer(final User user, boolean partialTurnIsEnded) {
+	public void setCurrentPlayer(final Player user, boolean partialTurnIsEnded) {
 
 		/* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
 		if (partialTurnIsEnded) {
@@ -401,18 +406,18 @@ public class PlayGameController implements PlayGame {
 		}
 
 		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-		switch (user.getUser()) {
+		switch (user.getPlayer()) {
 
-		case "User1":
+		case PLAYER_1:
 			this.user1Field.setImage(emptyFieldMyTurn);
 			break;
-		case "User2":
+		case PLAYER_2:
 			this.user2Field.setImage(emptyFieldMyTurn);
 			break;
-		case "User3":
+		case PLAYER_3:
 			this.user3Field.setImage(emptyFieldMyTurn);
 			break;
-		case "User4":
+		case PLAYER_4:
 			this.user4Field.setImage(emptyFieldMyTurn);
 			break;
 		}
