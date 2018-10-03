@@ -297,6 +297,11 @@
                         <Image url="@images/gameOver1.png" />
                      </image>
                   </ImageView>
+                  <Label fx:id="score" alignment="CENTER" contentDisplay="CENTER" style="-fx-background-color: black;" textFill="WHITE" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
+                     <font>
+                        <Font name="Charter Bold" size="24.0" />
+                     </font>
+                  </Label>
                </children>
             </GridPane>
          </center>

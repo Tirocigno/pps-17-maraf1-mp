@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,6 +27,9 @@ public class PlayGameController implements PlayGame {
 	private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
 	private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
 	private static final String END_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/gameOver1.png";
+	private static final int DURATION_ANIMATION = 3;
+	private static final int START_ANIMATION_POSITION = 1;
+	private static final int END_ANIMATION_POSITION = 2;
 	private static final String FORMAT = ".png";
 	private static final String START_PATH = "src";
 	private static final int TOTAL_HAND_CARDS = 10;
@@ -96,7 +101,7 @@ public class PlayGameController implements PlayGame {
 	ImageView gameOverImage = new ImageView();
 
 	@FXML
-	Label timer;
+	Label timer, score;
 
 	List<ImageView> userCards;
 
@@ -232,6 +237,8 @@ public class PlayGameController implements PlayGame {
 
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
 		System.out.println(indexCardSelected);
+
+		showAnimationEndMatch(2, 3);
 
 	}
 
@@ -404,7 +411,6 @@ public class PlayGameController implements PlayGame {
 		this.voloButton.setVisible(true);
 	}
 
-
 	private void cleanField() {
 		Image emptyField = getImageFromPath(EMPTY_FIELD);
 		this.user1Field.setImage(emptyField);
@@ -412,11 +418,10 @@ public class PlayGameController implements PlayGame {
 		this.user3Field.setImage(emptyField);
 		this.user4Field.setImage(emptyField);
 	}
-	
 
 	@Override
 	public void setCurrentPlayer(final User user, boolean partialTurnIsEnded) {
-		
+
 		/* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
 		if (partialTurnIsEnded) {
 			cleanField();
@@ -444,19 +449,44 @@ public class PlayGameController implements PlayGame {
 	public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam) {
 
 		cleanField();
-		/* Mostro i punteggi del turno parziale appena conclusosi,
-		 * da vedere se con un'immagine o con una semplice label	
+		showScore(actualScoreMyTeam, actualScoreOpponentTeam);
+		/*
+		 * Mostro i punteggi del turno parziale appena conclusosi
 		 */
 	}
 
 	@Override
 	public void showAnimationEndMatch(final int scoreMyTeam, final int scoreOpponentTeam) {
+
+		// mostro il punteggio finale
+		showScore(scoreMyTeam, scoreOpponentTeam);
+
 		/*
-		 * TODO per adesso ho caricato un'immagine 'game over' Poi bisognera' mostrare i
-		 * risultati passati come parametro
+		 * mostro l'immagine di vittoria o sconfitta Image imageEnd =
+		 * getImageFromPath(END_MATCH); gameOverImage.setImage(imageEnd);
+		 * this.gameOverImage.setVisible(true);
+		 * 
+		 * ScaleTransition trans = new ScaleTransition(Duration.seconds(2),
+		 * gameOverImage); trans.setToX(2); trans.setToY(2); trans.play();
+		 * 
+		 * trans.setOnFinished(e -> { System.out.println("Finito");
+		 * this.gameOverImage.setVisible(false); });
 		 */
-		Image imageEnd = getImageFromPath(END_MATCH);
-		this.gameOverImage.setVisible(true);
-		createTimeline(gameOverImage, imageEnd);
+	}
+
+	private void showScore(int scoreFirstTeam, int scoreSecondTeam) {
+
+		this.score.setText("Punteggio: " + scoreFirstTeam + "-" + scoreSecondTeam);
+		this.score.setVisible(true);
+		ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.score);
+		scoreTransition.setFromX(START_ANIMATION_POSITION);
+		scoreTransition.setFromY(START_ANIMATION_POSITION);
+		scoreTransition.setToX(END_ANIMATION_POSITION);
+		scoreTransition.setToY(END_ANIMATION_POSITION);
+		scoreTransition.play();
+
+		scoreTransition.setOnFinished(endScore -> {
+			this.score.setText("");
+		});
 	}
 }
