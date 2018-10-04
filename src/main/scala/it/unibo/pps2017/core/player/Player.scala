@@ -1,17 +1,18 @@
 package it.unibo.pps2017.core.player
 
+import java.util.TimerTask
+
 import it.unibo.pps2017.core.deck.cards.Card
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
-
-import scala.concurrent.{Future}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import it.unibo.pps2017.core.player.Player._
 
 
 /**
   * This trait define the concept of player, who has a username.
   */
-
+object Player{
+  val TURN_TIME_SEC: Int = 10
+}
  trait Player {
 
   def userName: String
@@ -51,7 +52,7 @@ import scala.util.{Failure, Success}
     */
   def onSetBriscola(): Seed
 
-  def getFuture(): Future[String]
+  def setCardPlayed(): Unit
 
 }
 
@@ -64,7 +65,8 @@ abstract case class PlayerImpl(override val userName: String) extends Player {
 
   var cardList : Set[Card]
   var controller : PlayerManager
-  var timer : Future[String]
+  var cardPlayed : Boolean
+  var task : TimerTask
 
   override def equals(obj: Any): Boolean = obj match {
     case PlayerImpl(username) if userName.equals(username) => true
@@ -80,21 +82,30 @@ abstract case class PlayerImpl(override val userName: String) extends Player {
 
   override def getHand(): Set[Card] = cardList
 
-  override def getFuture(): Future[String] = timer
-
   override def onMyTurn(): Unit = {
     controller.setTurn(this)
-
-    timer = Future {
-      //controller.updateTimer()
-      Thread.sleep(10000)
-      "Nothing played"
+    var tmp = 0
+    val timer = new java.util.Timer()
+    task = new java.util.TimerTask {
+      def run() = {
+        tmp = tmp + 1
+        cardPlayed match {
+          case true => {
+            cardPlayed = false
+            endTask()
+          }
+          case false => {
+            if(tmp == TURN_TIME_SEC) controller.getRandCard()
+          }
+        }
+      }
     }
 
-    timer.onComplete {
-      case Success(value) => //controller.getRandCard()
-      case Failure(e) => e.printStackTrace
-    }
+    timer.schedule(task, 1000L, 1000L)
+  }
+
+  def endTask(): Unit ={
+    task.cancel()
   }
 
   override def onSetBriscola(): Seed = {

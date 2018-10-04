@@ -37,5 +37,4 @@ public interface Controller {
 
     void isPlayerTurn(Player player);
 
-   // boolean timeExpired();
 }

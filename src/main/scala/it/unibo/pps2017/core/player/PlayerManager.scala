@@ -85,7 +85,6 @@ abstract class PlayerManager(model:Match) extends Controller{
     if(model.isCardOk(playedCard)){
       val cardPath = "src/main/java/it/unibo/pps2017/core/gui/cards/" + playedCard.cardValue + playedCard.cardSeed +".png"
       //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
-      playerTurn.getFuture().failed
       true
     }
     false
@@ -168,5 +167,4 @@ abstract class PlayerManager(model:Match) extends Controller{
     */
   override def isPlayerTurn(player: Player): Unit = playerTurn.equals(player)
 
-  //override def timeExpired(): Boolean = ???
 }
