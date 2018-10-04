@@ -23,8 +23,8 @@ import javafx.util.Duration;
 public class PlayGameController implements PlayGame {
 
 	private static final String COMMANDS_PATH = "src/main/java/it/unibo/pps2017/core/gui/commands/";
-	private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
-	private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
+	private static final String EMPTY_FIELD = "src/main/resources/it/unibo/pps2017/cards/emptyField.png";
+	private static final String EMPTY_FIELD_MY_TURN = "src/main/resources/it/unibo/pps2017/cards/emptyFieldMyTurn.png";
 	private static final String WIN_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/win.png";
 	private static final String LOSE_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/lose.png";
 	private static final int DURATION_ANIMATION = 3;
@@ -110,16 +110,18 @@ public class PlayGameController implements PlayGame {
 		this.players.add(new Player(PLAYER_3));
 		this.players.add(new Player(PLAYER_4));
 
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/10Sword.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/9Club.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/8Coin.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/7Cup.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/6Coin.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/5Coin.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/4Coin.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/3Club.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/2Coin.png");
-		this.firstPlayerCards.add("src/main/java/it/unibo/pps2017/core/gui/cards/1Sword.png");
+		
+		
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/10Sword.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/9Club.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/8Coin.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/7Cup.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/6Coin.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/5Coin.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/4Coin.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/3Club.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/2Coin.png");
+		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/1Sword.png");
 
 		this.indexOfMyCards = new HashMap<>();
 		this.cardsPlayer2 = new ArrayList<>();
@@ -228,7 +230,7 @@ public class PlayGameController implements PlayGame {
 
 		/*
 		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
-		 * OPPURE NO.
+		 * OPPURE NO, IN PIU' DEVO VERIFICARE, SE STA A ME FARE LE BRISCOLE, CHE L'ABBIA SCELTA.
 		 * 
 		 * if (c.myTurn(Player player)) { tutte queste righe } else { non devo far nulla anche se
 		 * l'utente clicca }
