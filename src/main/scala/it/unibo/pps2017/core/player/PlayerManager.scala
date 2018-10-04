@@ -1,17 +1,20 @@
 package it.unibo.pps2017.core.player
 
-
-import it.unibo.pps2017.core.deck.cards.Card
+import it.unibo.pps2017.core.deck.cards.{Card, Seed}
 import it.unibo.pps2017.core.game.Match
-import scala.collection.mutable.{ListBuffer,Seq}
+
+import scala.collection.mutable.{ListBuffer, Seq}
 
 
 abstract class PlayerManager(model:Match) extends Controller{
 
   var allCardsInHand = Map[Player, ListBuffer[Card]]()
   var playerTurn : Player
+  var turnBriscola : Player
+  var currentPlayerCommand : Player
   var totHandsSet : Int = 0
   var players : Seq[Player]
+
   /**
     * Get all the cards that each player actually has
     *
@@ -19,9 +22,12 @@ abstract class PlayerManager(model:Match) extends Controller{
     */
   override def getAllHands: Map[Player,ListBuffer[Card]] =  allCardsInHand
 
+  /**
+    * Checks if all the players has got the card in way to update the view
+    */
   override def incSetHands(): Unit = {
     totHandsSet = totHandsSet + 1
-    if(totHandsSet==4){
+    if(totHandsSet == 4){
       var allCardsPath : ListBuffer[String] = ListBuffer[String]()
       players.foreach(p => p.getHand().foreach(c =>
         allCardsPath += "src/main/java/it/unibo/pps2017/core/gui/cards/" + c.cardValue + c.cardSeed +".png"
@@ -30,6 +36,44 @@ abstract class PlayerManager(model:Match) extends Controller{
       //gui.setCardsPath(allCardsPath)
     }
   }
+
+  /**
+    * Update the cards of the player's hand on the view
+    * @param cardsPath list of cards images path
+    */
+  override def setHandView(cardsPath: Set[Card]): Unit = {
+    var allCardsPath : ListBuffer[String] = ListBuffer[String]()
+    cardsPath.foreach(card =>
+      allCardsPath += "src/main/java/it/unibo/pps2017/core/gui/cards/" + card.cardValue + card.cardSeed +".png"
+    )
+    //gui.getCardsFirstPlayer(allCardsPath)
+  }
+
+  /**
+    * Checks if it's his turn for briscola
+    * @param player the player
+    * @return true if is his turn else false
+    */
+  override def isMyTurnToChooseBriscola(player: Player): Boolean = turnBriscola.equals(player)
+
+  /**
+    * Called to set briscola
+    * @param seed the seed chosen
+    */
+  override def setMyBriscola(seed: Seed.type): Unit = {
+    //model.setBriscola(seed)
+  }
+
+  /**
+    * Called to set the called command and the player who called it
+    * @param command the command chosen
+    * @param player the player who called the command
+    */
+  override def setCommandFromPlayer(command: Command.type, player: Player): Unit = {
+    currentPlayerCommand = player
+    //model.setCommand(command,player)
+  }
+
     /**
     * Check if the selected and played card can be played
     *
@@ -53,8 +97,14 @@ abstract class PlayerManager(model:Match) extends Controller{
     * @param player  the player who has the turn
     */
   override def setTurn(player: Player): Unit = {
+    /*
+       if(model.isSetEnd()._3) totalPoints(model.isSetEnd()._1,model.isSetEnd()._2)
+       else gui.setCurrentPlayer(player, false)
+      */
+    /* OR
+       gui.setCurrentPlayer(player, model.isSetEnd()._3)
+      */
     playerTurn = player
-    //gui.setCurrentPlayer(playerTurn, model.isPartialTurnFinished())
   }
 
   /**
@@ -65,6 +115,7 @@ abstract class PlayerManager(model:Match) extends Controller{
   override def addPlayer(player: Player): Unit = {
     allCardsInHand += (player -> ListBuffer[Card]())
     players :+ player
+    //firstPlayer = gui
     //model.addPlayer(player,"User1")
   }
 
@@ -83,19 +134,18 @@ abstract class PlayerManager(model:Match) extends Controller{
     * expired so he will play a random card from his hand
     * considering the game rules
     *
-    * @return the 'almost' random card
     */
-  override def getRandCard: Card = {
-    //Card card = model.forcePlay(playerTurn)
-    //gui.playedCard(card)
-    null
+  override def getRandCard: Unit = {
+    //val card : Card = model.forcePlay(playerTurn)
+    //val cardPath = "src/main/java/it/unibo/pps2017/core/gui/cards/" + card.cardValue + card.cardSeed +".png"
+    //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
   }
 
   /**
     * Useful to notify all the players when one of them choose a
     * command which can be: busso, striscio, volo
     *
-    * @param command  the command choosen from the player
+    * @param command  the command chosen from the player
     */
   override def setCommand(command: String): Unit = {
     //model.setCommand(command)

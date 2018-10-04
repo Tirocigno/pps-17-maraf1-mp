@@ -47,7 +47,7 @@ import scala.util.{Failure, Success}
 
   /**
     * Notify the player to select a seed for briscola
-    * @return the seed choosen
+    * @return the seed chosen
     */
   def onSetBriscola(): Seed
 
@@ -75,7 +75,7 @@ abstract case class PlayerImpl(override val userName: String) extends Player {
 
   override def setHand(cards: Set[Card]): Unit = {
     cardList = cards
-    controller.incSetHands()
+    controller.setHandView(cards)
   }
 
   override def getHand(): Set[Card] = cardList
@@ -83,7 +83,7 @@ abstract case class PlayerImpl(override val userName: String) extends Player {
   override def getFuture(): Future[String] = timer
 
   override def onMyTurn(): Unit = {
-      controller.setTurn(this)
+    controller.setTurn(this)
 
     timer = Future {
       //controller.updateTimer()
@@ -97,7 +97,11 @@ abstract case class PlayerImpl(override val userName: String) extends Player {
     }
   }
 
-  override def onSetBriscola(): Seed = ???
+  override def onSetBriscola(): Seed = {
+    //gui.getSeedForBriscola()
+    //model.setBriscola()
+    null
+  }
 
   override def getCardAtIndex(index: Int): Card = {
     val mySeq = cardList.toSeq
