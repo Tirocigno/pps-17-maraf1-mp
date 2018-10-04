@@ -18,13 +18,14 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class PlayGameController implements PlayGame {
 
 	private static final String COMMANDS_PATH = "src/main/java/it/unibo/pps2017/core/gui/commands/";
-	private static final String EMPTY_FIELD = "src/main/resources/it/unibo/pps2017/cards/emptyField.png";
-	private static final String EMPTY_FIELD_MY_TURN = "src/main/resources/it/unibo/pps2017/cards/emptyFieldMyTurn.png";
+	private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
+	private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
 	private static final String WIN_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/win.png";
 	private static final String LOSE_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/lose.png";
 	private static final int DURATION_ANIMATION = 3;
@@ -81,7 +82,10 @@ public class PlayGameController implements PlayGame {
 	ImageView gameOverImage = new ImageView();
 
 	@FXML
-	Label timer, score, briscolaLabel;
+	Label timer, score;
+	
+	@FXML 
+	Text briscolaLabel;
 
 	List<ImageView> userCards;
 
@@ -217,7 +221,7 @@ public class PlayGameController implements PlayGame {
 	 */
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
 		getCardsFirstPlayer(firstPlayerCards);
-		setCurrentPlayer(new Player("User1"), false); // simulo che tocchi all'utente 1
+		setCurrentPlayer(new Player("Player1"), false); // simulo che tocchi all'utente 1
 	}
 
 	
@@ -246,17 +250,17 @@ public class PlayGameController implements PlayGame {
 		/* visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano */
 		this.user1Field.setImage(userCommand);
 		playedCard.setVisible(false);
+		
+		@SuppressWarnings("unused")
+		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
 
 		/*
+		 * 
 		 * CONTROLLER DA CHIAMARE: qui chiamo un metodo del controller e gli passo
 		 * l'indice della carta selezionata dall'utente e giocata
 		 * c.setPlayedCard(indexCardSelected)
 		 * 
 		 */
-
-		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
-		System.out.println(indexCardSelected);
-
 		// cleanFieldEndTotalTurn(5, 13, true);
 
 	}
@@ -347,7 +351,7 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void setCurrentPlayer(final Player user, boolean partialTurnIsEnded) {
+	public void setCurrentPlayer(final Player player, boolean partialTurnIsEnded) {
 
 		/* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
 		if (partialTurnIsEnded) {
@@ -355,7 +359,7 @@ public class PlayGameController implements PlayGame {
 		}
 
 		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-		switch (user.getPlayer()) {
+		switch (player.getPlayer()) {
 
 		case PLAYER_1:
 			this.user1Field.setImage(emptyFieldMyTurn);
@@ -497,6 +501,9 @@ public class PlayGameController implements PlayGame {
 		createCardsListUser4();
 	}
 
+	/* Questi metodi servono per avere una lista delle carte di ogni giocatore,
+	 * così ogni volta che ne viene giocata una la posso rimuovere e nascondere nella view
+	 */
 	private void createCardsListUser2() {
 		this.cardsPlayer2.add(firstCardUser2);
 		this.cardsPlayer2.add(secondCardUser2);
