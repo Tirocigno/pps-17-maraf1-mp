@@ -1,12 +1,8 @@
 
 package it.unibo.pps2017.core.deck
 
-import java.util
-
-import it.unibo.pps2017.core.deck.ComposedDeck.scalaToJavaHandConversion
 import it.unibo.pps2017.core.deck.cards.Card
 
-import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**
@@ -22,25 +18,16 @@ class ComposedDeck(val simpleDeck: SimpleDeck, val scoreCounter: ScoreCounter) e
 
   override def computeSetScore(): (Int, Int) = scoreCounter.computeSetScore()
 
-  override def registerTurnPlayedCards(playedCards: util.List[Card], teamIndex: Int): Unit =
-    scoreCounter.registerSetPlayedCards(playedCards.asScala, teamIndex)
+  override def registerTurnPlayedCards(playedCards: Seq[Card], teamIndex: Int): Unit =
+    scoreCounter.registerSetPlayedCards(playedCards, teamIndex)
 
-  override def distribute(): util.List[util.Collection[Card]] = simpleDeck.distribute()
+  override def distribute(): Seq[Iterable[Card]] = simpleDeck.distribute()
 }
 
 /**
   * Companion object for ComposedDeck.
   */
 object ComposedDeck {
-
-  /**
-    * Implicit method to convert a Scala Seq to a Java list.
-    *
-    * @param seq the scala sequence to convert.
-    * @return a java list containing some Java Collections of cards.
-    */
-  implicit def scalaToJavaHandConversion(seq: Seq[CardsHand]): util.List[util.Collection[Card]] =
-    seq.toStream.map(_.asJavaCollection).asJava
 
   /**
     * Apply method used as default constructor for the ComposedDeck class.
