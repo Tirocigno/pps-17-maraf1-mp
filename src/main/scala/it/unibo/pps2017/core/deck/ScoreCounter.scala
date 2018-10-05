@@ -2,6 +2,7 @@
 package it.unibo.pps2017.core.deck
 
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
+import it.unibo.pps2017.core.game.{Team, firstTeamID, secondTeamID}
 
 /**
   * This trait register the played cards and it increment the score of the team which earned them.
@@ -13,7 +14,7 @@ sealed trait ScoreCounter {
     * @param cardPlayedSeq the card sequence played in a set.
     * @param team          the index of team which earned the cards.
     */
-  def registerSetPlayedCards(cardPlayedSeq: Seq[Card], team: Int): Unit
+  def registerSetPlayedCards(cardPlayedSeq: Seq[Card], team: Team): Unit
 
   /**
     * When called, signal the closure of a set and retrieve the teams score.
@@ -21,6 +22,13 @@ sealed trait ScoreCounter {
     * @return a pair containing the teams score.
     */
   def computeSetScore(): (Int, Int)
+
+  /**
+    * Register scores of Marafona to specified team.
+    *
+    * @param team the team to register Marafona scores to.
+    */
+  def registerMarafona(team: Team): Unit
 }
 
 /**
@@ -59,12 +67,36 @@ private class ScoreTracker {
   */
 private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) extends ScoreCounter {
 
-  var lastSetWinner: Option[Int] = None
+  var lastSetWinner: Option[Team] = None
+
+  override def registerSetPlayedCards(cardPlayedSeq: Seq[Card], team: Team): Unit =
+    cardPlayedSeq foreach (registerPlayedCard(_, team))
 
   override def computeSetScore(): (Int, Int) = {
     finishSet()
     scores
   }
+
+  /**
+    * Finish a game and register an additional score to the team who won the last set.
+    */
+  def finishSet(): Unit = matchTeam((team, value: Int) => team.currentScore += value)(aceScore)
+
+  /**
+    * Register the score of a card earned by a team and set the team as last set winner.
+    *
+    * @param playedCard the card played.
+    * @param team       the index of the team which earned the cards.
+    */
+  def registerPlayedCard(playedCard: Card, team: Team): Unit = {
+    updateLastSetWinner(team)
+    registerCardScore(playedCard)
+  }
+
+  def updateLastSetWinner(setWinner: Team): Unit = lastSetWinner = Option(setWinner)
+
+  def registerCardScore(playedCard: Card): Unit =
+    matchTeam((team, card: Card) => team registerCardScore card)(playedCard)
 
   /**
     * Get the both team's scores.
@@ -73,35 +105,14 @@ private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) ext
     */
   def scores: (Int, Int) = (teamScores._1.currentScore / 3, teamScores._2.currentScore / 3)
 
-  /**
-    * Finish a game and register an additional score to the team who won the last set.
-    */
-  def finishSet(): Unit = matchTeam((team, value: Int) => team.currentScore += value)(aceScore)
-
   private[this] def matchTeam[A](apply: (ScoreTracker, A) => Unit)(argument: A): Unit = lastSetWinner match {
-    case Some(team) if team == firstTeam => apply(teamScores._1, argument)
-    case Some(team) if team == secondTeam => apply(teamScores._2, argument)
+    case Some(team) if team.name == firstTeamID => apply(teamScores._1, argument)
+    case Some(team) if team.name == secondTeamID => apply(teamScores._2, argument)
     case _ =>
   }
 
-  override def registerSetPlayedCards(cardPlayedSeq: Seq[Card], team: Int): Unit =
-    cardPlayedSeq foreach (registerPlayedCard(_, team))
-
-  /**
-    * Register the score of a card earned by a team and set the team as last set winner.
-    *
-    * @param playedCard the card played.
-    * @param team       the index of the team which earned the cards.
-    */
-  def registerPlayedCard(playedCard: Card, team: Int): Unit = {
-    updateLastSetWinner(team)
-    registerCardScore(playedCard)
-  }
-
-  def updateLastSetWinner(setWinner: Int): Unit = lastSetWinner = Option(setWinner)
-
-  def registerCardScore(playedCard: Card): Unit =
-    matchTeam((team, card: Card) => team registerCardScore card)(playedCard)
+  override def registerMarafona(team: Team): Unit =
+    matchTeam((team, value: Int) => team.currentScore += value)(marafonaScore)
 
 
 }

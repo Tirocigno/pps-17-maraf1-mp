@@ -5,6 +5,7 @@
 |**As a user, i must be able to play a Marafone game with all Marafone Rules**|||||
 | | Controller| Jakova | 3 | ?|
 | | Model of Match| Riciputi | 3 | ?|
+| | Integration between Deck and Model| Naldini | 2 | 0|
 |**The system should have a distributed architecture, so users can play remotely**|||||
 | | REST API communication planning| Naldini and Riciputi | 3 | ?|
 | | Client side implementation| Naldini | 6 | ?|

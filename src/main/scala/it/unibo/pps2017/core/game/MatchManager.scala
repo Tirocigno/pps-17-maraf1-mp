@@ -1,6 +1,5 @@
-package it.unibo.pps2017.core.game
 
-import java.util
+package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
@@ -8,8 +7,8 @@ import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.game.MatchManager._
 import it.unibo.pps2017.core.player.Player
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.language.implicitConversions
 import scala.util.Random
 
 
@@ -32,8 +31,8 @@ object MatchManager {
 }
 
 
-class MatchManager(team1: Team = Team("Team1"),
-                   team2: Team = Team("Team2")) extends Match {
+class MatchManager(team1: Team = Team(firstTeamID),
+                   team2: Team = Team(secondTeamID)) extends Match {
 
   var currentBriscola: Option[Seed] = None
   var currentSuit: Option[Seed] = None
@@ -193,8 +192,8 @@ class MatchManager(team1: Team = Team("Team1"),
     setEnd = false
     deck.shuffle()
     var i: Int = 0
-    deck.distribute().forEach(hand => {
-      getPlayers(i).setHand(hand.asScala.toSet)
+    deck.distribute().foreach(hand => {
+      getPlayers(i).setHand(hand)
       if (firstHand) {
         if (isFirstPlayer(hand)) {
           nextHandStarter = Some(getPlayers(i))
@@ -246,7 +245,7 @@ class MatchManager(team1: Team = Team("Team1"),
     * The hand taker.
     */
   private def onHandEnd(lastTaker: Player): Unit = {
-    deck.registerTurnPlayedCards(cardsOnTable.map(_._1).toList.asJava, getTeamIndexOfPlayer(lastTaker))
+    deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
 
     nextHandStarter = Some(lastTaker)
     currentSuit = None
@@ -444,7 +443,7 @@ class MatchManager(team1: Team = Team("Team1"),
     * @return
     * TRUE if found in the hand the four of coin, FALSE otherwise.
     */
-  private def isFirstPlayer(hand: util.Collection[Card]): Boolean = hand.contains(FOUR_OF_COIN)
+  private def isFirstPlayer(hand: Set[Card]): Boolean = hand.contains(FOUR_OF_COIN)
 
 
   /**
