@@ -2,6 +2,7 @@
 package it.unibo.pps2017.core.deck
 
 import it.unibo.pps2017.core.deck.cards.Card
+import it.unibo.pps2017.core.game.Team
 
 trait GameDeck {
 
@@ -28,13 +29,14 @@ trait GameDeck {
     * Register in the score storage all the card played in a turn.
     *
     * @param playedCards a Collection containing the four card played in a turn.
-    * @param teamIndex   the index of the team which earned those cards.
+    * @param team        the team which earned those cards.
     */
-  def registerTurnPlayedCards(playedCards: Seq[Card], teamIndex: Int): Unit
+  def registerTurnPlayedCards(playedCards: Seq[Card], team: Team): Unit
 
-  /* /**
-     * Register scores of Marafona to specified team.
+  /**
+    * Register scores of Marafona to specified team.
+    *
      * @param team the team to register Marafona scores to.
-     */
-   def registerMarafona(team: Team):Unit*/
+    */
+  def registerMarafona(team: Team): Unit
 }

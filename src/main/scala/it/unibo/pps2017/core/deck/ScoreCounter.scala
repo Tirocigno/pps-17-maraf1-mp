@@ -21,6 +21,13 @@ sealed trait ScoreCounter {
     * @return a pair containing the teams score.
     */
   def computeSetScore(): (Int, Int)
+
+  /**
+    * Register scores of Marafona to specified team.
+    *
+    * @param team the team to register Marafona scores to.
+    */
+  def registerMarafona(teamIndex: Int): Unit
 }
 
 /**
@@ -61,31 +68,21 @@ private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) ext
 
   var lastSetWinner: Option[Int] = None
 
-  override def computeSetScore(): (Int, Int) = {
-    finishSet()
-    scores
-  }
-
-  /**
-    * Get the both team's scores.
-    *
-    * @return a pair containing the scores as integer.
-    */
-  def scores: (Int, Int) = (teamScores._1.currentScore / 3, teamScores._2.currentScore / 3)
-
-  /**
-    * Finish a game and register an additional score to the team who won the last set.
-    */
-  def finishSet(): Unit = matchTeam((team, value: Int) => team.currentScore += value)(aceScore)
-
   private[this] def matchTeam[A](apply: (ScoreTracker, A) => Unit)(argument: A): Unit = lastSetWinner match {
     case Some(team) if team == firstTeam => apply(teamScores._1, argument)
     case Some(team) if team == secondTeam => apply(teamScores._2, argument)
     case _ =>
   }
 
-  override def registerSetPlayedCards(cardPlayedSeq: Seq[Card], team: Int): Unit =
-    cardPlayedSeq foreach (registerPlayedCard(_, team))
+  override def computeSetScore(): (Int, Int) = {
+    finishSet()
+    scores
+  }
+
+  /**
+    * Finish a game and register an additional score to the team who won the last set.
+    */
+  def finishSet(): Unit = matchTeam((team, value: Int) => team.currentScore += value)(aceScore)
 
   /**
     * Register the score of a card earned by a team and set the team as last set winner.
@@ -100,8 +97,21 @@ private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) ext
 
   def updateLastSetWinner(setWinner: Int): Unit = lastSetWinner = Option(setWinner)
 
+  /**
+    * Get the both team's scores.
+    *
+    * @return a pair containing the scores as integer.
+    */
+  def scores: (Int, Int) = (teamScores._1.currentScore / 3, teamScores._2.currentScore / 3)
+
   def registerCardScore(playedCard: Card): Unit =
     matchTeam((team, card: Card) => team registerCardScore card)(playedCard)
+
+  override def registerSetPlayedCards(cardPlayedSeq: Seq[Card], team: Int): Unit =
+    cardPlayedSeq foreach (registerPlayedCard(_, team))
+
+  override def registerMarafona(teamIndex: Int): Unit =
+    matchTeam((team, value: Int) => team.currentScore += value)(marafonaScore)
 
 
 }

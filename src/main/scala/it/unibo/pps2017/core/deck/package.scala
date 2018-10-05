@@ -17,6 +17,7 @@ package object deck {
   val upperCardValue: Int = 7
   val aceScore: Int = 3
   val defaultCardScore: Int = 1
+  val marafonaScore = aceScore * 3
 
 
   /**

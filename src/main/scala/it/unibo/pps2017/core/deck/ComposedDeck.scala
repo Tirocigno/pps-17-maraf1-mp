@@ -22,6 +22,8 @@ class ComposedDeck(val simpleDeck: SimpleDeck, val scoreCounter: ScoreCounter) e
     scoreCounter.registerSetPlayedCards(playedCards, teamIndex)
 
   override def distribute(): Seq[Set[Card]] = simpleDeck.distribute()
+
+  override def registerMarafona(teamIndex: Int): Unit = ???
 }
 
 /**

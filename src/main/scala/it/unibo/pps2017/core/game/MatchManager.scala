@@ -1,3 +1,4 @@
+
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
@@ -29,8 +30,8 @@ object MatchManager {
 }
 
 
-class MatchManager(team1: Team = Team("Team1"),
-                   team2: Team = Team("Team2")) extends Match {
+class MatchManager(team1: Team = Team(firstTeamID),
+                   team2: Team = Team(secondTeamId)) extends Match {
 
   var currentBriscola: Option[Seed] = None
   var currentSuit: Option[Seed] = None
