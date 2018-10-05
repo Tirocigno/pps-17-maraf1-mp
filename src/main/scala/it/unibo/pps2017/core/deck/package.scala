@@ -22,7 +22,7 @@ package object deck {
   /**
     * Alias for a card hand.
     */
-  type CardsHand = Iterable[Card]
+  type CardsHand = Set[Card]
 
   /**
     * Implicit class to randomize a Sequence of cards.

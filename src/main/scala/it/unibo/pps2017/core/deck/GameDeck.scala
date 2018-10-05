@@ -15,7 +15,7 @@ trait GameDeck {
     *
     * @return a list containing the four hands as collections.
     */
-  def distribute(): Seq[Iterable[Card]]
+  def distribute(): Seq[Set[Card]]
 
   /**
     * This method signal the deck the set is over, compute the new score and it return it.

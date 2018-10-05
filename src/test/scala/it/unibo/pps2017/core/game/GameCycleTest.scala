@@ -1,10 +1,13 @@
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.player.{Player, PlayerImpl}
+import org.junit.runner.RunWith
 import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
 
 import scala.collection.mutable.ListBuffer
 
+@RunWith(classOf[JUnitRunner])
 class GameCycleTest extends FunSuite {
 
   /**
