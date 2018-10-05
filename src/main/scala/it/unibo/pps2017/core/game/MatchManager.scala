@@ -41,7 +41,6 @@ class MatchManager(team1: Team = Team(firstTeamID),
   var firstHand: Boolean = true
   val cardsOnTable: mutable.ListBuffer[(Card, Player)] = mutable.ListBuffer()
   var nextHandStarter: Option[Player] = None
-  var hasMaraffa: Option[Team] = None
   var setEnd: Boolean = false
   var gameEnd: Boolean = false
 
@@ -267,7 +266,7 @@ class MatchManager(team1: Team = Team(firstTeamID),
   private def onFirstCardOfHand(card: Card): Unit = {
     val currentHand: Set[Card] = gameCycle.getCurrent.getHand()
     if (currentHand.size == MAX_HAND_CARDS && currentBriscola.get == card.cardSeed && card.cardValue == ACE_VALUE) {
-      hasMaraffa = checkMaraffa(currentHand, gameCycle.getCurrent)
+      checkMarafona(currentHand, gameCycle.getCurrent)
     }
     currentSuit = Option(card.cardSeed)
   }
@@ -282,10 +281,10 @@ class MatchManager(team1: Team = Team(firstTeamID),
     * @return
     * Team of the player if he has the Marafona, None otherwise.
     */
-  private def checkMaraffa(hand: Set[Card], player: Player): Option[Team] = {
+  private def checkMarafona(hand: Set[Card], player: Player): Unit = {
     if (hand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
       .count(c => c.cardValue == ACE_VALUE || c.cardValue == TWO_VALUE || c.cardValue == THREE_VALUE) == REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA) {
-      Some(getTeamOfPlayer(player))
+      deck.registerMarafona(getTeamOfPlayer(player))
     }
 
     None
@@ -302,22 +301,8 @@ class MatchManager(team1: Team = Team(firstTeamID),
     nextHandStarter = None
 
     val setScore = deck.computeSetScore()
-
-    hasMaraffa match {
-      case Some(team) =>
-        if (team1 == team) {
-          team1.addPoints(setScore._1.toInt + EXTRA_POINTS_FOR_MARAFFA)
-          team2.addPoints(setScore._2.toInt)
-        } else {
-          team1.addPoints(setScore._1.toInt)
-          team2.addPoints(setScore._2.toInt + EXTRA_POINTS_FOR_MARAFFA)
-        }
-      case None =>
-        team1.addPoints(setScore._1)
-        team2.addPoints(setScore._2)
-    }
-
-    hasMaraffa = None
+    team1.addPoints(setScore._1)
+    team2.addPoints(setScore._2)
 
     getGameWinner match {
       case Some(team) => notifyWinner(team)
