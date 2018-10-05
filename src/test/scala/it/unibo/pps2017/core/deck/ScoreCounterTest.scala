@@ -2,9 +2,11 @@
 package it.unibo.pps2017.core.deck
 
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
+import it.unibo.pps2017.core.game.{Team, firstTeamID}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+
 
 @RunWith(classOf[JUnitRunner])
 class ScoreCounterTest extends FunSuite with BeforeAndAfter {
@@ -27,7 +29,8 @@ class ScoreCounterTest extends FunSuite with BeforeAndAfter {
     generateCard(highCardWithValue), generateCard(noCardValue))
 
   private def registerHandAndCheckScore(handToRegister: Seq[Card])(expectedScore: Int) = {
-    scoreCounter.registerSetPlayedCards(handToRegister, firstTeam)
+    val team: Team = Team(firstTeamID)
+    scoreCounter.registerSetPlayedCards(handToRegister, team)
     assert(scoreCounter.computeSetScore() == (expectedScore + 1, 0))
   }
 

@@ -8,6 +8,7 @@ import it.unibo.pps2017.core.game.MatchManager._
 import it.unibo.pps2017.core.player.Player
 
 import scala.collection.mutable
+import scala.language.implicitConversions
 import scala.util.Random
 
 
@@ -31,7 +32,7 @@ object MatchManager {
 
 
 class MatchManager(team1: Team = Team(firstTeamID),
-                   team2: Team = Team(secondTeamId)) extends Match {
+                   team2: Team = Team(secondTeamID)) extends Match {
 
   var currentBriscola: Option[Seed] = None
   var currentSuit: Option[Seed] = None
@@ -244,7 +245,7 @@ class MatchManager(team1: Team = Team(firstTeamID),
     * The hand taker.
     */
   private def onHandEnd(lastTaker: Player): Unit = {
-    deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamIndexOfPlayer(lastTaker))
+    deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
 
     nextHandStarter = Some(lastTaker)
     currentSuit = None
