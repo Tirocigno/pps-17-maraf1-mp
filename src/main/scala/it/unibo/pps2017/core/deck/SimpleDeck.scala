@@ -46,5 +46,5 @@ private class SimpleDeckImpl(override var cardList: Seq[Card]) extends SimpleDec
 
   override def shuffle(): Unit = cardList = Random.shuffle(cardList)
 
-  override def distribute(): Seq[CardsHand] = cardList.grouped(handSize).toSeq
+  override def distribute(): Seq[CardsHand] = cardList.grouped(handSize).map(_.toSet).toSeq
 }

@@ -1,20 +1,65 @@
+
+//Script for sCoverage task.
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.3.0"
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.22"
+    }
+}
+//List of plugins to apply.
+
 plugins {
     id 'java'
     id 'scala'
+    id 'org.scoverage' version '2.3.0'
+    id 'com.github.maiflai.scalatest' version '0.22'
 }
 
+//group and version.
 group 'it.unibo.pps2017'
-version '0.2.1'
+version '0.3.1'
 
 sourceCompatibility = 1.8
 
+//List of variables used in the file.
 ext {
+    //Scala version variables.
     scalaBinaryVersion = '2.12'
+    scalaMajor = '2.12'
     scalaMinorVersion = '6'
     scalaVersion = "$scalaBinaryVersion.$scalaMinorVersion"
 
-    //Version for ScalaTest library
-    scalaTestVersion = "3.0.5"
+    //Version for Vertx.
+    vertxVersion = '3.5.3'
+
+    //Version for Akka.
+    akkaVersion = '2.5.14'
+
+    //Version for ScalaTest library.
+    scalaTestVersion = '3.0.1'
+
+    scalaCheckVersion = '1.14.0'
+
+    //Junit Version
+    jUnitVersion = '4.12'
+
+    sCoveragePluginVersion = '1.3.1'
+    pegDownVersion = '1.5.0'
+
+    gradleScalaTestVersion = '0.22'
+    gradleSCoverageVersion = '3.2.0'
+
+    //Cornichon version for REST API Test
+    cornichonVerison = '0.15.3'
+
+    //Circe version
+    circeVersion = '0.10.0'
+
 }
 
 repositories {
@@ -23,11 +68,65 @@ repositories {
     jcenter()
 }
 
+// this makes the scala classes builds alongside the java ones.
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['src/main/scala', 'src/main/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+}
+
 dependencies {
 
+    //Support to scala language.
     implementation "org.scala-lang:scala-library:$scalaVersion"
 
-    testImplementation "junit:junit:4.12"
+    //Support to Vertx libraries.
+    implementation "io.vertx:vertx-lang-scala_2.12:$vertxVersion"
+    implementation "io.vertx:vertx-web-scala_2.12:$vertxVersion"
+    implementation "io.vertx:vertx-web-client-scala_2.12:$vertxVersion"
 
+    //Basic support for Akka.
+    implementation "com.typesafe.akka:akka-actor_$scalaMajor:$akkaVersion"
+    implementation "com.typesafe.akka:akka-cluster_$scalaMajor:$akkaVersion"
+    implementation "com.typesafe.akka:akka-cluster-tools_$scalaMajor:$akkaVersion"
+
+
+    //Dependency for Junit.
+    testImplementation "junit:junit:$jUnitVersion"
+
+    //Dependency for pegdown, a library used in scoverage.
+    testImplementation "org.pegdown:pegdown:$pegDownVersion"
+
+    // Dependency for ScalaTest.
     testImplementation "org.scalatest:scalatest_2.12:$scalaTestVersion"
+
+    //Dependencies for ScalaCheck.
+    testImplementation "org.scalacheck:scalacheck_$scalaBinaryVersion:$scalaCheckVersion"
+
+
+    //TestKit for testing akka actors.
+    testImplementation "com.typesafe.akka:akka-testkit_$scalaMajor:$akkaVersion"
+
+
+    //Cornichon API REST test library
+    compile group: 'com.github.agourlay', name: 'cornichon_2.12', version: cornichonVerison
+
+    //Circe JSON Scala library
+    compile group: 'io.circe', name: 'circe-core_2.12', version: circeVersion
+
+
+
+    //Dependency for sCoverage.
+    scoverage "org.scoverage:scalac-scoverage-plugin_2.12:$sCoveragePluginVersion"
+    scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
 }
+
+defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
+
+
+

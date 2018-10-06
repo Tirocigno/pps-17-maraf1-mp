@@ -17,12 +17,13 @@ package object deck {
   val upperCardValue: Int = 7
   val aceScore: Int = 3
   val defaultCardScore: Int = 1
+  val marafonaScore = aceScore * 3
 
 
   /**
     * Alias for a card hand.
     */
-  type CardsHand = Iterable[Card]
+  type CardsHand = Set[Card]
 
   /**
     * Implicit class to randomize a Sequence of cards.
