@@ -4,6 +4,7 @@ import java.util.TimerTask
 
 import it.unibo.pps2017.core.deck.cards.Card
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
+import it.unibo.pps2017.core.game.Match
 import it.unibo.pps2017.core.player.Player._
 
 
@@ -12,7 +13,9 @@ import it.unibo.pps2017.core.player.Player._
   */
 object Player{
   val TURN_TIME_SEC: Int = 10
+  val TIME_PERIOD: Long = 1000L
 }
+
  trait Player {
 
   def userName: String
@@ -52,8 +55,6 @@ object Player{
     */
   def onSetBriscola(): Seed
 
-  def setCardPlayed(): Unit
-
 }
 
 /**
@@ -61,12 +62,12 @@ object Player{
   *
   * @param userName  the username of the player.
   */
-abstract case class PlayerImpl(override val userName: String) extends Player {
+  case class PlayerImpl(override val userName: String) extends Player {
 
-  var cardList : Set[Card]
-  var controller : PlayerManager
-  var cardPlayed : Boolean
-  var task : TimerTask
+  var cardList : Set[Card] = Set[Card]()
+  var controller : PlayerManager = PlayerManager(Match)
+  var cardPlayed : Boolean = false
+  var task : TimerTask = TimerTask
 
   override def equals(obj: Any): Boolean = obj match {
     case PlayerImpl(username) if userName.equals(username) => true
@@ -101,7 +102,7 @@ abstract case class PlayerImpl(override val userName: String) extends Player {
       }
     }
 
-    timer.schedule(task, 1000L, 1000L)
+    timer.schedule(task, TIME_PERIOD, TIME_PERIOD)
   }
 
   def endTask(): Unit ={

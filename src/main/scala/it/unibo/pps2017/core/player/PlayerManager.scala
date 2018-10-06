@@ -2,18 +2,24 @@ package it.unibo.pps2017.core.player
 
 import it.unibo.pps2017.core.deck.cards.{Card, Seed}
 import it.unibo.pps2017.core.game.Match
-
+import it.unibo.pps2017.core.player.PlayerManager._
 import scala.collection.mutable.{ListBuffer, Seq}
 
+object PlayerManager{
+  val IMG_PATH = "src/main/java/it/unibo/pps2017/core/gui/cards/"
+  val PNG_FILE = ".png"
+  def apply(model:Match) = new PlayerManager(model)
+}
 
-abstract class PlayerManager(model:Match) extends Controller{
 
-  var allCardsInHand = Map[Player, ListBuffer[Card]]()
-  var playerTurn : Player
-  var turnBriscola : Player
-  var currentPlayerCommand : Player
+ class PlayerManager(model:Match) extends Controller{
+
+  var allCardsInHand : Map[Player, ListBuffer[Card]] = Map[Player, ListBuffer[Card]]()
+  var playerTurn : Player = Player()
+  var turnBriscola : Player = Player()
+  var currentPlayerCommand : Player = Player()
   var totHandsSet : Int = 0
-  var players : Seq[Player]
+  var players : Seq[Player] = Seq[Player]()
 
   /**
     * Get all the cards that each player actually has
@@ -30,7 +36,7 @@ abstract class PlayerManager(model:Match) extends Controller{
     if(totHandsSet == 4){
       var allCardsPath : ListBuffer[String] = ListBuffer[String]()
       players.foreach(p => p.getHand().foreach(c =>
-        allCardsPath += "src/main/java/it/unibo/pps2017/core/gui/cards/" + c.cardValue + c.cardSeed +".png"
+        allCardsPath += IMG_PATH + c.cardValue + c.cardSeed + PNG_FILE
       ))
       totHandsSet = 0
       //gui.setCardsPath(allCardsPath)
@@ -44,7 +50,7 @@ abstract class PlayerManager(model:Match) extends Controller{
   override def setHandView(cardsPath: Set[Card]): Unit = {
     var allCardsPath : ListBuffer[String] = ListBuffer[String]()
     cardsPath.foreach(card =>
-      allCardsPath += "src/main/java/it/unibo/pps2017/core/gui/cards/" + card.cardValue + card.cardSeed +".png"
+      allCardsPath += IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
     )
     //gui.getCardsFirstPlayer(allCardsPath)
   }
@@ -83,7 +89,7 @@ abstract class PlayerManager(model:Match) extends Controller{
   override def isCardOk(cardIndex: Int): Boolean = {
     var playedCard: Card = playerTurn.getCardAtIndex(cardIndex)
     if(model.isCardOk(playedCard)){
-      val cardPath = "src/main/java/it/unibo/pps2017/core/gui/cards/" + playedCard.cardValue + playedCard.cardSeed +".png"
+      val cardPath = IMG_PATH + playedCard.cardValue + playedCard.cardSeed + PNG_FILE
       //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
       true
     }
@@ -136,7 +142,7 @@ abstract class PlayerManager(model:Match) extends Controller{
     */
   override def getRandCard: Unit = {
     //val card : Card = model.forcePlay(playerTurn)
-    //val cardPath = "src/main/java/it/unibo/pps2017/core/gui/cards/" + card.cardValue + card.cardSeed +".png"
+    //val cardPath = IMG_PATH + card.cardValue + card.cardSeed +PNG_FILE
     //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
   }
 
