@@ -54,6 +54,12 @@ ext {
     gradleScalaTestVersion = '0.22'
     gradleSCoverageVersion = '3.2.0'
 
+    //Cornichon version for REST API Test
+    cornichonVerison = '0.15.3'
+
+    //Circe version
+    circeVersion = '0.10.0'
+
 }
 
 repositories {
@@ -105,6 +111,15 @@ dependencies {
 
     //TestKit for testing akka actors.
     testImplementation "com.typesafe.akka:akka-testkit_$scalaMajor:$akkaVersion"
+
+
+    //Cornichon API REST test library
+    compile group: 'com.github.agourlay', name: 'cornichon_2.12', version: cornichonVerison
+
+    //Circe JSON Scala library
+    compile group: 'io.circe', name: 'circe-core_2.12', version: circeVersion
+
+
 
     //Dependency for sCoverage.
     scoverage "org.scoverage:scalac-scoverage-plugin_2.12:$sCoveragePluginVersion"
