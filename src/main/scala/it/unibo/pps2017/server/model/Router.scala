@@ -1,4 +1,4 @@
-package it.unibo.pps2017.core.server.model
+package it.unibo.pps2017.server.model
 
 import io.vertx.core.http.HttpMethod
 import io.vertx.lang.scala.json.{Json, JsonObject}

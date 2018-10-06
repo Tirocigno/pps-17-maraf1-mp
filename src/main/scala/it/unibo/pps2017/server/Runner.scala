@@ -1,4 +1,4 @@
-package it.unibo.pps2017.core.server
+package it.unibo.pps2017.server
 import controller.Dispatcher
 import io.vertx.scala.core.Vertx
 

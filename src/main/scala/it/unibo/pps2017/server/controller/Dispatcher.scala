@@ -1,9 +1,9 @@
-package it.unibo.pps2017.core.server.controller
+package it.unibo.pps2017.server.controller
 
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.lang.scala.json.{Json, JsonArray, JsonObject}
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-import it.unibo.pps2017.core.server.model.{ConsumeBeforeRes, GET, POST}
+import it.unibo.pps2017.server.model.{ConsumeBeforeRes, GET, POST}
 import Utility._
 
 
