@@ -15,14 +15,12 @@ trait Request {
 
   def method: HttpMethod
 
-  def handle: (RoutingContext, JsonObject, ConsumeBeforeRes) => Unit
+  def handle: (RoutingContext, RouterResponse) => Unit
 
   def handler(): Unit = {
     router.route(method, url).produces("application/json").handler(routingContext => {
-      val res = ConsumeBeforeRes(routingContext)
-      val data = Json.emptyObj()
-      res.setData(data)
-      handle(routingContext, data, res)
+      val res = RouterResponse(routingContext)
+      handle(routingContext, res)
     })
   }
 }
@@ -30,16 +28,17 @@ trait Request {
 
 /**
   * Tipo di richiesta GET
+  *
   * @param router
-  *        Oggetto che si occupa del routing
+  * Oggetto che si occupa del routing
   * @param url
-  *        URL da gestire
+  * URL da gestire
   * @param handle
-  *        Funzione che si occupa di gestire la richiesta e di produrre una risposta
+  * Funzione che si occupa di gestire la richiesta e di produrre una risposta
   */
 case class GET(override val router: Router,
                override val url: String,
-               override val handle: (RoutingContext, JsonObject, ConsumeBeforeRes) => Unit) extends Request {
+               override val handle: (RoutingContext, RouterResponse) => Unit) extends Request {
   override val method = HttpMethod.GET
 
   handler()
@@ -47,62 +46,44 @@ case class GET(override val router: Router,
 
 /**
   * Tipo di richiesta POST
+  *
   * @param router
-  *        Oggetto che si occupa del routing
+  * Oggetto che si occupa del routing
   * @param url
-  *        URL da gestire
+  * URL da gestire
   * @param handle
-  *        Funzione che si occupa di gestire la richiesta e di produrre una risposta
+  * Funzione che si occupa di gestire la richiesta e di produrre una risposta
   */
 case class POST(override val router: Router,
                 override val url: String,
-                override val handle: (RoutingContext, JsonObject, ConsumeBeforeRes) => Unit) extends Request {
+                override val handle: (RoutingContext, RouterResponse) => Unit) extends Request {
   override val method = HttpMethod.POST
 
   handler()
 }
 
-/**
-  * Produttore / Consumatore per attendere il completamento delle future e delle interazioni con il database.
-  * Una volta consumati tutti i "token" produce una risposta.
-  * @param routingContext
-  *         Oggetto con i riferimenti alla richiesta.
-  */
-case class ConsumeBeforeRes(routingContext: RoutingContext) {
-  private var counter: Int = 0
-  private var limit = 1
-  private var data: JsonObject = _
-
-
-  def consume(): Unit = {
-    counter += 1
-    if (counter == limit) {
-      responseJson()
-      counter = 0
-      limit = 1
-      data.clear()
-    }
-  }
-
-  def initialize(limit: Int): Unit = {
-    setLimit(limit)
-  }
-
-  def addProducer(qta: Int = 1): Unit = this.limit += qta
-
-  def setLimit(limit: Int): Unit = this.limit = limit
-
-  def setData(data: JsonObject): Unit = this.data = data
 
 
 
-  private def responseJson(): Unit = {
-    routingContext.response()
-      .setChunked(true)
-      .putHeader("Content-Type", "application/json")
-      .write(data.encode())
-      .end()
-  }
+object ResponseStatus {
+
+  val OK_CODE: Int = 200
+  val EXCEPTION_CODE: Int = 409
+
+  sealed trait HeaderStatus
+
+  case object OK extends HeaderStatus
+
+  case object ResponseException extends HeaderStatus
+
+
+  /**
+    * This method is used to get all the available seeds
+    *
+    * @return a Iterable containing all the available seeds.
+    */
+  def values: Iterable[HeaderStatus] = Iterable(OK, ResponseException)
+
 }
 
 
