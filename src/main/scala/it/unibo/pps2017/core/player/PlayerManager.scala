@@ -3,6 +3,7 @@ package it.unibo.pps2017.core.player
 import it.unibo.pps2017.core.deck.cards.{Card, Seed}
 import it.unibo.pps2017.core.game.Match
 import it.unibo.pps2017.core.player.PlayerManager._
+
 import scala.collection.mutable.{ListBuffer, Seq}
 
 object PlayerManager{
@@ -15,9 +16,9 @@ object PlayerManager{
  class PlayerManager(model:Match) extends Controller{
 
   var allCardsInHand : Map[Player, ListBuffer[Card]] = Map[Player, ListBuffer[Card]]()
-  var playerTurn : Player = Player()
-  var turnBriscola : Player = Player()
-  var currentPlayerCommand : Player = Player()
+  var playerTurn : Player = null
+  var turnBriscola : Player = null
+  var currentPlayerCommand : Player = null
   var totHandsSet : Int = 0
   var players : Seq[Player] = Seq[Player]()
 
