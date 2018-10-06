@@ -28,5 +28,4 @@
     <orderEntry type="library" name="Gradle: io.netty:netty:3.10.3.Final" level="project" />
     <orderEntry type="library" name="Gradle: org.uncommons.maths:uncommons-maths:1.2.2a" level="project" />
   </component>
-  <component name="TestModuleProperties" production-module="maraf1mp_main" />
 </module>

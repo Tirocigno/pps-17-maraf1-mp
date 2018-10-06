@@ -1,7 +1,7 @@
 package it.unibo.pps2017.core.player;
 
 import it.unibo.pps2017.core.deck.cards.Card;
-import it.unibo.pps2017.core.deck.cards.Seed;
+import it.unibo.pps2017.core.deck.cards.Seed.Seed;
 import scala.collection.immutable.Set;
 
 import java.util.List;
