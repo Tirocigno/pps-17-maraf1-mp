@@ -81,6 +81,8 @@ dependencies {
 
     //Support to Vertx libraries.
     implementation "io.vertx:vertx-lang-scala_2.12:$vertxVersion"
+    implementation "io.vertx:vertx-web-scala_2.12:$vertxVersion"
+    implementation "io.vertx:vertx-web-client-scala_2.12:$vertxVersion"
 
     //Basic support for Akka.
     implementation "com.typesafe.akka:akka-actor_$scalaMajor:$akkaVersion"
