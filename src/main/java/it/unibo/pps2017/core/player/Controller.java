@@ -20,7 +20,7 @@ public interface Controller {
 
     boolean isMyTurnToChooseBriscola(Player player);
 
-    void setMyBriscola(Seed.Seed seed);
+    void setMyBriscola(Seed seed);
 
     void setCommandFromPlayer(Command.Command command, Player player);
 
