@@ -1,6 +1,7 @@
+
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.core.player.{Player, PlayerImpl}
+import it.unibo.pps2017.core.player.Player
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -15,14 +16,14 @@ class GameCycleTest extends FunSuite {
     */
   test("gameTurning") {
     val team1 = Team("Team1", ListBuffer())
-    val team2 = Team("Team2", ListBuffer(PlayerImpl("3"), PlayerImpl("4")))
+    val team2 = Team("Team2", ListBuffer(generateTestPlayer("3"), generateTestPlayer("4")))
 
     assertThrows[TeamNotReadyException] {
       GameCycle(team1, team2)
     }
 
-    team1.addPlayer(PlayerImpl("1"))
-    team1.addPlayer(PlayerImpl("2"))
+    team1.addPlayer(generateTestPlayer("1"))
+    team1.addPlayer(generateTestPlayer("2"))
     val cycle = GameCycle(team1, team2)
     val queue: Seq[Player] = cycle.queue
 

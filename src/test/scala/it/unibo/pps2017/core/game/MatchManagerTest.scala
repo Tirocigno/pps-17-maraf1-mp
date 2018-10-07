@@ -1,9 +1,10 @@
+
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
 import it.unibo.pps2017.core.game.MatchManager.TEAM_MEMBERS_LIMIT
-import it.unibo.pps2017.core.player.{Player, PlayerImpl}
+import it.unibo.pps2017.core.player.Player
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -23,13 +24,13 @@ class MatchManagerTest extends FunSuite {
     val firstTeamName = game.firstTeam().name
 
 
-    game.addPlayer(PlayerImpl("1"))
+    game.addPlayer(generateTestPlayer("1"))
     assert(game.getPlayers.length == 1)
 
     val notFoundedTeamName = "TEST"
-    game.addPlayer(PlayerImpl("2"), notFoundedTeamName)
+    game.addPlayer(generateTestPlayer("2"), notFoundedTeamName)
 
-    game.addPlayer(PlayerImpl("3"), firstTeamName)
+    game.addPlayer(generateTestPlayer("3"), firstTeamName)
     assert(game.getPlayers.length == 2)
   }
 
@@ -42,13 +43,13 @@ class MatchManagerTest extends FunSuite {
 
     val firstTeamName = game.firstTeam().name
 
-    game.addPlayer(PlayerImpl("1"), firstTeamName)
-    game.addPlayer(PlayerImpl("2"), firstTeamName)
+    game.addPlayer(generateTestPlayer("1"), firstTeamName)
+    game.addPlayer(generateTestPlayer("2"), firstTeamName)
 
     assert(game.getPlayers.length == TEAM_MEMBERS_LIMIT)
     assert(game.firstTeam().numberOfMembers == TEAM_MEMBERS_LIMIT)
 
-    game.addPlayer(PlayerImpl("3"), firstTeamName)
+    game.addPlayer(generateTestPlayer("3"), firstTeamName)
     assert(game.firstTeam().numberOfMembers == TEAM_MEMBERS_LIMIT)
   }
 
@@ -60,13 +61,13 @@ class MatchManagerTest extends FunSuite {
 
     assert(team.numberOfMembers == 0)
 
-    team.addPlayer(PlayerImpl("1"))
-    team.addPlayer(PlayerImpl("2"))
+    team.addPlayer(generateTestPlayer("1"))
+    team.addPlayer(generateTestPlayer("2"))
 
     assert(team.numberOfMembers == TEAM_MEMBERS_LIMIT)
 
     assertThrows[FullTeamException] {
-      team.addPlayer(PlayerImpl("3"))
+      team.addPlayer(generateTestPlayer("3"))
     }
 
     assert(team.numberOfMembers == TEAM_MEMBERS_LIMIT)
@@ -78,11 +79,11 @@ class MatchManagerTest extends FunSuite {
     */
   test("TestFullTeam") {
     val team = Team("TeamOne")
-    team.addPlayer(PlayerImpl("1"))
+    team.addPlayer(generateTestPlayer("1"))
 
     assert(!team.isFull)
 
-    team.addPlayer(PlayerImpl("2"))
+    team.addPlayer(generateTestPlayer("2"))
 
     assert(team.isFull)
   }
@@ -90,14 +91,14 @@ class MatchManagerTest extends FunSuite {
   /*
   //TODO
   test("gameStartingTest") {
-    val player1 = PlayerImpl("1")
-    val player2 = PlayerImpl("2")
+    val player1 = generateTestPlayer("1")
+    val player2 = generateTestPlayer("2")
     val team1 = Team("TeamOne")
     team1.addPlayer(player1)
     team1.addPlayer(player2)
 
-    val player3 = PlayerImpl("3")
-    val player4 = PlayerImpl("4")
+    val player3 = generateTestPlayer("3")
+    val player4 = generateTestPlayer("4")
     val team2 = Team("TeamTwo")
     team2.addPlayer(player3)
     team2.addPlayer(player4)
@@ -116,10 +117,10 @@ class MatchManagerTest extends FunSuite {
   test("handTakerTestWithDifferentSuitAndBriscola") {
     val game = MatchManager()
 
-    val player1 = PlayerImpl("1")
-    val player2 = PlayerImpl("2")
-    val player3 = PlayerImpl("3")
-    val player4 = PlayerImpl("4")
+    val player1 = generateTestPlayer("1")
+    val player2 = generateTestPlayer("2")
+    val player3 = generateTestPlayer("3")
+    val player4 = generateTestPlayer("4")
 
     game.currentSuit = Option(Coin)
     game.currentBriscola = Option(Cup)
@@ -165,7 +166,7 @@ class MatchManagerTest extends FunSuite {
   test("PlayAcceptableRandomCard") {
     val game = MatchManager()
 
-    val player = PlayerImpl("1")
+    val player = generateTestPlayer("1")
     game.addPlayer(player)
 
     player.setHand(Set(CardImpl(Coin, 1), CardImpl(Coin, 2), CardImpl(Cup, 5), CardImpl(Sword, 6), CardImpl(Sword, 3), CardImpl(Sword, 2)))
