@@ -68,7 +68,7 @@ trait Player {
 case class PlayerImpl(override val userName: String, override val playerRef: ActorRef) extends Player {
 
   var cardList : Set[Card] = Set[Card]()
-  var controller : PlayerManager = _
+  var controller : Option[PlayerManager] = None
   var cardPlayed : Boolean = false
   var task : TimerTask = _
 
@@ -81,13 +81,16 @@ case class PlayerImpl(override val userName: String, override val playerRef: Act
 
   override def setHand(cards: Set[Card]): Unit = {
     cardList = cards
-    controller.setHandView(cards)
+    controller match {
+      case Some(con) => con.setHandView(cards)
+      case _ =>
+    }
   }
 
   override def getHand(): Set[Card] = cardList
 
   override def onMyTurn(): Unit = {
-    controller.setTurn(this)
+    controller.get.setTurn(this)
     var tmp = 0
     val timer = new java.util.Timer()
     task = new java.util.TimerTask {
@@ -99,7 +102,7 @@ case class PlayerImpl(override val userName: String, override val playerRef: Act
             endTask()
           }
           case false => {
-            if(tmp == TURN_TIME_SEC) controller.getRandCard()
+            if(tmp == TURN_TIME_SEC) controller.get.getRandCard()
           }
         }
       }
