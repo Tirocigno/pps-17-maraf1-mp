@@ -1,9 +1,11 @@
 package it.unibo.pps2017.core.player
 
+import it.unibo.pps2017.core.deck.cards.Seed.Seed
 import it.unibo.pps2017.core.deck.cards.{Card, Seed}
 import it.unibo.pps2017.core.game.Match
 import it.unibo.pps2017.core.player.PlayerManager._
-import scala.collection.mutable.{ListBuffer, Seq}
+
+import scala.collection.mutable.{ListBuffer, Seq, Map}
 
 object PlayerManager{
   val IMG_PATH = "src/main/java/it/unibo/pps2017/core/gui/cards/"
@@ -14,10 +16,10 @@ object PlayerManager{
 
  class PlayerManager(model:Match) extends Controller{
 
-  var allCardsInHand : Map[Player, ListBuffer[Card]] = Map[Player, ListBuffer[Card]]()
-  var playerTurn : Player = Player()
-  var turnBriscola : Player = Player()
-  var currentPlayerCommand : Player = Player()
+  var allCardsInHand : Map[Player,ListBuffer[Card]] = Map[Player,ListBuffer[Card]]()
+  var playerTurn : Player = _
+  var turnBriscola : Player = _
+  var currentPlayerCommand : Player = _
   var totHandsSet : Int = 0
   var players : Seq[Player] = Seq[Player]()
 
@@ -66,7 +68,8 @@ object PlayerManager{
     * Called to set briscola
     * @param seed the seed chosen
     */
-  override def setMyBriscola(seed: Seed.type): Unit = {
+
+  override def setMyBriscola(seed: Seed): Unit = {
     //model.setBriscola(seed)
   }
 
@@ -75,7 +78,8 @@ object PlayerManager{
     * @param command the command chosen
     * @param player the player who called the command
     */
-  override def setCommandFromPlayer(command: Command.type, player: Player): Unit = {
+
+  override def setCommandFromPlayer(command: Command.Command, player: Player): Unit = {
     currentPlayerCommand = player
     //model.setCommand(command,player)
   }

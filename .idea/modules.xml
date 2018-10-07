@@ -4,7 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/maraf1mp.iml" filepath="$PROJECT_DIR$/.idea/modules/maraf1mp.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/maraf1mp_main.iml" filepath="$PROJECT_DIR$/.idea/modules/maraf1mp_main.iml" group="maraf1mp" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/maraf1mp_scoverage.iml" filepath="$PROJECT_DIR$/.idea/modules/maraf1mp_scoverage.iml" group="maraf1mp" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/maraf1mp_test.iml" filepath="$PROJECT_DIR$/.idea/modules/maraf1mp_test.iml" group="maraf1mp" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/maraf1mp_testScoverage.iml" filepath="$PROJECT_DIR$/.idea/modules/maraf1mp_testScoverage.iml" group="maraf1mp" />
     </modules>
   </component>
 </project>

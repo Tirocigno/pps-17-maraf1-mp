@@ -3,7 +3,9 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
       <module name="maraf1mp_main" target="1.8" />
+      <module name="maraf1mp_scoverage" target="1.8" />
       <module name="maraf1mp_test" target="1.8" />
+      <module name="maraf1mp_testScoverage" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
