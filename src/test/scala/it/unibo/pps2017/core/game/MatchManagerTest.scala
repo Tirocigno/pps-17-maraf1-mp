@@ -169,6 +169,7 @@ class MatchManagerTest extends FunSuite {
     val player = generateTestPlayer("1")
     game.addPlayer(player)
 
+
     player.setHand(Set(CardImpl(Coin, 1), CardImpl(Coin, 2), CardImpl(Cup, 5), CardImpl(Sword, 6), CardImpl(Sword, 3), CardImpl(Sword, 2)))
 
     game.currentSuit = Option(Coin)
