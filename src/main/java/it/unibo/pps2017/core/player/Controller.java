@@ -3,13 +3,12 @@ package it.unibo.pps2017.core.player;
 import it.unibo.pps2017.core.deck.cards.Card;
 import it.unibo.pps2017.core.deck.cards.Seed.Seed;
 import scala.collection.immutable.Set;
-
-import java.util.List;
-import java.util.Map;
+import scala.collection.mutable.ListBuffer;
+import scala.collection.mutable.Map;
 
 public interface Controller {
 
-    Map<Player,List<Card>> getAllHands();
+    Map<Player,ListBuffer<Card>> getAllHands();
 
     boolean isCardOk(int cardIndex);
 
@@ -21,9 +20,9 @@ public interface Controller {
 
     boolean isMyTurnToChooseBriscola(Player player);
 
-    void setMyBriscola(Seed seed);
+    void setMyBriscola(Seed.Seed seed);
 
-    void setCommandFromPlayer(Command command, Player player);
+    void setCommandFromPlayer(Command.Command command, Player player);
 
     void addPlayer(Player player);
 
