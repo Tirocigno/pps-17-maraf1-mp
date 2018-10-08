@@ -16358,7 +16358,7 @@
 											"top": 295,
 											"width": 135.97314453125,
 											"height": 13,
-											"text": "MatchList"
+											"text": "MatchesSet"
 										},
 										{
 											"_type": "LabelView",
@@ -16587,7 +16587,7 @@
 											"top": 295,
 											"width": 128.9716796875,
 											"height": 13,
-											"text": "ServerList"
+											"text": "ServerMap"
 										},
 										{
 											"_type": "LabelView",
@@ -17415,7 +17415,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFmSJcoeSzbRoA="
 					},
-					"name": "MatchList",
+					"name": "MatchesSet",
 					"ownedElements": [
 						{
 							"_type": "UMLAssociation",
@@ -17479,7 +17479,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFmSJcoeSzbRoA="
 					},
-					"name": "ServerList",
+					"name": "ServerMap",
 					"ownedElements": [
 						{
 							"_type": "UMLAssociation",
