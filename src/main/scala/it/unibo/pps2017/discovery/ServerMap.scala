@@ -42,3 +42,4 @@ trait ServerMap {
     */
   def checkAllServersStatus():Unit
 }
+
