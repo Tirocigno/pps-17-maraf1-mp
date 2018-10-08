@@ -1,16 +1,24 @@
 package it.unibo.pps2017.core.playerActor
 
+import akka.actor.{ActorRef, ActorSystem, Props}
 import it.unibo.pps2017.core.gui.PlayGameController
-import it.unibo.pps2017.core.player._
 import it.unibo.pps2017.core.player.Command.Command
+import it.unibo.pps2017.core.player._
+import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCardMsg, ClickedCommandMsg, SelectBriscolaMsg}
 
 import scala.collection.JavaConverters._
 
 
-abstract class ClientController {
+ abstract class ClientController {
 
-  val playGameController: PlayGameController
-  val playerActor: PlayerActor
+   /** oggetto gui */
+  var playGameController: PlayGameController
+   val system = ActorSystem("mySystem")
+   /**
+     * ActorRef of the actor*/
+   val myActor: ActorRef = system.actorOf(Props(new PlayerActor(this)))
+
+
 
   def getCardsFirstPlayer(cards: List[String]): Unit = {
     playGameController.getCardsFirstPlayer(cards.asJava)
@@ -36,6 +44,19 @@ abstract class ClientController {
    playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer)
   }
 
+
+   /** Metodo per inviare al PlayerActor il comando cliccato dalla gui */
+   def setCommandFromPlayer(command: String, player: Player): Unit = {
+    myActor ! ClickedCommandMsg(command, player)
+   }
+
+   def selectBriscola(briscola: String): Unit = {
+     myActor ! SelectBriscolaMsg(briscola)
+   }
+
+   def setPlayedCard(cardIndex: Int): Unit ={
+     myActor ! ClickedCardMsg(cardIndex)
+   }
 
 
 }

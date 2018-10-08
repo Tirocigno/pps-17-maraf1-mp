@@ -7,20 +7,18 @@ import it.unibo.pps2017.core.playerActor.PlayerActor._
 
 object PlayerActor {
   case class DistributedCardMsg (cards: List[String])
-  case class SelectBriscolaMsg()
+  case class SelectBriscolaMsg(briscola: String)
   case class GetBriscolaChosenMsg(briscola: String)
   case class TurnMsg(player: Player, endPartialTurn: Boolean, isFirstPlayer: Boolean)
   case class ClickedCardMsg(index: Int)
   case class EndTurnMsg(firstTeamScore: Int, secondTeamScore: Int, endMatch: Boolean)
   case class PlayedCardMsg (path: String, player: Player)
-  case class ClickedCommandMsg(command: String)
+  case class ClickedCommandMsg(command: String, player: Player)
   case class NotifyCommandMsg (command: Command, player: Player)
 }
 
 
-abstract class PlayerActor extends Actor {
-
-  val  clientController: ClientController
+  class PlayerActor(clientController: ClientController) extends Actor {
 
   def receive: PartialFunction[Any, Unit] = {
 
@@ -32,16 +30,17 @@ abstract class PlayerActor extends Actor {
       clientController.getBriscolaChosen(briscola)
     }
 
-    case SelectBriscolaMsg() => {
-
+    case SelectBriscolaMsg(briscola) => {
+      /** inviare briscola scelta al GameActor */
     }
 
     case ClickedCardMsg(index) => {
+      /** inviare l'indice della carta scelta al GameActor */
 
     }
 
-    case ClickedCommandMsg(command) => {
-
+    case ClickedCommandMsg(command, player) => {
+      /** inviare comando e giocatore al GameActor */
     }
 
     case TurnMsg(player, endPartialTurn, isFirstPlayer) => {

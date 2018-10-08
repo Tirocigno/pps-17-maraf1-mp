@@ -23,6 +23,7 @@ import javafx.util.Duration;
 
 import it.unibo.pps2017.core.player.Player;
 import it.unibo.pps2017.core.player.Command.Command;
+import it.unibo.pps2017.core.playerActor.ClientController;
 
 public class PlayGameController implements PlayGame {
 
@@ -41,6 +42,9 @@ public class PlayGameController implements PlayGame {
 	private static final String PLAYER_2 = "Player2";
 	private static final String PLAYER_3 = "Player3";
 	private static final String PLAYER_4 = "Player4";
+	private Player playerPersonal;
+	private Command command;
+	private ClientController clientController;
 
 	@FXML
 	ImageView wallpaper = new ImageView();
@@ -90,7 +94,7 @@ public class PlayGameController implements PlayGame {
 	@FXML 
 	Text briscolaLabel;
 
-	List<ImageView> userCards;
+	//List<ImageView> userCards;
 
 	/*
 	 * in questa mappa avro' l'indice della carta e il suo path, mi serve per capire
@@ -98,7 +102,6 @@ public class PlayGameController implements PlayGame {
 	 */
 	private Map<Integer, String> indexOfMyCards;
 	private List<String> firstPlayerCards;
-	private List<Player> players;
 
 	private List<ImageView> cardsPlayer2;
 	private List<ImageView> cardsPlayer3;
@@ -111,7 +114,6 @@ public class PlayGameController implements PlayGame {
 		 * passata dal controller eliminero' tutto cio'
 		 */
 		this.firstPlayerCards = new ArrayList<>();
-		
 		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/10Sword.png");
 		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/9Club.png");
 		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/8Coin.png");
@@ -139,9 +141,8 @@ public class PlayGameController implements PlayGame {
 	 * 
 	 * @param buttonPressed
 	 *            button pressed from principal user
-	 * @throws InterruptedException
-	 */
-	public void signalMyCommands(final ActionEvent buttonPressed) throws InterruptedException {
+     */
+	public void signalMyCommands(final ActionEvent buttonPressed) {
 		/*
 		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
 		 * OPPURE NO.
@@ -157,8 +158,8 @@ public class PlayGameController implements PlayGame {
 		
 		/*
 		 * CHIAMO UN METODO DEL CONTROLLER E GLI DICO CHE HO CLICCATO IL COMANDO X
-		 * c.setCommandFromPlayer(Command command, Player player)
 		 */
+		clientController.setCommandFromPlayer(command, playerPersonal);
 	}
 
 
@@ -187,17 +188,17 @@ public class PlayGameController implements PlayGame {
 	 * 
 	 * @param buttonPressed
 	 *            button pressed (cup, sword, club or coin) from principal player
-	 * @throws InterruptedException
-	 */
-	public void selectBriscola(final ActionEvent buttonPressed) throws InterruptedException {
+     */
+	public void selectBriscola(final ActionEvent buttonPressed) {
 		Button button = (Button) buttonPressed.getSource();
 		String briscola = button.getText();
 
 		/*
 		 * CHIAMO UN METODO DEL CONTROLLER PER DIRE LA BRISCOLA CHE HO SCELTO
-		 * 
-		 * c.setMyBriscola(briscola);
+		 * Qui lo dico al controller che lo dira' al PlayActor, il quale lo dira'
+		 * al GameActor
 		 */
+		clientController.selectBriscola(briscola);
 
 		hideBriscolaCommands();
 		getBriscolaChosen(briscola);
@@ -251,14 +252,10 @@ public class PlayGameController implements PlayGame {
 		int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
 
 		/*
-		 * 
 		 * CONTROLLER DA CHIAMARE: qui chiamo un metodo del controller e gli passo
 		 * l'indice della carta selezionata dall'utente e giocata
-		 * c.setPlayedCard(indexCardSelected)
-		 * 
 		 */
-		// cleanFieldEndTotalTurn(5, 13, true);
-
+         clientController.setPlayedCard(indexCardSelected);
 
         /* Dopo che ho giocato la carta nascondo i comandi per busso, striscio, volo */
         hideCommands();
@@ -560,8 +557,7 @@ public class PlayGameController implements PlayGame {
 	/* Metodo per creare un'immagine dato un path */
 	private Image getImageFromPath(final String path) {
 		File file = new File(path);
-		Image image = new Image(file.toURI().toString());
-		return image;
+		return new Image(file.toURI().toString());
 	}
 
 	/* Metodo per recuperare l'indice della carta cliccata */
