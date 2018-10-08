@@ -1,6 +1,8 @@
 package it.unibo.pps2017.core.gui;
 
 import java.util.List;
+import it.unibo.pps2017.core.player.Player;
+import it.unibo.pps2017.core.player.Command.Command;
 
 public interface PlayGame {
 
@@ -47,7 +49,7 @@ public interface PlayGame {
 	 * @param partialTurnEnded
 	 *            true if the partial turn is ended, false otherwise.
 	 */
-	void setCurrentPlayer(final Player player, final boolean partialTurnEnded);
+	void setCurrentPlayer(final Player player, final boolean partialTurnEnded, final boolean isFirstPlayer);
 
 	/**
 	 * This method is called to show the played card from player.

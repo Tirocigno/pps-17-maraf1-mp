@@ -21,6 +21,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import it.unibo.pps2017.core.player.Player;
+import it.unibo.pps2017.core.player.Command.Command;
+
 public class PlayGameController implements PlayGame {
 
 	private static final String COMMANDS_PATH = "src/main/java/it/unibo/pps2017/core/gui/commands/";
@@ -108,13 +111,6 @@ public class PlayGameController implements PlayGame {
 		 * passata dal controller eliminero' tutto cio'
 		 */
 		this.firstPlayerCards = new ArrayList<>();
-		this.players = new ArrayList<>();
-		this.players.add(new Player(PLAYER_1));
-		this.players.add(new Player(PLAYER_2));
-		this.players.add(new Player(PLAYER_3));
-		this.players.add(new Player(PLAYER_4));
-
-		
 		
 		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/10Sword.png");
 		this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/9Club.png");
@@ -165,13 +161,13 @@ public class PlayGameController implements PlayGame {
 		 */
 	}
 
-	@Override
+
 	public void getCommand(final Player player, final Command command) {
 
-		/* CONTROLLER CHE ME LO CHIAMA */
-		Image userCommand = getImageFromPath(COMMANDS_PATH + command.getCommand() + player.getPlayer() + FORMAT);
+		/* CONTROLLER CHE ME LO CHIAMA, devo sostituire toString() con la getCommand() */
+		Image userCommand = getImageFromPath(COMMANDS_PATH + command.toString() + player.userName() + FORMAT);
 
-		switch (player.getPlayer()) {
+		switch (player.userName()) {
 		case PLAYER_2:
 			createTimeline(userTwoCommand, userCommand);
 			break;
@@ -218,11 +214,11 @@ public class PlayGameController implements PlayGame {
 	/*
 	 * metodo temporaneo che eliminero' quando ricevero' la lista delle carte dal
 	 * controller
-	 */
+
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
 		getCardsFirstPlayer(firstPlayerCards);
 		setCurrentPlayer(new Player("Player1"), false); // simulo che tocchi all'utente 1
-	}
+	} */
 
 	
 	/**
@@ -262,6 +258,10 @@ public class PlayGameController implements PlayGame {
 		 * 
 		 */
 		// cleanFieldEndTotalTurn(5, 13, true);
+
+
+        /* Dopo che ho giocato la carta nascondo i comandi per busso, striscio, volo */
+        hideCommands();
 
 	}
 
@@ -326,14 +326,12 @@ public class PlayGameController implements PlayGame {
 		}
 	}
 
-	
-
-	@Override
+    @Override
 	public void showOtherPlayersPlayedCard(final Player player, final String cardPath) {
 
 		Image cardPlayed = getImageFromPath(cardPath);
 
-		switch (player.getPlayer()) {
+		switch (player.userName()) {
 		case PLAYER_2:
 			this.user2Field.setImage(cardPlayed);
 			break;
@@ -351,7 +349,14 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void setCurrentPlayer(final Player player, boolean partialTurnIsEnded) {
+	public void setCurrentPlayer(final Player player, final boolean partialTurnIsEnded, final boolean isFirstPlayer) {
+
+	    /* se sono il primo ad iniziare il turno mostro i comandi busso, striscio, volo */
+	    if (isFirstPlayer) {
+            initializeCommands();
+        } else {
+            hideCommands();
+	    }
 
 		/* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
 		if (partialTurnIsEnded) {
@@ -359,7 +364,7 @@ public class PlayGameController implements PlayGame {
 		}
 
 		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-		switch (player.getPlayer()) {
+		switch (player.userName()) {
 
 		case PLAYER_1:
 			this.user1Field.setImage(emptyFieldMyTurn);
@@ -458,10 +463,16 @@ public class PlayGameController implements PlayGame {
 	}
 
 	private void initializeCommands() {
-		this.bussoButton.setVisible(true);
-		this.striscioButton.setVisible(true);
-		this.voloButton.setVisible(true);
-	}
+        this.bussoButton.setVisible(true);
+        this.striscioButton.setVisible(true);
+        this.voloButton.setVisible(true);
+    }
+
+    private void hideCommands() {
+        this.bussoButton.setVisible(false);
+        this.striscioButton.setVisible(false);
+        this.voloButton.setVisible(false);
+    }
 
 	private void cleanField() {
 		Image emptyField = getImageFromPath(EMPTY_FIELD);
@@ -473,7 +484,7 @@ public class PlayGameController implements PlayGame {
 	
 
 	private void deleteCardFromHand(final Player player) {
-		switch (player.getPlayer()) {
+		switch (player.userName()) {
 		case PLAYER_2:
 			deleteCard(cardsPlayer2);
 			break;
