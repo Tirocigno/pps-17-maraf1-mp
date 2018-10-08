@@ -1,12 +1,9 @@
 package it.unibo.pps2017.core.playerActor
 
 import akka.actor.Actor
-import it.unibo.pps2017.core.player._
+import it.unibo.pps2017.core.player.Player
 import it.unibo.pps2017.core.player.Command.Command
 import it.unibo.pps2017.core.playerActor.PlayerActor._
-import it.unibo.pps2017.core.gui.PlayGameController
-import collection.JavaConverters._
-
 
 object PlayerActor {
   case class DistributedCardMsg (cards: List[String])
@@ -23,37 +20,44 @@ object PlayerActor {
 
 abstract class PlayerActor extends Actor {
 
-  val  playGameController: PlayGameController
+  val  clientController: ClientController
 
   def receive: PartialFunction[Any, Unit] = {
 
     case DistributedCardMsg(cards) => {
-      playGameController.getCardsFirstPlayer(cards.asJava)
+      clientController.getCardsFirstPlayer(cards)
     }
 
     case GetBriscolaChosenMsg(briscola) => {
-      playGameController.getBriscolaChosen(briscola)
+      clientController.getBriscolaChosen(briscola)
     }
 
     case SelectBriscolaMsg() => {
 
     }
 
-    case TurnMsg(player, endPartialTurn, isFirstPlayer) => {
+    case ClickedCardMsg(index) => {
 
+    }
+
+    case ClickedCommandMsg(command) => {
+
+    }
+
+    case TurnMsg(player, endPartialTurn, isFirstPlayer) => {
+      clientController.setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
     }
 
     case EndTurnMsg(firstTeamScore, secondTeamScore, endMatch) => {
-
+      clientController.cleanFieldEndTotalTurn(firstTeamScore, secondTeamScore, endMatch)
     }
 
     case PlayedCardMsg(path, player) => {
-      // importare nel PlayGameController il Player di scala e fare le sostituzioni
-      //playGameController.showOtherPlayersPlayedCard(player, path)
+      clientController.showOtherPlayersPlayedCard(path, player)
     }
 
-    case NotifyCommandMsg(command, player) => {
-      //playGameController.getCommand(player, command)
+    case NotifyCommandMsg(player, command) => {
+      clientController.getCommand(player, command)
     }
 
   }
