@@ -332,7 +332,7 @@ class MatchManager(team1: Team = Team(firstTeamID),
     * True if the card's suit is correct.
     * False otherwise.
     */
-  override def isCardOk(card: Card): Boolean = currentSuit match {
+  override def isCardOk(card: Card, player: Player): Boolean = currentSuit match {
     case Some(seed) =>
       if (seed == card.cardSeed) {
         onCardPlayed(card)

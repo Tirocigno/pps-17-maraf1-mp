@@ -40,11 +40,13 @@ trait Match {
     *
     * @param card
     * Played card.
+    * @param player
+    * The played that played the card
     * @return
     * True if the card's suit is correct.
     * False otherwise.
     */
-  def isCardOk(card: Card): Boolean
+  def isCardOk(card: Card, player: Player): Boolean
 
   /**
     * Play a random card in the hand of the player.
