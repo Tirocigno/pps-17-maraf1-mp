@@ -3,7 +3,8 @@ package it.unibo.pps2017.core.playerActor
 import akka.actor.Actor
 import it.unibo.pps2017.core.player.Player
 import it.unibo.pps2017.core.playerActor.PlayerActor._
-
+import it.unibo.pps2017.core.gui.PlayGameController
+import collection.JavaConverters._
 
 
 object PlayerActor {
@@ -18,13 +19,14 @@ object PlayerActor {
 }
 
 
-class PlayerActor extends Actor {
+abstract class PlayerActor extends Actor {
 
+  val  playGameController: PlayGameController
 
   def receive: PartialFunction[Any, Unit] = {
 
     case DistributedCardMsg(cards) => {
-
+      playGameController.getCardsFirstPlayer(cards.asJava)
     }
 
     case SelectBriscolaMsg() => {
