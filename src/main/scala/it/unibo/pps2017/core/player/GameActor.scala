@@ -1,10 +1,12 @@
 package it.unibo.pps2017.core.player
 
+import java.util.TimerTask
+
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.pattern.pipe
 import com.typesafe.config.ConfigFactory
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
-import it.unibo.pps2017.core.deck.cards.Card
+import it.unibo.pps2017.core.deck.cards.{Card, Seed}
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
 import it.unibo.pps2017.core.game.MatchManager.{FOUR_OF_COIN, RANDOM_TEAM}
 import it.unibo.pps2017.core.game._
@@ -12,6 +14,10 @@ import it.unibo.pps2017.core.game._
 import scala.collection.mutable.Map
 import scala.collection.mutable.ListBuffer
 import it.unibo.pps2017.core.player.GameActor._
+import akka.cluster.pubsub.{DistributedPubSub, DistributedPubSubMediator}
+import DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
+import akka.cluster.Cluster
+import akka.cluster.ClusterEvent.MemberUp
 
 import scala.collection.mutable
 
@@ -33,11 +39,26 @@ class GameActor extends Actor with Match with ActorLogging {
   var cardsInHand :  collection.Map[ActorRef, ListBuffer[Card]] =  Map[ActorRef, ListBuffer[Card]]()
   var matchh = MatchManager()
   var cardsInTable : ListBuffer[Card] = ListBuffer[Card]()
+  var mediator : ActorRef  = _
+  val cluster = Cluster(context.system)
+  var task : TimerTask = _
+  var cardPlayed : Boolean = false
+
+  override def preStart(): Unit = {
+    mediator = DistributedPubSub(context.system).mediator
+    mediator ! Subscribe(TOPIC_NAME, self)
+    cluster.subscribe(self, classOf[MemberUp])
+  }
+
+  override def postStop(): Unit = cluster.unsubscribe(self)
 
   def receive = {
 
+    case SubscribeAck(Subscribe(TOPIC_NAME, None, _)) ⇒
+      log.info("subscribing")
+
     case RegisterPlayer(player) => {
-      actors.length match {
+       actors.length match {
         case x if x < TOT_PLAYERS - 1 => {
           addPlayer(player,"NOME_TEAM")
           actors += player.playerRef
@@ -47,15 +68,19 @@ class GameActor extends Actor with Match with ActorLogging {
           println("Already 4 players")
         }
         case _ => {
-          addPlayer(player,"NOME_TEAM")
+           addPlayer(player,"NOME_TEAM")
           actors += player.playerRef
         }
       }
     }
 
-    case DistributedCard(cards) => {
-     // cardsInHand += ( self -> cards)
+    case BriscolaChosen(seed) => {
+      setBriscola(seed)
+      mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed,nextHandStarter.get))
+      mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get.playerRef,false,true))
+      startTimer()
     }
+
     case ClickedCard(index) => {
      var card: Card = null
       //check cardOk? then
@@ -66,6 +91,30 @@ class GameActor extends Actor with Match with ActorLogging {
     case ClickedCommand(command) => {
 
     }
+  }
+
+  def startTimer(): Unit = {
+    var tmp = 0
+    val timer = new java.util.Timer()
+    task = new java.util.TimerTask {
+      def run() = {
+        tmp = tmp + 1
+        cardPlayed match {
+          case true => {
+            cardPlayed = false
+            endTask()
+          }
+          case false => {
+            if(tmp == TURN_TIME_SEC) controller.getRandCard()
+          }
+        }
+      }
+    }
+    timer.schedule(task, TIME_PERIOD, TIME_PERIOD)
+  }
+
+  def endTask(): Unit ={
+    task.cancel()
   }
 
   override def addPlayer(newPlayer: Player, team: String = RANDOM_TEAM): Unit = {
@@ -135,20 +184,17 @@ class GameActor extends Actor with Match with ActorLogging {
     deck.shuffle()
     var i: Int = 0
     deck.distribute().foreach(hand => {
-      //distribute the card to all players
       actors.foreach(player => {
-
-        player.tell(DistributedCard(hand),self)
+        mediator ! Publish(TOPIC_NAME, DistributedCard(hand,player))
       })
-      getPlayers(i).setHand(hand)
-      if (firstHand) {
-        if (isFirstPlayer(hand)) {
+      if (firstHand && isFirstPlayer(hand)) {
           nextHandStarter = Some(getPlayers(i))
           firstHand = false
-        }
       }
       i += 1
     })
+    mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get.playerRef))
+
   }
 
   def getPlayers: Seq[Player] = {
@@ -159,8 +205,9 @@ class GameActor extends Actor with Match with ActorLogging {
 
   private def isFirstPlayer(hand: Set[Card]): Boolean = hand.contains(FOUR_OF_COIN)
 
-  override def setBriscola(seed: Seed): Unit = {
-
+  override def setBriscola(seed: Seed.Seed): Unit = {
+    currentBriscola = Option(seed)
+    startHand()
   }
 
   override def isSetEnd: Option[(Int, Int, Boolean)] = ???
@@ -168,10 +215,21 @@ class GameActor extends Actor with Match with ActorLogging {
   override def forcePlay(player: Player): Card = ???
 
   override def isCardOk(card: Card): Boolean = ???
+
+  private def startHand(): Unit = {
+    nextHandStarter match {
+      case Some(player) => gameCycle.setFirst(player)
+      case None => throw new Exception("FirstPlayerOfTheHand Not Found")
+    }
+    gameCycle.getCurrent.onMyTurn()
+  }
 }
 
 object GameActor {
   val TOT_PLAYERS: Int = 4
+  val TOPIC_NAME = "CHANNEL"
+  val TURN_TIME_SEC: Int = 10
+  val TIME_PERIOD: Long = 1000L
 
   def main(args: Array[String]): Unit = {
     // Override the configuration of the port when specified as program argument
