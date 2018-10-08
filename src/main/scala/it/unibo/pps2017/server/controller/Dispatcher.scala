@@ -45,7 +45,7 @@ class Dispatcher extends ScalaVerticle {
     if (System.getenv("PORT") != null) port = System.getenv("PORT").toInt
 
     vertx.createHttpServer(options)
-      .requestHandler(router.accept _).listen( System.getenv("PORT").toInt)
+      .requestHandler(router.accept _).listen(port)
 
   }
 
