@@ -20,11 +20,32 @@ object PlayerActor {
 
 class PlayerActor extends Actor {
 
-  //val log = Logging(context.system, this)
 
   def receive: PartialFunction[Any, Unit] = {
 
-    case SelectBriscolaMsg() =>
+    case DistributedCardMsg(cards) => {
+
+    }
+
+    case SelectBriscolaMsg() => {
+
+    }
+
+    case TurnMsg(player, endPartialTurn, isFirstPlayer) => {
+
+    }
+
+    case EndTurnMsg(firstTeamScore, secondTeamScore, endMatch) => {
+
+    }
+
+    case PlayedCardMsg(path, player) => {
+
+    }
+
+    case NotifyCommandMsg(command, player) => {
+
+    }
 
   }
 
