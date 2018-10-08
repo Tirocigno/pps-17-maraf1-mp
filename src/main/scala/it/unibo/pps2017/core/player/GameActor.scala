@@ -6,8 +6,8 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.pattern.pipe
 import com.typesafe.config.ConfigFactory
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
-import it.unibo.pps2017.core.deck.cards.{Card, Seed}
-import it.unibo.pps2017.core.deck.cards.Seed.Seed
+import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
+import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.game.MatchManager.{FOUR_OF_COIN, RANDOM_TEAM}
 import it.unibo.pps2017.core.game._
 
@@ -20,6 +20,7 @@ import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
 
 import scala.collection.mutable
+import scala.util.Random
 
 
 class GameActor extends Actor with Match with ActorLogging {
@@ -36,7 +37,7 @@ class GameActor extends Actor with Match with ActorLogging {
   var team1: Team = _
   var team2: Team = _
   val actors : ListBuffer[ActorRef] = ListBuffer[ActorRef]()
-  var cardsInHand :  collection.Map[ActorRef, ListBuffer[Card]] =  Map[ActorRef, ListBuffer[Card]]()
+  var cardsInHand :  collection.Map[Player, ListBuffer[Card]] =  Map[Player, ListBuffer[Card]]()
   var matchh = MatchManager()
   var cardsInTable : ListBuffer[Card] = ListBuffer[Card]()
   var mediator : ActorRef  = _
@@ -60,7 +61,7 @@ class GameActor extends Actor with Match with ActorLogging {
     case RegisterPlayer(player) => {
        actors.length match {
         case x if x < TOT_PLAYERS - 1 => {
-          addPlayer(player,"NOME_TEAM")
+          addPlayer(player,RANDOM_TEAM)
           actors += player.playerRef
           onFullTable()
         }
@@ -68,7 +69,7 @@ class GameActor extends Actor with Match with ActorLogging {
           println("Already 4 players")
         }
         case _ => {
-           addPlayer(player,"NOME_TEAM")
+          addPlayer(player,RANDOM_TEAM)
           actors += player.playerRef
         }
       }
@@ -76,44 +77,38 @@ class GameActor extends Actor with Match with ActorLogging {
 
     case BriscolaChosen(seed) => {
       setBriscola(seed)
+
       mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed,nextHandStarter.get))
-      mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get.playerRef,false,true))
+      val setEnd = isSetEnd.get._3
+      mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get.playerRef,setEnd,true))
       startTimer()
     }
 
-    case ClickedCard(index) => {
-     var card: Card = null
-      //check cardOk? then
-      cardsInHand.filter(a => a.equals(self)).get(self).foreach(c=> card = c.apply(index))
-      cardsInTable += card
+    case ClickedCard(index, player) => {
+      isCardOk(cardsInHand.get(player)(index),player)
     }
 
-    case ClickedCommand(command) => {
-
+    case ClickedCommand(command, player) => {
+      mediator ! Publish(TOPIC_NAME, NotifyCommandChosen(command,player))
     }
   }
 
-  def startTimer(): Unit = {
+  private def startTimer(): Unit = {
     var tmp = 0
     val timer = new java.util.Timer()
     task = new java.util.TimerTask {
       def run() = {
         tmp = tmp + 1
-        cardPlayed match {
-          case true => {
-            cardPlayed = false
-            endTask()
-          }
-          case false => {
-            if(tmp == TURN_TIME_SEC) controller.getRandCard()
-          }
-        }
+            if(tmp == TURN_TIME_SEC) {
+              val randCard: Card = forcePlay(nextHandStarter.get)
+              mediator ! Publish(TOPIC_NAME,ForcedCardPlayed(randCard,nextHandStarter.get))
+            }
       }
     }
     timer.schedule(task, TIME_PERIOD, TIME_PERIOD)
   }
 
-  def endTask(): Unit ={
+  private def endTask(): Unit ={
     task.cancel()
   }
 
@@ -210,11 +205,129 @@ class GameActor extends Actor with Match with ActorLogging {
     startHand()
   }
 
-  override def isSetEnd: Option[(Int, Int, Boolean)] = ???
+  override def isSetEnd: Option[(Int, Int, Boolean)] = {
+    if (setEnd) {
+      Some((team1.getScore, team2.getScore, gameEnd))
+    }
 
-  override def forcePlay(player: Player): Card = ???
+    None
+  }
 
-  override def isCardOk(card: Card): Boolean = ???
+  override def forcePlay(player: Player): Card = {
+    currentSuit match {
+      case Some(seed) =>
+        val rightCards: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().filter(_.cardSeed == seed).toList
+        cardPlayed = true
+        endTask()
+        rightCards(Random.nextInt(rightCards.size))
+      case None =>
+        val playerHand: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().toList
+        cardPlayed = true
+        endTask()
+        playerHand(Random.nextInt(playerHand.size))
+    }
+  }
+
+  override def isCardOk(card: Card, player: Player): Boolean = currentSuit match {
+    case Some(seed) =>
+      if (seed == card.cardSeed) {
+        onCardPlayed(card, player)
+        return true
+      }
+
+      val playerHand: Seq[Card] = gameCycle.getCurrent.getHand().toStream
+
+      if (!playerHand.exists(_.cardSeed == seed)) {
+        onCardPlayed(card, player)
+        return true
+      }
+
+      false
+    case None =>
+      onCardPlayed(card, player)
+      true
+  }
+
+  private def onCardPlayed(card: Card, player: Player): Unit = {
+    if (gameCycle.isFirst) onFirstCardOfHand(card)
+
+    cardsOnTable += ((card, gameCycle.getCurrent))
+    cardPlayed = true
+    mediator ! Publish(TOPIC_NAME,PlayedCard(card, player))
+
+    if (!gameCycle.isLast) {
+      mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next().playerRef,isSetEnd.get._3, gameCycle.isFirst))
+    } else {
+     //onHandEnd(cardsOnTable)
+    }
+  }
+
+  private def onFirstCardOfHand(card: Card): Unit = {
+    val currentHand: Set[Card] = gameCycle.getCurrent.getHand()
+    if (currentHand.size == MAX_HAND_CARDS && currentBriscola.get == card.cardSeed && card.cardValue == ACE_VALUE) {
+      checkMarafona(currentHand, gameCycle.getCurrent)
+    }
+    currentSuit = Option(card.cardSeed)
+  }
+
+  private def onHandEnd(lastTaker: Player): Unit = {
+    deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
+    nextHandStarter = Some(lastTaker)
+    mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get.playerRef, isSetEnd.get._3, gameCycle.isFirst))
+    currentSuit = None
+    cardsOnTable.clear()
+
+
+    nextHandStarter match {
+      case Some(player) => if (player.getHand().isEmpty) onSetEnd()
+      case None => throw new Exception("FirstPlayerOfTheHand Not Found")
+    }
+  }
+
+  private def getTeamOfPlayer(player: Player): Team = getTeamIndexOfPlayer(player) match {
+    case 0 => team1
+    case 1 => team2
+  }
+
+  private def getTeamIndexOfPlayer(player: Player): Int = {
+    if (team1.getMembers.contains(player)) return 0
+
+    1
+  }
+
+  private def onSetEnd(): Unit = {
+    setEnd = true
+    currentBriscola = None
+    nextHandStarter = None
+
+    val setScore = deck.computeSetScore()
+    team1.addPoints(setScore._1)
+    team2.addPoints(setScore._2)
+
+    getGameWinner match {
+      case Some(team) => notifyWinner(team)
+      case None => startSet()
+    }
+  }
+
+  private def getGameWinner: Option[Team] = {
+    if (team1.getScore >= MAX_SCORE && team1.getScore > team2.getScore) return Some(team1)
+
+    if (team2.getScore >= MAX_SCORE && team2.getScore > team1.getScore) return Some(team2)
+
+    None
+  }
+
+  def notifyWinner(team: Team): Unit = gameEnd = true
+
+  private def checkMarafona(hand: Set[Card], player: Player): Unit = {
+    if (hand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
+      .count(c => c.cardValue == ACE_VALUE || c.cardValue == TWO_VALUE || c.cardValue == THREE_VALUE) == REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA) {
+      deck.registerMarafona(getTeamOfPlayer(player))
+    }
+
+    None
+  }
 
   private def startHand(): Unit = {
     nextHandStarter match {
@@ -230,6 +343,18 @@ object GameActor {
   val TOPIC_NAME = "CHANNEL"
   val TURN_TIME_SEC: Int = 10
   val TIME_PERIOD: Long = 1000L
+
+  val RANDOM_TEAM: String = "RANDOM_TEAM"
+  val TEAM_MEMBERS_LIMIT: Int = 2
+  val MAX_PLAYER_NUMBER: Int = 4
+  val MAX_HAND_CARDS: Int = 10
+  val FOUR_OF_COIN: Card = CardImpl(Coin, 4)
+  val MAX_SCORE: Int = 41
+  val ACE_VALUE: Int = 1
+  val TWO_VALUE: Int = 2
+  val THREE_VALUE: Int = 3
+  val REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA: Int = 3
+  val EXTRA_POINTS_FOR_MARAFFA: Int = 3
 
   def main(args: Array[String]): Unit = {
     // Override the configuration of the port when specified as program argument

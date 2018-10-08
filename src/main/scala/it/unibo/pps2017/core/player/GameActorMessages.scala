@@ -12,8 +12,12 @@ final case class Turn(player: ActorRef, endPartialTurn: Boolean, isFirstPlayer: 
 final case class SelectBriscola(player: ActorRef)
 final case class BriscolaChosen(seed: Seed)
 final case class NotifyBriscolaChosen(seed: Seed, player: Player)
-final case class ClickedCard(index: Int)
-final case class ClickedCommand(command: String)
+final case class ForcedCardPlayed(card: Card, player: Player)
+final case class ClickedCard(index: Int, player: Player)
+final case class PlayedCard(card: Card, player: Player)
+final case class ClickedCommand(command: String, player: Player)
+final case class NotifyCommandChosen(command: String, player: Player)
+
 //#messages
 
 
