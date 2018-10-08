@@ -1,1 +1,1 @@
-web: build/install/pps-17-maraf1-mp/bin/pps-17-maraf1-mp
+web: build/install/maraf1mp/bin/maraf1mp
