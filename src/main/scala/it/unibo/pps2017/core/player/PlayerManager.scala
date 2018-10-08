@@ -92,7 +92,7 @@ object PlayerManager{
     */
   override def isCardOk(cardIndex: Int): Boolean = {
     var playedCard: Card = playerTurn.getCardAtIndex(cardIndex)
-    if(model.isCardOk(playedCard)){
+    if(model.isCardOk(playedCard,playerTurn)){
       val cardPath = IMG_PATH + playedCard.cardValue + playedCard.cardSeed + PNG_FILE
       //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
       true

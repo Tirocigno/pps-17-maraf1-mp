@@ -11,8 +11,7 @@ import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.game.MatchManager.{FOUR_OF_COIN, RANDOM_TEAM}
 import it.unibo.pps2017.core.game._
 
-import scala.collection.mutable.Map
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer, Map}
 import it.unibo.pps2017.core.player.GameActor._
 import akka.cluster.pubsub.{DistributedPubSub, DistributedPubSubMediator}
 import DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
@@ -37,7 +36,7 @@ class GameActor extends Actor with Match with ActorLogging {
   var team1: Team = _
   var team2: Team = _
   val actors : ListBuffer[ActorRef] = ListBuffer[ActorRef]()
-  var cardsInHand :  collection.Map[Player, ListBuffer[Card]] =  Map[Player, ListBuffer[Card]]()
+  var cardsInHand :  collection.Map[Player, ArrayBuffer[Card]] =  Map[Player, ArrayBuffer[Card]]()
   var matchh = MatchManager()
   var cardsInTable : ListBuffer[Card] = ListBuffer[Card]()
   var mediator : ActorRef  = _
@@ -85,7 +84,7 @@ class GameActor extends Actor with Match with ActorLogging {
     }
 
     case ClickedCard(index, player) => {
-      isCardOk(cardsInHand.get(player)(index),player)
+      isCardOk(cardsInHand.get(player).get(index),player)
     }
 
     case ClickedCommand(command, player) => {
