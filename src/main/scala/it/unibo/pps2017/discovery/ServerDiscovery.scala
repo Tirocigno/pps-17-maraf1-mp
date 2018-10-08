@@ -19,7 +19,11 @@ trait ServerDiscovery extends ScalaVerticle{
 
 }
 
-private class SeverDiscoveryImpl extends ServerDiscovery {
+object ServerDiscovery {
+  def apply(): ServerDiscovery = new ServerDiscoveryImpl()
+}
+
+private class ServerDiscoveryImpl extends ServerDiscovery {
 
   override def start(): Unit = developAPI()
 
