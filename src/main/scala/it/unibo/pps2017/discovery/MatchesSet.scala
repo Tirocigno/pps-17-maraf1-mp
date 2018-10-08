@@ -29,7 +29,7 @@ trait MatchesSet {
 
 object MatchesSet {
 
-  def apply: MatchesSet = new MatchesSetImpl()
+  def apply(): MatchesSet = new MatchesSetImpl()
 
   private class MatchesSetImpl extends MatchesSet {
     private var matchesSet = SortedSet[MatchRef]()
