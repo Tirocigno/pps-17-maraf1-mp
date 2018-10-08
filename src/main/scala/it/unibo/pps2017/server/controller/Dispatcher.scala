@@ -40,8 +40,12 @@ class Dispatcher extends ScalaVerticle {
       .setIdleTimeout(TIMEOUT)
 
 
+    var port = 4700
+
+    if (System.getenv("PORT") != null) port = System.getenv("PORT").toInt
+
     vertx.createHttpServer(options)
-      .requestHandler(router.accept _).listen(PORT)
+      .requestHandler(router.accept _).listen(port)
 
   }
 
