@@ -37,7 +37,6 @@ abstract class PlayerActor extends Actor {
 
     case SelectBriscolaMsg() => {
 
-
     }
 
     case TurnMsg(player, endPartialTurn, isFirstPlayer) => {
