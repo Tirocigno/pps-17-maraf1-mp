@@ -10,4 +10,18 @@ object DiscoveryAPI {
     def httpMethod:HttpMethod
   }
 
+  case object RegisterServerAPI extends DiscoveryAPI {
+
+    override def path: String = "/registerserver"
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+  }
+
+  case object getServerAPI extends DiscoveryAPI {
+
+    override def path: String = "/getserver"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+  }
+
 }
