@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017
 
+import io.vertx.scala.ext.web.RoutingContext
 import it.unibo.pps2017.server.model.ServerContextEncoder
 
 package object discovery {
@@ -18,6 +19,11 @@ package object discovery {
       case ServerContext(otherAddress, otherPort) => IPAddress.equals(otherAddress) && port == otherPort
       case _ => false
     }
+  }
+
+  implicit def generateServerContextFromRouter(route: RoutingContext): ServerContext = {
+    val source = route.request().remoteAddress()
+    ServerContext(source.host(), source.port())
   }
 
   implicit def serverContextToJson(serverContext: ServerContext): ServerContextEncoder =
