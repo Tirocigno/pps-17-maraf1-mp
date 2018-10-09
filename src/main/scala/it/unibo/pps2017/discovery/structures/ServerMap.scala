@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.discovery.structures
 
+import it.unibo.pps2017.core.deck.SeqExtractor
 import it.unibo.pps2017.discovery.ServerContext
 
 /**
@@ -27,7 +28,7 @@ trait ServerMap {
     *
     * @return less busy server IP Address and Port.
     */
-  def getLessBusyServer: ServerContext
+  def getLessBusyServer: Option[ServerContext]
 
   /**
     * Increase the number of matches played in the server at the specified IP
@@ -55,7 +56,10 @@ object ServerMap {
 
     override def removeServer(server: ServerContext): Unit = matchesMap -= server
 
-    override def getLessBusyServer: ServerContext = matchesMap.toSeq.sortBy(_._2).map(_._1).head
+    override def getLessBusyServer: Option[ServerContext] = matchesMap.toSeq.sortBy(_._2).map(_._1) match {
+      case SeqExtractor(h, _) => Some(h)
+      case _ => None
+    }
 
     override def increaseMatchesPlayedOnServer(server: ServerContext): Unit = {
       var matchesPlayed = matchesMap.getOrElse(server, throw new IllegalArgumentException)
