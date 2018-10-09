@@ -8,7 +8,7 @@ import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
-import it.unibo.pps2017.server.model.{ResponseStatus, RouterResponse}
+import it.unibo.pps2017.server.model.{Error, RouterResponse}
 
 /**
   * Basic trait for a server discovery implementation.
@@ -54,7 +54,7 @@ private class ServerDiscoveryImpl extends ServerDiscovery {
   private val getServerAPIHandler: (RoutingContext, RouterResponse) => Unit = (_, response) => {
     serverMap.getLessBusyServer match {
       case Some(server) => response.sendResponse(server)
-      case _ => response.setError(ResponseStatus.ResponseException, Some("NO SERVER FOUND"))
+      case _ => response.sendResponse(Error(Some("NO SERVER FOUND")))
     }
   }
 
