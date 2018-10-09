@@ -11,7 +11,14 @@ package object discovery {
 
   type MatchRef = String
 
-  case class ServerContext(IPAddress: IPAddress, port: Port)
+  case class ServerContext(IPAddress: IPAddress, port: Port) {
+    override def hashCode(): Port = super.hashCode()
+
+    override def equals(obj: Any): Boolean = obj match {
+      case ServerContext(otherAddress, otherPort) => IPAddress.equals(otherAddress) && port == otherPort
+      case _ => false
+    }
+  }
 
   implicit def serverContextToJson(serverContext: ServerContext): ServerContextEncoder =
     ServerContextEncoder(serverContext.IPAddress, serverContext.port)
