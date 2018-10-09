@@ -8,38 +8,58 @@ trait ServerMap {
 
   /**
     * Add a new server
-    * @param ipAddress the IP address of the server.
+    *
+    * @param server the IP address and Port of the server.
     */
-  def addServer(ipAddress: IPAddress):Unit
+  def addServer(server: ServerContext): Unit
 
   /**
     * Remove a server from the map.
-    * @param ipAddress the IP address of the server to remove.
+    *
+    * @param server the IP address and Port of the server to remove.
     */
-  def removeServer(ipAddress: IPAddress):Unit
+  def removeServer(server: ServerContext):Unit
 
   /**
     * Check what server has the less amount of matches and returns its IP.
-    * @return less busy server IP Address.
+    *
+    * @return less busy server IP Address and Port.
     */
-  def getLessBusyServer:IPAddress
+  def getLessBusyServer: ServerContext
 
   /**
     * Increase the number of matches played in the server at the specified IP
-    * @param ipAddress the IP address of the server which register a new match.
+    *
+    * @param server the IP address and Port of the server which register a new match.
     */
-  def increaseMatchesPlayedOnServer(ipAddress: IPAddress):Unit
+  def increaseMatchesPlayedOnServer(server: ServerContext):Unit
 
   /**
     * Decrease the number of matches played in the server at the specified IP
+    *
     * @param ipAddress the IP address of the server which unregister a new match.
     */
-  def decreaseMatchesPlayedOnServer(ipAddress: IPAddress):Unit
+  def decreaseMatchesPlayedOnServer(server: ServerContext): Unit
+}
 
-  /**
-    * Check all server status,
-    * The discovery call a check API on each server, if a server is unreachable, is deleted from the list.
-    */
-  def checkAllServersStatus():Unit
+object ServerMap {
+
+  def apply(): ServerMap = new ServerMapImpl()
+
+  private class ServerMapImpl extends ServerMap {
+    var matchesMap: scala.collection.mutable.Map[ServerContext, Int] = scala.collection.mutable.Map()
+
+    override def addServer(serverContext: ServerContext): Unit = matchesMap + (serverContext -> 0)
+
+    override def removeServer(server: ServerContext): Unit = matchesMap - server
+
+    override def getLessBusyServer: ServerContext = matchesMap.toSeq.sortBy(_._2).map(_._1).head
+
+    override def increaseMatchesPlayedOnServer(server: ServerContext): Unit = ???
+
+    //matchesMap.get(server).getOrElse()
+
+    override def decreaseMatchesPlayedOnServer(server: (IPAddress, Port)): Unit = ???
+  }
 }
 
