@@ -1,7 +1,7 @@
 
-package it.unibo.pps2017.discovery
+package it.unibo.pps2017.discovery.structures
 
-import it.unibo.pps2017.discovery.structures.MatchesSet
+import it.unibo.pps2017.discovery.MatchRef
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
