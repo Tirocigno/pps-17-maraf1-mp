@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017
 
-import it.unibo.pps2017.server.model.JsonResponse
+import it.unibo.pps2017.server.model.ServerContextEncoder
 
 package object discovery {
 
@@ -11,10 +11,8 @@ package object discovery {
 
   type MatchRef = String
 
-  type ServerContext = (IPAddress,Port)
+  case class ServerContext(IPAddress: IPAddress, port: Port)
 
-  implicit class RichServerContext(serverContext: ServerContext) extends JsonResponse {
-    def ipAddress:IPAddress = serverContext._1
-    def port:Port = serverContext._2
-  }
+  implicit def serverContextToJson(serverContext: ServerContext): ServerContextEncoder =
+    ServerContextEncoder(serverContext.IPAddress, serverContext.port)
 }

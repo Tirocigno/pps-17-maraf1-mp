@@ -59,7 +59,7 @@ object ServerMap {
 
     //matchesMap.get(server).getOrElse()
 
-    override def decreaseMatchesPlayedOnServer(server: (IPAddress, Port)): Unit = ???
+    override def decreaseMatchesPlayedOnServer(server: ServerContext): Unit = ???
   }
 }
 

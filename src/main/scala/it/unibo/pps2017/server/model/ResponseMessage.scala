@@ -11,18 +11,21 @@ import io.circe.{Decoder, Encoder}
   *
   */
 
-trait JsonResponse
+sealed trait JsonResponse
 
 case class Game(gameId: String) extends JsonResponse
 
 case class Message(message: String) extends JsonResponse
 case class Error(cause: Option[String] = None) extends JsonResponse
 
+case class ServerContextEncoder(ipAddress: String, port: Int) extends JsonResponse
+
 object ResponseMessage {
   implicit val encodeEvent: Encoder[JsonResponse] = Encoder.instance {
     case game @ Game(_) => game.asJson
     case message @ Message(_) => message.asJson
     case error @ Error(_) => error.asJson
+    case context@ServerContextEncoder(_, _) => context.asJson
   }
 
   implicit val decodeEvent: Decoder[JsonResponse] =
