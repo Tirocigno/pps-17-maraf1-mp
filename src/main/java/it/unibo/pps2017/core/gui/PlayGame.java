@@ -23,7 +23,7 @@ public interface PlayGame {
 	 * @param command
 	 *            command selected by user.
 	 */
-	void getCommand(final Player player, final Command command);
+	void getCommand(final Player player, final String command);
 
 	/**
 	 * This method is called when the turn is over: all four players has been played
