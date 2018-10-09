@@ -9,14 +9,14 @@ import org.scalatest.junit.JUnitRunner
 class packageTest extends FunSuite {
 
   test("ServerContexts equals") {
-    val baseContext:ServerContext = ("a",0)
-    val otherContext:ServerContext = ("a",0)
+    val baseContext: ServerContext = ServerContext("a", 0)
+    val otherContext: ServerContext = ServerContext("a", 0)
     assert(baseContext.equals(otherContext))
   }
 
   test("ServerContexts different ") {
-    val baseContext:ServerContext = ("b",0)
-    val otherContext:ServerContext = ("b",1)
+    val baseContext: ServerContext = ServerContext("b", 0)
+    val otherContext: ServerContext = ServerContext("b", 1)
     assert(!baseContext.equals(otherContext))
   }
 }
