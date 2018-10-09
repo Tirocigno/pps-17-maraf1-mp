@@ -62,16 +62,16 @@ object ServerMap {
     }
 
     override def increaseMatchesPlayedOnServer(server: ServerContext): Unit = {
-      var matchesPlayed = matchesMap.getOrElse(server, throw new IllegalArgumentException)
-      matchesPlayed = matchesPlayed + 1
+      val matchesPlayed = matchesMap.getOrElse(server, throw new IllegalArgumentException)
+      matchesMap(server) = matchesPlayed + 1
     }
 
 
     override def decreaseMatchesPlayedOnServer(server: ServerContext): Unit = {
-      var matchesPlayed = matchesMap.getOrElse(server, throw new IllegalArgumentException)
+      val matchesPlayed = matchesMap.getOrElse(server, throw new IllegalArgumentException)
       matchesPlayed match {
         case 0 => throw new IllegalStateException()
-        case _ => matchesPlayed = matchesPlayed - 1
+        case _ => matchesMap(server) = matchesPlayed - 1
       }
     }
   }

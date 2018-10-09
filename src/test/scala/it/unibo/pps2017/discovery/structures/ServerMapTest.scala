@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.discovery.structures
 
+
 import it.unibo.pps2017.discovery
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -25,11 +26,31 @@ class ServerMapTest extends FunSuite with BeforeAndAfterEach {
     assert(serverMap.getLessBusyServer.get.equals(mockServerContext))
   }
 
+  test("Removing a registered server") {
+    serverMap.addServer(mockServerContext)
+    serverMap.removeServer(mockServerContext)
+    assert(serverMap.getLessBusyServer.isEmpty)
+  }
+
+
+  test("Get actual less busy server") {
+    serverMap.addServer(mockServerContext)
+    serverMap.addServer(otherServerContext)
+    try {
+      serverMap.increaseMatchesPlayedOnServer(otherServerContext)
+      serverMap.increaseMatchesPlayedOnServer(otherServerContext)
+      serverMap.increaseMatchesPlayedOnServer(mockServerContext)
+      assert(serverMap.getLessBusyServer.get.equals(mockServerContext))
+    } catch {
+      case e: IllegalArgumentException => fail(e)
+    }
+  }
+
   test("Get a server if no server is registered.") {
     assert(serverMap.getLessBusyServer.isEmpty)
   }
 
-  test("Increase the number of matches on a registerd server") {
+  test("Increase the number of matches on a registered server") {
     serverMap.addServer(mockServerContext)
     try {
       serverMap.increaseMatchesPlayedOnServer(mockServerContext)
@@ -41,4 +62,25 @@ class ServerMapTest extends FunSuite with BeforeAndAfterEach {
   test("Increase the number of matches on a non registered server") {
     assertThrows[IllegalArgumentException](serverMap.increaseMatchesPlayedOnServer(mockServerContext))
   }
+
+  test("Decrease the number of matches on a registered server") {
+    serverMap.addServer(mockServerContext)
+    try {
+      serverMap.increaseMatchesPlayedOnServer(mockServerContext)
+      serverMap.decreaseMatchesPlayedOnServer(mockServerContext)
+    } catch {
+      case e: IllegalArgumentException => fail(e)
+      case e: IllegalStateException => fail(e)
+    }
+  }
+
+  test("Decrease the number of matches on a server which hasn't any match") {
+    serverMap.addServer(mockServerContext)
+    assertThrows[IllegalStateException](serverMap.decreaseMatchesPlayedOnServer(mockServerContext))
+  }
+
+  test("Decrease the number of matches on a non registered server") {
+    assertThrows[IllegalArgumentException](serverMap.decreaseMatchesPlayedOnServer(mockServerContext))
+  }
+
 }
