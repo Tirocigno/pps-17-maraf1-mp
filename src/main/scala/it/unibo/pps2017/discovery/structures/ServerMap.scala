@@ -69,7 +69,10 @@ object ServerMap {
 
     override def decreaseMatchesPlayedOnServer(server: ServerContext): Unit = {
       var matchesPlayed = matchesMap.getOrElse(server, throw new IllegalArgumentException)
-      matchesPlayed = matchesPlayed - 1
+      matchesPlayed match {
+        case 0 => throw new IllegalStateException()
+        case _ => matchesPlayed = matchesPlayed - 1
+      }
     }
   }
 }
