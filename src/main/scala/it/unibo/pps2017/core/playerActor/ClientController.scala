@@ -2,9 +2,8 @@ package it.unibo.pps2017.core.playerActor
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import it.unibo.pps2017.core.gui.PlayGameController
-import it.unibo.pps2017.core.player.Command.Command
 import it.unibo.pps2017.core.player._
-import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCardMsg, ClickedCommandMsg, SelectBriscolaMsg}
+import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCard, ClickedCommand}
 
 import scala.collection.JavaConverters._
 
@@ -28,7 +27,7 @@ import scala.collection.JavaConverters._
     playGameController.getBriscolaChosen(briscola)
   }
 
-  def getCommand(command: Command, player: Player): Unit = {
+  def getCommand(command: String, player: Player): Unit = {
     playGameController.getCommand(player, command)
   }
 
@@ -44,18 +43,23 @@ import scala.collection.JavaConverters._
    playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer)
   }
 
+  def selectBriscola() = {
+    playGameController.showBriscolaCommands()
+  }
+
 
    /** Metodo per inviare al PlayerActor il comando cliccato dalla gui */
-   def setCommandFromPlayer(command: String, player: Player): Unit = {
-    myActor ! ClickedCommandMsg(command, player)
+   def setCommandFromPlayer(command: String): Unit = {
+    myActor ! ClickedCommand(command, myActor)
    }
 
    def selectBriscola(briscola: String): Unit = {
-     myActor ! SelectBriscolaMsg(briscola)
+     // creo un seed e gli metto come campo briscola
+      //myActor ! BriscolaChosen(briscola)
    }
 
    def setPlayedCard(cardIndex: Int): Unit ={
-     myActor ! ClickedCardMsg(cardIndex)
+     myActor ! ClickedCard(cardIndex, myActor)
    }
 
 

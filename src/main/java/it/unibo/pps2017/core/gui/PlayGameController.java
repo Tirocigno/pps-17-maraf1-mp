@@ -159,11 +159,11 @@ public class PlayGameController implements PlayGame {
 		/*
 		 * CHIAMO UN METODO DEL CONTROLLER E GLI DICO CHE HO CLICCATO IL COMANDO X
 		 */
-		clientController.setCommandFromPlayer(command, playerPersonal);
+		clientController.setCommandFromPlayer(command);
 	}
 
 
-	public void getCommand(final Player player, final Command command) {
+	public void getCommand(final Player player, final String command) {
 
 		/* CONTROLLER CHE ME LO CHIAMA, devo sostituire toString() con la getCommand() */
 		Image userCommand = getImageFromPath(COMMANDS_PATH + command.toString() + player.userName() + FORMAT);
@@ -429,7 +429,7 @@ public class PlayGameController implements PlayGame {
 		});
 	}
 
-	private void showBriscolaCommands() {
+	public void showBriscolaCommands() {
 		this.coinButton.setVisible(true);
 		this.clubButton.setVisible(true);
 		this.cupButton.setVisible(true);

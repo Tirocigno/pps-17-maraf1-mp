@@ -3,20 +3,22 @@ package it.unibo.pps2017.core.playerActor
 import akka.actor.Actor
 import akka.actor.ActorRef
 import it.unibo.pps2017.core.player.Player
-import it.unibo.pps2017.core.player.Command.Command
 import it.unibo.pps2017.core.playerActor.PlayerActor._
 import it.unibo.pps2017.core.deck.cards._
+import it.unibo.pps2017.core.deck.cards.Seed.Seed
 
 object PlayerActor {
   case class DistributedCard(cards: Set[Card], player: ActorRef)
-  case class SelectBriscola(briscola: String)
-  case class GetBriscolaChosen(briscola: String)
+  case class SelectBriscola(player: ActorRef) // la manda il controller per capire chi deve fare le bris
+  case class BriscolaChosen(seed: Seed) // la manda il controller a tutti per dire la bris scelta
+  case class NotifyBriscolaChosen(seed: Seed)
   case class Turn(player: Player, endPartialTurn: Boolean, isFirstPlayer: Boolean)
-  case class ClickedCard(index: Int)
+  case class ClickedCard(index: Int, player: ActorRef)
   case class EndTurn(firstTeamScore: Int, secondTeamScore: Int, endMatch: Boolean)
-  case class PlayedCard(path: String, player: Player)
-  case class ClickedCommand(command: String, player: Player)
-  case class NotifyCommand(command: Command, player: Player)
+  case class PlayedCard(card: Card, player: Player)
+  case class ClickedCommand(command: String, player: ActorRef)
+  case class NotifyCommandChose(command: String, player: Player)
+  case class ForcedCardPlayed(card: Card, player: Player)
 }
 
 
@@ -32,8 +34,6 @@ object PlayerActor {
 
       /* Se il messaggio che arriva rappresenta le mie carte, le invio al ClientController */
       if (this.player.eq(player)) {
-        val cards1 = List("")
-        clientController.getCardsFirstPlayer(cards1)
         /**
           * Quando Ulio avra' fatto, chiamero':
           * clientController.getCardsFirstPlayer(cards)
@@ -42,15 +42,24 @@ object PlayerActor {
 
     }
 
-    case GetBriscolaChosen(briscola) => {
-      clientController.getBriscolaChosen(briscola)
+
+    case SelectBriscola(player) => {
+      if (this.player.eq(player)) {
+        clientController.selectBriscola()
+      }
     }
 
-    case SelectBriscola(briscola) => {
-      /** inviare briscola scelta al GameActor */
+    case BriscolaChosen(seed) => {
+      /** inviare al GameActor la briscola scelta */
     }
 
-    case ClickedCard(index) => {
+    case NotifyBriscolaChosen(seed) => {
+      /**  Quando Ulio avra' fatto chiamero':
+            clientController.getBriscolaChosen(seed)
+        */
+    }
+
+    case ClickedCard(index, player) => {
       /** inviare l'indice della carta scelta al GameActor */
 
     }
@@ -67,12 +76,18 @@ object PlayerActor {
       clientController.cleanFieldEndTotalTurn(firstTeamScore, secondTeamScore, endMatch)
     }
 
-    case PlayedCard(path, player) => {
-      clientController.showOtherPlayersPlayedCard(path, player)
+    case PlayedCard(card, player) => {
+      // qui dovro' convertire da carta a path
+      //clientController.showOtherPlayersPlayedCard(card, player)
     }
 
-    case NotifyCommand(player, command) => {
+    case NotifyCommandChose(player, command) => {
       clientController.getCommand(player, command)
+    }
+
+    case ForcedCardPlayed(card, player) => {
+      // qui dovro' convertire da carta a path
+      //clientController.showOtherPlayersPlayedCard(card, player)
     }
 
   }
