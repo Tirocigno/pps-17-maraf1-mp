@@ -37,7 +37,7 @@ trait ServerMap {
   /**
     * Decrease the number of matches played in the server at the specified IP
     *
-    * @param ipAddress the IP address of the server which unregister a new match.
+    * @param server the IP address of the server which unregister a new match.
     */
   def decreaseMatchesPlayedOnServer(server: ServerContext): Unit
 }
@@ -51,15 +51,20 @@ object ServerMap {
 
     override def addServer(serverContext: ServerContext): Unit = matchesMap += (serverContext -> 0)
 
-    override def removeServer(server: ServerContext): Unit = matchesMap -= (server)
+    override def removeServer(server: ServerContext): Unit = matchesMap -= server
 
     override def getLessBusyServer: ServerContext = matchesMap.toSeq.sortBy(_._2).map(_._1).head
 
-    override def increaseMatchesPlayedOnServer(server: ServerContext): Unit = ???
+    override def increaseMatchesPlayedOnServer(server: ServerContext): Unit = {
+      var matchesPlayed = matchesMap.getOrElse(server, throw new IllegalArgumentException)
+      matchesPlayed = matchesPlayed + 1
+    }
 
-    //matchesMap.get(server).getOrElse()
 
-    override def decreaseMatchesPlayedOnServer(server: ServerContext): Unit = ???
+    override def decreaseMatchesPlayedOnServer(server: ServerContext): Unit = {
+      var matchesPlayed = matchesMap.getOrElse(server, throw new IllegalArgumentException)
+      matchesPlayed = matchesPlayed - 1
+    }
   }
 }
 
