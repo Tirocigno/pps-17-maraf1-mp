@@ -1,13 +1,17 @@
+
 package it.unibo.pps2017.server.model
 
 import cats.syntax.functor._
-import io.circe.{ Decoder, Encoder }, io.circe.generic.auto._
+import io.circe.generic.auto._
 import io.circe.syntax._
+import io.circe.{Decoder, Encoder}
 
 /**
   * This class is used for define the message accepted to the RouterResponse.
+  *
   */
-sealed trait JsonResponse
+
+trait JsonResponse
 
 case class Game(gameId: String) extends JsonResponse
 
