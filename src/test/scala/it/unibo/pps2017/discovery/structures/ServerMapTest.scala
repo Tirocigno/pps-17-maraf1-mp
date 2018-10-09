@@ -22,6 +22,23 @@ class ServerMapTest extends FunSuite with BeforeAndAfterEach {
 
   test("Register a new Server") {
     serverMap.addServer(mockServerContext)
-    assert(serverMap.getLessBusyServer.equals(mockServerContext))
+    assert(serverMap.getLessBusyServer.get.equals(mockServerContext))
+  }
+
+  test("Get a server if no server is registered.") {
+    assert(serverMap.getLessBusyServer.isEmpty)
+  }
+
+  test("Increase the number of matches on a registerd server") {
+    serverMap.addServer(mockServerContext)
+    try {
+      serverMap.increaseMatchesPlayedOnServer(mockServerContext)
+    } catch {
+      case IllegalArgumentException => fail()
+    }
+  }
+
+  test("Increase the number of matches on a non registered server") {
+    assertThrows(serverMap.increaseMatchesPlayedOnServer(mockServerContext), IllegalArgumentException)
   }
 }
