@@ -143,23 +143,15 @@ public class PlayGameController implements PlayGame {
 	 *            button pressed from principal user
      */
 	public void signalMyCommands(final ActionEvent buttonPressed) {
-		/*
-		 * QUI DEVO CHIAMARE UN METODO DEL CONTROLLER CHE MI DICA SE E' IL MIO TURNO
-		 * OPPURE NO.
-		 * 
-		 * if (isMyTurn(Player player)) { metto quelle 4 righe } else { non devo far nulla anche se
-		 * l'utente clicca }
-		 */
 
-		Button button = (Button) buttonPressed.getSource();
-		String command = button.getText().toLowerCase();
-		Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
-		createTimeline(currentUserCommand, image);
-		
-		/*
-		 * CHIAMO UN METODO DEL CONTROLLER E GLI DICO CHE HO CLICCATO IL COMANDO X
-		 */
-		clientController.setCommandFromPlayer(command);
+		 if (clientController.isMyTurn()) {
+			 Button button = (Button) buttonPressed.getSource();
+			 String command = button.getText().toLowerCase();
+			 Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
+			 createTimeline(currentUserCommand, image);
+
+			 clientController.setCommandFromPlayer(command);
+		 }
 	}
 
 
@@ -265,7 +257,6 @@ public class PlayGameController implements PlayGame {
 	@Override
 	public void getCardsFirstPlayer(final List<String> firstUserCards) {
 
-		/* CONTROLLER CHE ME LO CHIAMA */
 		initializePlayersHand(); // mostro il retro delle carte degli altri giocatori
 
 		this.indexOfMyCards.clear(); // svuoto la mappa per i turni successivi

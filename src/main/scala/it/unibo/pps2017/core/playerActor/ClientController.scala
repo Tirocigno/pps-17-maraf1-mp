@@ -17,6 +17,7 @@ import scala.collection.JavaConverters._
      * ActorRef of the actor*/
    val myActor: ActorRef = system.actorOf(Props(new PlayerActor(this)))
 
+   var myTurn: Boolean = _
 
 
   def getCardsFirstPlayer(cards: List[String]): Unit = {
@@ -60,6 +61,14 @@ import scala.collection.JavaConverters._
 
    def setPlayedCard(cardIndex: Int): Unit ={
      myActor ! ClickedCard(cardIndex, myActor)
+   }
+
+   def isMyTurn(): Boolean = {
+     return myTurn
+   }
+
+   def setMyTurn(turn: Boolean): Unit = {
+     this.myTurn = turn
    }
 
 

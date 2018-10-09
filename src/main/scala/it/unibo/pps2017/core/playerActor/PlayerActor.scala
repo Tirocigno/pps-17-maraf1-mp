@@ -27,7 +27,6 @@ object PlayerActor {
     /* Qui dovro' inserire il mio player */
     var player : Player = _
 
-
   def receive: PartialFunction[Any, Unit] = {
 
     case DistributedCard(cards, player) => {
@@ -69,6 +68,12 @@ object PlayerActor {
     }
 
     case Turn(player, endPartialTurn, isFirstPlayer) => {
+      /* se e' il mio turno, setto la variabile isMyTurn a true */
+      if (this.player.eq(player)) {
+        clientController.setMyTurn(true)
+      } else {
+        clientController.setMyTurn(false)
+      }
       clientController.setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
     }
 
@@ -91,6 +96,10 @@ object PlayerActor {
     }
 
   }
+
+     def myTurn: Boolean = {
+      return this.isMyTurn
+    }
 
 
 }
