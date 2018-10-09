@@ -1,5 +1,7 @@
 
-package it.unibo.pps2017.discovery
+package it.unibo.pps2017.discovery.structures
+
+import it.unibo.pps2017.discovery.ServerContext
 
 /**
   * A structure to register and check status of all servers in the system.
