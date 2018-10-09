@@ -49,7 +49,7 @@ class Dispatcher extends ScalaVerticle {
 
 
     import java.net.ServerSocket
-    val server = new ServerSocket(4700)
+    val server = new ServerSocket(4701)
 
     System.out.println("Server has started on 127.0.0.1:80.\r\nWaiting for a connection...")
 
