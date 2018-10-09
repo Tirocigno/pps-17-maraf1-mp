@@ -42,8 +42,6 @@ object DiscoveryAPI {
       POST(router,path,handle)
   }
 
-  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI)
-
   case object GetServerAPI extends DiscoveryAPI {
 
     override def path: String = "/getserver"
@@ -54,5 +52,6 @@ object DiscoveryAPI {
       GET(router,path,handle)
   }
 
+  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI)
 
 }
