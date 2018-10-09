@@ -34,11 +34,11 @@ class ServerMapTest extends FunSuite with BeforeAndAfterEach {
     try {
       serverMap.increaseMatchesPlayedOnServer(mockServerContext)
     } catch {
-      case IllegalArgumentException => fail()
+      case _: IllegalArgumentException => fail()
     }
   }
 
   test("Increase the number of matches on a non registered server") {
-    assertThrows(serverMap.increaseMatchesPlayedOnServer(mockServerContext), IllegalArgumentException)
+    assertThrows[IllegalArgumentException](serverMap.increaseMatchesPlayedOnServer(mockServerContext))
   }
 }
