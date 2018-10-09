@@ -56,5 +56,6 @@ private class ServerDiscoveryImpl extends ServerDiscovery {
 
   override def handleRestCall(): Unit = ???
 
-  override def addMockServer(IPAddress: IPAddress, port: Port): Unit = serverMap.addServer((IPAddress, port))
+  override def addMockServer(IPAddress: IPAddress, port: Port): Unit =
+    serverMap.addServer(ServerContext(IPAddress, port))
 }
