@@ -1,5 +1,7 @@
 
-package it.unibo.pps2017.discovery
+package it.unibo.pps2017.discovery.structures
+
+import it.unibo.pps2017.discovery.MatchRef
 
 import scala.collection.SortedSet
 

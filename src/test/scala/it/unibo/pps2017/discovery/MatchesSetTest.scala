@@ -1,9 +1,11 @@
 
 package it.unibo.pps2017.discovery
 
+import it.unibo.pps2017.discovery.structures.MatchesSet
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
+
 import scala.language.postfixOps
 
 @RunWith(classOf[JUnitRunner])
