@@ -1,7 +1,7 @@
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.Player
+import it.unibo.pps2017.core.player.{ PlayerActor}
 
 import scala.collection.mutable.ListBuffer
 
@@ -14,7 +14,7 @@ import scala.collection.mutable.ListBuffer
   * Members of the team. Limited at max 2.
   */
 case class Team(var name: String,
-                private var members: ListBuffer[Player] = ListBuffer(),
+                private var members: ListBuffer[PlayerActor] = ListBuffer(),
                 private var score: Int = 0) {
 
   /**
@@ -26,7 +26,7 @@ case class Team(var name: String,
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
-  def addPlayer(newPlayer: Player): Unit = {
+  def addPlayer(newPlayer: PlayerActor): Unit = {
     if (members.length >= TEAM_MEMBERS_LIMIT) {
       throw FullTeamException()
     }
@@ -41,7 +41,7 @@ case class Team(var name: String,
     * @return
     * the first player of the team.
     */
-  def firstMember: Option[Player] = members.headOption
+  def firstMember: Option[PlayerActor] = members.headOption
 
   /**
     * Return the second player of the team.
@@ -49,7 +49,7 @@ case class Team(var name: String,
     * @return
     * the second player of the team.
     */
-  def secondMember: Option[Player] = members.lastOption
+  def secondMember: Option[PlayerActor] = members.lastOption
 
   /**
     * Return the actual number of players in the team.
@@ -65,7 +65,7 @@ case class Team(var name: String,
     * @return
     * the members of the team
     */
-  def getMembers: Seq[Player] = members
+  def getMembers: Seq[PlayerActor] = members
 
   /**
     * Add set's point to the team score.

@@ -1,7 +1,7 @@
 package it.unibo.pps2017.core.player
 
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
-import it.unibo.pps2017.core.deck.cards.{Card, Seed}
+import it.unibo.pps2017.core.deck.cards.{Card}
 import it.unibo.pps2017.core.game.Match
 import it.unibo.pps2017.core.player.PlayerManager._
 
@@ -92,11 +92,11 @@ object PlayerManager{
     */
   override def isCardOk(cardIndex: Int): Boolean = {
     var playedCard: Card = playerTurn.getCardAtIndex(cardIndex)
-    if(model.isCardOk(playedCard,playerTurn)){
+   /* if(model.isCardOk(playedCard,playerTurn)){
       val cardPath = IMG_PATH + playedCard.cardValue + playedCard.cardSeed + PNG_FILE
       //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
       true
-    }
+    }*/
     false
   }
 

@@ -3,7 +3,6 @@ package it.unibo.pps2017.core.player
 import java.util.TimerTask
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
-import akka.pattern.pipe
 import com.typesafe.config.ConfigFactory
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
@@ -29,14 +28,14 @@ class GameActor extends Actor with Match with ActorLogging {
   var gameCycle: GameCycle = _
   var deck: GameDeck = ComposedDeck()
   var firstHand: Boolean = true
-  val cardsOnTable: mutable.ListBuffer[(Card, Player)] = mutable.ListBuffer()
-  var nextHandStarter: Option[Player] = None
+  val cardsOnTable: mutable.ListBuffer[(Card, PlayerActor)] = mutable.ListBuffer()
+  var nextHandStarter: Option[PlayerActor] = None
   var setEnd: Boolean = false
   var gameEnd: Boolean = false
   var team1: Team = _
   var team2: Team = _
   val actors : ListBuffer[ActorRef] = ListBuffer[ActorRef]()
-  var cardsInHand :  collection.Map[Player, ArrayBuffer[Card]] =  Map[Player, ArrayBuffer[Card]]()
+  var cardsInHand :  collection.Map[PlayerActor, ArrayBuffer[Card]] =  Map[PlayerActor, ArrayBuffer[Card]]()
   var matchh = MatchManager()
   var cardsInTable : ListBuffer[Card] = ListBuffer[Card]()
   var mediator : ActorRef  = _
@@ -61,7 +60,7 @@ class GameActor extends Actor with Match with ActorLogging {
        actors.length match {
         case x if x < TOT_PLAYERS - 1 => {
           addPlayer(player,RANDOM_TEAM)
-          actors += player.playerRef
+          actors += player.self
           onFullTable()
         }
         case TOT_PLAYERS => {
@@ -69,21 +68,20 @@ class GameActor extends Actor with Match with ActorLogging {
         }
         case _ => {
           addPlayer(player,RANDOM_TEAM)
-          actors += player.playerRef
+          actors += player.self
         }
       }
     }
 
     case BriscolaChosen(seed) => {
       setBriscola(seed)
-
-      mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed,nextHandStarter.get))
+      mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed))
       val setEnd = isSetEnd.get._3
-      mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get.playerRef,setEnd,true))
+      mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get.self,setEnd,true))
       startTimer()
     }
 
-    case ClickedCard(index, player) => {
+    case ClickedCard(index,player) => {
       isCardOk(cardsInHand.get(player).get(index),player)
     }
 
@@ -111,7 +109,7 @@ class GameActor extends Actor with Match with ActorLogging {
     task.cancel()
   }
 
-  override def addPlayer(newPlayer: Player, team: String = RANDOM_TEAM): Unit = {
+  override def addPlayer(newPlayer: PlayerActor, team: String = RANDOM_TEAM): Unit = {
     try {
       addPlayerToTeam(newPlayer, team)
     } catch {
@@ -122,7 +120,7 @@ class GameActor extends Actor with Match with ActorLogging {
 
   @throws(classOf[FullTeamException])
   @throws(classOf[TeamNotFoundException])
-  private def addPlayerToTeam(player: Player, teamName: String = RANDOM_TEAM): Unit = {
+  private def addPlayerToTeam(player: PlayerActor, teamName: String = RANDOM_TEAM): Unit = {
     if (teamName.equals(RANDOM_TEAM)) {
       try {
         team1.addPlayer(player)
@@ -166,10 +164,10 @@ class GameActor extends Actor with Match with ActorLogging {
   override def playSet(): Unit = {
     prepareSet()
 
-    nextHandStarter match {
+  /*  nextHandStarter match {
       case Some(player) => setBriscola(player.onSetBriscola())
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
-    }
+    }*/
   }
 
 
@@ -187,11 +185,11 @@ class GameActor extends Actor with Match with ActorLogging {
       }
       i += 1
     })
-    mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get.playerRef))
+    mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get.self))
 
   }
 
-  def getPlayers: Seq[Player] = {
+  def getPlayers: Seq[PlayerActor] = {
     if (gameCycle != null) return gameCycle.queue
 
     team1.getMembers ++ team2.getMembers
@@ -212,85 +210,90 @@ class GameActor extends Actor with Match with ActorLogging {
     None
   }
 
-  override def forcePlay(player: Player): Card = {
+  override def forcePlay(player: PlayerActor): Card = {
     currentSuit match {
       case Some(seed) =>
-        val rightCards: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().filter(_.cardSeed == seed).toList
+        val rightCards: Seq[Card] = cardsInHand.get(player).get.filter(_.cardSeed == seed).toList
+       // val rightCards: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().filter(_.cardSeed == seed).toList
         cardPlayed = true
         endTask()
         rightCards(Random.nextInt(rightCards.size))
       case None =>
-        val playerHand: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().toList
+        val playerHand: Seq[Card] = cardsInHand.get(player).get.toList
+        //val playerHand: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().toList
         cardPlayed = true
         endTask()
         playerHand(Random.nextInt(playerHand.size))
     }
   }
 
-  override def isCardOk(card: Card, player: Player): Boolean = currentSuit match {
+  override def isCardOk(card: Card, player: PlayerActor): Boolean = currentSuit match {
     case Some(seed) =>
       if (seed == card.cardSeed) {
         onCardPlayed(card, player)
         return true
       }
 
-      val playerHand: Seq[Card] = gameCycle.getCurrent.getHand().toStream
+      val playerHand: Seq[Card] = cardsInHand.get(player).get.toStream
+      //val playerHand: Seq[Card] = gameCycle.getCurrent.getHand().toStream
 
       if (!playerHand.exists(_.cardSeed == seed)) {
         onCardPlayed(card, player)
         return true
       }
-
+      mediator ! Publish(TOPIC_NAME,CardOk(false))
       false
     case None =>
       onCardPlayed(card, player)
       true
   }
 
-  private def onCardPlayed(card: Card, player: Player): Unit = {
+  private def onCardPlayed(card: Card, player: PlayerActor): Unit = {
     if (gameCycle.isFirst) onFirstCardOfHand(card)
 
     cardsOnTable += ((card, gameCycle.getCurrent))
     cardPlayed = true
+    mediator ! Publish(TOPIC_NAME,CardOk(true))
     mediator ! Publish(TOPIC_NAME,PlayedCard(card, player))
-
+//remove card ??
     if (!gameCycle.isLast) {
-      mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next().playerRef,isSetEnd.get._3, gameCycle.isFirst))
+      mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next().self,isSetEnd.get._3, gameCycle.isFirst))
     } else {
      //onHandEnd(cardsOnTable)
     }
   }
 
   private def onFirstCardOfHand(card: Card): Unit = {
-    val currentHand: Set[Card] = gameCycle.getCurrent.getHand()
+    val currentHand: Set[Card] = cardsInHand.get(gameCycle.getCurrent).get.toSet
+   // val currentHand: Set[Card] = gameCycle.getCurrent.getHand()
     if (currentHand.size == MAX_HAND_CARDS && currentBriscola.get == card.cardSeed && card.cardValue == ACE_VALUE) {
       checkMarafona(currentHand, gameCycle.getCurrent)
     }
     currentSuit = Option(card.cardSeed)
   }
 
-  private def onHandEnd(lastTaker: Player): Unit = {
+  private def onHandEnd(lastTaker: PlayerActor): Unit = {
     deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
     nextHandStarter = Some(lastTaker)
-    mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get.playerRef, isSetEnd.get._3, gameCycle.isFirst))
+    mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get.self, isSetEnd.get._3, gameCycle.isFirst))
     currentSuit = None
     cardsOnTable.clear()
 
 
     nextHandStarter match {
-      case Some(player) => if (player.getHand().isEmpty) onSetEnd()
+      case Some(player) => if (cardsInHand.get(player).get.isEmpty) onSetEnd()
+      //case Some(player) => if (player.getHand().isEmpty) onSetEnd()
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
     }
   }
 
-  private def getTeamOfPlayer(player: Player): Team = getTeamIndexOfPlayer(player) match {
+  private def getTeamOfPlayer(player: PlayerActor): Team = getTeamIndexOfPlayer(player) match {
     case 0 => team1
     case 1 => team2
   }
 
-  private def getTeamIndexOfPlayer(player: Player): Int = {
+  private def getTeamIndexOfPlayer(player: PlayerActor): Int = {
     if (team1.getMembers.contains(player)) return 0
-
     1
   }
 
@@ -319,7 +322,7 @@ class GameActor extends Actor with Match with ActorLogging {
 
   def notifyWinner(team: Team): Unit = gameEnd = true
 
-  private def checkMarafona(hand: Set[Card], player: Player): Unit = {
+  private def checkMarafona(hand: Set[Card], player: PlayerActor): Unit = {
     if (hand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
       .count(c => c.cardValue == ACE_VALUE || c.cardValue == TWO_VALUE || c.cardValue == THREE_VALUE) == REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA) {
       deck.registerMarafona(getTeamOfPlayer(player))
@@ -333,7 +336,7 @@ class GameActor extends Actor with Match with ActorLogging {
       case Some(player) => gameCycle.setFirst(player)
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
     }
-    gameCycle.getCurrent.onMyTurn()
+    //gameCycle.getCurrent.onMyTurn()
   }
 }
 
