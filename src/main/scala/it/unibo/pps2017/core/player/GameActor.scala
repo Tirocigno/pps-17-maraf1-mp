@@ -163,11 +163,6 @@ class GameActor extends Actor with Match with ActorLogging {
 
   override def playSet(): Unit = {
     prepareSet()
-
-  /*  nextHandStarter match {
-      case Some(player) => setBriscola(player.onSetBriscola())
-      case None => throw new Exception("FirstPlayerOfTheHand Not Found")
-    }*/
   }
 
 
@@ -214,13 +209,11 @@ class GameActor extends Actor with Match with ActorLogging {
     currentSuit match {
       case Some(seed) =>
         val rightCards: Seq[Card] = cardsInHand.get(player).get.filter(_.cardSeed == seed).toList
-       // val rightCards: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().filter(_.cardSeed == seed).toList
         cardPlayed = true
         endTask()
         rightCards(Random.nextInt(rightCards.size))
       case None =>
         val playerHand: Seq[Card] = cardsInHand.get(player).get.toList
-        //val playerHand: Seq[Card] = getPlayers(getPlayers.indexOf(player)).getHand().toList
         cardPlayed = true
         endTask()
         playerHand(Random.nextInt(playerHand.size))
@@ -235,7 +228,6 @@ class GameActor extends Actor with Match with ActorLogging {
       }
 
       val playerHand: Seq[Card] = cardsInHand.get(player).get.toStream
-      //val playerHand: Seq[Card] = gameCycle.getCurrent.getHand().toStream
 
       if (!playerHand.exists(_.cardSeed == seed)) {
         onCardPlayed(card, player)
@@ -255,7 +247,8 @@ class GameActor extends Actor with Match with ActorLogging {
     cardPlayed = true
     mediator ! Publish(TOPIC_NAME,CardOk(true))
     mediator ! Publish(TOPIC_NAME,PlayedCard(card, player))
-//remove card ??
+    cardsInHand.get(player).get -= card
+
     if (!gameCycle.isLast) {
       mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next().self,isSetEnd.get._3, gameCycle.isFirst))
     } else {
@@ -265,7 +258,6 @@ class GameActor extends Actor with Match with ActorLogging {
 
   private def onFirstCardOfHand(card: Card): Unit = {
     val currentHand: Set[Card] = cardsInHand.get(gameCycle.getCurrent).get.toSet
-   // val currentHand: Set[Card] = gameCycle.getCurrent.getHand()
     if (currentHand.size == MAX_HAND_CARDS && currentBriscola.get == card.cardSeed && card.cardValue == ACE_VALUE) {
       checkMarafona(currentHand, gameCycle.getCurrent)
     }
@@ -282,7 +274,6 @@ class GameActor extends Actor with Match with ActorLogging {
 
     nextHandStarter match {
       case Some(player) => if (cardsInHand.get(player).get.isEmpty) onSetEnd()
-      //case Some(player) => if (player.getHand().isEmpty) onSetEnd()
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
     }
   }
@@ -336,7 +327,6 @@ class GameActor extends Actor with Match with ActorLogging {
       case Some(player) => gameCycle.setFirst(player)
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
     }
-    //gameCycle.getCurrent.onMyTurn()
   }
 }
 
