@@ -47,6 +47,16 @@ class Dispatcher extends ScalaVerticle {
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
 
+
+    import java.net.ServerSocket
+    val server = new ServerSocket(80)
+
+    System.out.println("Server has started on 127.0.0.1:80.\r\nWaiting for a connection...")
+
+    val client = server.accept
+
+    System.out.println("A client connected.")
+
   }
 
   /**
