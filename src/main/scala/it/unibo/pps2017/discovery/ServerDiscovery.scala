@@ -5,9 +5,9 @@ import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterServerAPI
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
-import it.unibo.pps2017.server.model.{Message, RouterResponse}
+import it.unibo.pps2017.server.model.RouterResponse
 
 /**
   * Basic trait for a server discovery implementation.
@@ -18,6 +18,8 @@ trait ServerDiscovery extends ScalaVerticle{
 
   def handleRestCall():Unit
 
+  def addMockServer(IPAddress: IPAddress, port: Port): Unit
+
 }
 
 object ServerDiscovery {
@@ -26,7 +28,7 @@ object ServerDiscovery {
 
 private class ServerDiscoveryImpl extends ServerDiscovery {
 
-  val serverMap:ServerMap = ???
+  val serverMap: ServerMap = ServerMap()
   val matchesSet:MatchesSet = MatchesSet()
 
   override def start(): Unit = developAPI()
@@ -36,7 +38,7 @@ private class ServerDiscoveryImpl extends ServerDiscovery {
   override def developAPI(): Unit = {
     val router = Router.router(vertx)
     DiscoveryAPI.values.map({
-      case api @ RegisterServerAPI => api.asRequest(router,getServerAPIHandler)
+      case api@GetServerAPI => api.asRequest(router, getServerAPIHandler)
       case api @ _ => api.asRequest(router,mockHandler)
     })
     val options = HttpServerOptions()
@@ -49,8 +51,10 @@ private class ServerDiscoveryImpl extends ServerDiscovery {
   }
 
   private val getServerAPIHandler:(RoutingContext, RouterResponse) => Unit = (request,response) => {
-    response.sendResponse(Message(serverMap.getLessBusyServer))
+    response.sendResponse(serverMap.getLessBusyServer)
   }
 
   override def handleRestCall(): Unit = ???
+
+  override def addMockServer(IPAddress: IPAddress, port: Port): Unit = serverMap.addServer((IPAddress, port))
 }

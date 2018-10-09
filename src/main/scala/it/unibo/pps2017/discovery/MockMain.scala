@@ -5,5 +5,7 @@ import io.vertx.scala.core.Vertx
 
 
 object MockMain extends App {
-  Vertx.vertx().deployVerticle(ServerDiscovery())
+  val serverDiscovery = ServerDiscovery()
+  serverDiscovery.addMockServer("Autunno", 2018)
+  Vertx.vertx().deployVerticle(serverDiscovery)
 }
