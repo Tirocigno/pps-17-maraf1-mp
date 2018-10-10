@@ -32,6 +32,11 @@ object DiscoveryAPI {
     def asRequest(router: Router, handle:(RoutingContext, RouterResponse) => Unit):Request
   }
 
+  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI, IncreaseServerMatches, DecreaseServerMatched)
+
+  /**
+    * API to register a new server on discovery server.
+    */
   case object RegisterServerAPI extends DiscoveryAPI {
 
     override def path: String = "/registerserver"
@@ -42,6 +47,9 @@ object DiscoveryAPI {
       POST(router,path,handle)
   }
 
+  /**
+    * API to retrieve less busy server.
+    */
   case object GetServerAPI extends DiscoveryAPI {
 
     override def path: String = "/getserver"
@@ -52,6 +60,30 @@ object DiscoveryAPI {
       GET(router,path,handle)
   }
 
-  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI)
+  /**
+    * API to increase the number of matches on a specified server.
+    */
+  case object IncreaseServerMatches extends DiscoveryAPI {
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+
+    override def path: String = "/increaseservermatches"
+  }
+
+  /**
+    * API to decrease the number of matches on a specified server.
+    */
+  case object DecreaseServerMatched extends DiscoveryAPI {
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+
+    override def path: String = "/decreaseservermatches"
+  }
 
 }
