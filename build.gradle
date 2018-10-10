@@ -60,6 +60,10 @@ ext {
     //Circe version
     circeVersion = '0.10.0'
 
+    // SLF4J
+    slf4jApiVersion = '1.7.12'
+    logbackVersion = '1.2.3'
+
 }
 
 repositories {
@@ -90,6 +94,11 @@ dependencies {
     implementation "io.vertx:vertx-web-scala_2.12:$vertxVersion"
     implementation "io.vertx:vertx-web-client-scala_2.12:$vertxVersion"
 
+    // Simple Logging Facade for Java
+    implementation "org.slf4j:slf4j-api:$slf4jApiVersion"
+    // Logback Classic
+    implementation "ch.qos.logback:logback-classic:$logbackVersion"
+
     //Basic support for Akka.
     implementation "com.typesafe.akka:akka-actor_$scalaMajor:$akkaVersion"
     implementation "com.typesafe.akka:akka-cluster_$scalaMajor:$akkaVersion"
@@ -111,6 +120,12 @@ dependencies {
 
     //TestKit for testing akka actors.
     testImplementation "com.typesafe.akka:akka-testkit_$scalaMajor:$akkaVersion"
+
+    //TestKit for vertx stuff.
+    testImplementation "io.vertx:vertx-unit:3.5.4"
+
+    //Logback for test implementation.
+    testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 
 
     //Cornichon API REST test library
