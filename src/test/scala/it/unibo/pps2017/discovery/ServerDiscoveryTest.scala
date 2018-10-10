@@ -4,6 +4,7 @@ package it.unibo.pps2017.discovery
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.client.{WebClient, WebClientOptions}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterServerAPI
+import it.unibo.pps2017.server.model.ResponseStatus
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
@@ -35,7 +36,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
       .post(defaultPort, defaultHost, RegisterServerAPI.path)
       .sendFuture()
     val result = Await.result(request, 3 seconds)
-    assert(result.statusCode() == 200)
+    assert(result.statusCode() == ResponseStatus.OK_CODE)
   }
 
   test("Mock test 2") {
