@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017
 
+import io.vertx.scala.core.net.SocketAddress
 import io.vertx.scala.ext.web.RoutingContext
 import it.unibo.pps2017.server.model.ServerContextEncoder
 
@@ -21,8 +22,11 @@ package object discovery {
     }
   }
 
-  implicit def generateServerContextFromRouter(route: RoutingContext): ServerContext = {
-    val source = route.request().remoteAddress()
+  implicit class RichRoutingContext(route: RoutingContext) {
+    def senderSocket: SocketAddress = route.request().remoteAddress()
+  }
+
+  implicit def generateServerContextFromRouter(source: SocketAddress): ServerContext = {
     ServerContext(source.host(), source.port())
   }
 
