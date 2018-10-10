@@ -7,16 +7,15 @@ import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCard, ClickedComman
 import scala.collection.JavaConverters._
 
 
- abstract class ClientController {
+abstract class ClientController {
 
-   /** oggetto gui */
+  /** oggetto gui */
   var playGameController: PlayGameController
-   val system = ActorSystem("mySystem")
-   /**
-     * ActorRef of the actor*/
-   val myActor: ActorRef = system.actorOf(Props(new PlayerActor(this, "nic")))
-
-   var myTurn: Boolean = _
+  val system = ActorSystem("mySystem")
+  /**
+    * ActorRef of the actor*/
+  val myActor: ActorRef = system.actorOf(Props(new PlayerActor(this, "nic")))
+  var myTurn: Boolean = _
 
 
   def getCardsFirstPlayer(cards: List[String]): Unit = {
@@ -40,39 +39,38 @@ import scala.collection.JavaConverters._
   }
 
   def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean): Unit = {
-   playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer)
+    playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer)
   }
 
   def selectBriscola() = {
     playGameController.showBriscolaCommands()
   }
 
-
-   /** Metodo per inviare al PlayerActor il comando cliccato dalla gui */
-   def setCommandFromPlayer(command: String): Unit = {
+  /** Metodo per inviare al PlayerActor il comando cliccato dalla gui */
+  def setCommandFromPlayer(command: String): Unit = {
     myActor ! ClickedCommand(command, null)
-   }
+  }
 
-   def selectedBriscola(briscola: String): Unit = {
-     // creo un seed e gli metto come campo briscola
-      //myActor ! BriscolaChosen(briscola)
-   }
+  def selectedBriscola(briscola: String): Unit = {
+    // creo un seed e gli metto come campo briscola
+    //myActor ! BriscolaChosen(briscola)
+  }
 
-   def setPlayedCard(cardIndex: Int): Unit ={
-     myActor ! ClickedCard(cardIndex, null)
-   }
+  def setPlayedCard(cardIndex: Int): Unit = {
+    myActor ! ClickedCard(cardIndex, null)
+  }
 
-   def isMyTurn(): Boolean = {
-     return myTurn
-   }
+  def isMyTurn(): Boolean = {
+    return myTurn
+  }
 
-   def setMyTurn(turn: Boolean): Unit = {
-     this.myTurn = turn
-   }
+  def setMyTurn(turn: Boolean): Unit = {
+    this.myTurn = turn
+  }
 
-   def sendPlayersList(playersList: List[String]): Unit = {
-     playGameController.setPlayersList(playersList.asJava)
-   }
+  def sendPlayersList(playersList: List[String]): Unit = {
+    playGameController.setPlayersList(playersList.asJava)
+  }
 
 
 }
