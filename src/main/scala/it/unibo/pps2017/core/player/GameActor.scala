@@ -34,7 +34,7 @@ class GameActor extends Actor with Match with ActorLogging {
   var gameEnd: Boolean = false
   var team1: Team = _
   var team2: Team = _
-  val actors : ListBuffer[ActorRef] = ListBuffer[ActorRef]()
+  val actors : ListBuffer[PlayerActor] = ListBuffer[PlayerActor]()
   var cardsInHand :  collection.Map[PlayerActor, ArrayBuffer[Card]] =  Map[PlayerActor, ArrayBuffer[Card]]()
   var matchh = MatchManager()
   var cardsInTable : ListBuffer[Card] = ListBuffer[Card]()
@@ -60,7 +60,7 @@ class GameActor extends Actor with Match with ActorLogging {
        actors.length match {
         case x if x < TOT_PLAYERS - 1 => {
           addPlayer(player,RANDOM_TEAM)
-          actors += player.self
+          actors += player
           onFullTable()
         }
         case TOT_PLAYERS => {
@@ -68,7 +68,7 @@ class GameActor extends Actor with Match with ActorLogging {
         }
         case _ => {
           addPlayer(player,RANDOM_TEAM)
-          actors += player.self
+          actors += player
         }
       }
     }
@@ -77,7 +77,7 @@ class GameActor extends Actor with Match with ActorLogging {
       setBriscola(seed)
       mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed))
       val setEnd = isSetEnd.get._3
-      mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get.self,setEnd,true))
+      mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get,setEnd,true))
       startTimer()
     }
 
@@ -180,7 +180,8 @@ class GameActor extends Actor with Match with ActorLogging {
       }
       i += 1
     })
-    mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get.self))
+    mediator ! Publish(TOPIC_NAME,PlayersRef(actors.toSet))
+    mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get))
 
   }
 
@@ -250,7 +251,7 @@ class GameActor extends Actor with Match with ActorLogging {
     cardsInHand.get(player).get -= card
 
     if (!gameCycle.isLast) {
-      mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next().self,isSetEnd.get._3, gameCycle.isFirst))
+      mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next(),isSetEnd.get._3, gameCycle.isFirst))
     } else {
      //onHandEnd(cardsOnTable)
     }
@@ -267,7 +268,7 @@ class GameActor extends Actor with Match with ActorLogging {
   private def onHandEnd(lastTaker: PlayerActor): Unit = {
     deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
     nextHandStarter = Some(lastTaker)
-    mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get.self, isSetEnd.get._3, gameCycle.isFirst))
+    mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, isSetEnd.get._3, gameCycle.isFirst))
     currentSuit = None
     cardsOnTable.clear()
 
