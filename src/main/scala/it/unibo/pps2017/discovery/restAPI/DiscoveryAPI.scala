@@ -32,8 +32,6 @@ object DiscoveryAPI {
     def asRequest(router: Router, handle:(RoutingContext, RouterResponse) => Unit):Request
   }
 
-  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI, IncreaseServerMatches, DecreaseServerMatched)
-
   /**
     * API to register a new server on discovery server.
     */
@@ -74,9 +72,16 @@ object DiscoveryAPI {
   }
 
   /**
+    * values method, analog to java's enumeration's values() method.
+    *
+    * @return a Set containing all the objects in the DiscoveryAPI object.
+    */
+  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI, IncreaseServerMatches, DecreaseServerMatches)
+
+  /**
     * API to decrease the number of matches on a specified server.
     */
-  case object DecreaseServerMatched extends DiscoveryAPI {
+  case object DecreaseServerMatches extends DiscoveryAPI {
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
