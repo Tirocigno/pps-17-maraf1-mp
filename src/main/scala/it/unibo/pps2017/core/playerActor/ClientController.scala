@@ -2,7 +2,6 @@ package it.unibo.pps2017.core.playerActor
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import it.unibo.pps2017.core.gui.PlayGameController
-import it.unibo.pps2017.core.player._
 import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCard, ClickedCommand}
 
 import scala.collection.JavaConverters._
@@ -15,7 +14,7 @@ import scala.collection.JavaConverters._
    val system = ActorSystem("mySystem")
    /**
      * ActorRef of the actor*/
-   val myActor: ActorRef = system.actorOf(Props(new PlayerActor(this)))
+   val myActor: ActorRef = system.actorOf(Props(new PlayerActor(this, "nic")))
 
    var myTurn: Boolean = _
 
@@ -28,11 +27,11 @@ import scala.collection.JavaConverters._
     playGameController.getBriscolaChosen(briscola)
   }
 
-  def getCommand(command: String, player: Player): Unit = {
+  def getCommand(command: String, player: String): Unit = {
     playGameController.getCommand(player, command)
   }
 
-  def showOtherPlayersPlayedCard(path: String, player: Player): Unit = {
+  def showOtherPlayersPlayedCard(path: String, player: String): Unit = {
     playGameController.showOtherPlayersPlayedCard(player, path)
   }
 
@@ -40,7 +39,7 @@ import scala.collection.JavaConverters._
     playGameController.cleanFieldEndTotalTurn(firstTeamScore, secondTeamScore, endMatch)
   }
 
-  def setCurrentPlayer(player: Player, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean): Unit = {
+  def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean): Unit = {
    playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer)
   }
 
@@ -51,8 +50,8 @@ import scala.collection.JavaConverters._
 
    /** Metodo per inviare al PlayerActor il comando cliccato dalla gui */
    def setCommandFromPlayer(command: String): Unit = {
-    myActor ! ClickedCommand(command, myActor)
-   }
+    myActor ! ClickedCommand(command, null)
+   }t
 
    def selectBriscola(briscola: String): Unit = {
      // creo un seed e gli metto come campo briscola
@@ -60,7 +59,7 @@ import scala.collection.JavaConverters._
    }
 
    def setPlayedCard(cardIndex: Int): Unit ={
-     myActor ! ClickedCard(cardIndex, myActor)
+     myActor ! ClickedCard(cardIndex, null)
    }
 
    def isMyTurn(): Boolean = {
@@ -69,6 +68,10 @@ import scala.collection.JavaConverters._
 
    def setMyTurn(turn: Boolean): Unit = {
      this.myTurn = turn
+   }
+
+   def sendPlayersList(playersList: List[String]): Unit = {
+     playGameController.setPlayersList(playersList.asJava)
    }
 
 
