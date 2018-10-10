@@ -39,7 +39,7 @@ object PlayerActor {
 
     case DistributedCard(cards, player) => {
 
-      /* Se il messaggio che arriva rappresenta le mie carte, le invio al ClientController */
+      /* Se il messaggio che arriva e' destinato a me, invio le carte al ClientController */
       if (this.player.eq(player)) {
 
         /**
@@ -58,12 +58,14 @@ object PlayerActor {
     }
 
     case BriscolaChosen(seed) => {
-      /** inviare al GameActor la briscola scelta */
+      /** inviare al GameActor la briscola scelta
+        * gameActor ! BriscolaChosen(seed)
+        * * */
     }
 
     case NotifyBriscolaChosen(seed) => {
       /**  Quando Ulio avra' fatto chiamero':
-            clientController.getBriscolaChosen(seed)
+            clientController.getBriscolaChosen(seed.getType)
         */
     }
 

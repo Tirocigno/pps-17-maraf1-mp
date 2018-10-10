@@ -51,9 +51,9 @@ import scala.collection.JavaConverters._
    /** Metodo per inviare al PlayerActor il comando cliccato dalla gui */
    def setCommandFromPlayer(command: String): Unit = {
     myActor ! ClickedCommand(command, null)
-   }t
+   }
 
-   def selectBriscola(briscola: String): Unit = {
+   def selectedBriscola(briscola: String): Unit = {
      // creo un seed e gli metto come campo briscola
       //myActor ! BriscolaChosen(briscola)
    }

@@ -138,22 +138,17 @@ public class PlayGameController implements PlayGame {
 	 *            button pressed from principal user
      */
 	public void signalMyCommands(final ActionEvent buttonPressed) {
-
-		 if (clientController.isMyTurn()) {
 			 Button button = (Button) buttonPressed.getSource();
 			 String command = button.getText().toLowerCase();
 			 Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
 			 createTimeline(currentUserCommand, image);
-
 			 clientController.setCommandFromPlayer(command);
-		 }
 	}
 
 
 	public void getCommand(final String player, final String command) {
 
-		/* CONTROLLER CHE ME LO CHIAMA, devo sostituire toString() con la getCommand() */
-		Image userCommand = getImageFromPath(COMMANDS_PATH + command + player + FORMAT);
+		Image userCommand = getImageFromPath(COMMANDS_PATH + command + FORMAT);
 
 		switch (player) {
 		case PLAYER_2:
@@ -179,17 +174,9 @@ public class PlayGameController implements PlayGame {
 	public void selectBriscola(final ActionEvent buttonPressed) {
 		Button button = (Button) buttonPressed.getSource();
 		String briscola = button.getText();
-
-		/*
-		 * CHIAMO UN METODO DEL CONTROLLER PER DIRE LA BRISCOLA CHE HO SCELTO
-		 * Qui lo dico al controller che lo dira' al PlayActor, il quale lo dira'
-		 * al GameActor
-		 */
-		clientController.selectBriscola(briscola);
-
+		clientController.selectedBriscola(briscola);
 		hideBriscolaCommands();
 		getBriscolaChosen(briscola);
-		initializeCommands();
 	}
 	
 	@Override
@@ -285,28 +272,6 @@ public class PlayGameController implements PlayGame {
 				this.tenthCard.setImage(userCard);
 			}
 		}
-
-		/*
-		 * Dopo che mi sono state date le dieci carte, chiamo un metodo del controller
-		 * che mi torni un bool per capire se devo fare io le briscole oppure no. Se
-		 * si', allora chiamo un mio metodo privato che mi permetta di scegliere la
-		 * briscola, altrimenti non faccio nulla ma dovro' ricevere sempre dal
-		 * controller la briscola scelta dagli altri
-		 * 
-		 * 
-		 * boolean isMyTurnBriscola = controller.isMyTurnToChooseBriscola(Player player);
-		 * 
-		 * if (isMyTurnBriscola) { 
-		 * 	showBriscolaCommands(); 
-		 * } else { 
-		 * 	initializeCommands();
-		 * }
-		 * 
-		 */
-
-		if (true) {
-			showBriscolaCommands();
-		}
 	}
 
     @Override
@@ -336,7 +301,7 @@ public class PlayGameController implements PlayGame {
 
 	    /* se sono il primo ad iniziare il turno mostro i comandi busso, striscio, volo */
 	    if (isFirstPlayer) {
-            initializeCommands();
+            showCommands();
         } else {
             hideCommands();
 	    }
@@ -445,7 +410,7 @@ public class PlayGameController implements PlayGame {
 		}
 	}
 
-	private void initializeCommands() {
+	private void showCommands() {
         this.bussoButton.setVisible(true);
         this.striscioButton.setVisible(true);
         this.voloButton.setVisible(true);
