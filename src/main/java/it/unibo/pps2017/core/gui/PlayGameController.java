@@ -87,7 +87,7 @@ public class PlayGameController implements PlayGame {
     Label timer, score;
 
     @FXML
-    Text briscolaLabel;
+    Text briscolaLabel, cardNotOk;
 
     //List<ImageView> userCards;
 
@@ -198,6 +198,7 @@ public class PlayGameController implements PlayGame {
      */
     public void clickedCard(final MouseEvent clickedCard) {
 
+        this.cardNotOk.setVisible(false);
         if (clientController.isMyTurn()) {
             ImageView playedCard = (ImageView) clickedCard.getSource();
             @SuppressWarnings("deprecation")
@@ -205,13 +206,17 @@ public class PlayGameController implements PlayGame {
             String pathOfImageSelected = getCleanPath(path);
             Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
 
-            /* visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano */
-            this.user1Field.setImage(imagePlayedCard);
-            playedCard.setVisible(false);
             int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
-
             clientController.setPlayedCard(indexCardSelected);
-            hideCommands();
+
+            if (clientController.cardOK()) {
+                /* visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano */
+                this.user1Field.setImage(imagePlayedCard);
+                playedCard.setVisible(false);
+                hideCommands();
+            } else {
+                this.cardNotOk.setVisible(true);
+            }
         }
     }
 

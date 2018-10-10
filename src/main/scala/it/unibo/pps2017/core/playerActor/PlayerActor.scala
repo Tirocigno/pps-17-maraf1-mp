@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 
 object PlayerActor {
 
-  case class Start(playersList: List[PlayerActor])
+  case class PlayersRef(playersList: Set[PlayerActor])
 
   case class DistributedCard(cards: List[String], player: PlayerActor)
 
@@ -32,6 +32,8 @@ object PlayerActor {
 
   case class ForcedCardPlayed(card: String, player: PlayerActor)
 
+  case class CardOk(correctClickedCard: Boolean)
+
 }
 
 
@@ -43,7 +45,7 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
   def receive: PartialFunction[Any, Unit] = {
 
-    case Start(playersList) =>
+    case PlayersRef(playersList) =>
       // qui devo ordinare la mia lista mettendo me in testa
 
 
@@ -74,6 +76,9 @@ class PlayerActor(clientController: ClientController, username: String) extends 
     /** inviare l'indice della carta scelta al GameActor
       * gameActor ! ClickedCard(index, this)
       * */
+
+    case CardOk(correctClickedCard) =>
+      clientController.setCardOK(correctClickedCard)
 
     case ClickedCommand(command, player) =>
 
