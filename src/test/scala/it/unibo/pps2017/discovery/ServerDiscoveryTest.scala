@@ -23,25 +23,20 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
   val timeOut: Int = 3
   var serverDiscovery: ServerDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
   private var vertx = Vertx.vertx()
-  vertx.deployVerticle(serverDiscovery)
 
   override protected def beforeEach() {
     vertx = Vertx.vertx()
+    serverDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
     vertx.deployVerticle(serverDiscovery)
+  }
+
+  override protected def afterEach(): Unit = {
+    vertx.close()
   }
 
   private def generateMockClient(port: Int): WebClient = {
     val options = WebClientOptions() setDefaultPort defaultPort
     WebClient.create(vertx, options)
-  }
-
-  //TODO MUST DO HIS JOB
-  override protected def afterEach(): Unit = {
-    vertx.close()
-  }
-
-  private def registerAServer(webClient: WebClient, port: Port) = {
-    executeAPICallAndWait(webClient, port, defaultHost, RegisterServerAPI)
   }
 
   private def executeAPICallAndWait(webClient: WebClient, port: Port, host: IPAddress, api: DiscoveryAPI) = {
@@ -52,22 +47,26 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     }
   }
 
+  private def registerAServer(webClient: WebClient, port: Port) = {
+    executeAPICallAndWait(webClient, port, defaultHost, RegisterServerAPI)
+  }
+
 
   test("Adding a server to  server Discovery") {
     println("Test one started")
     val webClient = generateMockClient(defaultPort)
     val result = registerAServer(webClient, defaultDiscoveryPort)
     assert(result.statusCode() == ResponseStatus.OK_CODE)
-
   }
 
-  //TODO Test should not pass, instead pass because afterEach doesn't do his job
+  //TODO Test should not pass, instead pass because Riciputi thought that was funny to give error messages ok code ._.
   test("Increasing number of current played matches on a registered server") {
     println("Test two started")
     val webClient = generateMockClient(defaultPort)
     /* val result = registerAServer(webClient, defaultDiscoveryPort)*/
     //assert(result.statusCode() == ResponseStatus.OK_CODE)
     val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI)
+    println(increaseResult.bodyAsString().get)
     assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
