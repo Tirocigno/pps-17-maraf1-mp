@@ -6,6 +6,8 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
+import it.unibo.pps2017.commons.API
+import it.unibo.pps2017.commons.API.{ErrorAPI, FoundGameAPI, GameAPI, HelloAPI}
 import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
 import it.unibo.pps2017.server.model._
@@ -36,13 +38,13 @@ class Dispatcher extends ScalaVerticle {
 
     val router = Router.router(vertx)
 
-    GET(router, "/", hello)
-
-    GET(router, "/game/:gameId", getGame)
-
-    GET(router, "/error", responseError)
-
-    POST(router, "/foundGame", foundGame)
+    API.values.map({
+      case api@HelloAPI => api.asRequest(router, hello)
+      case api@ErrorAPI => api.asRequest(router, responseError)
+      case api@GameAPI => api.asRequest(router, getGame)
+      case api@FoundGameAPI => api.asRequest(router, foundGame)
+      case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("API not founded.")).sendResponse(Error()))
+    })
 
 
     val options = HttpServerOptions()
