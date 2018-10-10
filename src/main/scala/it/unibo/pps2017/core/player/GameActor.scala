@@ -172,7 +172,7 @@ class GameActor extends Actor with Match with ActorLogging {
     var i: Int = 0
     deck.distribute().foreach(hand => {
       actors.foreach(player => {
-        mediator ! Publish(TOPIC_NAME, DistributedCard(hand,player))
+        mediator ! Publish(TOPIC_NAME, DistributedCard(cardsToPath(hand),player))
       })
       if (firstHand && isFirstPlayer(hand)) {
           nextHandStarter = Some(getPlayers(i))
@@ -183,6 +183,14 @@ class GameActor extends Actor with Match with ActorLogging {
     mediator ! Publish(TOPIC_NAME,PlayersRef(actors.toSet))
     mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get))
 
+  }
+
+  private def cardsToPath(cards: Set[Card]): List[String] = {
+    var allCardsPath : ListBuffer[String] = ListBuffer[String]()
+    cards.foreach(card =>
+      allCardsPath += IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
+    )
+    allCardsPath.toList
   }
 
   def getPlayers: Seq[PlayerActor] = {
@@ -247,7 +255,8 @@ class GameActor extends Actor with Match with ActorLogging {
     cardsOnTable += ((card, gameCycle.getCurrent))
     cardPlayed = true
     mediator ! Publish(TOPIC_NAME,CardOk(true))
-    mediator ! Publish(TOPIC_NAME,PlayedCard(card, player))
+    val cardPath: String = IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
+    mediator ! Publish(TOPIC_NAME,PlayedCard(cardPath, player))
     cardsInHand.get(player).get -= card
 
     if (!gameCycle.isLast) {
@@ -348,6 +357,8 @@ object GameActor {
   val THREE_VALUE: Int = 3
   val REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA: Int = 3
   val EXTRA_POINTS_FOR_MARAFFA: Int = 3
+  val IMG_PATH = "src/main/java/it/unibo/pps2017/core/gui/cards/"
+  val PNG_FILE = ".png"
 
   def main(args: Array[String]): Unit = {
     // Override the configuration of the port when specified as program argument
