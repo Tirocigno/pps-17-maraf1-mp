@@ -141,6 +141,20 @@ dependencies {
     scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
 }
 
+/**
+ * This should run tests one at time.
+ */
+test {
+    maxParallelForks = 1
+}
+
+/**
+ * This should run tests one at time for SCoverage.
+ */
+testScoverage {
+    maxParallelForks = 1
+}
+
 defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
 
 
