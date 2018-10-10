@@ -20,9 +20,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-
-import it.unibo.pps2017.core.player.Player;
-import it.unibo.pps2017.core.player.Command.Command;
 import it.unibo.pps2017.core.playerActor.ClientController;
 
 public class PlayGameController implements PlayGame {
@@ -42,8 +39,6 @@ public class PlayGameController implements PlayGame {
 	private static final String PLAYER_2 = "Player2";
 	private static final String PLAYER_3 = "Player3";
 	private static final String PLAYER_4 = "Player4";
-	private Player playerPersonal;
-	private Command command;
 	private ClientController clientController;
 
 	@FXML

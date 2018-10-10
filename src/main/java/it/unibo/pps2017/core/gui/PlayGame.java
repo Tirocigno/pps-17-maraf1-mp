@@ -1,8 +1,6 @@
 package it.unibo.pps2017.core.gui;
 
 import java.util.List;
-import it.unibo.pps2017.core.player.Player;
-import it.unibo.pps2017.core.player.Command.Command;
 
 public interface PlayGame {
 
