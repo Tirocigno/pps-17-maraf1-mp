@@ -17,9 +17,10 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
 
   val defaultDiscoveryPort: Int = 4700
   val defaultHost: String = "localhost"
-  val serverDiscovery: ServerDiscovery = ServerDiscovery()
   val defaultPort: Int = 8080
   val otherPort: Int = 8081
+  val timeOut: Int = 3
+  val serverDiscovery: ServerDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
   private val vertx = Vertx.vertx()
 
   private def generateMockClient(port: Int): WebClient = {
@@ -35,7 +36,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val request = generateMockClient(defaultPort)
       .post(defaultPort, defaultHost, RegisterServerAPI.path)
       .sendFuture()
-    val result = Await.result(request, 3 seconds)
+    val result = Await.result(request, timeOut seconds)
     assert(result.statusCode() == ResponseStatus.OK_CODE)
   }
 
