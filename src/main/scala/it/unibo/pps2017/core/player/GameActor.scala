@@ -98,7 +98,9 @@ class GameActor extends Actor with Match with ActorLogging {
         tmp = tmp + 1
             if(tmp == TURN_TIME_SEC) {
               val randCard: Card = forcePlay(nextHandStarter.get)
-              mediator ! Publish(TOPIC_NAME,ForcedCardPlayed(randCard,nextHandStarter.get))
+              val cardPath: String = IMG_PATH + randCard.cardValue + randCard.cardSeed + PNG_FILE
+
+              mediator ! Publish(TOPIC_NAME,ForcedCardPlayed(cardPath,nextHandStarter.get))
             }
       }
     }
