@@ -1,8 +1,9 @@
 package it.unibo.pps2017.core.playerActor
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+import it.unibo.pps2017.core.deck.cards.Seed.Seed
 import it.unibo.pps2017.core.gui.PlayGameController
-import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCard, ClickedCommand}
+import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCard, ClickedCommand, BriscolaChosen}
 
 import scala.collection.JavaConverters._
 
@@ -56,9 +57,11 @@ abstract class ClientController {
     myActor ! ClickedCommand(command, null)
   }
 
+
   def selectedBriscola(briscola: String): Unit = {
-    // creo un seed e gli metto come campo briscola
-    //myActor ! BriscolaChosen(briscola)
+    val seed: Seed = _
+    seed.setSeed(briscola)
+    myActor ! BriscolaChosen(seed)
   }
 
   def setPlayedCard(cardIndex: Int): Unit = {

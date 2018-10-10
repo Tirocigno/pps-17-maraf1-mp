@@ -14,7 +14,7 @@ object PlayerActor {
 
   case class SelectBriscola(player: PlayerActor) // la manda il controller per capire chi deve fare le bris
 
-  case class BriscolaChosen(seed: Seed) // la manda il controller a tutti per dire la bris scelta
+  case class BriscolaChosen(seed: Seed) // la mando io al GameActor per la bris che ho scelto
 
   case class NotifyBriscolaChosen(seed: Seed)
 
@@ -65,27 +65,24 @@ class PlayerActor(clientController: ClientController, username: String) extends 
         clientController.selectBriscola()
 
     case BriscolaChosen(seed) =>
-
     /** inviare al GameActor la briscola scelta
       * gameActor ! BriscolaChosen(seed)
       * * */
 
     case NotifyBriscolaChosen(seed) =>
-      clientController.getBriscolaChosen(seed.toString)
+      clientController.getBriscolaChosen(briscola = seed.getSeed())
 
     case ClickedCard(index, player) =>
-
     /** inviare l'indice della carta scelta al GameActor
-      * gameActor ! ClickedCard(index, this)
+      * gameActor ! ClickedCard(index, this.player)
       * */
 
     case CardOk(correctClickedCard) =>
       clientController.setCardOK(correctClickedCard)
 
     case ClickedCommand(command, player) =>
-
     /** inviare comando e giocatore al GameActor
-      * gameActor ! ClickedCommand(command, this)
+      * gameActor ! ClickedCommand(command, this.player)
       * */
 
     case Turn(player, endPartialTurn, isFirstPlayer) =>

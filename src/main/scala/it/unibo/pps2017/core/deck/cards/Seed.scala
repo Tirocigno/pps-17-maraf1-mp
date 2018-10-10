@@ -7,7 +7,13 @@ package it.unibo.pps2017.core.deck.cards
 
 object Seed {
 
-  sealed trait Seed
+  sealed trait Seed {
+    var seed: String = _
+
+    def getSeed(): String = this.seed
+
+    def setSeed(seed: String): Unit = this.seed = seed
+  }
 
   case object Sword extends Seed
 
@@ -16,6 +22,8 @@ object Seed {
   case object Coin extends Seed
 
   case object Club extends Seed
+
+
 
   /**
     * This method is used to get all the available seeds
