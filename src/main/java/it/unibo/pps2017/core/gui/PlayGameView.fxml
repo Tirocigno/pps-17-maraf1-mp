@@ -225,7 +225,7 @@
                         </ImageView>
                      </children>
                   </HBox>
-                  <Button fx:id="buttonStart" mnemonicParsing="false" onAction="#distributedCards" text="Inizia" />
+                  <Button fx:id="buttonStart" mnemonicParsing="false" text="Inizia" />
                </children>
             </AnchorPane>
          </top>

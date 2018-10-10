@@ -72,5 +72,4 @@ public interface PlayGame {
 	 * @param timer timer
 	 */
 	void setTimer(final int timer);
-
 }

@@ -28,7 +28,7 @@ abstract class ClientController {
     playGameController.getBriscolaChosen(briscola)
   }
 
-  def getCommand(command: String, player: String): Unit = {
+  def getCommand(player: String, command: String): Unit = {
     playGameController.getCommand(player, command)
   }
 
@@ -59,7 +59,7 @@ abstract class ClientController {
 
 
   def selectedBriscola(briscola: String): Unit = {
-    val seed: Seed = _
+    val seed: Seed = null
     seed.setSeed(briscola)
     myActor ! BriscolaChosen(seed)
   }

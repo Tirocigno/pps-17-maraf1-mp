@@ -89,7 +89,6 @@ public class PlayGameController implements PlayGame {
     @FXML
     Text briscolaLabel, cardNotOk;
 
-    //List<ImageView> userCards;
 
     /*
      * in questa mappa avro' l'indice della carta e il suo path, mi serve per capire
@@ -103,28 +102,10 @@ public class PlayGameController implements PlayGame {
     private List<ImageView> cardsPlayer4;
 
     public PlayGameController() {
-
-        /*
-         * Simulo il fatto di avere la mia lista di carte. Quando questa mi verra'
-         * passata dal controller eliminero' tutto cio'
-         */
-        this.firstPlayerCards = new ArrayList<>();
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/10Sword.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/9Club.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/8Coin.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/7Cup.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/6Coin.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/5Coin.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/4Coin.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/3Club.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/2Coin.png");
-        this.firstPlayerCards.add("src/main/resources/it/unibo/pps2017/cards/1Sword.png");
-
         this.indexOfMyCards = new HashMap<>();
         this.cardsPlayer2 = new ArrayList<>();
         this.cardsPlayer3 = new ArrayList<>();
         this.cardsPlayer4 = new ArrayList<>();
-
     }
 
 
@@ -142,11 +123,9 @@ public class PlayGameController implements PlayGame {
         clientController.setCommandFromPlayer(command);
     }
 
-
+    @Override
     public void getCommand(final String player, final String command) {
-
         Image userCommand = getImageFromPath(COMMANDS_PATH + command + FORMAT);
-
         switch (player) {
             case PLAYER_2:
                 createTimeline(userTwoCommand, userCommand);
@@ -159,7 +138,6 @@ public class PlayGameController implements PlayGame {
                 break;
         }
     }
-
 
     /**
      * This method permits to catch briscola selected by player.
@@ -182,9 +160,6 @@ public class PlayGameController implements PlayGame {
 	
 
 	/*
-	 * metodo temporaneo che eliminero' quando ricevero' la lista delle carte dal
-	 * controller
-
 	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
 		getCardsFirstPlayer(firstPlayerCards);
 		setCurrentPlayer(new Player("Player1"), false); // simulo che tocchi all'utente 1
@@ -224,11 +199,9 @@ public class PlayGameController implements PlayGame {
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
 
         initializePlayersHand(); // mostro il retro delle carte degli altri giocatori
-
         this.indexOfMyCards.clear(); // svuoto la mappa per i turni successivi
 
         for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
-
             Image userCard = getImageFromPath(firstUserCards.get(cardIndex));
             /* mi salvo le carte in ordine nella mappa */
             indexOfMyCards.put(cardIndex, firstUserCards.get(cardIndex));
@@ -260,9 +233,7 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void showOtherPlayersPlayedCard(final String player, final String cardPath) {
-
         Image cardPlayed = getImageFromPath(cardPath);
-
         switch (player) {
             case PLAYER_2:
                 this.user2Field.setImage(cardPlayed);
@@ -274,30 +245,24 @@ public class PlayGameController implements PlayGame {
                 this.user4Field.setImage(cardPlayed);
                 break;
         }
-
         /* dopo aver mostrato la carta ne devo eliminare una dalla mano dell'utente */
         deleteCardFromHand(player);
-
     }
 
     @Override
     public void setCurrentPlayer(final String player, final boolean partialTurnIsEnded, final boolean isFirstPlayer) {
-
         /* se sono il primo ad iniziare il turno mostro i comandi busso, striscio, volo */
         if (isFirstPlayer) {
             showCommands();
         } else {
             hideCommands();
         }
-
         /* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
         if (partialTurnIsEnded) {
             cleanField();
         }
-
         Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
         switch (player) {
-
             case PLAYER_1:
                 this.user1Field.setImage(emptyFieldMyTurn);
                 break;
@@ -316,7 +281,6 @@ public class PlayGameController implements PlayGame {
     @Override
     public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam,
                                        boolean endedMatch) {
-
         cleanField();
         this.briscolaLabel.setVisible(false); // finito un turno nascondo la label con la briscola perche' verra' riscelta
         showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
@@ -420,7 +384,6 @@ public class PlayGameController implements PlayGame {
         this.user4Field.setImage(emptyField);
     }
 
-
     private void deleteCardFromHand(final String player) {
         switch (player) {
             case PLAYER_2:
@@ -443,7 +406,6 @@ public class PlayGameController implements PlayGame {
     }
 
     /* Inizializzo le liste con tutte le carte degli altri utenti e poi le mostro */
-
     private void initializePlayersHand() {
         createCardsListUser2();
         createCardsListUser3();
@@ -519,7 +481,6 @@ public class PlayGameController implements PlayGame {
         return pathOfImageSelected;
     }
 
-
     /**
      * This method sets four players of the game.
      *
@@ -528,5 +489,4 @@ public class PlayGameController implements PlayGame {
     public void setPlayersList(final List<String> playersList) {
         this.playersList = playersList;
     }
-
 }

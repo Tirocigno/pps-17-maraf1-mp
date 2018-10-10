@@ -49,11 +49,7 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
     case PlayersRef(playersList) =>
       // qui devo ordinare la mia lista mettendo me in testa
-
-
       for (player <- playersList) if (this.player.eq(player)) orderedPlayersList += player.getUsername
-
-
       clientController.sendPlayersList(orderedPlayersList.toList)
 
     case DistributedCard(cards, player) =>
@@ -100,19 +96,17 @@ class PlayerActor(clientController: ClientController, username: String) extends 
       clientController.showOtherPlayersPlayedCard(card, player.getUsername)
 
     case NotifyCommandChose(command, player) =>
-      clientController.getCommand(command, player.getUsername)
+      clientController.getCommand(player.getUsername, command)
 
     case ForcedCardPlayed(card, player) =>
-      clientController.showOtherPlayersPlayedCard(card, player.getUsername)
+      clientController.showOtherPlayersPlayedCard(card, player = player.getUsername)
 
     case SetTimer(timer) =>
       clientController.setTimer(timer)
   }
 
-
   private def getUsername: String = {
     user
   }
-
 
 }
