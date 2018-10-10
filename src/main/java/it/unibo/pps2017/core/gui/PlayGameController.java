@@ -322,6 +322,12 @@ public class PlayGameController implements PlayGame {
         showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
     }
 
+    @Override
+    public void setTimer(final int timer) {
+        String newTimer = Integer.toString(timer);
+        this.timer.setText(newTimer);
+    }
+
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
         this.score.setText("Score: " + scoreFirstTeam + "-" + scoreSecondTeam);
         this.score.setVisible(true);
@@ -522,6 +528,5 @@ public class PlayGameController implements PlayGame {
     public void setPlayersList(final List<String> playersList) {
         this.playersList = playersList;
     }
-
 
 }

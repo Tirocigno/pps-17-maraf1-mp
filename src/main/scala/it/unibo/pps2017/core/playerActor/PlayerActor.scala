@@ -34,6 +34,8 @@ object PlayerActor {
 
   case class CardOk(correctClickedCard: Boolean)
 
+  case class SetTimer(timer: Int)
+
 }
 
 
@@ -97,7 +99,6 @@ class PlayerActor(clientController: ClientController, username: String) extends 
     case EndTurn(firstTeamScore, secondTeamScore, endMatch) =>
       clientController.cleanFieldEndTotalTurn(firstTeamScore, secondTeamScore, endMatch)
 
-
     case PlayedCard(card, player) =>
       clientController.showOtherPlayersPlayedCard(card, player.getUsername)
 
@@ -106,6 +107,9 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
     case ForcedCardPlayed(card, player) =>
       clientController.showOtherPlayersPlayedCard(card, player.getUsername)
+
+    case SetTimer(timer) =>
+      clientController.setTimer(timer)
   }
 
 

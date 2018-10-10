@@ -47,6 +47,10 @@ abstract class ClientController {
     playGameController.showBriscolaCommands()
   }
 
+  def setTimer(timer: Int) = {
+    playGameController.setTimer(timer)
+  }
+
   /** Metodo per inviare al PlayerActor il comando cliccato dalla gui */
   def setCommandFromPlayer(command: String): Unit = {
     myActor ! ClickedCommand(command, null)
