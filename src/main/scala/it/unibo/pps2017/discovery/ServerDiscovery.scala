@@ -8,7 +8,6 @@ import it.unibo.pps2017.discovery.ServerDiscovery.APIHandler
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{DecreaseServerMatches, GetServerAPI, IncreaseServerMatches, RegisterServerAPI}
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap}
-import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse}
 
 /**
@@ -26,10 +25,11 @@ trait ServerDiscovery extends ScalaVerticle{
 
 object ServerDiscovery {
   type APIHandler = (RoutingContext, RouterResponse) => Unit
-  def apply(): ServerDiscovery = new ServerDiscoveryImpl()
+
+  def apply(port: Port, timeout: Int): ServerDiscovery = new ServerDiscoveryImpl(port, timeout)
 }
 
-private class ServerDiscoveryImpl extends ServerDiscovery {
+private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscovery {
 
   val serverMap: ServerMap = ServerMap()
   val matchesSet:MatchesSet = MatchesSet()
@@ -81,10 +81,10 @@ private class ServerDiscoveryImpl extends ServerDiscovery {
 
     val options = HttpServerOptions()
     options.setCompressionSupported(true)
-      .setIdleTimeout(TIMEOUT)
+      .setIdleTimeout(timeout)
 
     vertx.createHttpServer(options)
-      .requestHandler(router.accept _).listen(PORT)
+      .requestHandler(router.accept _).listen(port)
   }
 
   override def handleRestCall(): Unit = ???
