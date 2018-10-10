@@ -102,7 +102,7 @@ public class PlayGameController implements PlayGame {
 	 */
 	private Map<Integer, String> indexOfMyCards;
 	private List<String> firstPlayerCards;
-
+	private List<String> playersList;
 	private List<ImageView> cardsPlayer2;
 	private List<ImageView> cardsPlayer3;
 	private List<ImageView> cardsPlayer4;
@@ -155,12 +155,12 @@ public class PlayGameController implements PlayGame {
 	}
 
 
-	public void getCommand(final Player player, final String command) {
+	public void getCommand(final String player, final String command) {
 
 		/* CONTROLLER CHE ME LO CHIAMA, devo sostituire toString() con la getCommand() */
-		Image userCommand = getImageFromPath(COMMANDS_PATH + command.toString() + player.userName() + FORMAT);
+		Image userCommand = getImageFromPath(COMMANDS_PATH + command + player + FORMAT);
 
-		switch (player.userName()) {
+		switch (player) {
 		case PLAYER_2:
 			createTimeline(userTwoCommand, userCommand);
 			break;
@@ -315,11 +315,11 @@ public class PlayGameController implements PlayGame {
 	}
 
     @Override
-	public void showOtherPlayersPlayedCard(final Player player, final String cardPath) {
+	public void showOtherPlayersPlayedCard(final String player, final String cardPath) {
 
 		Image cardPlayed = getImageFromPath(cardPath);
 
-		switch (player.userName()) {
+		switch (player) {
 		case PLAYER_2:
 			this.user2Field.setImage(cardPlayed);
 			break;
@@ -337,7 +337,7 @@ public class PlayGameController implements PlayGame {
 	}
 
 	@Override
-	public void setCurrentPlayer(final Player player, final boolean partialTurnIsEnded, final boolean isFirstPlayer) {
+	public void setCurrentPlayer(final String player, final boolean partialTurnIsEnded, final boolean isFirstPlayer) {
 
 	    /* se sono il primo ad iniziare il turno mostro i comandi busso, striscio, volo */
 	    if (isFirstPlayer) {
@@ -352,7 +352,7 @@ public class PlayGameController implements PlayGame {
 		}
 
 		Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-		switch (player.userName()) {
+		switch (player) {
 
 		case PLAYER_1:
 			this.user1Field.setImage(emptyFieldMyTurn);
@@ -471,8 +471,8 @@ public class PlayGameController implements PlayGame {
 	}
 	
 
-	private void deleteCardFromHand(final Player player) {
-		switch (player.userName()) {
+	private void deleteCardFromHand(final String player) {
+		switch (player) {
 		case PLAYER_2:
 			deleteCard(cardsPlayer2);
 			break;
@@ -568,6 +568,12 @@ public class PlayGameController implements PlayGame {
 		String pathOfImageSelected = path.substring(index, path.length());
 		return pathOfImageSelected;
 	}
+
+
+	public void setPlayersList(final List<String> playersList) {
+		this.playersList = playersList;
+	}
+
 	
 	
 }

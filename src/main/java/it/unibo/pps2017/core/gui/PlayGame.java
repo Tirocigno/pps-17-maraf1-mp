@@ -23,7 +23,7 @@ public interface PlayGame {
 	 * @param command
 	 *            command selected by user.
 	 */
-	void getCommand(final Player player, final String command);
+	void getCommand(final String player, final String command);
 
 	/**
 	 * This method is called when the turn is over: all four players has been played
@@ -49,17 +49,17 @@ public interface PlayGame {
 	 * @param partialTurnEnded
 	 *            true if the partial turn is ended, false otherwise.
 	 */
-	void setCurrentPlayer(final Player player, final boolean partialTurnEnded, final boolean isFirstPlayer);
+	void setCurrentPlayer(final String player, final boolean partialTurnEnded, final boolean isFirstPlayer);
 
 	/**
 	 * This method is called to show the played card from player.
 	 * 
 	 * @param player
-	 *            player that has played the card.
+	 *            player that has played the card.s
 	 * @param cardPath
 	 *            played card's path.
 	 */
-	void showOtherPlayersPlayedCard(final Player player, final String cardPath);
+	void showOtherPlayersPlayedCard(final String player, final String cardPath);
 
 	/**
 	 * This method is called to inform view of the chosen briscola.
