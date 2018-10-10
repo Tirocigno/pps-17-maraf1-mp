@@ -1,8 +1,8 @@
+
 package it.unibo.pps2017.server.model
 
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.vertx.lang.scala.json.JsonObject
 import io.vertx.scala.ext.web.RoutingContext
 import it.unibo.pps2017.server.model.ResponseStatus._
 

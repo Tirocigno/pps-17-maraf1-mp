@@ -1,6 +1,8 @@
+
 package it.unibo.pps2017.server.model
 
 import cats.syntax.functor._
+import io.circe.generic.semiauto.deriveDecoder
 import io.circe.{ Decoder, Encoder }, io.circe.generic.auto._
 import io.circe.syntax._
 
@@ -11,8 +13,12 @@ sealed trait JsonResponse
 
 case class Game(gameId: String) extends JsonResponse
 
+
 case class Message(message: String) extends JsonResponse
 case class Error(cause: Option[String] = None) extends JsonResponse
+
+
+
 
 object ResponseMessage {
   implicit val encodeEvent: Encoder[JsonResponse] = Encoder.instance {

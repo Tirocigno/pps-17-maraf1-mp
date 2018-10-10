@@ -1,7 +1,7 @@
+
 package it.unibo.pps2017.server.model
 
 import io.vertx.core.http.HttpMethod
-import io.vertx.lang.scala.json.{Json, JsonObject}
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 
 
@@ -61,8 +61,6 @@ case class POST(override val router: Router,
 
   handler()
 }
-
-
 
 
 object ResponseStatus {
