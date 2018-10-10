@@ -4,6 +4,8 @@ import akka.actor.Actor
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
 import it.unibo.pps2017.core.playerActor.PlayerActor._
 
+import scala.collection.mutable.ListBuffer
+
 object PlayerActor {
 
   case class Start(playersList: List[PlayerActor])
@@ -37,13 +39,18 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
   var player: PlayerActor = this // mio player
   var user: String = username // username del player
-  var orderedPlayersList: List[String] = _
+  var orderedPlayersList = new ListBuffer[String]()
 
   def receive: PartialFunction[Any, Unit] = {
 
     case Start(playersList) =>
       // qui devo ordinare la mia lista mettendo me in testa
-      clientController.sendPlayersList(orderedPlayersList)
+
+
+      for (player <- playersList) if (this.player.eq(player)) orderedPlayersList += player.getUsername
+
+
+      clientController.sendPlayersList(orderedPlayersList.toList)
 
     case DistributedCard(cards, player) =>
       if (this.player.eq(player))
