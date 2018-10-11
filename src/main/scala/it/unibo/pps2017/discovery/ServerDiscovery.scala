@@ -37,7 +37,15 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private val getServerAPIHandler: APIHandler = (_, response) => {
     serverMap.getLessBusyServer match {
       case Some(server) => response.sendResponse(server)
-      case _ => response.sendResponse(Error(Some("NO SERVER FOUND")))
+      case _ => setErrorAndRespond(response, "NO SERVER FOUND")
+    }
+  }
+  private val increaseServerMatchesAPIHandler: APIHandler = (router, response) => {
+    try {
+      serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
+      response.sendResponse(Message("INCREASE MATCHES ON SERVER"))
+    } catch {
+      case e: IllegalArgumentException => setErrorAndRespond(response, e.getMessage)
     }
   }
 
@@ -45,25 +53,18 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     serverMap.addServer(router.senderSocket)
     response.sendResponse(Message("SERVER REGISTERED SUCCESSFULLY"))
   }
-
-  private val increaseServerMatchesAPIHandler: APIHandler = (router, response) => {
-    try {
-      serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
-      response.sendResponse(Message("INCREASE MATCHES ON SERVER"))
-    } catch {
-      case e: IllegalArgumentException => response.sendResponse(Error(Some(e.getMessage)))
-    }
-  }
-
   private val decreaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
       serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
       response.sendResponse(Message("DECREASED MATCHES ON SERVER"))
     } catch {
-      case e: IllegalArgumentException => response.sendResponse(Error(Some(e.getMessage)))
-      case e: IllegalStateException => response.sendResponse(Error(Some(e.getMessage)))
+      case e: IllegalArgumentException => setErrorAndRespond(response, e.getMessage)
+      case e: IllegalStateException => setErrorAndRespond(response, e.getMessage)
     }
   }
+
+  private def setErrorAndRespond(response: RouterResponse, body: String): Unit =
+    response.setError().sendResponse(Error(Some(body)))
 
   private def mockHandler:(RoutingContext, RouterResponse) => Unit = (_,_) => println("Api called")
 
