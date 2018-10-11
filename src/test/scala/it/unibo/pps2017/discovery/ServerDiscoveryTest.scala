@@ -22,7 +22,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
   val defaultHost: String = "127.0.0.1"
   val defaultPort: Int = 8080
   val otherPort: Int = 8081
-  val timeOut: Int = 3
+  val timeOut: Int = 5
   var serverDiscovery: ServerDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
   private var vertx = Vertx.vertx()
 
