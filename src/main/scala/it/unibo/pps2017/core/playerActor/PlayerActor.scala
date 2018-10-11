@@ -7,20 +7,37 @@ import it.unibo.pps2017.core.playerActor.PlayerActor._
 import scala.collection.mutable.ListBuffer
 
 object PlayerActor {
+
   case class PlayersRef(playersList: ListBuffer[PlayerActor])
+
   case class DistributedCard(cards: List[String], player: PlayerActor)
+
   case class SelectBriscola(player: PlayerActor)
+
   case class BriscolaChosen(seed: Seed)
+
   case class NotifyBriscolaChosen(seed: Seed)
+
   case class Turn(player: PlayerActor, endPartialTurn: Boolean, isFirstPlayer: Boolean)
+
   case class ClickedCard(index: Int, player: PlayerActor)
-  case class EndTurn(firstTeamScore: Int, secondTeamScore: Int, endMatch: Boolean)
+
   case class PlayedCard(card: String, player: PlayerActor)
+
   case class ClickedCommand(command: String, player: PlayerActor)
+
   case class NotifyCommandChose(command: String, player: PlayerActor)
+
   case class ForcedCardPlayed(card: String, player: PlayerActor)
+
   case class CardOk(correctClickedCard: Boolean)
+
   case class SetTimer(timer: Int)
+
+  case class PartialGameScore(winner1: PlayerActor, winner2: PlayerActor, score1: Int, score2: Int)
+
+  case class FinalGameScore(winner1: PlayerActor, winner2: PlayerActor, score1: Int, score2: Int)
+
   final val START_PLAYER_SEARCH: Int = 0
   final val ADD_PLAYER_FOUNDED: Int = 1
   final val END_PLAYER_SEARCH: Int = 4
@@ -72,9 +89,6 @@ class PlayerActor(clientController: ClientController, username: String) extends 
       }
       clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
 
-    case EndTurn(firstTeamScore, secondTeamScore, endMatch) =>
-      clientController.cleanFieldEndTotalTurn(firstTeamScore, secondTeamScore, endMatch)
-
     case PlayedCard(card, player) =>
       clientController.showOtherPlayersPlayedCard(card, player.getUsername)
 
@@ -86,6 +100,35 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
     case SetTimer(timer) =>
       clientController.setTimer(timer)
+
+    case PartialGameScore(winner1, winner2, score1, score2) =>
+      if (this.actorPlayer.eq(winner1) | this.actorPlayer.eq(winner2)) {
+        if (score1 > score2) clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = false)
+        else clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = false)
+      } else {
+        if (score1 > score2) clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = false)
+        else clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = false)
+      }
+
+    case FinalGameScore(winner1, winner2, score1, score2) =>
+      if (this.actorPlayer.eq(winner1) | this.actorPlayer.eq(winner2)) {
+        if (score1 > score2) {
+          clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = true)
+          clientController.setWinner(true)
+        } else {
+          clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = true)
+          clientController.setWinner(true)
+        }
+      } else {
+        if (score1 > score2) {
+          clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = true)
+          clientController.setWinner(false)
+        }
+        else {
+          clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = true)
+          clientController.setWinner(false)
+        }
+      }
   }
 
   private def getUsername: String = {
