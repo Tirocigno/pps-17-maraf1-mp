@@ -5,6 +5,8 @@ import io.vertx.scala.core.net.SocketAddress
 import io.vertx.scala.ext.web.RoutingContext
 import it.unibo.pps2017.server.model.ServerContextEncoder
 
+import scala.language.implicitConversions
+
 package object discovery {
 
   type IPAddress = String
@@ -13,14 +15,7 @@ package object discovery {
 
   type MatchRef = String
 
-  case class ServerContext(IPAddress: IPAddress, port: Port) {
-    override def hashCode(): Port = super.hashCode()
-
-    override def equals(obj: Any): Boolean = obj match {
-      case ServerContext(otherAddress, otherPort) => IPAddress.equals(otherAddress) && port == otherPort
-      case _ => false
-    }
-  }
+  case class ServerContext(IPAddress: IPAddress, port: Port)
 
   implicit class RichRoutingContext(route: RoutingContext) {
     def senderSocket: SocketAddress = route.request().remoteAddress()

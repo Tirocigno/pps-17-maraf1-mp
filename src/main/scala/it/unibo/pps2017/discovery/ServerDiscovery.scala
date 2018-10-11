@@ -17,8 +17,6 @@ trait ServerDiscovery extends ScalaVerticle{
 
   def developAPI():Unit
 
-  def handleRestCall():Unit
-
   def addMockServer(IPAddress: IPAddress, port: Port): Unit
 
 }
@@ -40,19 +38,21 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       case _ => setErrorAndRespond(response, "NO SERVER FOUND")
     }
   }
-  private val increaseServerMatchesAPIHandler: APIHandler = (router, response) => {
-    try {
-      serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
-      response.sendResponse(Message("INCREASE MATCHES ON SERVER"))
-    } catch {
-      case e: IllegalArgumentException => setErrorAndRespond(response, e.getMessage)
-    }
-  }
 
   private val registerServerAPIHandler: APIHandler = (router, response) => {
     serverMap.addServer(router.senderSocket)
     response.sendResponse(Message("SERVER REGISTERED SUCCESSFULLY"))
   }
+
+  private val increaseServerMatchesAPIHandler: APIHandler = (router, response) => {
+    try {
+      serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
+      response.sendResponse(Message("INCREASE MATCHES ON SERVER"))
+    } catch {
+      case e: IllegalArgumentException => setErrorAndRespond(response, "BAD REQUEST")
+    }
+  }
+
   private val decreaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
       serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
@@ -87,8 +87,6 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
   }
-
-  override def handleRestCall(): Unit = ???
 
   override def addMockServer(IPAddress: IPAddress, port: Port): Unit =
     serverMap.addServer(ServerContext(IPAddress, port))
