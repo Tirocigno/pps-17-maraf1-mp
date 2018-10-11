@@ -23,6 +23,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
   val defaultPort: Int = 8080
   val otherPort: Int = 8081
   val timeOut: Int = 5
+  val asyncTimerDuration: Int = 1000
   var serverDiscovery: ServerDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
   private var vertx = Vertx.vertx()
 
@@ -33,7 +34,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     vertx = Vertx.vertx()
     serverDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
     vertx.deployVerticle(serverDiscovery)
-    Thread.sleep(1000)
+    waitForAsyncMethodToExecute()
   }
 
   /**
@@ -41,7 +42,14 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     */
   override protected def afterEach(): Unit = {
     vertx.close()
-    Thread.sleep(1000)
+    waitForAsyncMethodToExecute()
+  }
+
+  /**
+    * This method is used to block the thread to wait for a async call effect.
+    */
+  private def waitForAsyncMethodToExecute(): Unit = {
+    Thread.sleep(asyncTimerDuration)
   }
 
   private def generateMockClient(port: Int): WebClient = {
