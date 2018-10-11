@@ -1,8 +1,6 @@
 package it.unibo.pps2017.core.player
 
-import it.unibo.pps2017.core.deck.cards.Card
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
-
 import scala.collection.mutable.ListBuffer
 
 
@@ -20,6 +18,7 @@ final case class CardOk(correctClickedCard: Boolean)
 final case class PlayedCard(card: String, player: PlayerActor)
 final case class ClickedCommand(command: String, player: PlayerActor)
 final case class NotifyCommandChosen(command: String, player: PlayerActor)
+final case class GameFinished(winner1: PlayerActor, winner2: PlayerActor, score1: Int, score2: Int)
 //#messages
 
 

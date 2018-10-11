@@ -323,7 +323,10 @@ class GameActor extends Actor with Match with ActorLogging {
     None
   }
 
-  def notifyWinner(team: Team): Unit = gameEnd = true
+  def notifyWinner(team: Team): Unit = {
+    gameEnd = true
+    mediator ! Publish(TOPIC_NAME, GameFinished(team.firstMember.get,team.secondMember.get,team1.getScore, team1.getScore))
+  }
 
   private def checkMarafona(hand: Set[Card], player: PlayerActor): Unit = {
     if (hand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
