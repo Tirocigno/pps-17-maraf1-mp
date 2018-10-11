@@ -17,8 +17,6 @@ trait ServerDiscovery extends ScalaVerticle{
 
   def developAPI():Unit
 
-  def addMockServer(IPAddress: IPAddress, port: Port): Unit
-
 }
 
 object ServerDiscovery {
@@ -55,7 +53,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
 
   private val decreaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
-      serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
+      serverMap.decreaseMatchesPlayedOnServer(router.senderSocket)
       response.sendResponse(Message("DECREASED MATCHES ON SERVER"))
     } catch {
       case e: IllegalArgumentException => setErrorAndRespond(response, e.getMessage)
@@ -87,7 +85,4 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
   }
-
-  override def addMockServer(IPAddress: IPAddress, port: Port): Unit =
-    serverMap.addServer(ServerContext(IPAddress, port))
 }
