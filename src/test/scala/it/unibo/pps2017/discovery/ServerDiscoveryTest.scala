@@ -19,7 +19,7 @@ import scala.language.{implicitConversions, postfixOps}
 class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
 
   val defaultDiscoveryPort: Int = 49153
-  val defaultHost: String = "localhost"
+  val defaultHost: String = "127.0.0.1"
   val defaultPort: Int = 8080
   val otherPort: Int = 8081
   val timeOut: Int = 3
@@ -40,6 +40,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     */
   override protected def afterEach(): Unit = {
     vertx.close()
+    Thread.sleep(1000)
   }
 
   private def generateMockClient(port: Int): WebClient = {
