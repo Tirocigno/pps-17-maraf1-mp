@@ -15,6 +15,7 @@ public class PlayGameView extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("PlayGameView.fxml"));
+
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -22,6 +23,7 @@ public class PlayGameView extends Application {
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
 			primaryStage.show();
+			// prendere il riferimento al controller e passarlo a clientcontroller
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
