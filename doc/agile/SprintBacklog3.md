@@ -8,6 +8,6 @@
 | | Service discovery implementation| Naldini | 3 | ?|
 | | Server Actor implementation| Jakova | 8 | ? |
 | | Client Actor implementation | Brasini | 8 | ?|
-| | Integration between Sever and Actors | Jakova and Riciputi | 2 | ?|
-| | Integration between Client and Actors | Jakova and Riciputi | 4 | ?|
+| | Integration between Server and Actors | Jakova and Riciputi | 2 | ?|
+| | Integration between Client and Actors | Brasini and Naldini | 4 | ?|
 | | Integration between Client and Server | All | 20 | ?|
