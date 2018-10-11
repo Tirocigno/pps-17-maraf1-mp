@@ -281,7 +281,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
-        this.score.setText("Score: " + scoreFirstTeam + "-" + scoreSecondTeam);
+        this.score.setText("My team's score: " + scoreFirstTeam + "\n Other team's score:" + scoreSecondTeam);
         this.score.setVisible(true);
         createLabelScaleTransition(this.score, endedMatch);
     }
@@ -297,8 +297,8 @@ public class PlayGameController implements PlayGame {
         scoreTransition.setOnFinished(endScore -> {
             if (endedMatch) {
                 Image finalImage;
-                boolean winMatch = false; // da sostituire con la funzione del controller
-                // chiamo metodo controller che mi dice se ho vinto
+                boolean winMatch;
+                winMatch = clientController.getWinner();
                 if (winMatch) {
                     finalImage = getImageFromPath(WIN_MATCH);
                     createImageScaleTransition(finalImage);
