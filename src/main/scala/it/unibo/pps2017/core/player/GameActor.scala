@@ -182,7 +182,7 @@ class GameActor extends Actor with Match with ActorLogging {
       }
       i += 1
     })
-    mediator ! Publish(TOPIC_NAME,PlayersRef(actors.toSet))
+    mediator ! Publish(TOPIC_NAME,PlayersRef(actors))
     mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get))
 
   }

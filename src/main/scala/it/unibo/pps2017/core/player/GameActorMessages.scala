@@ -3,11 +3,13 @@ package it.unibo.pps2017.core.player
 import it.unibo.pps2017.core.deck.cards.Card
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
 
+import scala.collection.mutable.ListBuffer
+
 
 //#messages
 final case class RegisterPlayer(player: PlayerActor)
 final case class DistributedCard(cards: List[String],player: PlayerActor)
-final case class PlayersRef(players: Set[PlayerActor])
+final case class PlayersRef(players: ListBuffer[PlayerActor])
 final case class Turn(player: PlayerActor, endPartialTurn: Boolean, isFirstPlayer: Boolean)
 final case class SelectBriscola(player: PlayerActor)
 final case class BriscolaChosen(seed: Seed)
