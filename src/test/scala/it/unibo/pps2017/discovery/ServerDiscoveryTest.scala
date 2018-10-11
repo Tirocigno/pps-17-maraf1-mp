@@ -33,6 +33,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     vertx = Vertx.vertx()
     serverDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
     vertx.deployVerticle(serverDiscovery)
+    Thread.sleep(1000)
   }
 
   /**
