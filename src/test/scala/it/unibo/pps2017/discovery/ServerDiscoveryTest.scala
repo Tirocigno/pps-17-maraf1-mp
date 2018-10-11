@@ -5,7 +5,7 @@ package it.unibo.pps2017.discovery
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.client.{WebClient, WebClientOptions}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{DiscoveryAPI, GetServerAPI, IncreaseServerMatches, RegisterServerAPI}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.server.model.ResponseStatus
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -80,13 +80,43 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI)
     assert(increaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
+
+
   test("Increasing number of matches on a server") {
     val webClient = generateMockClient(defaultPort)
     val result = registerAServer(webClient, defaultDiscoveryPort)
     assert(result.statusCode() == ResponseStatus.OK_CODE)
     val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, IncreaseServerMatches)
-    println(increaseResult.bodyAsString().get)
     assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
+  }
+
+  test("Increasing number of matches on a non registered server") {
+    val webClient = generateMockClient(defaultPort)
+    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, IncreaseServerMatches)
+    assert(increaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
+  }
+
+  test("Decreasing number of matches on a server") {
+    val webClient = generateMockClient(defaultPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort)
+    assert(result.statusCode() == ResponseStatus.OK_CODE)
+    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, IncreaseServerMatches)
+    val decreaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, DecreaseServerMatches)
+    assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
+  }
+
+  test("Decreasing number of matches on a server with no matches") {
+    val webClient = generateMockClient(defaultPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort)
+    assert(result.statusCode() == ResponseStatus.OK_CODE)
+    val decreaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, DecreaseServerMatches)
+    assert(decreaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
+  }
+
+  test("Decreasing number of matches on a not registered server") {
+    val webClient = generateMockClient(defaultPort)
+    val decreaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, DecreaseServerMatches)
+    assert(decreaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
 
 }
