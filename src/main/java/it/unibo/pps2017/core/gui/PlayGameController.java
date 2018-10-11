@@ -35,10 +35,6 @@ public class PlayGameController implements PlayGame {
     private static final String FORMAT = ".png";
     private static final String START_PATH = "src";
     private static final int TOTAL_HAND_CARDS = 10;
-    private static final String PLAYER_1 = "Player1";
-    private static final String PLAYER_2 = "Player2";
-    private static final String PLAYER_3 = "Player3";
-    private static final String PLAYER_4 = "Player4";
     private ClientController clientController;
 
     @FXML
@@ -95,11 +91,14 @@ public class PlayGameController implements PlayGame {
      * quando gioco una carta quale e' e dirlo al controller
      */
     private Map<Integer, String> indexOfMyCards;
-    private List<String> firstPlayerCards;
     private List<String> playersList;
     private List<ImageView> cardsPlayer2;
     private List<ImageView> cardsPlayer3;
     private List<ImageView> cardsPlayer4;
+    private String player1;
+    private String player2;
+    private String player3;
+    private String player4;
 
     public PlayGameController() {
         this.indexOfMyCards = new HashMap<>();
@@ -126,16 +125,12 @@ public class PlayGameController implements PlayGame {
     @Override
     public void getCommand(final String player, final String command) {
         Image userCommand = getImageFromPath(COMMANDS_PATH + command + FORMAT);
-        switch (player) {
-            case PLAYER_2:
-                createTimeline(userTwoCommand, userCommand);
-                break;
-            case PLAYER_3:
-                createTimeline(userThreeCommand, userCommand);
-                break;
-            case PLAYER_4:
-                createTimeline(userFourCommand, userCommand);
-                break;
+        if (player.equals(player2)) {
+            createTimeline(userTwoCommand, userCommand);
+        } else if (player.equals(player3)) {
+            createTimeline(userThreeCommand, userCommand);
+        } else if (player.equals(player4)) {
+            createTimeline(userFourCommand, userCommand);
         }
     }
 
@@ -169,7 +164,7 @@ public class PlayGameController implements PlayGame {
     /**
      * Method to show which card is pressed by first user and throw it in field.
      *
-     * @param clickedCard
+     * @param clickedCard clickedCard.
      */
     public void clickedCard(final MouseEvent clickedCard) {
 
@@ -234,16 +229,13 @@ public class PlayGameController implements PlayGame {
     @Override
     public void showOtherPlayersPlayedCard(final String player, final String cardPath) {
         Image cardPlayed = getImageFromPath(cardPath);
-        switch (player) {
-            case PLAYER_2:
-                this.user2Field.setImage(cardPlayed);
-                break;
-            case PLAYER_3:
-                this.user3Field.setImage(cardPlayed);
-                break;
-            case PLAYER_4:
-                this.user4Field.setImage(cardPlayed);
-                break;
+
+        if (player.equals(player2)) {
+            this.user2Field.setImage(cardPlayed);
+        } else if (player.equals(player3)) {
+            this.user3Field.setImage(cardPlayed);
+        } else if (player.equals(player4)) {
+            this.user4Field.setImage(cardPlayed);
         }
         /* dopo aver mostrato la carta ne devo eliminare una dalla mano dell'utente */
         deleteCardFromHand(player);
@@ -262,19 +254,15 @@ public class PlayGameController implements PlayGame {
             cleanField();
         }
         Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
-        switch (player) {
-            case PLAYER_1:
-                this.user1Field.setImage(emptyFieldMyTurn);
-                break;
-            case PLAYER_2:
-                this.user2Field.setImage(emptyFieldMyTurn);
-                break;
-            case PLAYER_3:
-                this.user3Field.setImage(emptyFieldMyTurn);
-                break;
-            case PLAYER_4:
-                this.user4Field.setImage(emptyFieldMyTurn);
-                break;
+
+        if (player.equals(player1)) {
+            this.user1Field.setImage(emptyFieldMyTurn);
+        } else if (player.equals(player2)) {
+            this.user2Field.setImage(emptyFieldMyTurn);
+        } else if (player.equals(player3)) {
+            this.user3Field.setImage(emptyFieldMyTurn);
+        } else if (player.equals(player4)) {
+            this.user4Field.setImage(emptyFieldMyTurn);
         }
     }
 
@@ -299,7 +287,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private void createLabelScaleTransition(final Label score, final boolean endedMatch) {
-        ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.score);
+        ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), score);
         scoreTransition.setFromX(START_ANIMATION_POSITION);
         scoreTransition.setFromY(START_ANIMATION_POSITION);
         scoreTransition.setToX(END_ANIMATION_POSITION);
@@ -329,9 +317,7 @@ public class PlayGameController implements PlayGame {
         scoreTransition.setToX(END_ANIMATION_POSITION + 1);
         scoreTransition.setToY(END_ANIMATION_POSITION + 1);
         scoreTransition.play();
-        scoreTransition.setOnFinished(endScore -> {
-            this.gameOverImage.setVisible(false);
-        });
+        scoreTransition.setOnFinished(endScore ->  this.gameOverImage.setVisible(false));
     }
 
     public void showBriscolaCommands() {
@@ -385,16 +371,12 @@ public class PlayGameController implements PlayGame {
     }
 
     private void deleteCardFromHand(final String player) {
-        switch (player) {
-            case PLAYER_2:
-                deleteCard(cardsPlayer2);
-                break;
-            case PLAYER_3:
-                deleteCard(cardsPlayer3);
-                break;
-            case PLAYER_4:
-                deleteCard(cardsPlayer4);
-                break;
+        if (player.equals(player2)) {
+            deleteCard(cardsPlayer2);
+        } else if (player.equals(player3)) {
+            deleteCard(cardsPlayer3);
+        } else if (player.equals(player4)) {
+            deleteCard(cardsPlayer4);
         }
     }
 
@@ -477,8 +459,7 @@ public class PlayGameController implements PlayGame {
     /* Metodo per pulire il path ricavato dalla ImageView */
     private String getCleanPath(final String path) {
         int index = path.indexOf(START_PATH);
-        String pathOfImageSelected = path.substring(index, path.length());
-        return pathOfImageSelected;
+        return path.substring(index, path.length());
     }
 
     /**
@@ -488,5 +469,9 @@ public class PlayGameController implements PlayGame {
      */
     public void setPlayersList(final List<String> playersList) {
         this.playersList = playersList;
+        this.player1 = playersList.get(0);
+        this.player2 = playersList.get(1);
+        this.player3 = playersList.get(2);
+        this.player4 = playersList.get(3);
     }
 }
