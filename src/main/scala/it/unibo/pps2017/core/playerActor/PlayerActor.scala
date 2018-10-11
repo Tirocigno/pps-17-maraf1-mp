@@ -7,55 +7,39 @@ import it.unibo.pps2017.core.playerActor.PlayerActor._
 import scala.collection.mutable.ListBuffer
 
 object PlayerActor {
-
-  case class PlayersRef(playersList: Set[PlayerActor])
-
+  case class PlayersRef(playersList: ListBuffer[PlayerActor])
   case class DistributedCard(cards: List[String], player: PlayerActor)
-
   case class SelectBriscola(player: PlayerActor)
-
   case class BriscolaChosen(seed: Seed)
-
   case class NotifyBriscolaChosen(seed: Seed)
-
   case class Turn(player: PlayerActor, endPartialTurn: Boolean, isFirstPlayer: Boolean)
-
   case class ClickedCard(index: Int, player: PlayerActor)
-
   case class EndTurn(firstTeamScore: Int, secondTeamScore: Int, endMatch: Boolean)
-
   case class PlayedCard(card: String, player: PlayerActor)
-
   case class ClickedCommand(command: String, player: PlayerActor)
-
   case class NotifyCommandChose(command: String, player: PlayerActor)
-
   case class ForcedCardPlayed(card: String, player: PlayerActor)
-
   case class CardOk(correctClickedCard: Boolean)
-
   case class SetTimer(timer: Int)
-
+  final val START_PLAYER_SEARCH: Int = 0
+  final val ADD_PLAYER_FOUNDED: Int = 1
+  final val END_PLAYER_SEARCH: Int = 4
 }
 
 
 class PlayerActor(clientController: ClientController, username: String) extends Actor {
 
-  var actorPlayer: PlayerActor = this // mio player
-  var user: String = username // username del player
+  var actorPlayer: PlayerActor = this
+  var user: String = username
   var orderedPlayersList = new ListBuffer[String]()
-  var gameActor: ActorRef = _ // riferimento al gameActor
+  var gameActor: ActorRef = _
 
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>
-      /* prendo il riferimento al GameActor */
-      gameActor = sender()
-      /* qui devo ordinare la mia lista mettendo me in testa */
-      for (player <- playersList) if (this.actorPlayer.eq(player)) orderedPlayersList += player.getUsername
-
-
-      clientController.sendPlayersList(orderedPlayersList.toList)
+      this.gameActor = sender()
+      val finalList: ListBuffer[String] = this.orderPlayersList(playersList)
+      clientController.sendPlayersList(finalList.toList)
 
     case DistributedCard(cards, player) =>
       if (this.actorPlayer.eq(player))
@@ -108,4 +92,23 @@ class PlayerActor(clientController: ClientController, username: String) extends 
     user
   }
 
+  private def orderPlayersList(playersList: ListBuffer[PlayerActor]): ListBuffer[String] = {
+
+    val tempList = playersList ++ playersList
+    var orderedList = new ListBuffer[String]
+
+    var searchPlayer = START_PLAYER_SEARCH
+    for (player <- tempList) {
+      if (this.actorPlayer.eq(player) & searchPlayer.equals(START_PLAYER_SEARCH)) {
+        orderedList += player.getUsername
+        System.out.println(orderedList)
+        searchPlayer += ADD_PLAYER_FOUNDED
+      }
+      if (searchPlayer != START_PLAYER_SEARCH & searchPlayer < END_PLAYER_SEARCH & !this.actorPlayer.eq(player)) {
+        orderedList += player.getUsername
+        searchPlayer += ADD_PLAYER_FOUNDED
+      }
+    }
+    orderedList
+  }
 }

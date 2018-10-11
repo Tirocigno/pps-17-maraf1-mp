@@ -4,9 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
 import it.unibo.pps2017.core.gui.PlayGameController
 import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCard, ClickedCommand, BriscolaChosen}
-
 import scala.collection.JavaConverters._
-
 
 abstract class ClientController {
 
@@ -52,11 +50,9 @@ abstract class ClientController {
     playGameController.setTimer(timer)
   }
 
-  /** Metodo per inviare al PlayerActor il comando cliccato dalla gui */
   def setCommandFromPlayer(command: String): Unit = {
     myActor ! ClickedCommand(command, null)
   }
-
 
   def selectedBriscola(briscola: String): Unit = {
     val seed: Seed = null
@@ -87,6 +83,4 @@ abstract class ClientController {
   def sendPlayersList(playersList: List[String]): Unit = {
     playGameController.setPlayersList(playersList.asJava)
   }
-
-
 }
