@@ -1,6 +1,6 @@
 package it.unibo.pps2017.core.playerActor
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorRef}
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
 import it.unibo.pps2017.core.playerActor.PlayerActor._
 
@@ -12,9 +12,9 @@ object PlayerActor {
 
   case class DistributedCard(cards: List[String], player: PlayerActor)
 
-  case class SelectBriscola(player: PlayerActor) // la manda il controller per capire chi deve fare le bris
+  case class SelectBriscola(player: PlayerActor)
 
-  case class BriscolaChosen(seed: Seed) // la mando io al GameActor per la bris che ho scelto
+  case class BriscolaChosen(seed: Seed)
 
   case class NotifyBriscolaChosen(seed: Seed)
 
@@ -41,48 +41,47 @@ object PlayerActor {
 
 class PlayerActor(clientController: ClientController, username: String) extends Actor {
 
-  var player: PlayerActor = this // mio player
+  var actorPlayer: PlayerActor = this // mio player
   var user: String = username // username del player
   var orderedPlayersList = new ListBuffer[String]()
+  var gameActor: ActorRef = _ // riferimento al gameActor
 
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>
-      // qui devo ordinare la mia lista mettendo me in testa
-      for (player <- playersList) if (this.player.eq(player)) orderedPlayersList += player.getUsername
+      /* prendo il riferimento al GameActor */
+      gameActor = sender()
+      /* qui devo ordinare la mia lista mettendo me in testa */
+      for (player <- playersList) if (this.actorPlayer.eq(player)) orderedPlayersList += player.getUsername
+
+
       clientController.sendPlayersList(orderedPlayersList.toList)
 
     case DistributedCard(cards, player) =>
-      if (this.player.eq(player))
+      if (this.actorPlayer.eq(player))
         clientController.getCardsFirstPlayer(cards)
 
     case SelectBriscola(player) =>
-      if (this.player.eq(player))
+      if (this.actorPlayer.eq(player))
         clientController.selectBriscola()
 
     case BriscolaChosen(seed) =>
-    /** inviare al GameActor la briscola scelta
-      * gameActor ! BriscolaChosen(seed)
-      * * */
+      gameActor ! BriscolaChosen(seed)
 
     case NotifyBriscolaChosen(seed) =>
       clientController.getBriscolaChosen(briscola = seed.getSeed())
 
     case ClickedCard(index, player) =>
-    /** inviare l'indice della carta scelta al GameActor
-      * gameActor ! ClickedCard(index, this.player)
-      * */
+      gameActor ! ClickedCard(index, this.actorPlayer)
 
     case CardOk(correctClickedCard) =>
       clientController.setCardOK(correctClickedCard)
 
     case ClickedCommand(command, player) =>
-    /** inviare comando e giocatore al GameActor
-      * gameActor ! ClickedCommand(command, this.player)
-      * */
+      gameActor ! ClickedCommand(command, this.actorPlayer)
 
     case Turn(player, endPartialTurn, isFirstPlayer) =>
-      if (this.player.eq(player)) {
+      if (this.actorPlayer.eq(player)) {
         clientController.setMyTurn(true)
       } else {
         clientController.setMyTurn(false)
