@@ -83,6 +83,6 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       .setIdleTimeout(timeout)
 
     val v = vertx.createHttpServer(options)
-      .requestHandler(router.accept _).listen(port, "localhost")
+      .requestHandler(router.accept _).listen(port)
   }
 }
