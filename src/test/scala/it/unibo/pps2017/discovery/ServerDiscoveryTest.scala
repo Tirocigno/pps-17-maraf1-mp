@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.discovery
 
+
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.client.{WebClient, WebClientOptions}
@@ -24,12 +25,18 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
   var serverDiscovery: ServerDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
   private var vertx = Vertx.vertx()
 
+  /**
+    * Create the vertx environment every test.
+    */
   override protected def beforeEach() {
     vertx = Vertx.vertx()
     serverDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
     vertx.deployVerticle(serverDiscovery)
   }
 
+  /**
+    * Shut down the server after exh test.
+    */
   override protected def afterEach(): Unit = {
     vertx.close()
   }
@@ -58,8 +65,8 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     assert(result.statusCode() == ResponseStatus.OK_CODE)
   }
 
-  //TODO Test should not pass, instead pass because Riciputi thought that was funny to give error messages ok code ._.
-  test("Increasing number of current played matches on a registered server") {
+
+  test("Getting a registered server") {
     val webClient = generateMockClient(defaultPort)
     val result = registerAServer(webClient, defaultDiscoveryPort)
     assert(result.statusCode() == ResponseStatus.OK_CODE)
@@ -67,9 +74,10 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
-  //TODO Increase is probably broken, FIX IT
-  test("Mock test 3") {
-    Thread.sleep(1000)
+  test("Trying to get a server when no server is registered") {
+    val webClient = generateMockClient(defaultPort)
+    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI)
+    assert(increaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
   test("Mock test 4") {
     Thread.sleep(1000)
