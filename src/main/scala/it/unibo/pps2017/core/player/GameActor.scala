@@ -76,7 +76,7 @@ class GameActor extends Actor with Match with ActorLogging {
     case BriscolaChosen(seed) => {
       setBriscola(seed)
       mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed))
-      val setEnd = isSetEnd.get._3
+      val setEnd = gameEnd
       mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get,setEnd,true))
       startTimer()
     }
@@ -210,6 +210,12 @@ class GameActor extends Actor with Match with ActorLogging {
 
   override def isSetEnd: Option[(Int, Int, Boolean)] = {
     if (setEnd) {
+      /*if(team1.getScore > team2.getScore){
+        mediator ! Publish(TOPIC_NAME, PartialGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
+      }
+      else{
+        mediator ! Publish(TOPIC_NAME, PartialGameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore))
+      }*/
       Some((team1.getScore, team2.getScore, gameEnd))
     }
 
@@ -262,7 +268,7 @@ class GameActor extends Actor with Match with ActorLogging {
     cardsInHand.get(player).get -= card
 
     if (!gameCycle.isLast) {
-      mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next(),isSetEnd.get._3, gameCycle.isFirst))
+      mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next(),gameEnd, gameCycle.isFirst))
     } else {
      //onHandEnd(cardsOnTable)
     }
@@ -279,7 +285,7 @@ class GameActor extends Actor with Match with ActorLogging {
   private def onHandEnd(lastTaker: PlayerActor): Unit = {
     deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
     nextHandStarter = Some(lastTaker)
-    mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, isSetEnd.get._3, gameCycle.isFirst))
+    mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, gameEnd, gameCycle.isFirst))
     currentSuit = None
     cardsOnTable.clear()
 
@@ -325,7 +331,7 @@ class GameActor extends Actor with Match with ActorLogging {
 
   def notifyWinner(team: Team): Unit = {
     gameEnd = true
-    mediator ! Publish(TOPIC_NAME, GameFinished(team.firstMember.get,team.secondMember.get,team1.getScore, team1.getScore))
+    mediator ! Publish(TOPIC_NAME, FinalGameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore))
   }
 
   private def checkMarafona(hand: Set[Card], player: PlayerActor): Unit = {
