@@ -18,7 +18,7 @@ import scala.language.{implicitConversions, postfixOps}
 @RunWith(classOf[JUnitRunner])
 class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
 
-  val defaultDiscoveryPort: Int = 49153
+  val defaultDiscoveryPort: Int = 1234
   val defaultHost: String = "0.0.0.0"
   val defaultPort: Int = 8080
   val otherPort: Int = 8081

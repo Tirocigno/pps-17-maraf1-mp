@@ -98,7 +98,38 @@ object DiscoveryAPI {
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       POST(router, path, handle)
 
-    override def path: String = "/decreaseservermatches"
+    override def path: String = "/registermatch"
   }
+
+  case object RemoveMatch extends DiscoveryAPI {
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+
+    override def path: String = "/removermatch"
+  }
+
+  case object GetMatch extends DiscoveryAPI {
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+
+    override def path: String = "/getmatch"
+  }
+
+  case object GetAllMatches extends DiscoveryAPI {
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+
+    override def path: String = "/getallmatches"
+  }
+
 
 }
