@@ -91,4 +91,14 @@ object DiscoveryAPI {
     override def path: String = "/decreaseservermatches"
   }
 
+  case object RegisterMatch extends DiscoveryAPI {
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+
+    override def path: String = "/decreaseservermatches"
+  }
+
 }
