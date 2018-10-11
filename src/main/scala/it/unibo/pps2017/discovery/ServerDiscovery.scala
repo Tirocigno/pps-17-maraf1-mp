@@ -82,7 +82,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     options.setCompressionSupported(true)
       .setIdleTimeout(timeout)
 
-    vertx.createHttpServer(options)
-      .requestHandler(router.accept _).listen(port)
+    val v = vertx.createHttpServer(options)
+      .requestHandler(router.accept _).listen(port, "localhost")
   }
 }
