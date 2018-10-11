@@ -8,20 +8,24 @@ package it.unibo.pps2017.core.deck.cards
 object Seed {
 
   sealed trait Seed {
-    var seed: String = _
-
-    def getSeed(): String = this.seed
-
-    def setSeed(seed: String): Unit = this.seed = seed
+    def asString:String
   }
 
-  case object Sword extends Seed
+  case object Sword extends Seed {
+    override def asString: String = "Sword"
+  }
 
-  case object Cup extends Seed
+  case object Cup extends Seed {
+    override def asString: String = "Cup"
+  }
 
-  case object Coin extends Seed
+  case object Coin extends Seed {
+    override def asString: String = "Coin"
+  }
 
-  case object Club extends Seed
+  case object Club extends Seed {
+    override def asString: String = "Club"
+  }
 
 
 

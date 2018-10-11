@@ -1,14 +1,16 @@
 package it.unibo.pps2017.core.playerActor
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import it.unibo.pps2017.core.deck.cards.Seed.Seed
+import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
-import it.unibo.pps2017.core.playerActor.PlayerActor.{ClickedCard, ClickedCommand, BriscolaChosen}
+import it.unibo.pps2017.core.playerActor.PlayerActor.{BriscolaChosen, ClickedCard, ClickedCommand}
+
 import scala.collection.JavaConverters._
 
 abstract class ClientController {
 
   /** oggetto gui */
+
   var playGameController: PlayGameController
   val system = ActorSystem("mySystem")
   /**
@@ -54,10 +56,12 @@ abstract class ClientController {
     myActor ! ClickedCommand(command, null)
   }
 
-  def selectedBriscola(briscola: String): Unit = {
-    val seed: Seed = null
-    seed.setSeed(briscola)
-    myActor ! BriscolaChosen(seed)
+  def selectedBriscola(briscola: String): Unit = briscola match {
+    case Sword.asString => myActor ! BriscolaChosen(Sword)
+    case Cup.asString => myActor ! BriscolaChosen(Cup)
+    case Coin.asString => myActor ! BriscolaChosen(Coin)
+    case Club.asString => myActor ! BriscolaChosen(Club)
+    case _ => new IllegalArgumentException()
   }
 
   def setPlayedCard(cardIndex: Int): Unit = {

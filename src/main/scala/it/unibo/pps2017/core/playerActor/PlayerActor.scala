@@ -70,7 +70,7 @@ class PlayerActor(clientController: ClientController, username: String) extends 
       gameActor ! BriscolaChosen(seed)
 
     case NotifyBriscolaChosen(seed) =>
-      clientController.getBriscolaChosen(briscola = seed.getSeed())
+      clientController.getBriscolaChosen(briscola = seed.asString)
 
     case ClickedCard(index, player) =>
       gameActor ! ClickedCard(index, this.actorPlayer)
