@@ -14,7 +14,7 @@ class ServerMapTest extends FunSuite with BeforeAndAfterEach {
   val mockIP2 = "0.0.1.0"
   val mockPort = 4851
   val mockServerContext = discovery.ServerContext(mockIP, mockPort)
-  val otherServerContext = discovery.ServerContext(mockIP, mockPort)
+  val otherServerContext = discovery.ServerContext(mockIP2, mockPort)
   var serverMap: ServerMap = ServerMap()
 
   override def beforeEach() {
@@ -34,6 +34,7 @@ class ServerMapTest extends FunSuite with BeforeAndAfterEach {
 
 
   test("Get actual less busy server") {
+    val secondMapContext = discovery.ServerContext(mockIP2, mockPort)
     serverMap.addServer(mockServerContext)
     serverMap.addServer(otherServerContext)
     try {

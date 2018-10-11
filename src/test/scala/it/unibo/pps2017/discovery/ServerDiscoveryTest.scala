@@ -5,7 +5,7 @@ package it.unibo.pps2017.discovery
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.client.{WebClient, WebClientOptions}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{DiscoveryAPI, GetServerAPI, RegisterServerAPI}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{DiscoveryAPI, GetServerAPI, IncreaseServerMatches, RegisterServerAPI}
 import it.unibo.pps2017.server.model.ResponseStatus
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -13,6 +13,7 @@ import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.language.{implicitConversions, postfixOps}
 
 @RunWith(classOf[JUnitRunner])
 class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
@@ -79,8 +80,13 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI)
     assert(increaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
-  test("Mock test 4") {
-    Thread.sleep(1000)
+  test("Increasing number of matches on a server") {
+    val webClient = generateMockClient(defaultPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort)
+    assert(result.statusCode() == ResponseStatus.OK_CODE)
+    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, IncreaseServerMatches)
+    println(increaseResult.bodyAsString().get)
+    assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
 }
