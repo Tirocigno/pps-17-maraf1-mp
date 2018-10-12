@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ScaleTransition;
@@ -165,7 +166,7 @@ public class PlayGameController implements PlayGame {
 
 
     /**
-     * Method to show which card is pressed by first user and throw it in field.
+     * Method to show which card is pressed by first.
      *
      * @param clickedCard clickedCard.
      */
@@ -192,6 +193,7 @@ public class PlayGameController implements PlayGame {
         }
     }
 
+    @Override
     public void showPlayedCardOk() {
         this.cardNotOk.setVisible(false);
         // visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano
@@ -201,6 +203,7 @@ public class PlayGameController implements PlayGame {
         hideCommands();
     }
 
+    @Override
     public void showPlayedCardError() {
         this.cardNotOk.setVisible(true);
     }
