@@ -12,19 +12,19 @@ object Seed {
   }
 
   case object Sword extends Seed {
-    override def asString: String = "Sword"
+    override val asString: String = "Sword"
   }
 
   case object Cup extends Seed {
-    override def asString: String = "Cup"
+    override val asString: String = "Cup"
   }
 
   case object Coin extends Seed {
-    override def asString: String = "Coin"
+    override val asString: String = "Coin"
   }
 
   case object Club extends Seed {
-    override def asString: String = "Club"
+    override val asString: String = "Club"
   }
 
 
