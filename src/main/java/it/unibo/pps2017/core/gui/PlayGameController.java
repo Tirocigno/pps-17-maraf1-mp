@@ -99,6 +99,9 @@ public class PlayGameController implements PlayGame {
     private String player2;
     private String player3;
     private String player4;
+    /* Due variabili per gestire la carta giocata */
+    private String pathOfImageSelected;
+    private ImageView playedCard;
 
     public PlayGameController() {
         this.indexOfMyCards = new HashMap<>();
@@ -167,28 +170,41 @@ public class PlayGameController implements PlayGame {
      * @param clickedCard clickedCard.
      */
     public void clickedCard(final MouseEvent clickedCard) {
-
-        this.cardNotOk.setVisible(false);
         if (clientController.isMyTurn()) {
-            ImageView playedCard = (ImageView) clickedCard.getSource();
+            this.playedCard = (ImageView) clickedCard.getSource();
             @SuppressWarnings("deprecation")
             String path = getCleanPath(playedCard.getImage().impl_getUrl());
-            String pathOfImageSelected = getCleanPath(path);
-            Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
+            this.pathOfImageSelected = getCleanPath(path);
+            //Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
 
             int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
             clientController.setPlayedCard(indexCardSelected);
 
-            if (clientController.cardOK()) {
-                /* visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano */
+           /* if (clientController.cardOK()) {
+                // visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano
+                Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
                 this.user1Field.setImage(imagePlayedCard);
                 playedCard.setVisible(false);
                 hideCommands();
             } else {
                 this.cardNotOk.setVisible(true);
-            }
+            } */
         }
     }
+
+    public void showPlayedCardOk() {
+        this.cardNotOk.setVisible(false);
+        // visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano
+        Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
+        this.user1Field.setImage(imagePlayedCard);
+        playedCard.setVisible(false);
+        hideCommands();
+    }
+
+    public void showPlayedCardError() {
+        this.cardNotOk.setVisible(true);
+    }
+
 
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
@@ -317,7 +333,7 @@ public class PlayGameController implements PlayGame {
         scoreTransition.setToX(END_ANIMATION_POSITION + 1);
         scoreTransition.setToY(END_ANIMATION_POSITION + 1);
         scoreTransition.play();
-        scoreTransition.setOnFinished(endScore ->  this.gameOverImage.setVisible(false));
+        scoreTransition.setOnFinished(endScore -> this.gameOverImage.setVisible(false));
     }
 
     public void showBriscolaCommands() {

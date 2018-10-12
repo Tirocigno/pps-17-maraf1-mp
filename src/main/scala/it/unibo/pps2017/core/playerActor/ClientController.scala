@@ -17,7 +17,6 @@ abstract class ClientController {
     * ActorRef of the actor*/
   val myActor: ActorRef = system.actorOf(Props(new PlayerActor(this, "nic")))
   var myTurn: Boolean = _
-  var cardOK: Boolean = _
   var amIWinner: Boolean = _
 
   def getCardsFirstPlayer(cards: List[String]): Unit = {
@@ -76,12 +75,9 @@ abstract class ClientController {
     this.myTurn = turn
   }
 
-  def setCardOK(cardOK: Boolean): Unit = {
-    this.cardOK = cardOK
-  }
-
-  def isCardOK(): Boolean = {
-    this.cardOK
+  def setCardOK(cardOK: Boolean): Unit = cardOK match {
+    case true => playGameController.showPlayedCardOk()
+    case false => playGameController.showPlayedCardError()
   }
 
   def sendPlayersList(playersList: List[String]): Unit = {
