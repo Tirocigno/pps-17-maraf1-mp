@@ -70,7 +70,8 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     response.sendResponse(returnSet)
   }
 
-  private def mockHandler:(RoutingContext, RouterResponse) => Unit = (_,_) => println("Api called")
+  private def mockHandler:(RoutingContext, RouterResponse) => Unit = (_,res) =>
+    res.sendResponse(Message("API CALLED"))
 
   override def start(): Unit = developAPI()
 
@@ -80,11 +81,12 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       case api @ GetServerAPI => api.asRequest(router, getServerAPIHandler)
       case api @ RegisterServerAPI => api.asRequest(router,
         registerServerAPIHandler)
-      case api @ IncreaseServerMatches => api.asRequest(router,
+      case api @ IncreaseServerMatchesAPI => api.asRequest(router,
         increaseServerMatchesAPIHandler)
-      case api @ DecreaseServerMatches => api.asRequest(router,
+      case api @ DecreaseServerMatchesAPI => api.asRequest(router,
         decreaseServerMatchesAPIHandler)
-      case api @ GetAllMatches => api.asRequest(router, getMatchesSetAPIHandler)
+      case api @ GetAllMatchesAPI => api.asRequest(router,
+        getMatchesSetAPIHandler)
       case api @ _ => api.asRequest(router,mockHandler)
     })
 
