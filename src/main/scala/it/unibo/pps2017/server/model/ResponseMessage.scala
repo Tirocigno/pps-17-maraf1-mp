@@ -32,6 +32,7 @@ object ResponseMessage {
     List[Decoder[JsonResponse]](
       Decoder[Game].widen,
       Decoder[Message].widen,
-      Decoder[Error].widen
+      Decoder[Error].widen,
+      Decoder[ServerContextEncoder].widen
     ).reduceLeft(_ or _)
 }
