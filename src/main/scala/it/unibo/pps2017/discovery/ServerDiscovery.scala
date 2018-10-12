@@ -6,7 +6,7 @@ import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.discovery.ServerDiscovery.APIHandler
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{DecreaseServerMatches, GetServerAPI, IncreaseServerMatches, RegisterServerAPI}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap}
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse}
 
@@ -29,6 +29,10 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
 
   val serverMap: ServerMap = ServerMap()
   val matchesSet:MatchesSet = MatchesSet()
+
+
+  private def setErrorAndRespond(response: RouterResponse, body: String): Unit =
+    response.setError().sendResponse(Error(Some(body)))
 
   private val getServerAPIHandler: APIHandler = (_, response) => {
     serverMap.getLessBusyServer match {
@@ -61,8 +65,10 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     }
   }
 
-  private def setErrorAndRespond(response: RouterResponse, body: String): Unit =
-    response.setError().sendResponse(Error(Some(body)))
+  private val getMatchesSetAPIHandler:APIHandler = (_, response) => {
+    val returnSet = matchesSet.getAllMatches
+    response.sendResponse(returnSet)
+  }
 
   private def mockHandler:(RoutingContext, RouterResponse) => Unit = (_,_) => println("Api called")
 
@@ -71,10 +77,14 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   override def developAPI(): Unit = {
     val router = Router.router(vertx)
     DiscoveryAPI.values.map({
-      case api@GetServerAPI => api.asRequest(router, getServerAPIHandler)
-      case api@RegisterServerAPI => api.asRequest(router, registerServerAPIHandler)
-      case api@IncreaseServerMatches => api.asRequest(router, increaseServerMatchesAPIHandler)
-      case api@DecreaseServerMatches => api.asRequest(router, decreaseServerMatchesAPIHandler)
+      case api @ GetServerAPI => api.asRequest(router, getServerAPIHandler)
+      case api @ RegisterServerAPI => api.asRequest(router,
+        registerServerAPIHandler)
+      case api @ IncreaseServerMatches => api.asRequest(router,
+        increaseServerMatchesAPIHandler)
+      case api @ DecreaseServerMatches => api.asRequest(router,
+        decreaseServerMatchesAPIHandler)
+      case api @ GetAllMatches => api.asRequest(router, getMatchesSetAPIHandler)
       case api @ _ => api.asRequest(router,mockHandler)
     })
 
@@ -82,7 +92,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     options.setCompressionSupported(true)
       .setIdleTimeout(timeout)
 
-    val v = vertx.createHttpServer(options)
+    vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
   }
 }
