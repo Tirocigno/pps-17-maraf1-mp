@@ -11,9 +11,6 @@ import it.unibo.pps2017.server.model.{MatchesSetEncoder, ResponseStatus}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
-import io.circe.parser.decode
-import io.circe.syntax._
-import it.unibo.pps2017.server.model.ResponseMessage.decodeEvent
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -161,6 +158,20 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val callResult = executeAPICallAndWait(webClient, defaultDiscoveryPort,
       defaultHost, GetAllMatchesAPI)
     assert(callResult.statusCode() == ResponseStatus.OK_CODE)
+  }
+
+  test("Register a match and delete it") {
+    val webClient = generateMockClient(defaultPort)
+    val insertCall = webClient.post(defaultDiscoveryPort,defaultHost,
+      RegisterMatchAPI.path)
+      .addQueryParam(RegisterMatchAPI.matchIdKey, mockMatchRef)
+    val insertResult = executeAPICallAndWait(insertCall)
+    assert(insertResult.statusCode() == ResponseStatus.OK_CODE)
+    val removeCall = webClient.post(defaultDiscoveryPort,defaultHost,
+      RemoveMatchAPI.path)
+      .addQueryParam(RemoveMatchAPI.matchIdKey, mockMatchRef)
+    val removeResult = executeAPICallAndWait(removeCall)
+    assert(removeResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
 }
