@@ -86,6 +86,8 @@ object DiscoveryAPI {
 
   case object RegisterMatchAPI extends DiscoveryAPI {
 
+    val matchIdKey = "matchID"
+
     override def httpMethod: HttpMethod = HttpMethod.POST
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
