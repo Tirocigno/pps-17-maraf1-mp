@@ -61,7 +61,7 @@ object DiscoveryAPI {
   /**
     * API to increase the number of matches on a specified server.
     */
-  case object IncreaseServerMatches extends DiscoveryAPI {
+  case object IncreaseServerMatchesAPI extends DiscoveryAPI {
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -72,16 +72,9 @@ object DiscoveryAPI {
   }
 
   /**
-    * values method, analog to java's enumeration's values() method.
-    *
-    * @return a Set containing all the objects in the DiscoveryAPI object.
-    */
-  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI, IncreaseServerMatches, DecreaseServerMatches)
-
-  /**
     * API to decrease the number of matches on a specified server.
     */
-  case object DecreaseServerMatches extends DiscoveryAPI {
+  case object DecreaseServerMatchesAPI extends DiscoveryAPI {
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -91,7 +84,7 @@ object DiscoveryAPI {
     override def path: String = "/decreaseservermatches"
   }
 
-  case object RegisterMatch extends DiscoveryAPI {
+  case object RegisterMatchAPI extends DiscoveryAPI {
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -101,7 +94,7 @@ object DiscoveryAPI {
     override def path: String = "/registermatch"
   }
 
-  case object RemoveMatch extends DiscoveryAPI {
+  case object RemoveMatchAPI extends DiscoveryAPI {
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -111,17 +104,7 @@ object DiscoveryAPI {
     override def path: String = "/removermatch"
   }
 
-  case object GetMatch extends DiscoveryAPI {
-
-    override def httpMethod: HttpMethod = HttpMethod.GET
-
-    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
-      POST(router, path, handle)
-
-    override def path: String = "/getmatch"
-  }
-
-  case object GetAllMatches extends DiscoveryAPI {
+  case object GetAllMatchesAPI extends DiscoveryAPI {
 
     override def httpMethod: HttpMethod = HttpMethod.GET
 
@@ -131,5 +114,13 @@ object DiscoveryAPI {
     override def path: String = "/getallmatches"
   }
 
+  /**
+    * values method, analog to java's enumeration's values() method.
+    *
+    * @return a Set containing all the objects in the DiscoveryAPI object.
+    */
+  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
+    IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
+    RemoveMatchAPI, GetAllMatchesAPI)
 
 }

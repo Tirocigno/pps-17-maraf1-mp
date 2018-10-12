@@ -96,13 +96,15 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val webClient = generateMockClient(defaultPort)
     val result = registerAServer(webClient, defaultDiscoveryPort)
     assert(result.statusCode() == ResponseStatus.OK_CODE)
-    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, IncreaseServerMatches)
+    val increaseResult = executeAPICallAndWait(webClient,
+      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI)
     assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
   test("Increasing number of matches on a non registered server") {
     val webClient = generateMockClient(defaultPort)
-    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, IncreaseServerMatches)
+    val increaseResult = executeAPICallAndWait(webClient,
+      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI)
     assert(increaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
 
@@ -110,8 +112,10 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val webClient = generateMockClient(defaultPort)
     val result = registerAServer(webClient, defaultDiscoveryPort)
     assert(result.statusCode() == ResponseStatus.OK_CODE)
-    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, IncreaseServerMatches)
-    val decreaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, DecreaseServerMatches)
+    val increaseResult = executeAPICallAndWait(webClient,
+      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI)
+    val decreaseResult = executeAPICallAndWait(webClient,
+      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI)
     assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
@@ -119,14 +123,23 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val webClient = generateMockClient(defaultPort)
     val result = registerAServer(webClient, defaultDiscoveryPort)
     assert(result.statusCode() == ResponseStatus.OK_CODE)
-    val decreaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, DecreaseServerMatches)
+    val decreaseResult = executeAPICallAndWait(webClient,
+      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI)
     assert(decreaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
 
   test("Decreasing number of matches on a not registered server") {
     val webClient = generateMockClient(defaultPort)
-    val decreaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, DecreaseServerMatches)
+    val decreaseResult = executeAPICallAndWait(webClient,
+      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI)
     assert(decreaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
+  }
+
+  test("Get an empty set of matches") {
+    val webClient = generateMockClient(defaultPort)
+    val callResult = executeAPICallAndWait(webClient, defaultDiscoveryPort,
+      defaultHost, GetAllMatchesAPI)
+    assert(callResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
 }
