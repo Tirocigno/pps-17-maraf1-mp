@@ -3,7 +3,7 @@ package it.unibo.pps2017
 
 import io.vertx.scala.core.net.SocketAddress
 import io.vertx.scala.ext.web.RoutingContext
-import it.unibo.pps2017.server.model.ServerContextEncoder
+import it.unibo.pps2017.server.model.{MatchesSetEncoder, ServerContextEncoder}
 
 import scala.language.implicitConversions
 
@@ -27,4 +27,7 @@ package object discovery {
 
   implicit def serverContextToJson(serverContext: ServerContext): ServerContextEncoder =
     ServerContextEncoder(serverContext.IPAddress, serverContext.port)
+
+  implicit def matchesSetToJson(matchesSet:Set[MatchRef]):MatchesSetEncoder =
+    MatchesSetEncoder(matchesSet)
 }
