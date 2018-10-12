@@ -126,7 +126,7 @@ object DiscoveryAPI {
     override def httpMethod: HttpMethod = HttpMethod.GET
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
-      POST(router, path, handle)
+      GET(router, path, handle)
 
     override def path: String = "/getallmatches"
   }
