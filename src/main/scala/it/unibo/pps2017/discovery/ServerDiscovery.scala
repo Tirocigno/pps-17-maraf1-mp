@@ -70,6 +70,18 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     response.sendResponse(returnSet)
   }
 
+  private val registerMatchAPIHandler:APIHandler = (router, response) => {
+    try {
+      val matchId = router.request().getParam(RegisterMatchAPI.matchIdKey)
+        .getOrElse(throw new IllegalStateException())
+      matchesSet.addMatch(matchId)
+      response.sendResponse(Message("MATCH ADDED SUCCESSFULLY"))
+    } catch {
+      case _ : IllegalStateException => setErrorAndRespond(response,
+        "NO MATCHID FOUND IN REQUEST")
+    }
+  }
+
   private def mockHandler:(RoutingContext, RouterResponse) => Unit = (_,res) =>
     res.sendResponse(Message("API CALLED"))
 
@@ -87,6 +99,8 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
         decreaseServerMatchesAPIHandler)
       case api @ GetAllMatchesAPI => api.asRequest(router,
         getMatchesSetAPIHandler)
+      case api @ RegisterMatchAPI => api.asRequest(router,
+        registerMatchAPIHandler)
       case api @ _ => api.asRequest(router,mockHandler)
     })
 

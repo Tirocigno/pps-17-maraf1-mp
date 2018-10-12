@@ -2,14 +2,18 @@
 package it.unibo.pps2017.discovery
 
 
+import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.core.Vertx
-import io.vertx.scala.ext.web.client.{WebClient, WebClientOptions}
+import io.vertx.scala.ext.web.client.{HttpRequest, WebClient, WebClientOptions}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
-import it.unibo.pps2017.server.model.ResponseStatus
+import it.unibo.pps2017.server.model.{MatchesSetEncoder, ResponseStatus}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
+import io.circe.parser.decode
+import io.circe.syntax._
+import it.unibo.pps2017.server.model.ResponseMessage.decodeEvent
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -24,6 +28,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
   val otherPort: Int = 8081
   val timeOut: Int = 5
   val asyncTimerDuration: Int = 1000
+  val mockMatchRef:MatchRef = "MockMatch"
   var serverDiscovery: ServerDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
   private var vertx = Vertx.vertx()
 
@@ -63,6 +68,10 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
       case HttpMethod.GET => Await.result(webClient.get(port, host, api.path).sendFuture(), timeOut seconds)
       case _ => fail()
     }
+  }
+
+  private def executeAPICallAndWait(request:HttpRequest[Buffer]) = {
+    Await.result(request.sendFuture(),timeOut seconds)
   }
 
   private def registerAServer(webClient: WebClient, port: Port) = {
@@ -137,6 +146,18 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
 
   test("Get an empty set of matches") {
     val webClient = generateMockClient(defaultPort)
+    val callResult = executeAPICallAndWait(webClient, defaultDiscoveryPort,
+      defaultHost, GetAllMatchesAPI)
+    assert(callResult.statusCode() == ResponseStatus.OK_CODE)
+  }
+
+  test("Register a match and retrieve the non empty list") {
+    val webClient = generateMockClient(defaultPort)
+    val restCall = webClient.post(defaultDiscoveryPort,defaultHost,
+      RegisterMatchAPI.path)
+      .addQueryParam(RegisterMatchAPI.matchIdKey, mockMatchRef)
+    val insertResult = executeAPICallAndWait(restCall)
+    assert(insertResult.statusCode() == ResponseStatus.OK_CODE)
     val callResult = executeAPICallAndWait(webClient, defaultDiscoveryPort,
       defaultHost, GetAllMatchesAPI)
     assert(callResult.statusCode() == ResponseStatus.OK_CODE)
