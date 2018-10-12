@@ -1,6 +1,8 @@
 package it.unibo.pps2017.core.playerActor
 
 import akka.actor.{Actor, ActorRef}
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
 import it.unibo.pps2017.core.playerActor.PlayerActor._
 
@@ -37,6 +39,8 @@ object PlayerActor {
   case class PartialGameScore(winner1: PlayerActor, winner2: PlayerActor, score1: Int, score2: Int)
 
   case class FinalGameScore(winner1: PlayerActor, winner2: PlayerActor, score1: Int, score2: Int)
+
+  case class IdChannelPublishSubscribe(id: String)
 
   final val START_PLAYER_SEARCH: Int = 0
   final val ADD_PLAYER_FOUNDED: Int = 1
@@ -80,6 +84,15 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
     case ClickedCommand(command, player) =>
       gameActor ! ClickedCommand(command, this.actorPlayer)
+
+      /*
+      Da verificare se posso farlo cosi'. Non sono sicuro sull'ultima istruzione che deve
+      essere sempre eseguita, qui credo che la esegua solo se arriva al default case
+    case Turn(player, endPartialTurn, isFirstPlayer) => player match {
+      case actorPlayer => clientController.setMyTurn(true)
+      case _ => clientController.setMyTurn(false)
+        clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
+    } */
 
     case Turn(player, endPartialTurn, isFirstPlayer) =>
       if (this.actorPlayer.eq(player)) {
@@ -129,6 +142,10 @@ class PlayerActor(clientController: ClientController, username: String) extends 
           clientController.setWinner(false)
         }
       }
+
+    case IdChannelPublishSubscribe(id) =>
+      val mediator = DistributedPubSub(context.system).mediator
+      mediator ! Subscribe(id, self)
   }
 
   private def getUsername: String = {
@@ -136,15 +153,12 @@ class PlayerActor(clientController: ClientController, username: String) extends 
   }
 
   private def orderPlayersList(playersList: ListBuffer[PlayerActor]): ListBuffer[String] = {
-
     val tempList = playersList ++ playersList
     var orderedList = new ListBuffer[String]
-
     var searchPlayer = START_PLAYER_SEARCH
     for (player <- tempList) {
       if (this.actorPlayer.eq(player) & searchPlayer.equals(START_PLAYER_SEARCH)) {
         orderedList += player.getUsername
-        System.out.println(orderedList)
         searchPlayer += ADD_PLAYER_FOUNDED
       }
       if (searchPlayer != START_PLAYER_SEARCH & searchPlayer < END_PLAYER_SEARCH & !this.actorPlayer.eq(player)) {
