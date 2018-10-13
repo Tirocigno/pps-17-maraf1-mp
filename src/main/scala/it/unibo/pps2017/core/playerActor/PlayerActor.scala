@@ -85,11 +85,11 @@ class PlayerActor(clientController: ClientController, username: String) extends 
     case ClickedCommand(command, player) =>
       gameActor ! ClickedCommand(command, this.actorPlayer)
 
+
       /*
-      Da verificare se posso farlo cosi'. Non sono sicuro sull'ultima istruzione che deve
-      essere sempre eseguita, qui credo che la esegua solo se arriva al default case
     case Turn(player, endPartialTurn, isFirstPlayer) => player match {
       case actorPlayer => clientController.setMyTurn(true)
+        clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
       case _ => clientController.setMyTurn(false)
         clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
     } */

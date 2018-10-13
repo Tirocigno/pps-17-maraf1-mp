@@ -1,10 +1,7 @@
 package it.unibo.pps2017.core.gui;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 
@@ -34,7 +31,6 @@ public class PlayGameController implements PlayGame {
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
     private static final String FORMAT = ".png";
-    private static final String START_PATH = "src";
     private static final int TOTAL_HAND_CARDS = 10;
     private ClientController clientController;
 
@@ -87,11 +83,7 @@ public class PlayGameController implements PlayGame {
     Text briscolaLabel, cardNotOk;
 
 
-    /*
-     * in questa mappa avro' l'indice della carta e il suo path, mi serve per capire
-     * quando gioco una carta quale e' e dirlo al controller
-     */
-    private Map<Integer, String> indexOfMyCards;
+    private Map<String, String> indexOfMyCards;
     private List<String> playersList;
     private List<ImageView> cardsPlayer2;
     private List<ImageView> cardsPlayer3;
@@ -104,11 +96,17 @@ public class PlayGameController implements PlayGame {
     private String pathOfImageSelected;
     private ImageView playedCard;
 
+    private List<String> idUserCards;
+
     public PlayGameController() {
-        this.indexOfMyCards = new HashMap<>();
+        this.indexOfMyCards = new LinkedHashMap<>();
         this.cardsPlayer2 = new ArrayList<>();
         this.cardsPlayer3 = new ArrayList<>();
         this.cardsPlayer4 = new ArrayList<>();
+
+        this.playersList = new ArrayList<>();
+        this.idUserCards = new ArrayList<>();
+        this.createListWithCardsId();  // creo la lista degli id delle carte del player
     }
 
 
@@ -148,7 +146,7 @@ public class PlayGameController implements PlayGame {
         String briscola = button.getText();
         clientController.selectedBriscola(briscola);
         hideBriscolaCommands();
-        getBriscolaChosen(briscola);
+        showCommands();
     }
 
     @Override
@@ -156,13 +154,12 @@ public class PlayGameController implements PlayGame {
         this.briscolaLabel.setText("Briscola chosen: " + briscola);
         this.briscolaLabel.setVisible(true);
     }
-	
 
-	/*
-	public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
-		getCardsFirstPlayer(firstPlayerCards);
-		setCurrentPlayer(new Player("Player1"), false); // simulo che tocchi all'utente 1
-	} */
+    /*
+    public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
+        getCardsFirstPlayer(firstPlayerCards);
+        setCurrentPlayer(playersList.get(0), false, true); // simulo che tocchi all'utente 1
+    } */
 
 
     /**
@@ -173,30 +170,16 @@ public class PlayGameController implements PlayGame {
     public void clickedCard(final MouseEvent clickedCard) {
         if (clientController.isMyTurn()) {
             this.playedCard = (ImageView) clickedCard.getSource();
-            @SuppressWarnings("deprecation")
-            String path = getCleanPath(playedCard.getImage().impl_getUrl());
-            this.pathOfImageSelected = getCleanPath(path);
-            //Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
-
-            int indexCardSelected = getIndexOfCardSelected(pathOfImageSelected);
+            String clickedCardId = playedCard.getId();
+            this.pathOfImageSelected = getPathFromMap(clickedCardId);
+            int indexCardSelected = getIndexOfCardSelected(clickedCardId);
             clientController.setPlayedCard(indexCardSelected);
-
-           /* if (clientController.cardOK()) {
-                // visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano
-                Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
-                this.user1Field.setImage(imagePlayedCard);
-                playedCard.setVisible(false);
-                hideCommands();
-            } else {
-                this.cardNotOk.setVisible(true);
-            } */
         }
     }
 
     @Override
     public void showPlayedCardOk() {
         this.cardNotOk.setVisible(false);
-        // visualizzo la carta in mezzo al campo e tolgo la carta cliccata dalla mano
         Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
         this.user1Field.setImage(imagePlayedCard);
         playedCard.setVisible(false);
@@ -218,7 +201,7 @@ public class PlayGameController implements PlayGame {
         for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
             Image userCard = getImageFromPath(firstUserCards.get(cardIndex));
             /* mi salvo le carte in ordine nella mappa */
-            indexOfMyCards.put(cardIndex, firstUserCards.get(cardIndex));
+            indexOfMyCards.put(idUserCards.get(cardIndex), firstUserCards.get(cardIndex));
 
             switch (cardIndex) {
                 case 0:
@@ -262,13 +245,13 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void setCurrentPlayer(final String player, final boolean partialTurnIsEnded, final boolean isFirstPlayer) {
-        /* se sono il primo ad iniziare il turno mostro i comandi busso, striscio, volo */
-        if (isFirstPlayer) {
+
+        if (isFirstPlayer && player.equals(playersList.get(0)) && !coinButton.isVisible()) {
             showCommands();
         } else {
             hideCommands();
         }
-        /* se un giro e' stato fatto, devo eliminare tutte le carte dal campo */
+
         if (partialTurnIsEnded) {
             cleanField();
         }
@@ -289,7 +272,7 @@ public class PlayGameController implements PlayGame {
     public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam,
                                        boolean endedMatch) {
         cleanField();
-        this.briscolaLabel.setVisible(false); // finito un turno nascondo la label con la briscola perche' verra' riscelta
+        this.briscolaLabel.setVisible(false);
         showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
     }
 
@@ -300,7 +283,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
-        this.score.setText("My team's score: " + scoreFirstTeam + "\n Other team's score:" + scoreSecondTeam);
+        this.score.setText("My team's score: " + scoreFirstTeam + "\nOther team's score:" + scoreSecondTeam);
         this.score.setVisible(true);
         createLabelScaleTransition(this.score, endedMatch);
     }
@@ -464,21 +447,19 @@ public class PlayGameController implements PlayGame {
         return new Image(file.toURI().toString());
     }
 
-    /* Metodo per recuperare l'indice della carta cliccata */
-    private int getIndexOfCardSelected(final String path) {
-        int cardIndex = 0;
-        for (final Entry<Integer, String> entry : indexOfMyCards.entrySet()) {
-            if (path.contains(entry.getValue())) {
-                cardIndex = entry.getKey();
-            }
-        }
-        return cardIndex;
+    private int getIndexOfCardSelected(final String clickedCardId) {
+        List<String> indexes = new ArrayList<>(indexOfMyCards.keySet());
+        return indexes.indexOf(clickedCardId);
     }
 
-    /* Metodo per pulire il path ricavato dalla ImageView */
-    private String getCleanPath(final String path) {
-        int index = path.indexOf(START_PATH);
-        return path.substring(index, path.length());
+    private String getPathFromMap(final String clickedCardId) {
+        String correctPath = "";
+        for (final Entry<String, String> entry : indexOfMyCards.entrySet()) {
+            if (clickedCardId.equals(entry.getKey())) {
+                correctPath = entry.getValue();
+            }
+        }
+        return correctPath;
     }
 
     /**
@@ -492,5 +473,18 @@ public class PlayGameController implements PlayGame {
         this.player2 = playersList.get(1);
         this.player3 = playersList.get(2);
         this.player4 = playersList.get(3);
+    }
+
+    private void createListWithCardsId() {
+        this.idUserCards.add("firstCard");
+        this.idUserCards.add("secondCard");
+        this.idUserCards.add("thirdCard");
+        this.idUserCards.add("fourthCard");
+        this.idUserCards.add("fifthCard");
+        this.idUserCards.add("sixthCard");
+        this.idUserCards.add("seventhCard");
+        this.idUserCards.add("eighthCard");
+        this.idUserCards.add("ninthCard");
+        this.idUserCards.add("tenthCard");
     }
 }
