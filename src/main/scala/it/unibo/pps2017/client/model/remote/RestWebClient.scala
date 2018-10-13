@@ -1,16 +1,34 @@
 
 package it.unibo.pps2017.client.model.remote
 
+import it.unibo.pps2017.client.controller.{ClientController, SingletonClientController}
+import it.unibo.pps2017.utils.remote.RestAPI
 import it.unibo.pps2017.utils.remote.RestUtils.ServerContext
 
-
-trait RestWebClient {
+/**
+  * This module is responsable for sending remote calls via rest apis and
+  * handle their responses.
+  */
+sealed trait RestWebClient {
 
   val discoveryServerContext: ServerContext
-  var assignedServerContext: ServerContext
+  val clientController: ClientController = SingletonClientController
+  var assignedServerContext: Option[ServerContext] = None
 
-  def retrieveRemoteServer()
+  /**
+    * Start a Rest API call.
+    *
+    * @param apiToCall the API to call.
+    */
+  def callRemoteAPI(apiToCall: RestAPI): Unit
+}
 
-  def callRemoteAPI()
+object RestWebClient {
+
+  private class RestWebClientImpl(override val
+                                  discoveryServerContext: ServerContext)
+    extends RestWebClient {
+    override def callRemoteAPI(apiToCall: RestAPI): Unit = ???
+  }
 
 }
