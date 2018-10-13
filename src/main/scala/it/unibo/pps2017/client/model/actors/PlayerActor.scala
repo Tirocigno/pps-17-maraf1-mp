@@ -1,5 +1,5 @@
 
-package it.unibo.pps2017.client.model
+package it.unibo.pps2017.client.model.actors
 
 import it.unibo.pps2017.client.controller.MatchController
 
