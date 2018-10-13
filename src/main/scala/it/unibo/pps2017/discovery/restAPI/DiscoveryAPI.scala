@@ -4,13 +4,14 @@ package it.unibo.pps2017.discovery.restAPI
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.server.model.{GET, POST, Request, RouterResponse}
+import it.unibo.pps2017.utils.remote.RestAPI
 
 object DiscoveryAPI {
 
   /**
     * Trait of DiscoveryAPI.
     */
-  sealed trait DiscoveryAPI {
+  sealed trait DiscoveryAPI extends RestAPI {
     /**
       * Path of the API
       * @return a string containing the path of API.
