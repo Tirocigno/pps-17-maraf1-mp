@@ -42,9 +42,9 @@ object PlayerActor {
 
   case class IdChannelPublishSubscribe(id: String)
 
-  final val START_PLAYER_SEARCH: Int = 0
-  final val ADD_PLAYER_FOUNDED: Int = 1
-  final val END_PLAYER_SEARCH: Int = 4
+  final val START_SEARCH: Int = 0
+  final val FOUNDED: Int = 1
+  final val END_SEARCH: Int = 4
 }
 
 
@@ -88,7 +88,7 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
     /*
   case Turn(player, endPartialTurn, isFirstPlayer) => player match {
-    case actorPlayer => clientController.setMyTurn(true)
+    case player if player == actorPlayer  => clientController.setMyTurn(true)
       clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
     case _ => clientController.setMyTurn(false)
       clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
@@ -123,6 +123,18 @@ class PlayerActor(clientController: ClientController, username: String) extends 
         else clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = false)
       }
 
+    /*
+  case PartialGameScore(winner1, winner2, score1, score2) => (winner1, winner2) match {
+    case (`winner1`, `winner2`) if winner1.eq(actorPlayer) | winner2.eq(actorPlayer) => (score1, score2) match {
+      case `score1` > `score2` => clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = false)
+      case _ => clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = false)
+    }
+    case _ => (score1, score2) match {
+      case `score1` > `score2` => clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = false)
+      case _ => clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = false)
+    }
+  } */
+
     case FinalGameScore(winner1, winner2, score1, score2) =>
       if (this.actorPlayer.eq(winner1) | this.actorPlayer.eq(winner2)) {
         if (score1 > score2) {
@@ -143,6 +155,28 @@ class PlayerActor(clientController: ClientController, username: String) extends 
         }
       }
 
+/*
+    case FinalGameScore(winner1, winner2, score1, score2) => (winner1, winner2) match {
+      case (`winner1`, `winner2`) if winner1.eq(actorPlayer) | winner2.eq(actorPlayer) => (score1, score2) match {
+        case `score1` > `score2` =>
+          clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = true)
+          clientController.setWinner(true)
+        case _ =>
+          clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = true)
+          clientController.setWinner(true)
+      }
+      case _ => (score1, score2) match {
+        case `score1` > `score2` =>
+          clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = true)
+          clientController.setWinner(false)
+        case _ =>
+          clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = true)
+          clientController.setWinner(false)
+      }
+    }
+      */
+
+
     case IdChannelPublishSubscribe(id) =>
       val mediator = DistributedPubSub(context.system).mediator
       mediator ! Subscribe(id, self)
@@ -154,15 +188,15 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
   private def orderPlayersList(playersList: ListBuffer[PlayerActor]): ListBuffer[String] = {
     val tempList = playersList ++ playersList
-    var searchPlayer = START_PLAYER_SEARCH
+    var searchPlayer = START_SEARCH
     var orderedList = new ListBuffer[String]
 
     for (player <- tempList) {
       player match {
-        case `player` if player == actorPlayer & searchPlayer == START_PLAYER_SEARCH
-        => (orderedList += player.getUsername, searchPlayer += 1)
-        case `player` if player != actorPlayer & searchPlayer != START_PLAYER_SEARCH & searchPlayer < END_PLAYER_SEARCH
-        => (orderedList += player.getUsername, searchPlayer += 1)
+        case `player` if player.eq(actorPlayer) & searchPlayer.eq(START_SEARCH)
+        => (orderedList += player.getUsername, searchPlayer += FOUNDED)
+        case `player` if player.eq(actorPlayer) & !searchPlayer.eq(START_SEARCH) & searchPlayer < END_SEARCH
+        => (orderedList += player.getUsername, searchPlayer += FOUNDED)
         case _ => tempList.clear
       }
     }
