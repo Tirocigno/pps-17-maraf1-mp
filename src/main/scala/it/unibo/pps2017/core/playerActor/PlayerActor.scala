@@ -86,13 +86,13 @@ class PlayerActor(clientController: ClientController, username: String) extends 
       gameActor ! ClickedCommand(command, this.actorPlayer)
 
 
-      /*
-    case Turn(player, endPartialTurn, isFirstPlayer) => player match {
-      case actorPlayer => clientController.setMyTurn(true)
-        clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
-      case _ => clientController.setMyTurn(false)
-        clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
-    } */
+    /*
+  case Turn(player, endPartialTurn, isFirstPlayer) => player match {
+    case actorPlayer => clientController.setMyTurn(true)
+      clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
+    case _ => clientController.setMyTurn(false)
+      clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
+  } */
 
     case Turn(player, endPartialTurn, isFirstPlayer) =>
       if (this.actorPlayer.eq(player)) {
@@ -154,16 +154,16 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
   private def orderPlayersList(playersList: ListBuffer[PlayerActor]): ListBuffer[String] = {
     val tempList = playersList ++ playersList
-    var orderedList = new ListBuffer[String]
     var searchPlayer = START_PLAYER_SEARCH
+    var orderedList = new ListBuffer[String]
+
     for (player <- tempList) {
-      if (this.actorPlayer.eq(player) & searchPlayer.equals(START_PLAYER_SEARCH)) {
-        orderedList += player.getUsername
-        searchPlayer += ADD_PLAYER_FOUNDED
-      }
-      if (searchPlayer != START_PLAYER_SEARCH & searchPlayer < END_PLAYER_SEARCH & !this.actorPlayer.eq(player)) {
-        orderedList += player.getUsername
-        searchPlayer += ADD_PLAYER_FOUNDED
+      player match {
+        case `player` if player == actorPlayer & searchPlayer == START_PLAYER_SEARCH
+        => (orderedList += player.getUsername, searchPlayer += 1)
+        case `player` if player != actorPlayer & searchPlayer != START_PLAYER_SEARCH & searchPlayer < END_PLAYER_SEARCH
+        => (orderedList += player.getUsername, searchPlayer += 1)
+        case _ => tempList.clear
       }
     }
     orderedList
