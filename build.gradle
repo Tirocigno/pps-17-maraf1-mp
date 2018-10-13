@@ -92,6 +92,12 @@ dependencies {
     implementation "io.vertx:vertx-web-scala_2.12:$vertxVersion"
     implementation "io.vertx:vertx-web-client-scala_2.12:$vertxVersion"
 
+    // JSON4S Json Library
+    compile group: 'org.json4s', name: 'json4s-native_2.12', version: '3.6.0'
+    compile group: 'org.json4s', name: 'json4s-jackson_2.12', version: '3.6.0'
+
+
+
     //Basic support for Akka.
     implementation "com.typesafe.akka:akka-actor_$scalaMajor:$akkaVersion"
     implementation "com.typesafe.akka:akka-cluster_$scalaMajor:$akkaVersion"

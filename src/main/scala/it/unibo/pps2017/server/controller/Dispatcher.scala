@@ -11,6 +11,8 @@ import it.unibo.pps2017.commons.API.{ErrorAPI, FoundGameAPI, GameAPI, HelloAPI}
 import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
 import it.unibo.pps2017.server.model._
+import org.json4s._
+import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.duration._
 
@@ -30,6 +32,8 @@ object Dispatcher {
 class Dispatcher extends ScalaVerticle {
 
   implicit val akkaSystem: ActorSystem = akka.actor.ActorSystem()
+  implicit val formats: DefaultFormats.type = DefaultFormats
+
 
   val lobbyManager: ActorRef = ActorSystem("Lobby").actorOf(Props[LobbyActor])
 
@@ -63,7 +67,11 @@ class Dispatcher extends ScalaVerticle {
     akkaSystem.scheduler.schedule(5 seconds, 30 seconds)({
       val currentGame: String = "0"
 
-      GETReq(Dispatcher.DISCOVERY_URL, Dispatcher.DISCOVERY_PORT, "/addServer", _ => {}, failRes => {
+      GETReq("localhost", PORT, "/game/jacopo", res => {
+        val game = read[Game](res.bodyAsString().get)
+
+        println(game)
+      }, failRes => {
         println("Error on talk with the DISCOVERY. Messasge: " + failRes.getMessage)
       }, Map[String, String]("nMatch" -> currentGame),vertx = vertx)
     }
