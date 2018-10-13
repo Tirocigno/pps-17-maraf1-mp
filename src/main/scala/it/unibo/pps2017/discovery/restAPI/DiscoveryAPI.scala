@@ -33,7 +33,7 @@ object DiscoveryAPI {
   }
 
   /**
-    * API to register a new server on discovery server.
+    * API to register a new server on RestUtils server.
     */
   case object RegisterServerAPI extends DiscoveryAPI {
 

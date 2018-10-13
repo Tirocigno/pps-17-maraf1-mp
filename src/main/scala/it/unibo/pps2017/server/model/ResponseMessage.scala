@@ -5,7 +5,7 @@ import cats.syntax.functor._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
-import it.unibo.pps2017.discovery.MatchRef
+import it.unibo.pps2017.utils.remote.RestUtils.MatchRef
 
 /**
   * This class is used for define the message accepted to the RouterResponse.
