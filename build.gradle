@@ -37,7 +37,7 @@ ext {
     scalaVersion = "$scalaBinaryVersion.$scalaMinorVersion"
 
     //Version for Vertx.
-    vertxVersion = '3.5.3'
+    vertxVersion = '3.5.4'
 
     //Version for Akka.
     akkaVersion = '2.5.14'
