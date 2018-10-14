@@ -42,6 +42,10 @@ object PlayerActor {
 
   case class IdChannelPublishSubscribe(id: String)
 
+  case class BriscolaAck()
+
+  case class CardPlayedAck()
+
   final val START_SEARCH: Int = 0
   final val FOUNDED: Int = 1
   final val END_SEARCH: Int = 4
@@ -75,6 +79,7 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
     case NotifyBriscolaChosen(seed) =>
       clientController.getBriscolaChosen(briscola = seed.asString)
+      gameActor ! BriscolaAck
 
     case ClickedCard(index, player) =>
       gameActor ! ClickedCard(index, this.actorPlayer)
@@ -104,12 +109,14 @@ class PlayerActor(clientController: ClientController, username: String) extends 
 
     case PlayedCard(card, player) =>
       clientController.showOtherPlayersPlayedCard(card, player.getUsername)
+      gameActor ! CardPlayedAck
 
     case NotifyCommandChose(command, player) =>
       clientController.getCommand(player.getUsername, command)
 
     case ForcedCardPlayed(card, player) =>
       clientController.showOtherPlayersPlayedCard(card, player = player.getUsername)
+      gameActor ! CardPlayedAck
 
     case SetTimer(timer) =>
       clientController.setTimer(timer)
