@@ -6,7 +6,7 @@ import io.vertx.scala.ext.web.{Router, RoutingContext}
 
 
 /**
-  * Interfaccio per la gestione di una richiesta proveniente dal server di Vertx.
+  * Interface for managing requests form the Vertx server.
   */
 trait Request {
   def router: Router
@@ -27,14 +27,14 @@ trait Request {
 
 
 /**
-  * Tipo di richiesta GET
+  * GET request
   *
   * @param router
-  * Oggetto che si occupa del routing
+  *   The router object
   * @param url
-  * URL da gestire
+  *   The relative path url
   * @param handle
-  * Funzione che si occupa di gestire la richiesta e di produrre una risposta
+  *   Request handler.
   */
 case class GET(override val router: Router,
                override val url: String,
@@ -45,19 +45,29 @@ case class GET(override val router: Router,
 }
 
 /**
-  * Tipo di richiesta POST
+  * POST request
   *
   * @param router
-  * Oggetto che si occupa del routing
+  *   The router object
   * @param url
-  * URL da gestire
+  *   The relative path url
   * @param handle
-  * Funzione che si occupa di gestire la richiesta e di produrre una risposta
+  *   Request handler.
   */
 case class POST(override val router: Router,
                 override val url: String,
                 override val handle: (RoutingContext, RouterResponse) => Unit) extends Request {
   override val method = HttpMethod.POST
+
+  override def handler(): Unit = {
+    router.post(url).produces("application/json").handler(routingContext => {
+      routingContext.request().setExpectMultipart(true)
+      routingContext.request().endHandler(_ =>{
+        val res = RouterResponse(routingContext)
+        handle(routingContext, res)
+      })
+    })
+  }
 
   handler()
 }

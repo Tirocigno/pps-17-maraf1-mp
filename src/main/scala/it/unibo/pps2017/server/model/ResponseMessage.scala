@@ -6,8 +6,19 @@ package it.unibo.pps2017.server.model
   */
 sealed trait JsonResponse
 
-case class Game(gameId: String, list: Seq[Message] = Seq(Message("ciao"), Message("giocatore1"), Message("giocatore2"))) extends JsonResponse
+case class GameFound(gameId: String) extends JsonResponse
 
 
 case class Message(message: String) extends JsonResponse
+
 case class Error(cause: Option[String] = None) extends JsonResponse
+
+case class GameHistory(gameId: String, teams: Seq[Side], gameSet: GameSet) extends JsonResponse
+
+case class GameSet(player1Hand: Seq[String],
+                   player2Hand: Seq[String],
+                   player3Hand: Seq[String],
+                   player4Hand: Seq[String],
+                   commands: Seq[String]) extends JsonResponse
+
+case class Side(members: Seq[String]) extends JsonResponse

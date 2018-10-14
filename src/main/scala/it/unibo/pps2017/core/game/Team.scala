@@ -2,7 +2,8 @@
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.{Player, PlayerImpl}
+import it.unibo.pps2017.core.player.Player
+import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
@@ -86,6 +87,14 @@ sealed trait BaseTeam[A] {
     * TRUE if the team has almost one member, FALSE otherwise.
     */
   def hasMember: Boolean
+
+  /**
+    * Return the team composition with both player's username.
+    *
+    * @return
+    * the team composition with both player's username.
+    */
+  def asSide: Side
 }
 
 /**
@@ -182,6 +191,29 @@ case class Team(var name: String = Random.nextInt().toString,
     * TRUE if the team has almost one member, FALSE otherwise.
     */
   def hasMember: Boolean = members.nonEmpty
+
+  /**
+    * Return the team composition with both player's username.
+    *
+    * @return
+    * the team composition with both player's username.
+    */
+  override def asSide: Side = {
+    val app: ListBuffer[String] = ListBuffer()
+    firstMember match {
+      case Some(member) =>
+        app += member.userName
+      case None =>
+    }
+
+    secondMember match {
+      case Some(member) =>
+        app += member.userName
+      case None =>
+    }
+
+    Side(app)
+  }
 }
 
 
@@ -266,4 +298,27 @@ case class SimpleTeam(private var members: ListBuffer[String] = ListBuffer(),
     * TRUE if the team has almost one member, FALSE otherwise.
     */
   override def hasMember: Boolean = members.nonEmpty
+
+  /**
+    * Return the team composition with both player's username.
+    *
+    * @return
+    * the team composition with both player's username.
+    */
+  override def asSide: Side = {
+    val app: ListBuffer[String] = ListBuffer()
+    firstMember match {
+      case Some(member) =>
+        app += member
+      case None =>
+    }
+
+    secondMember match {
+      case Some(member) =>
+        app += member
+      case None =>
+    }
+
+    Side(app)
+  }
 }

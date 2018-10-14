@@ -4,17 +4,14 @@ package it.unibo.pps2017.server.controller
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import io.vertx.lang.scala.ScalaVerticle
+import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-import it.unibo.pps2017.commons.API
-import it.unibo.pps2017.commons.API.{ErrorAPI, FoundGameAPI, GameAPI, HelloAPI}
 import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
+import it.unibo.pps2017.server.model.ServerApi.{ErrorAPI, FoundGameAPI, GameAPI, HelloAPI}
 import it.unibo.pps2017.server.model._
 import org.json4s._
-import org.json4s.jackson.Serialization.read
-
-import scala.concurrent.duration._
 
 object Dispatcher {
   val applicationJson: String = "application/json"
@@ -26,6 +23,7 @@ object Dispatcher {
   val TIMEOUT = 1000
   val DISCOVERY_URL: String = ""
   val DISCOVERY_PORT: Int = 0
+  val VERTX = Vertx.vertx()
 }
 
 
@@ -42,7 +40,7 @@ class Dispatcher extends ScalaVerticle {
 
     val router = Router.router(vertx)
 
-    API.values.map({
+    ServerApi.values.map({
       case api@HelloAPI => api.asRequest(router, hello)
       case api@ErrorAPI => api.asRequest(router, responseError)
       case api@GameAPI => api.asRequest(router, getGame)
@@ -63,20 +61,6 @@ class Dispatcher extends ScalaVerticle {
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
 
-
-    akkaSystem.scheduler.schedule(5 seconds, 30 seconds)({
-      val currentGame: String = "0"
-
-      GETReq("localhost", PORT, "/game/jacopo", res => {
-        val game = read[Game](res.bodyAsString().get)
-
-        println(game)
-      }, failRes => {
-        println("Error on talk with the DISCOVERY. Messasge: " + failRes.getMessage)
-      }, Map[String, String]("nMatch" -> currentGame),vertx = vertx)
-    }
-    )
-
   }
 
   /**
@@ -88,14 +72,22 @@ class Dispatcher extends ScalaVerticle {
 
   /**
     * Respond to GET /game/:gameId
-    *
+    * TODO / Pending
     */
   private val getGame: (RoutingContext, RouterResponse) => Unit = (routingContext, res) => {
     val gameId = routingContext.request().getParam("gameId")
 
 
     gameId match {
-      case Some(game) => res.sendResponse(Game("You write " + game))
+      case Some(game) =>
+        val team1: Side = Side(Seq("player1", "player2"))
+        val team2: Side = Side(Seq("player3", "player4"))
+        val gameSet: GameSet = GameSet(Seq("Card1", "Card2"),
+          Seq("Card3", "Card5"),
+          Seq("Card6", "Card7"),
+          Seq("Card8", "Card9"), Seq("PLAY CARD", "SET BRISCOLA"))
+        val gameHistory: GameHistory = GameHistory(game, Seq(team1, team2), gameSet)
+        res.sendResponse(gameHistory)
       case None => res.sendResponse(Error(Some("you write nothing")))
     }
   }
@@ -106,13 +98,13 @@ class Dispatcher extends ScalaVerticle {
     *
     */
   private val foundGame: (RoutingContext, RouterResponse) => Unit = (routingContext, res) => {
-    val params = routingContext.queryParams()
+    val params = routingContext.request().formAttributes()
 
     val player = params.get("me")
     val friend = params.get("partner")
 
     val gameFoundEvent: String => Unit = gameId => {
-      res.sendResponse(Game(gameId))
+      res.sendResponse(GameFound(gameId))
     }
 
     player match {
