@@ -18,7 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import it.unibo.pps2017.core.playerActor.ClientController;
+import it.unibo.pps2017.core.playerActor.GameController;
 
 public class PlayGameController implements PlayGame {
 
@@ -32,7 +32,7 @@ public class PlayGameController implements PlayGame {
     private static final int END_ANIMATION_POSITION = 2;
     private static final String FORMAT = ".png";
     private static final int TOTAL_HAND_CARDS = 10;
-    private ClientController clientController;
+    private GameController gameController;
 
     @FXML
     ImageView wallpaper = new ImageView();
@@ -121,7 +121,7 @@ public class PlayGameController implements PlayGame {
         String command = button.getText().toLowerCase();
         Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
         createTimeline(currentUserCommand, image);
-        clientController.setCommandFromPlayer(command);
+        gameController.setCommandFromPlayer(command);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class PlayGameController implements PlayGame {
     public void selectBriscola(final ActionEvent buttonPressed) {
         Button button = (Button) buttonPressed.getSource();
         String briscola = button.getText();
-        clientController.selectedBriscola(briscola);
+        gameController.selectedBriscola(briscola);
         hideBriscolaCommands();
         showCommands();
     }
@@ -168,12 +168,12 @@ public class PlayGameController implements PlayGame {
      * @param clickedCard clickedCard.
      */
     public void clickedCard(final MouseEvent clickedCard) {
-        if (clientController.isMyTurn()) {
+        if (gameController.isMyTurn()) {
             this.playedCard = (ImageView) clickedCard.getSource();
             String clickedCardId = playedCard.getId();
             this.pathOfImageSelected = getPathFromMap(clickedCardId);
             int indexCardSelected = getIndexOfCardSelected(clickedCardId);
-            clientController.setPlayedCard(indexCardSelected);
+            gameController.setPlayedCard(indexCardSelected);
         }
     }
 
@@ -300,7 +300,7 @@ public class PlayGameController implements PlayGame {
             if (endedMatch) {
                 Image finalImage;
                 boolean winMatch;
-                winMatch = clientController.getWinner();
+                winMatch = gameController.getWinner();
                 if (winMatch) {
                     finalImage = getImageFromPath(WIN_MATCH);
                     createImageScaleTransition(finalImage);

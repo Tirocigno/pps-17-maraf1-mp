@@ -7,7 +7,7 @@ import it.unibo.pps2017.core.playerActor.PlayerActor.{BriscolaChosen, ClickedCar
 
 import scala.collection.JavaConverters._
 
-abstract class ClientController {
+abstract class GameController {
 
   /** oggetto gui */
 

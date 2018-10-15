@@ -52,7 +52,7 @@ object PlayerActor {
 }
 
 
-class PlayerActor(clientController: ClientController, username: String) extends Actor {
+class PlayerActor(clientController: GameController, username: String) extends Actor {
 
   var actorPlayer: PlayerActor = this
   var user: String = username
