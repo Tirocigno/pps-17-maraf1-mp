@@ -66,7 +66,6 @@ class GameActor extends Actor with Match with ActorLogging {
       })
 
       onFullTable()
-
     }
 
     case BriscolaChosen(seed) => {
@@ -76,6 +75,7 @@ class GameActor extends Actor with Match with ActorLogging {
       mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, setEnd, true))
 
     }
+
     case BriscolaAck =>{
       numAck = numAck + 1
       if(numAck==TOT_PLAYERS){
@@ -84,6 +84,7 @@ class GameActor extends Actor with Match with ActorLogging {
         numAck = 0
       }
     }
+
     case ClickedCard(index,player) => {
       isCardOk(cardsInHand.get(player).get(index),player)
     }
@@ -95,6 +96,7 @@ class GameActor extends Actor with Match with ActorLogging {
         numAck = 0
       }
     }
+
     case ClickedCommand(command, player) => {
       mediator ! Publish(TOPIC_NAME, NotifyCommandChosen(command,player))
     }
@@ -183,7 +185,7 @@ class GameActor extends Actor with Match with ActorLogging {
     actors.foreach(p => {
       //actorReferences += p.getUsername()
     })
-    mediator ! Publish(TOPIC_NAME,PlayersRef(actorReferences))
+    //mediator ! Publish(TOPIC_NAME,PlayersRef(actorReferences))
 
     setEnd = false
     deck.shuffle()
