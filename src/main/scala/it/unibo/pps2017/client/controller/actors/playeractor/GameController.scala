@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.controller.actors.playeractor
 import akka.actor.{ActorRef, ActorSystem, Props}
 import it.unibo.pps2017.client.controller.ActorController
 import it.unibo.pps2017.client.model.actors.ActorMessage
-import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages.{BriscolaChosen, ClickedCard}
+import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages.{BriscolaChosen, ClickedCard, ClickedCommand}
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
@@ -106,9 +106,13 @@ class GameController extends ActorController {
     playGameController.setTimer(timer)
   }
 
-  //TODO FIX THIS
+  /**
+    * Method to send to the actor the clicked command from actual player.
+    * @param command
+    *                Clicked command from actual player.
+    */
   def setCommandFromPlayer(command: String): Unit = {
-    //currentActorRef ! ClickedCommand(command, )
+    currentActorRef ! ClickedCommand(command, null)
   }
 
   def getOrThrow(actorRef: Option[ActorRef]): ActorRef =
