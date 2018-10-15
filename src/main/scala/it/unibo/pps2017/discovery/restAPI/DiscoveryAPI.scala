@@ -12,17 +12,7 @@ object DiscoveryAPI {
     * Trait of DiscoveryAPI.
     */
   sealed trait DiscoveryAPI extends RestAPI {
-    /**
-      * Path of the API
-      * @return a string containing the path of API.
-      */
-    def path:String
 
-    /**
-      * Http method of API.
-      * @return an HTTP method to call.
-      */
-    def httpMethod:HttpMethod
 
     /**
       * Convert the API to a request object to register into a router.
