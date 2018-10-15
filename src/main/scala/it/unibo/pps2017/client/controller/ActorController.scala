@@ -12,6 +12,6 @@ trait ActorController {
   def sendMessage(message:ActorMessage):Unit =
     currentActorRef ! message
 
-  def updateGUI():Unit
+  def updateGUI(message: ActorMessage): Unit
 }
 

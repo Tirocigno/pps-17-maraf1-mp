@@ -5,48 +5,14 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.client.model.actors.ClientGameActor
+import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient._
-import it.unibo.pps2017.core.deck.cards.Seed.Seed
 
 import scala.collection.mutable.ListBuffer
 
 object PlayerActorClient {
 
-  case class PlayersRef(playersList: ListBuffer[ClientGameActor])
 
-  case class DistributedCard(cards: List[String], player: ClientGameActor)
-
-  case class SelectBriscola(player: ClientGameActor)
-
-  case class BriscolaChosen(seed: Seed)
-
-  case class NotifyBriscolaChosen(seed: Seed)
-
-  case class Turn(player: ClientGameActor, endPartialTurn: Boolean, isFirstPlayer: Boolean)
-
-  case class ClickedCard(index: Int, player: ClientGameActor)
-
-  case class PlayedCard(card: String, player: ClientGameActor)
-
-  case class ClickedCommand(command: String, player: ClientGameActor)
-
-  case class NotifyCommandChose(command: String, player: ClientGameActor)
-
-  case class ForcedCardPlayed(card: String, player: ClientGameActor)
-
-  case class CardOk(correctClickedCard: Boolean)
-
-  case class SetTimer(timer: Int)
-
-  case class PartialGameScore(winner1: ClientGameActor, winner2: ClientGameActor, score1: Int, score2: Int)
-
-  case class FinalGameScore(winner1: ClientGameActor, winner2: ClientGameActor, score1: Int, score2: Int)
-
-  case class IdChannelPublishSubscribe(id: String)
-
-  case class BriscolaAck()
-
-  case class CardPlayedAck()
 
   final val START_SEARCH: Int = 0
   final val FOUNDED: Int = 1

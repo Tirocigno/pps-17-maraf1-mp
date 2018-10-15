@@ -3,24 +3,24 @@ package it.unibo.pps2017.client.controller.actors.playeractor
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import it.unibo.pps2017.client.controller.ActorController
+import it.unibo.pps2017.client.model.actors.ActorMessage
+import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages.{BriscolaChosen, ClickedCard}
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient
-import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient.{BriscolaChosen, ClickedCard, ClickedCommand}
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
-import scala.language.implicitConversions
-import it.unibo.pps2017.client.controller.actors.playeractor.getOrThrow
 
 import scala.collection.JavaConverters._
 
  class GameController extends ActorController {
 
-  /** oggetto gui */
 
-  var playGameController: PlayGameController
+   /** oggetto gui */
+
+   var playGameController: PlayGameController = _
   val system = ActorSystem("mySystem")
   /**
     * ActorRef of the actor*/
-  var myActor: Option[ActorRef] = None
+  var currentActorRef: ActorRef = _
 
   var myTurn: Boolean = _
   var amIWinner: Boolean = _
@@ -57,21 +57,21 @@ import scala.collection.JavaConverters._
     playGameController.setTimer(timer)
   }
 
-  def setCommandFromPlayer(command: String): Unit = {
-    myActor ! ClickedCommand(command, null)
-  }
+   //TODO FIX THIS
+   def setCommandFromPlayer(command: String): Unit = {
+     //currentActorRef ! ClickedCommand(command, )
+   }
 
-  def selectedBriscola(briscola: String): Unit = briscola match {
-    case Sword.asString => getOrThrow(myActor) ! BriscolaChosen(Sword)
-    case Cup.asString => myActor BriscolaChosen(Cup)
-    case Coin.asString => myActor ! BriscolaChosen(Coin)
-    case Club.asString => myActor ! BriscolaChosen(Club)
-    case _ => new IllegalArgumentException()
-  }
+   def getOrThrow(actorRef: Option[ActorRef]): ActorRef =
+     actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
 
   def setPlayedCard(cardIndex: Int): Unit = {
-    myActor ! ClickedCard(cardIndex, null)
+    currentActorRef ! ClickedCard(cardIndex, null)
   }
+
+   override def createActor(actorId: String, actorSystem: ActorSystem) = {
+     currentActorRef = actorSystem.actorOf(Props(new PlayerActorClient(this, actorId)))
+   }
 
   def isMyTurn(): Boolean = {
     return myTurn
@@ -98,7 +98,17 @@ import scala.collection.JavaConverters._
     this.amIWinner
   }
 
-   override def createActor(actorId: String, actorSystem: ActorSystem) = {
-     myActor = Some (actorSystem.actorOf(Props(new PlayerActorClient(this, actorId))))
+   //TODO refactor code according to this method
+   override def updateGUI(message: ActorMessage): Unit = message match {
+     case BriscolaChosen(seed) => selectedBriscola(seed.asString)
+     case _ =>
+   }
+
+   def selectedBriscola(briscola: String): Unit = briscola match {
+     case Sword.asString => currentActorRef ! BriscolaChosen(Sword)
+     case Cup.asString => currentActorRef ! BriscolaChosen(Cup)
+     case Coin.asString => currentActorRef ! BriscolaChosen(Coin)
+     case Club.asString => currentActorRef ! BriscolaChosen(Club)
+     case _ => new IllegalArgumentException()
    }
 }
