@@ -7,13 +7,12 @@ import com.typesafe.config.ConfigFactory
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
-import it.unibo.pps2017.core.game.MatchManager.{FOUR_OF_COIN, RANDOM_TEAM}
 import it.unibo.pps2017.core.game._
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer, Map}
 import it.unibo.pps2017.core.player.GameActor._
 import akka.cluster.pubsub.{DistributedPubSub, DistributedPubSubMediator}
-import DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
+import DistributedPubSubMediator.{Publish, Subscribe}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
 
@@ -22,6 +21,7 @@ import scala.util.Random
 
 
 class GameActor extends Actor with Match with ActorLogging {
+  type ActorName = String
 
   var currentBriscola: Option[Seed] = None
   var currentSuit: Option[Seed] = None
@@ -36,55 +36,65 @@ class GameActor extends Actor with Match with ActorLogging {
   var team2: Team = _
   val actors : ListBuffer[PlayerActor] = ListBuffer[PlayerActor]()
   var cardsInHand :  collection.Map[PlayerActor, ArrayBuffer[Card]] =  Map[PlayerActor, ArrayBuffer[Card]]()
-  var matchh = MatchManager()
   var cardsInTable : ListBuffer[Card] = ListBuffer[Card]()
   var mediator : ActorRef  = _
   val cluster = Cluster(context.system)
   var task : TimerTask = _
   var cardPlayed : Boolean = false
+  var numAck: Int = 0
 
   override def preStart(): Unit = {
+    cluster.subscribe(self, classOf[MemberUp])
     mediator = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(TOPIC_NAME, self)
-    cluster.subscribe(self, classOf[MemberUp])
   }
 
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   def receive = {
 
-    case SubscribeAck(Subscribe(TOPIC_NAME, None, _)) ⇒
-      log.info("subscribing")
+    case RegisterPlayer(team1, team2) => {
 
-    case RegisterPlayer(player) => {
-       actors.length match {
-        case x if x < TOT_PLAYERS - 1 => {
-          addPlayer(player,RANDOM_TEAM)
-          actors += player
-          onFullTable()
-        }
-        case TOT_PLAYERS => {
-          println("Already 4 players")
-        }
-        case _ => {
-          addPlayer(player,RANDOM_TEAM)
-          actors += player
-        }
-      }
+      team1.getMembers.foreach(player =>{
+        addPlayer(player,RANDOM_TEAM)
+        //actors += player.getUsername()
+      })
+
+      team2.getMembers.foreach(player =>{
+        addPlayer(player,RANDOM_TEAM)
+        //actors += player.getUsername()
+      })
+
+      onFullTable()
+
     }
 
     case BriscolaChosen(seed) => {
       setBriscola(seed)
       mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed))
       val setEnd = gameEnd
-      mediator ! Publish(TOPIC_NAME,Turn(nextHandStarter.get,setEnd,true))
-      startTimer()
-    }
+      mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, setEnd, true))
 
+    }
+    case BriscolaAck =>{
+      numAck = numAck + 1
+      if(numAck==TOT_PLAYERS){
+        mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, setEnd, true))
+        startTimer()
+        numAck = 0
+      }
+    }
     case ClickedCard(index,player) => {
       isCardOk(cardsInHand.get(player).get(index),player)
     }
 
+    case PlayedCardAck => {
+      numAck = numAck + 1
+      if(numAck==TOT_PLAYERS) {
+        mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, setEnd, gameCycle.isFirst))
+        numAck = 0
+      }
+    }
     case ClickedCommand(command, player) => {
       mediator ! Publish(TOPIC_NAME, NotifyCommandChosen(command,player))
     }
@@ -169,6 +179,12 @@ class GameActor extends Actor with Match with ActorLogging {
 
 
   private def prepareSet(): Unit = {
+    var actorReferences: List[ActorName] = List[ActorName]()
+    actors.foreach(p => {
+      //actorReferences += p.getUsername()
+    })
+    mediator ! Publish(TOPIC_NAME,PlayersRef(actorReferences))
+
     setEnd = false
     deck.shuffle()
     var i: Int = 0
@@ -182,7 +198,6 @@ class GameActor extends Actor with Match with ActorLogging {
       }
       i += 1
     })
-    mediator ! Publish(TOPIC_NAME,PlayersRef(actors))
     mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get))
 
   }
@@ -237,24 +252,20 @@ class GameActor extends Actor with Match with ActorLogging {
     }
   }
 
-  override def isCardOk(card: Card, player: PlayerActor): Boolean = currentSuit match {
+  override def isCardOk(card: Card, player: PlayerActor): Unit = currentSuit match {
     case Some(seed) =>
       if (seed == card.cardSeed) {
         onCardPlayed(card, player)
-        return true
       }
-
       val playerHand: Seq[Card] = cardsInHand.get(player).get.toStream
 
       if (!playerHand.exists(_.cardSeed == seed)) {
         onCardPlayed(card, player)
-        return true
       }
-      mediator ! Publish(TOPIC_NAME,CardOk(false))
-      false
+      mediator ! Publish(TOPIC_NAME,CardOk(false, player))
+
     case None =>
       onCardPlayed(card, player)
-      true
   }
 
   private def onCardPlayed(card: Card, player: PlayerActor): Unit = {
@@ -262,11 +273,11 @@ class GameActor extends Actor with Match with ActorLogging {
 
     cardsOnTable += ((card, gameCycle.getCurrent))
     cardPlayed = true
-    mediator ! Publish(TOPIC_NAME,CardOk(true))
     val cardPath: String = IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
     mediator ! Publish(TOPIC_NAME,PlayedCard(cardPath, player))
     cardsInHand.get(player).get -= card
 
+    // DA RIVEDERE ANCORA
     if (!gameCycle.isLast) {
       mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next(),gameEnd, gameCycle.isFirst))
     } else {
@@ -350,6 +361,13 @@ class GameActor extends Actor with Match with ActorLogging {
     }
   }
 }
+
+
+final case class FullTeamException(message: String = "The team has reached the maximum number of players",
+                                   private val cause: Throwable = None.orNull) extends Exception(message, cause)
+
+final case class TeamNotFoundException(message: String = "Team not found in this match",
+                                       private val cause: Throwable = None.orNull) extends Exception(message, cause)
 
 object GameActor {
   val TOT_PLAYERS: Int = 4
