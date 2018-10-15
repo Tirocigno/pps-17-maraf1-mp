@@ -1,10 +1,12 @@
+
 package it.unibo.pps2017.server
 import controller.Dispatcher
-import io.vertx.scala.core.Vertx
+import it.unibo.pps2017.server.controller.Dispatcher.VERTX
 
 
 
 object Runner extends App {
-  Vertx.vertx().deployVerticle(new Dispatcher())
+
+  VERTX.deployVerticle(new Dispatcher())
 }
 

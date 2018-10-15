@@ -1,10 +1,12 @@
+
 package it.unibo.pps2017.server.model
 
-import io.circe.generic.auto._
-import io.circe.syntax._
-import io.vertx.lang.scala.json.JsonObject
+
 import io.vertx.scala.ext.web.RoutingContext
 import it.unibo.pps2017.server.model.ResponseStatus._
+import org.json4s._
+import org.json4s.jackson.Serialization.write
+
 
 
 /**
@@ -22,6 +24,9 @@ import it.unibo.pps2017.server.model.ResponseStatus._
 case class RouterResponse(routingContext: RoutingContext,
                           var status: HeaderStatus = OK,
                           var message: Option[String] = None) {
+
+
+  implicit val formats: DefaultFormats.type = DefaultFormats
 
   /**
     * Set the response status to error.
@@ -69,14 +74,14 @@ case class RouterResponse(routingContext: RoutingContext,
           .setStatusCode(OK_CODE)
           .setChunked(true)
           .putHeader("Content-Type", "application/json")
-          .write(data.asJson.noSpaces)
+          .write(write(data))
           .end()
       case ResponseException =>
         routingContext.response()
           .setStatusCode(EXCEPTION_CODE)
           .setChunked(true)
           .putHeader("Content-Type", "application/json")
-          .write(Error(message).asJson.noSpaces)
+          .write(write(Error(message)))
           .end()
     }
 

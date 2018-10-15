@@ -1,1 +1,6 @@
 language: java
+deploy:
+  provider: heroku
+  api_key:
+    secure: 29634f4b-d833-4cc8-8a3a-4bd0c77faf52
+  on: feature/ServerGameAPI
