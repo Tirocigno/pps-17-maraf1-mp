@@ -1,9 +1,10 @@
 
 package it.unibo.pps2017.client.model.remote
 
+import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.core.Vertx
-import io.vertx.scala.ext.web.client.WebClient
+import io.vertx.scala.ext.web.client.{HttpResponse, WebClient}
 import it.unibo.pps2017.client.controller.ClientController
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.utils.remote.RestAPI
@@ -11,6 +12,7 @@ import it.unibo.pps2017.utils.remote.RestUtils.{IPAddress, Port, ServerContext}
 import it.unibo.pps2017.utils.remote.exceptions.NotValidHttpMethodException
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * This module is responsable for sending remote calls via rest apis and
@@ -33,12 +35,20 @@ sealed trait RestWebClient {
 
 object RestWebClient {
 
+  type AsyncResponse = Future[HttpResponse[Buffer]]
+
   private class RestWebClientImpl(override val discoveryServerContext: ServerContext) extends RestWebClient {
 
     override val webClient: WebClient = WebClient.create(Vertx.vertx())
 
     override def callRemoteAPI(apiToCall: RestAPI): Unit = checkOrSetServer(apiToCall)
 
+    /**
+      * Check if assigned server is setted, if not, makes a Rest call to the discovery server in order to get one,
+      * then it start the rest call initially requested.
+      *
+      * @param restAPI the API to call.
+      */
     def checkOrSetServer(restAPI: RestAPI): Unit = assignedServerContext match {
       case Some(context) => invokeAPI(context.port, context.ipAddress, restAPI)
       case None => callAPIAsAFuture(discoveryServerContext.port, discoveryServerContext.IPAddress,
@@ -64,6 +74,12 @@ object RestWebClient {
       case HttpMethod.GET => webClient.get(port, host, api.path).sendFuture()
       case _ => throw new NotValidHttpMethodException()
     }
+
+    /**
+      * Retrieve the body of an async response as a Future[String].
+      */
+    private def getResponseBodyAsFuture(response: AsyncResponse) =
+      response.map(_.bodyAsString().get)
 
     private def invokeAPI(port: Port, host: IPAddress, api: RestAPI): Unit = {
 
