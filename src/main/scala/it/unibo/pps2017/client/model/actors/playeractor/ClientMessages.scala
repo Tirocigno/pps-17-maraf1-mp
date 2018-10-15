@@ -26,7 +26,7 @@ object ClientMessages {
 
   case class ClickedCommand(command: String, player: String) extends ActorMessage
 
-  case class NotifyCommandChose(command: String, player: String) extends ActorMessage
+  case class NotifyCommandChosen(command: String, player: String) extends ActorMessage
 
   case class ForcedCardPlayed(card: String, player: String) extends ActorMessage
 

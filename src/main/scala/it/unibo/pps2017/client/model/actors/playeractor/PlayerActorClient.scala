@@ -31,28 +31,33 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     case PlayersRef(playersList) =>
       this.gameActor = sender()
       val finalList: ListBuffer[String] = this.orderPlayersList(playersList)
-      controller.sendPlayersList(finalList.toList)
+      controller.updateGUI(PlayersRef(finalList))
+      //controller.sendPlayersList(finalList.toList)
 
     case DistributedCard(cards, player) =>
       if (this.user.eq(player))
-        controller.sendCardsFirstPlayer(cards)
+        controller.updateGUI(DistributedCard(cards, player))
+        //controller.sendCardsFirstPlayer(cards)
 
     case SelectBriscola(player) =>
       if (this.user.eq(player))
-        controller.selectBriscola()
+        //controller.selectBriscola()
+        controller.updateGUI(SelectBriscola(player))
 
     case BriscolaChosen(seed) =>
       gameActor ! BriscolaChosen(seed)
 
     case NotifyBriscolaChosen(seed) =>
-      controller.sendBriscolaChosen(briscola = seed.asString)
+      controller.updateGUI(NotifyBriscolaChosen(seed))
+      //controller.sendBriscolaChosen(briscola = seed.asString)
       gameActor ! BriscolaAck
 
     case ClickedCard(index, player) =>
       gameActor ! ClickedCard(index, player)
 
     case CardOk(correctClickedCard) =>
-      controller.setCardOK(correctClickedCard)
+      //controller.setCardOK(correctClickedCard)
+      controller.updateGUI(CardOk(correctClickedCard))
 
     case ClickedCommand(command, player) =>
       gameActor ! ClickedCommand(command, player)
@@ -72,21 +77,27 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       } else {
         controller.setMyTurn(false)
       }
-      controller.setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
+      controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
+      //controller.setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
 
     case PlayedCard(card, player) =>
-      controller.showOtherPlayersPlayedCard(card, player)
+      //controller.showOtherPlayersPlayedCard(card, player)
+      controller.updateGUI(PlayedCard(card, player))
       gameActor ! CardPlayedAck
 
-    case NotifyCommandChose(command, player) =>
-      controller.sendCommand(player, command)
+
+    case NotifyCommandChosen(command, player) =>
+      //controller.sendCommand(player, command)
+      controller.updateGUI(NotifyCommandChosen(command, player))
 
     case ForcedCardPlayed(card, player) =>
-      controller.showOtherPlayersPlayedCard(card, player = player)
+      controller.updateGUI(ForcedCardPlayed(card, player))
+      //controller.showOtherPlayersPlayedCard(card, player = player)
       gameActor ! CardPlayedAck
 
     case SetTimer(timer) =>
-      controller.setTimer(timer)
+      controller.updateGUI(SetTimer(timer))
+      //controller.setTimer(timer)
 
     case PartialGameScore(winner1, winner2, score1, score2) =>
       if (this.user.eq(winner1) | this.user.eq(winner2)) {
