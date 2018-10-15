@@ -69,17 +69,18 @@ object RestWebClient {
       * @param api  the api to call on that server.
       * @return a future containing an HttpResponse[Buffer] object to handle.
       */
-    private def callAPIAsAFuture(port: Port, host: IPAddress, api: RestAPI) = api.httpMethod match {
+    private def callAPIAsAFuture(port: Port, host: IPAddress, api: RestAPI) =
+      api.httpMethod match {
       case HttpMethod.POST => webClient.post(port, host, api.path).sendFuture()
       case HttpMethod.GET => webClient.get(port, host, api.path).sendFuture()
       case _ => throw new NotValidHttpMethodException()
     }
 
     /**
-      * Retrieve the body of an async response as a Future[String].
+      * Retrieve the body of an async response as a Future[String], if body is not present, throw NoSuchField exception.
       */
     private def getResponseBodyAsFuture(response: AsyncResponse) =
-      response.map(_.bodyAsString().get)
+      response.map(_.bodyAsString().getOrElse(throw new NoSuchFieldException("Response body not found")))
 
     private def invokeAPI(port: Port, host: IPAddress, api: RestAPI): Unit = {
 
