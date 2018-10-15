@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.model.actors
 
-import it.unibo.pps2017.client.controller.MatchController
+import it.unibo.pps2017.client.model.actors.playerActor.GameController
 
 /**
   * Trait PlayerActor outline the model for real time comunication structure,
@@ -9,6 +9,7 @@ import it.unibo.pps2017.client.controller.MatchController
   * a remote Maraphone match.
   */
 //TODO MERGE WITH BRASINI WORK.
-trait PlayerActor extends ModelActor {
-  override val controller: MatchController
+trait GameActor extends ModelActor {
+  override val controller: GameController
+  def getUsername: String
 }
