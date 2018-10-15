@@ -4,24 +4,15 @@ package it.unibo.pps2017.discovery.restAPI
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.server.model.{GET, POST, Request, RouterResponse}
+import it.unibo.pps2017.utils.remote.RestAPI
 
 object DiscoveryAPI {
 
   /**
     * Trait of DiscoveryAPI.
     */
-  sealed trait DiscoveryAPI {
-    /**
-      * Path of the API
-      * @return a string containing the path of API.
-      */
-    def path:String
+  sealed trait DiscoveryAPI extends RestAPI {
 
-    /**
-      * Http method of API.
-      * @return an HTTP method to call.
-      */
-    def httpMethod:HttpMethod
 
     /**
       * Convert the API to a request object to register into a router.
@@ -33,7 +24,7 @@ object DiscoveryAPI {
   }
 
   /**
-    * API to register a new server on discovery server.
+    * API to register a new server on RestUtils server.
     */
   case object RegisterServerAPI extends DiscoveryAPI {
 

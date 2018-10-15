@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.discovery
 
+import it.unibo.pps2017.utils.remote.RestUtils.ServerContext
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
