@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.model.remote
 
-import it.unibo.pps2017.client.controller.{ClientController, SingletonClientController}
+import it.unibo.pps2017.client.controller.ClientController
 import it.unibo.pps2017.utils.remote.RestAPI
 import it.unibo.pps2017.utils.remote.RestUtils.ServerContext
 
@@ -12,7 +12,7 @@ import it.unibo.pps2017.utils.remote.RestUtils.ServerContext
 sealed trait RestWebClient {
 
   val discoveryServerContext: ServerContext
-  val clientController: ClientController = SingletonClientController
+  val clientController: ClientController = ClientController getSingletonController
   var assignedServerContext: Option[ServerContext] = None
 
   /**

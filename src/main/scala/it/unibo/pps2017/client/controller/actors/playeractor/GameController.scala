@@ -13,11 +13,9 @@ import scala.collection.JavaConverters._
 
  class GameController extends ActorController {
 
-
    /** oggetto gui */
 
    var playGameController: PlayGameController = _
-  val system = ActorSystem("mySystem")
   /**
     * ActorRef of the actor*/
   var currentActorRef: ActorRef = _
@@ -71,6 +69,7 @@ import scala.collection.JavaConverters._
 
    override def createActor(actorId: String, actorSystem: ActorSystem) = {
      currentActorRef = actorSystem.actorOf(Props(new PlayerActorClient(this, actorId)))
+     println(currentActorRef)
    }
 
   def isMyTurn(): Boolean = {
