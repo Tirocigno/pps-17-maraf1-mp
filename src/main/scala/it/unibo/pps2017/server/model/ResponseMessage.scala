@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.server.model
 
-import it.unibo.pps2017.discovery.MatchRef
+import it.unibo.pps2017.utils.remote.RestUtils.MatchRef
 
 
 /**
