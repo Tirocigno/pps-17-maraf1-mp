@@ -11,104 +11,198 @@ import it.unibo.pps2017.core.gui.PlayGameController
 
 import scala.collection.JavaConverters._
 
- class GameController extends ActorController {
+class GameController extends ActorController {
 
 
-   /** oggetto gui */
-
-   var playGameController: PlayGameController = _
+  /** oggetto gui */
+  var playGameController: PlayGameController = _
   val system = ActorSystem("mySystem")
   /**
     * ActorRef of the actor*/
   var currentActorRef: ActorRef = _
 
-  var myTurn: Boolean = _
-  var amIWinner: Boolean = _
+  var myTurn: Boolean = false
+  var amIWinner: Boolean = false
 
-  def getCardsFirstPlayer(cards: List[String]): Unit = {
+  /**
+    * Method to send to GUI ten cards of the user.
+    * @param cards
+    *              List of ten cards.
+    */
+  def sendCardsFirstPlayer(cards: List[String]): Unit = {
     playGameController.getCardsFirstPlayer(cards.asJava)
   }
 
-  def getBriscolaChosen(briscola: String): Unit = {
+  /**
+    * Method to send to GUI briscola chosen from other player.
+    * @param briscola
+    *                 Briscola chosen.
+    */
+  def sendBriscolaChosen(briscola: String): Unit = {
     playGameController.getBriscolaChosen(briscola)
   }
 
-  def getCommand(player: String, command: String): Unit = {
+  /**
+    * Method to send to GUI command chosen from other player.
+    * @param player
+    *               Player who clicks the command.
+    * @param command
+    *                Command clicked by other player.
+    */
+  def sendCommand(player: String, command: String): Unit = {
     playGameController.getCommand(player, command)
   }
 
+  /**
+    * Method to send to GUI path of played card from other player.
+    * @param path
+    *             Played card's path.
+    * @param player
+    *               Player who played card.
+    */
   def showOtherPlayersPlayedCard(path: String, player: String): Unit = {
     playGameController.showOtherPlayersPlayedCard(player, path)
   }
 
+  /**
+    * Method to send to GUI the score of two team.
+    * @param firstTeamScore
+    *                       Score of first team.
+    * @param secondTeamScore
+    *                        Score of second team.
+    * @param endMatch
+    *                 Boolean to know if match is ended.
+    */
   def cleanFieldEndTotalTurn(firstTeamScore: Int, secondTeamScore: Int, endMatch: Boolean): Unit = {
     playGameController.cleanFieldEndTotalTurn(firstTeamScore, secondTeamScore, endMatch)
   }
 
+  /**
+    * Method to send to GUI the player that now will be plays a card.
+    * @param player
+    *               Player that will be plays a card.
+    * @param partialTurnIsEnded
+    *                           Boolean to know if turn is ended.
+    * @param isFirstPlayer
+    *                      Boolean to know if the player is the first of the turn (for show or hide commands)
+    */
   def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean): Unit = {
     playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer)
   }
 
-  def selectBriscola() = {
+  /**
+    * Method to send to GUI the command to choose briscola.
+    */
+  def selectBriscola(): Unit = {
     playGameController.showBriscolaCommands()
   }
 
-  def setTimer(timer: Int) = {
+  /**
+    * Method to send to GUI the current value of timer.
+    * @param timer
+    *              Value of timer.
+    */
+  def setTimer(timer: Int): Unit = {
     playGameController.setTimer(timer)
   }
 
-   //TODO FIX THIS
-   def setCommandFromPlayer(command: String): Unit = {
-     //currentActorRef ! ClickedCommand(command, )
-   }
+  //TODO FIX THIS
+  def setCommandFromPlayer(command: String): Unit = {
+    //currentActorRef ! ClickedCommand(command, )
+  }
 
-   def getOrThrow(actorRef: Option[ActorRef]): ActorRef =
-     actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
+  def getOrThrow(actorRef: Option[ActorRef]): ActorRef =
+    actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
 
+  /**
+    * Method to send to actor to informe of played card.
+    * @param cardIndex
+    *                  Index of played card.
+    */
   def setPlayedCard(cardIndex: Int): Unit = {
     currentActorRef ! ClickedCard(cardIndex, null)
   }
 
-   override def createActor(actorId: String, actorSystem: ActorSystem) = {
-     currentActorRef = actorSystem.actorOf(Props(new PlayerActorClient(this, actorId)))
-   }
-
-  def isMyTurn(): Boolean = {
-    return myTurn
+  /**
+    * Method to create a new PlayerActorClient.
+    * @param actorId
+    *                Id of PlayerActorClient.
+    * @param actorSystem
+    *                    System.
+    */
+  override def createActor(actorId: String, actorSystem: ActorSystem): Unit = {
+    currentActorRef = actorSystem.actorOf(Props(new PlayerActorClient(this, actorId)))
   }
 
+  /**
+    * Method to know if is the turn of actual player.
+    * @return
+    *         myTurn
+    */
+  def isMyTurn: Boolean = {
+    myTurn
+  }
+
+  /**
+    * Method to set the turn.
+    * @param turn
+    *             Boolean turn.
+    */
   def setMyTurn(turn: Boolean): Unit = {
-    this.myTurn = turn
+    myTurn = turn
   }
 
-  def setCardOK(cardOK: Boolean): Unit = cardOK match {
-    case true => playGameController.showPlayedCardOk()
-    case false => playGameController.showPlayedCardError()
-  }
+  /**
+    * Method to send to GUI to understand if clicked card is ok or not.
+    * @param cardOK
+    *               Boolean to know if clicked card is ok or not.
+    */
+  def setCardOK(cardOK: Boolean): Unit =
+    if (cardOK) playGameController.showPlayedCardOk() else playGameController.showPlayedCardError()
 
+  /**
+    * Method to send to GUI four players of the match.
+    * @param playersList
+    *                    Players' list of match.
+    */
   def sendPlayersList(playersList: List[String]): Unit = {
     playGameController.setPlayersList(playersList.asJava)
   }
 
+  /**
+    * Method to set variable amIWinner.
+    * @param winner
+    *               Boolean variable.
+    */
   def setWinner(winner: Boolean): Unit = {
     this.amIWinner = winner
   }
 
-  def getWinner(): Boolean = {
+  /**
+    * Method to know if the current player is the winner.
+    * @return
+    *         getWinner Boolean variable.
+    */
+  def getWinner: Boolean = {
     this.amIWinner
   }
 
-   //TODO refactor code according to this method
-   override def updateGUI(message: ActorMessage): Unit = message match {
-     case BriscolaChosen(seed) => selectedBriscola(seed.asString)
-     case _ =>
-   }
+  //TODO refactor code according to this method
+  override def updateGUI(message: ActorMessage): Unit = message match {
+    case BriscolaChosen(seed) => selectedBriscola(seed.asString)
+    case _ =>
+  }
 
-   def selectedBriscola(briscola: String): Unit = briscola match {
-     case Sword.asString => currentActorRef ! BriscolaChosen(Sword)
-     case Cup.asString => currentActorRef ! BriscolaChosen(Cup)
-     case Coin.asString => currentActorRef ! BriscolaChosen(Coin)
-     case Club.asString => currentActorRef ! BriscolaChosen(Club)
-     case _ => new IllegalArgumentException()
-   }
+  /**
+    * Method to send to actor to inform of briscola chosen.
+    * @param briscola
+    *                 Briscola chosen from current player.
+    */
+  def selectedBriscola(briscola: String): Unit = briscola match {
+    case Sword.asString => currentActorRef ! BriscolaChosen(Sword)
+    case Cup.asString => currentActorRef ! BriscolaChosen(Cup)
+    case Coin.asString => currentActorRef ! BriscolaChosen(Coin)
+    case Club.asString => currentActorRef ! BriscolaChosen(Club)
+    case _ => new IllegalArgumentException()
+  }
 }

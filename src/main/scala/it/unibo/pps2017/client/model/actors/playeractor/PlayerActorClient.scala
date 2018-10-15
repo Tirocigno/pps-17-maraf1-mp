@@ -1,3 +1,4 @@
+
 package it.unibo.pps2017.client.model.actors.playeractor
 
 import akka.actor.ActorRef
@@ -11,8 +12,6 @@ import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient._
 import scala.collection.mutable.ListBuffer
 
 object PlayerActorClient {
-
-
 
   final val START_SEARCH: Int = 0
   final val FOUNDED: Int = 1
@@ -35,62 +34,62 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       controller.sendPlayersList(finalList.toList)
 
     case DistributedCard(cards, player) =>
-      if (this.actorPlayer.eq(player))
-        controller.getCardsFirstPlayer(cards)
+      if (this.user.eq(player))
+        controller.sendCardsFirstPlayer(cards)
 
     case SelectBriscola(player) =>
-      if (this.actorPlayer.eq(player))
+      if (this.user.eq(player))
         controller.selectBriscola()
 
     case BriscolaChosen(seed) =>
       gameActor ! BriscolaChosen(seed)
 
     case NotifyBriscolaChosen(seed) =>
-      controller.getBriscolaChosen(briscola = seed.asString)
+      controller.sendBriscolaChosen(briscola = seed.asString)
       gameActor ! BriscolaAck
 
     case ClickedCard(index, player) =>
-      gameActor ! ClickedCard(index, this.actorPlayer)
+      gameActor ! ClickedCard(index, player)
 
     case CardOk(correctClickedCard) =>
       controller.setCardOK(correctClickedCard)
 
     case ClickedCommand(command, player) =>
-      gameActor ! ClickedCommand(command, this.actorPlayer)
+      gameActor ! ClickedCommand(command, player)
 
 
     /*
   case Turn(player, endPartialTurn, isFirstPlayer) => player match {
-    case player if player == actorPlayer  => clientController.setMyTurn(true)
-      clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
+    case player if player.eq(user)  => clientController.setMyTurn(true)
+      clientController.setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
     case _ => clientController.setMyTurn(false)
-      clientController.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
+      clientController.setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
   } */
 
     case Turn(player, endPartialTurn, isFirstPlayer) =>
-      if (this.actorPlayer.eq(player)) {
+      if (this.user.eq(player)) {
         controller.setMyTurn(true)
       } else {
         controller.setMyTurn(false)
       }
-      controller.setCurrentPlayer(player.getUsername, endPartialTurn, isFirstPlayer)
+      controller.setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
 
     case PlayedCard(card, player) =>
-      controller.showOtherPlayersPlayedCard(card, player.getUsername)
+      controller.showOtherPlayersPlayedCard(card, player)
       gameActor ! CardPlayedAck
 
     case NotifyCommandChose(command, player) =>
-      controller.getCommand(player.getUsername, command)
+      controller.sendCommand(player, command)
 
     case ForcedCardPlayed(card, player) =>
-      controller.showOtherPlayersPlayedCard(card, player = player.getUsername)
+      controller.showOtherPlayersPlayedCard(card, player = player)
       gameActor ! CardPlayedAck
 
     case SetTimer(timer) =>
       controller.setTimer(timer)
 
     case PartialGameScore(winner1, winner2, score1, score2) =>
-      if (this.actorPlayer.eq(winner1) | this.actorPlayer.eq(winner2)) {
+      if (this.user.eq(winner1) | this.user.eq(winner2)) {
         if (score1 > score2) controller.cleanFieldEndTotalTurn(score1, score2, endMatch = false)
         else controller.cleanFieldEndTotalTurn(score2, score1, endMatch = false)
       } else {
@@ -100,7 +99,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
 
     /*
   case PartialGameScore(winner1, winner2, score1, score2) => (winner1, winner2) match {
-    case (`winner1`, `winner2`) if winner1.eq(actorPlayer) | winner2.eq(actorPlayer) => (score1, score2) match {
+    case (`winner1`, `winner2`) if winner1.eq(user) | winner2.eq(user) => (score1, score2) match {
       case `score1` > `score2` => clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = false)
       case _ => clientController.cleanFieldEndTotalTurn(score2, score1, endMatch = false)
     }
@@ -111,7 +110,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
   } */
 
     case FinalGameScore(winner1, winner2, score1, score2) =>
-      if (this.actorPlayer.eq(winner1) | this.actorPlayer.eq(winner2)) {
+      if (this.user.eq(winner1) | this.user.eq(winner2)) {
         if (score1 > score2) {
           controller.cleanFieldEndTotalTurn(score1, score2, endMatch = true)
           controller.setWinner(true)
@@ -132,7 +131,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
 
 /*
     case FinalGameScore(winner1, winner2, score1, score2) => (winner1, winner2) match {
-      case (`winner1`, `winner2`) if winner1.eq(actorPlayer) | winner2.eq(actorPlayer) => (score1, score2) match {
+      case (`winner1`, `winner2`) if winner1.eq(user) | winner2.eq(user) => (score1, score2) match {
         case `score1` > `score2` =>
           clientController.cleanFieldEndTotalTurn(score1, score2, endMatch = true)
           clientController.setWinner(true)
@@ -162,17 +161,17 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     user
   }
 
-  private def orderPlayersList(playersList: ListBuffer[ClientGameActor]): ListBuffer[String] = {
+  private def orderPlayersList(playersList: ListBuffer[String]): ListBuffer[String] = {
     val tempList = playersList ++ playersList
     var searchPlayer = START_SEARCH
     var orderedList = new ListBuffer[String]
 
     for (player <- tempList) {
       player match {
-        case `player` if player.eq(actorPlayer) & searchPlayer == START_SEARCH
-        => (orderedList += player.getUsername, searchPlayer += FOUNDED)
-        case `player` if player.eq(actorPlayer) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
-        => (orderedList += player.getUsername, searchPlayer += FOUNDED)
+        case `player` if player.eq(user) & searchPlayer == START_SEARCH
+        => (orderedList += player, searchPlayer += FOUNDED)
+        case `player` if player.eq(user) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
+        => (orderedList += player, searchPlayer += FOUNDED)
         case _ => tempList.clear
       }
     }
