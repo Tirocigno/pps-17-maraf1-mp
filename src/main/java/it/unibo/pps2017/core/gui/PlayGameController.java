@@ -18,7 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import it.unibo.pps2017.client.model.actors.playerActor.GameController;
+import it.unibo.pps2017.client.controller.actors.playeractor.GameController;
 
 public class PlayGameController implements PlayGame {
 

@@ -1,14 +1,18 @@
-package it.unibo.pps2017.client.model.actors.playerActor
+
+package it.unibo.pps2017.client.controller.actors.playeractor
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import it.unibo.pps2017.client.controller.ActorController
+import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient
+import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient.{BriscolaChosen, ClickedCard, ClickedCommand}
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
-import it.unibo.pps2017.client.model.actors.playerActor.PlayerActor.{BriscolaChosen, ClickedCard, ClickedCommand}
+import scala.language.implicitConversions
+import it.unibo.pps2017.client.controller.actors.playeractor.getOrThrow
 
 import scala.collection.JavaConverters._
 
-abstract class GameController extends ActorController {
+ class GameController extends ActorController {
 
   /** oggetto gui */
 
@@ -16,7 +20,8 @@ abstract class GameController extends ActorController {
   val system = ActorSystem("mySystem")
   /**
     * ActorRef of the actor*/
-  val myActor: ActorRef = system.actorOf(Props(new PlayerActor(this, "nic")))
+  var myActor: Option[ActorRef] = None
+
   var myTurn: Boolean = _
   var amIWinner: Boolean = _
 
@@ -57,8 +62,8 @@ abstract class GameController extends ActorController {
   }
 
   def selectedBriscola(briscola: String): Unit = briscola match {
-    case Sword.asString => myActor ! BriscolaChosen(Sword)
-    case Cup.asString => myActor ! BriscolaChosen(Cup)
+    case Sword.asString => getOrThrow(myActor) ! BriscolaChosen(Sword)
+    case Cup.asString => myActor BriscolaChosen(Cup)
     case Coin.asString => myActor ! BriscolaChosen(Coin)
     case Club.asString => myActor ! BriscolaChosen(Club)
     case _ => new IllegalArgumentException()
@@ -92,4 +97,8 @@ abstract class GameController extends ActorController {
   def getWinner(): Boolean = {
     this.amIWinner
   }
+
+   override def createActor(actorId: String, actorSystem: ActorSystem) = {
+     myActor = Some (actorSystem.actorOf(Props(new PlayerActorClient(this, actorId))))
+   }
 }

@@ -1,45 +1,46 @@
-package it.unibo.pps2017.client.model.actors.playerActor
+package it.unibo.pps2017.client.model.actors.playeractor
 
 import akka.actor.ActorRef
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
-import it.unibo.pps2017.client.model.actors.GameActor
-import it.unibo.pps2017.client.model.actors.playerActor.PlayerActor._
+import it.unibo.pps2017.client.controller.actors.playeractor.GameController
+import it.unibo.pps2017.client.model.actors.ClientGameActor
+import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient._
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
 
 import scala.collection.mutable.ListBuffer
 
-object PlayerActor {
+object PlayerActorClient {
 
-  case class PlayersRef(playersList: ListBuffer[GameActor])
+  case class PlayersRef(playersList: ListBuffer[ClientGameActor])
 
-  case class DistributedCard(cards: List[String], player: GameActor)
+  case class DistributedCard(cards: List[String], player: ClientGameActor)
 
-  case class SelectBriscola(player: GameActor)
+  case class SelectBriscola(player: ClientGameActor)
 
   case class BriscolaChosen(seed: Seed)
 
   case class NotifyBriscolaChosen(seed: Seed)
 
-  case class Turn(player: GameActor, endPartialTurn: Boolean, isFirstPlayer: Boolean)
+  case class Turn(player: ClientGameActor, endPartialTurn: Boolean, isFirstPlayer: Boolean)
 
-  case class ClickedCard(index: Int, player: GameActor)
+  case class ClickedCard(index: Int, player: ClientGameActor)
 
-  case class PlayedCard(card: String, player: GameActor)
+  case class PlayedCard(card: String, player: ClientGameActor)
 
-  case class ClickedCommand(command: String, player: GameActor)
+  case class ClickedCommand(command: String, player: ClientGameActor)
 
-  case class NotifyCommandChose(command: String, player: GameActor)
+  case class NotifyCommandChose(command: String, player: ClientGameActor)
 
-  case class ForcedCardPlayed(card: String, player: GameActor)
+  case class ForcedCardPlayed(card: String, player: ClientGameActor)
 
   case class CardOk(correctClickedCard: Boolean)
 
   case class SetTimer(timer: Int)
 
-  case class PartialGameScore(winner1: GameActor, winner2: GameActor, score1: Int, score2: Int)
+  case class PartialGameScore(winner1: ClientGameActor, winner2: ClientGameActor, score1: Int, score2: Int)
 
-  case class FinalGameScore(winner1: GameActor, winner2: GameActor, score1: Int, score2: Int)
+  case class FinalGameScore(winner1: ClientGameActor, winner2: ClientGameActor, score1: Int, score2: Int)
 
   case class IdChannelPublishSubscribe(id: String)
 
@@ -53,9 +54,9 @@ object PlayerActor {
 }
 
 
-class PlayerActor(override val controller: GameController, username: String) extends GameActor {
+class PlayerActorClient(override val controller: GameController, username: String) extends ClientGameActor {
 
-  var actorPlayer: GameActor = this
+  var actorPlayer: ClientGameActor = this
   var user: String = username
   var orderedPlayersList = new ListBuffer[String]()
   var gameActor: ActorRef = _
@@ -195,16 +196,16 @@ class PlayerActor(override val controller: GameController, username: String) ext
     user
   }
 
-  private def orderPlayersList(playersList: ListBuffer[GameActor]): ListBuffer[String] = {
+  private def orderPlayersList(playersList: ListBuffer[ClientGameActor]): ListBuffer[String] = {
     val tempList = playersList ++ playersList
     var searchPlayer = START_SEARCH
     var orderedList = new ListBuffer[String]
 
     for (player <- tempList) {
       player match {
-        case `player` if player.eq(actorPlayer) & searchPlayer.eq(START_SEARCH)
+        case `player` if player.eq(actorPlayer) & searchPlayer == START_SEARCH
         => (orderedList += player.getUsername, searchPlayer += FOUNDED)
-        case `player` if player.eq(actorPlayer) & !searchPlayer.eq(START_SEARCH) & searchPlayer < END_SEARCH
+        case `player` if player.eq(actorPlayer) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
         => (orderedList += player.getUsername, searchPlayer += FOUNDED)
         case _ => tempList.clear
       }
