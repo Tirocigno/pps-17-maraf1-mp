@@ -18,6 +18,10 @@ object ServerApi {
     */
   case object FoundGameRestAPI$ extends RestAPI {
 
+    val meParamKey = "me"
+
+    val partnerParam = "partner"
+
     override def path: String = "/foundGame"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
