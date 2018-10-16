@@ -10,7 +10,8 @@ import it.unibo.pps2017.commons.remote.API.RestAPI
 import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, Port, ServerContext, formats}
 import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
-import it.unibo.pps2017.server.model.ServerContextEncoder
+import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
+import it.unibo.pps2017.server.model.{PostRequest, ServerContextEncoder}
 import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -54,13 +55,13 @@ object RestWebClient {
       * @param restAPI the RestAPI to call.
       */
     def checkOrSetServer(restAPI: RestAPI): Unit = assignedServerContext match {
-      case Some(context) => invokeAPI(context.port, context.ipAddress, restAPI)
-      case None => callAPIAsAFuture(discoveryServerContext.port, discoveryServerContext.IPAddress,
+      case Some(context) => invokeAPI(restAPI)
+      case None => callAPIAsAFuture(discoveryServerContext.port, discoveryServerContext.ipAddress,
         GetServerAPI)
         .map(getResponseBody)
         .map(deserializeServerContext)
         .onComplete {
-          case scala.util.Success(server) => invokeAPI(server.port, server.IPAddress, restAPI)
+          case scala.util.Success(server) => assignedServerContext = Some(server); invokeAPI(restAPI)
           case scala.util.Failure(exception) => clientController.notifyError(exception)
         }
     }
@@ -80,6 +81,13 @@ object RestWebClient {
       case _ => throw new NotValidHttpMethodException()
     }
 
+    private def reportErrorToController(throwable: Throwable): Unit = clientController.notifyError(throwable)
+
+
+    private def callAPIWithParameter(port: Port, host: IPAddress, api: RestAPI, paramMap: Map[String, String],
+                                     successCallBack: Option[String] => Unit, onFailureMessage: String) =
+      PostRequest(host, api.path, successCallBack, reportErrorToController, Some(paramMap), Some(port))
+
     /**
       * Retrieve the body of an async response as a Future[String], if body is not present, throw NoSuchField exception.
       */
@@ -94,9 +102,21 @@ object RestWebClient {
       */
     private def deserializeServerContext(jsonSource: String): ServerContext = read[ServerContextEncoder](jsonSource)
 
+    private def handleFoundGameRestAPI(): Unit = {
+      val context = assignedServerContext.get
+      callAPIAsAFuture(context.port, context.ipAddress, FoundGameRestAPI$)
+    }
 
-    private def invokeAPI(port: Port, host: IPAddress, api: RestAPI): Unit = {
 
+    /**
+      * Invoke a Rest API on the current Server.
+      *
+      * @param port port of the remote server.
+      * @param host ip address of the remote server.
+      * @param api  the api to invoke
+      */
+    private def invokeAPI(api: RestAPI): Unit = api match {
+      case FoundGameRestAPI$ =>
     }
   }
 
