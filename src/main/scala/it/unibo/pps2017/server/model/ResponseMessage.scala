@@ -2,7 +2,7 @@
 
 package it.unibo.pps2017.server.model
 
-import it.unibo.pps2017.utils.remote.RestUtils.MatchRef
+import it.unibo.pps2017.commons.remote.RestUtils.MatchRef
 
 
 /**
