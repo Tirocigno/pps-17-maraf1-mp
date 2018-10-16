@@ -7,11 +7,15 @@ import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterServerAPI
 import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
 import it.unibo.pps2017.server.model.ServerApi.{ErrorAPI, FoundGameAPI, GameAPI, HelloAPI}
 import it.unibo.pps2017.server.model._
 import org.json4s._
+import org.json4s.jackson.Serialization.read
+
+import scala.concurrent.duration._
 
 object Dispatcher {
   val applicationJson: String = "application/json"
@@ -21,8 +25,8 @@ object Dispatcher {
   var PASSWORD: Option[String] = Some("")
   val RESULT = "result"
   val TIMEOUT = 1000
-  val DISCOVERY_URL: String = ""
-  val DISCOVERY_PORT: Int = 0
+  val DISCOVERY_URL: String = "localhost"
+  val DISCOVERY_PORT: Int = 2000
   val VERTX = Vertx.vertx()
 }
 
@@ -61,6 +65,21 @@ class Dispatcher extends ScalaVerticle {
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
 
+
+    akkaSystem.scheduler.scheduleOnce(5 second) {
+      PostRequest(Dispatcher.DISCOVERY_URL, RegisterServerAPI.path, {
+        case Some(res) => try {
+          val msgFromDiscovery = read[Message](res)
+
+          println("Discovery registration response: " + msgFromDiscovery.message)
+        } catch {
+          case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
+        }
+        case None => println("No response from the discovery")
+      }, cause => {
+        println("Error on the discovery registration! \nDetails: " + cause.getMessage)
+      }, None, Some(Dispatcher.DISCOVERY_PORT))
+    }
   }
 
   /**
