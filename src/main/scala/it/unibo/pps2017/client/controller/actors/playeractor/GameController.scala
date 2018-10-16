@@ -20,7 +20,6 @@ class GameController extends ActorController {
   /**
     * ActorRef of the actor*/
   var currentActorRef: ActorRef = _
-
   var myTurn: Boolean = false
   var amIWinner: Boolean = false
 
@@ -69,17 +68,65 @@ class GameController extends ActorController {
   }
 
   /**
-    * Method to send to GUI the score of two team.
+    * Method to verify if player is a winner of this turn or not.
     *
-    * @param firstTeamScore
-    * Score of first team.
-    * @param secondTeamScore
-    * Score of second team.
-    * @param endMatch
-    * Boolean to know if match is ended.
+    * @param user
+    * Current player.
+    * @param winner1
+    * First of two winners of this turn.
+    * @param winner2
+    * Second of two winners of this turn.
+    * @param score1
+    * Aggregated score of first team.
+    * @param score2
+    * Aggregated score of second team.
     */
-  def cleanFieldEndTotalTurn(firstTeamScore: Int, secondTeamScore: Int, endMatch: Boolean): Unit = {
-    playGameController.cleanFieldEndTotalTurn(firstTeamScore, secondTeamScore, endMatch)
+  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
+
+    if (user.eq(winner1) | user.eq(winner2)) {
+      if (score1 > score2)
+        playGameController.cleanFieldEndTotalTurn(score1, score2, false)
+      else playGameController.cleanFieldEndTotalTurn(score2, score1, false)
+    } else {
+      if (score1 > score2) playGameController.cleanFieldEndTotalTurn(score2, score1, false)
+      else playGameController.cleanFieldEndTotalTurn(score1, score2, false)
+    }
+  }
+
+  /**
+    * Method to verify if player is a winner of match.
+    *
+    * @param user
+    * Current player.
+    * @param winner1
+    * First of two winners of match.
+    * @param winner2
+    * Second of two winners of match.
+    * @param score1
+    * Final score of first team.
+    * @param score2
+    * Final score of second team.
+    */
+  def cleanFieldEndMatch(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
+
+    if (user.eq(winner1) | user.eq(winner2)) {
+      if (score1 > score2) {
+        playGameController.cleanFieldEndTotalTurn(score1, score2, true)
+        this.setWinner(true)
+      } else {
+        playGameController.cleanFieldEndTotalTurn(score2, score1, true)
+        this.setWinner(true)
+      }
+    } else {
+      if (score1 > score2) {
+        playGameController.cleanFieldEndTotalTurn(score2, score1, true)
+        this.setWinner(false)
+      }
+      else {
+        playGameController.cleanFieldEndTotalTurn(score1, score2, true)
+        this.setWinner(false)
+      }
+    }
   }
 
   /**
@@ -188,6 +235,20 @@ class GameController extends ActorController {
   }
 
   /**
+    * Method to send to actor to inform of briscola chosen.
+    *
+    * @param briscola
+    * Briscola chosen from current player.
+    */
+  def selectedBriscola(briscola: String): Unit = briscola match {
+    case Sword.asString => currentActorRef ! BriscolaChosen(Sword)
+    case Cup.asString => currentActorRef ! BriscolaChosen(Cup)
+    case Coin.asString => currentActorRef ! BriscolaChosen(Coin)
+    case Club.asString => currentActorRef ! BriscolaChosen(Club)
+    case _ => new IllegalArgumentException()
+  }
+
+  /**
     * Method to set variable amIWinner.
     *
     * @param winner
@@ -224,20 +285,9 @@ class GameController extends ActorController {
     case SetTimer(timer) => setTimer(timer)
     case PlayedCard(card, player) => showOtherPlayersPlayedCard(card, player)
     case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
+    case ComputePartialGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2)
+    case ComputeFinalGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndMatch(user, winner1, winner2, score1, score2)
     case _ =>
   }
 
-  /**
-    * Method to send to actor to inform of briscola chosen.
-    *
-    * @param briscola
-    * Briscola chosen from current player.
-    */
-  def selectedBriscola(briscola: String): Unit = briscola match {
-    case Sword.asString => currentActorRef ! BriscolaChosen(Sword)
-    case Cup.asString => currentActorRef ! BriscolaChosen(Cup)
-    case Coin.asString => currentActorRef ! BriscolaChosen(Coin)
-    case Club.asString => currentActorRef ! BriscolaChosen(Club)
-    case _ => new IllegalArgumentException()
-  }
 }
