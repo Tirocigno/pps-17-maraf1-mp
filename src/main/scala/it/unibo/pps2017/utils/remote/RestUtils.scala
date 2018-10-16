@@ -30,4 +30,13 @@ object RestUtils {
   implicit def serverContextEncoderConversion(serverContext: ServerContext): ServerContextEncoder =
     ServerContextEncoder(serverContext.IPAddress, serverContext.port)
 
+  /**
+    * Implicit conversion from serverContextEncoder to ServerContext.
+    *
+    * @param serverContext the server context to deserialize.
+    * @return a ServerContext object derived from source.
+    */
+  implicit def serverContextDecoderConversion(serverContext: ServerContextEncoder): ServerContext =
+    ServerContext(serverContext.ipAddress, serverContext.port)
+
 }
