@@ -14,6 +14,13 @@ object RestUtils {
 
   type MatchRef = String
 
+  case class ServerContext(IPAddress: IPAddress, port: Port)
+
+  /**
+    * Implicit val containing the format for Json deserialization.
+    */
+  implicit val formats: DefaultFormats.type = DefaultFormats
+
   /**
     * Implicit conversion from server context to serverContextEncoder, a object which can be serialized.
     *
@@ -21,14 +28,7 @@ object RestUtils {
     * @return a ServerContextEncoder which can be encoded in Json format.
     */
   implicit def serverContextEncoderConversion(serverContext: ServerContext): ServerContextEncoder =
-    ServerContextEncoder(serverContext.ipAddress, serverContext.port)
-
-  /**
-    * Implicit val containing the format for Json deserialization.
-    */
-  implicit val formats: DefaultFormats.type = DefaultFormats
-
-  case class ServerContext(ipAddress: IPAddress, port: Port)
+    ServerContextEncoder(serverContext.IPAddress, serverContext.port)
 
   /**
     * Implicit conversion from serverContextEncoder to ServerContext.
