@@ -4,12 +4,12 @@ package it.unibo.pps2017.discovery
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
+import it.unibo.pps2017.commons.remote.RestUtils.Port
 import it.unibo.pps2017.discovery.ServerDiscovery.APIHandler
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap}
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse}
-import it.unibo.pps2017.utils.remote.RestUtils.Port
 
 /**
   * Basic trait for a server RestUtils implementation.
@@ -96,7 +96,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   }
 
   private def mockHandler:(RoutingContext, RouterResponse) => Unit = (_,res) =>
-    res.sendResponse(Message("API CALLED"))
+    res.sendResponse(Message("RestAPI CALLED"))
 
   override def start(): Unit = developAPI()
 

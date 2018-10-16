@@ -3,8 +3,9 @@ package it.unibo.pps2017.discovery.restAPI
 
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}
+import it.unibo.pps2017.commons.remote.API.RestAPI
 import it.unibo.pps2017.server.model.{GET, POST, Request, RouterResponse}
-import it.unibo.pps2017.utils.remote.RestAPI
+
 
 object DiscoveryAPI {
 
@@ -15,16 +16,17 @@ object DiscoveryAPI {
 
 
     /**
-      * Convert the API to a request object to register into a router.
+      * Convert the RestAPI to a request object to register into a router.
+      *
       * @param router the router on which request will be registered.
       * @param handle the handler of the request.
-      * @return a Request object build from the API.
+      * @return a Request object build from the RestAPI.
       */
     def asRequest(router: Router, handle:(RoutingContext, RouterResponse) => Unit):Request
   }
 
   /**
-    * API to register a new server on RestUtils server.
+    * RestAPI to register a new server on RestUtils server.
     */
   case object RegisterServerAPI extends DiscoveryAPI {
 
@@ -37,7 +39,7 @@ object DiscoveryAPI {
   }
 
   /**
-    * API to retrieve less busy server.
+    * RestAPI to retrieve less busy server.
     */
   case object GetServerAPI extends DiscoveryAPI {
 
@@ -50,7 +52,7 @@ object DiscoveryAPI {
   }
 
   /**
-    * API to increase the number of matches on a specified server.
+    * RestAPI to increase the number of matches on a specified server.
     */
   case object IncreaseServerMatchesAPI extends DiscoveryAPI {
 
@@ -63,7 +65,7 @@ object DiscoveryAPI {
   }
 
   /**
-    * API to decrease the number of matches on a specified server.
+    * RestAPI to decrease the number of matches on a specified server.
     */
   case object DecreaseServerMatchesAPI extends DiscoveryAPI {
 

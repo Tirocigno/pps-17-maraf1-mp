@@ -3,14 +3,20 @@ package it.unibo.pps2017.server.model
 
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-
-import it.unibo.pps2017.commons.API.API
+import it.unibo.pps2017.commons.remote.API.RestAPI
 
 object ServerApi {
   /**
-    * API for searching
+    * values method, analog to java's enumeration's values() method.
+    *
+    * @return a Set containing all the objects in the DiscoveryAPI object.
     */
-  case object FoundGameAPI extends API {
+  def values: Set[RestAPI] = Set(HelloRestAPI$, ErrorRestAPI$, GameRestAPI$, FoundGameRestAPI$)
+
+  /**
+    * RestAPI for searching
+    */
+  case object FoundGameRestAPI$ extends RestAPI {
 
     override def path: String = "/foundGame"
 
@@ -20,11 +26,10 @@ object ServerApi {
       POST(router, path, handle)
   }
 
-
   /**
-    * API for test a good communication.
+    * RestAPI for test a good communication.
     */
-  case object HelloAPI extends API {
+  case object HelloRestAPI$ extends RestAPI {
 
     override def path: String = "/"
 
@@ -35,9 +40,9 @@ object ServerApi {
   }
 
   /**
-    * API for test a wrong communication.
+    * RestAPI for test a wrong communication.
     */
-  case object ErrorAPI extends API {
+  case object ErrorRestAPI$ extends RestAPI {
 
     override def path: String = "/error"
 
@@ -48,9 +53,9 @@ object ServerApi {
   }
 
   /**
-    * API for retrieve a single game.
+    * RestAPI for retrieve a single game.
     */
-  case object GameAPI extends API {
+  case object GameRestAPI$ extends RestAPI {
 
     override def path: String = "/game/:gameId"
 
@@ -59,11 +64,4 @@ object ServerApi {
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       GET(router, path, handle)
   }
-
-  /**
-    * values method, analog to java's enumeration's values() method.
-    *
-    * @return a Set containing all the objects in the DiscoveryAPI object.
-    */
-  def values: Set[API] = Set(HelloAPI, ErrorAPI, GameAPI, FoundGameAPI)
 }
