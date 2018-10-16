@@ -1,8 +1,8 @@
 
 package it.unibo.pps2017.discovery.structures
 
+import it.unibo.pps2017.commons.remote.RestUtils.ServerContext
 import it.unibo.pps2017.core.deck.SeqExtractor
-import it.unibo.pps2017.utils.remote.RestUtils.ServerContext
 
 /**
   * A structure to register and check status of all servers in the system.

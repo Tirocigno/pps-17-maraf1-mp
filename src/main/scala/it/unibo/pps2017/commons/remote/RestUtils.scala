@@ -1,5 +1,5 @@
 
-package it.unibo.pps2017.utils.remote
+package it.unibo.pps2017.commons.remote
 
 import it.unibo.pps2017.server.model.ServerContextEncoder
 import org.json4s.DefaultFormats

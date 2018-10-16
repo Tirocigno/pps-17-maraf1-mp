@@ -10,7 +10,7 @@ import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterServerAPI
 import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
-import it.unibo.pps2017.server.model.ServerApi.{ErrorAPI, FoundGameAPI, GameAPI, HelloAPI}
+import it.unibo.pps2017.server.model.ServerApi.{ErrorRestAPI$, FoundGameRestAPI$, GameRestAPI$, HelloRestAPI$}
 import it.unibo.pps2017.server.model._
 import org.json4s._
 import org.json4s.jackson.Serialization.read
@@ -45,11 +45,11 @@ class Dispatcher extends ScalaVerticle {
     val router = Router.router(vertx)
 
     ServerApi.values.map({
-      case api@HelloAPI => api.asRequest(router, hello)
-      case api@ErrorAPI => api.asRequest(router, responseError)
-      case api@GameAPI => api.asRequest(router, getGame)
-      case api@FoundGameAPI => api.asRequest(router, foundGame)
-      case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("API not founded.")).sendResponse(Error()))
+      case api@HelloRestAPI$ => api.asRequest(router, hello)
+      case api@ErrorRestAPI$ => api.asRequest(router, responseError)
+      case api@GameRestAPI$ => api.asRequest(router, getGame)
+      case api@FoundGameRestAPI$ => api.asRequest(router, foundGame)
+      case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 
 

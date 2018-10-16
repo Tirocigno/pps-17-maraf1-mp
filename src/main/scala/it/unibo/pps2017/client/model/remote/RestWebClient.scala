@@ -6,11 +6,11 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.client.{HttpResponse, WebClient}
 import it.unibo.pps2017.client.controller.ClientController
+import it.unibo.pps2017.commons.remote.API.RestAPI
+import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, Port, ServerContext, formats}
+import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.model.ServerContextEncoder
-import it.unibo.pps2017.utils.remote.RestAPI
-import it.unibo.pps2017.utils.remote.RestUtils.{IPAddress, Port, ServerContext, formats}
-import it.unibo.pps2017.utils.remote.exceptions.NotValidHttpMethodException
 import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -28,9 +28,9 @@ sealed trait RestWebClient {
   val webClient: WebClient
 
   /**
-    * Start a Rest API call.
+    * Start a Rest RestAPI call.
     *
-    * @param apiToCall the API to call.
+    * @param apiToCall the RestAPI to call.
     */
   def callRemoteAPI(apiToCall: RestAPI): Unit
 
@@ -51,7 +51,7 @@ object RestWebClient {
       * Check if assigned server is setted, if not, makes a Rest call to the discovery server in order to get one,
       * then it start the rest call initially requested.
       *
-      * @param restAPI the API to call.
+      * @param restAPI the RestAPI to call.
       */
     def checkOrSetServer(restAPI: RestAPI): Unit = assignedServerContext match {
       case Some(context) => invokeAPI(context.port, context.ipAddress, restAPI)
