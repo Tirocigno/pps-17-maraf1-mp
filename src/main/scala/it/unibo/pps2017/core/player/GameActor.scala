@@ -71,9 +71,6 @@ class GameActor extends Actor with Match with ActorLogging {
     case BriscolaChosen(seed) => {
       setBriscola(seed)
       mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed))
-      val setEnd = gameEnd
-      mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, setEnd, true))
-
     }
 
     case BriscolaAck =>{
@@ -92,7 +89,10 @@ class GameActor extends Actor with Match with ActorLogging {
     case PlayedCardAck => {
       numAck = numAck + 1
       if(numAck==TOT_PLAYERS) {
-        mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, setEnd, gameCycle.isFirst))
+        if(gameCycle.isLast){
+          onHandEnd(defineTaker(cardsOnTable))
+        }
+        mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next(),setEnd, gameCycle.isFirst))
         numAck = 0
       }
     }
@@ -186,7 +186,6 @@ class GameActor extends Actor with Match with ActorLogging {
       //actorReferences += p.getUsername()
     })
     //mediator ! Publish(TOPIC_NAME,PlayersRef(actorReferences))
-
     setEnd = false
     deck.shuffle()
     var i: Int = 0
@@ -225,17 +224,11 @@ class GameActor extends Actor with Match with ActorLogging {
     startHand()
   }
 
+//da cancellare?
   override def isSetEnd: Option[(Int, Int, Boolean)] = {
     if (setEnd) {
-      /*if(team1.getScore > team2.getScore){
-        mediator ! Publish(TOPIC_NAME, PartialGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
-      }
-      else{
-        mediator ! Publish(TOPIC_NAME, PartialGameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore))
-      }*/
       Some((team1.getScore, team2.getScore, gameEnd))
     }
-
     None
   }
 
@@ -256,21 +249,24 @@ class GameActor extends Actor with Match with ActorLogging {
 
   override def isCardOk(card: Card, player: PlayerActor): Unit = currentSuit match {
     case Some(seed) =>
+      val playerHand: Seq[Card] = cardsInHand.get(player).get.toStream
+
       if (seed == card.cardSeed) {
         onCardPlayed(card, player)
       }
-      val playerHand: Seq[Card] = cardsInHand.get(player).get.toStream
-
-      if (!playerHand.exists(_.cardSeed == seed)) {
+      else if (!playerHand.exists(_.cardSeed == seed)) {
         onCardPlayed(card, player)
       }
-      mediator ! Publish(TOPIC_NAME,CardOk(false, player))
-
+      else {
+        mediator ! Publish(TOPIC_NAME, CardOk(false, player))
+      }
     case None =>
       onCardPlayed(card, player)
   }
 
   private def onCardPlayed(card: Card, player: PlayerActor): Unit = {
+    mediator ! Publish(TOPIC_NAME, CardOk(true, player))
+
     if (gameCycle.isFirst) onFirstCardOfHand(card)
 
     cardsOnTable += ((card, gameCycle.getCurrent))
@@ -278,13 +274,6 @@ class GameActor extends Actor with Match with ActorLogging {
     val cardPath: String = IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
     mediator ! Publish(TOPIC_NAME,PlayedCard(cardPath, player))
     cardsInHand.get(player).get -= card
-
-    // DA RIVEDERE ANCORA
-    if (!gameCycle.isLast) {
-      mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next(),gameEnd, gameCycle.isFirst))
-    } else {
-     //onHandEnd(cardsOnTable)
-    }
   }
 
   private def onFirstCardOfHand(card: Card): Unit = {
@@ -296,16 +285,23 @@ class GameActor extends Actor with Match with ActorLogging {
   }
 
   private def onHandEnd(lastTaker: PlayerActor): Unit = {
+    setEnd = true
     deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
     nextHandStarter = Some(lastTaker)
-    mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, gameEnd, gameCycle.isFirst))
     currentSuit = None
     cardsOnTable.clear()
-
 
     nextHandStarter match {
       case Some(player) => if (cardsInHand.get(player).get.isEmpty) onSetEnd()
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
+      case _ => {
+        if(team1.getScore > team2.getScore){
+          mediator ! Publish(TOPIC_NAME, PartialGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
+        }
+        else{
+          mediator ! Publish(TOPIC_NAME, PartialGameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore))
+        }
+      }
     }
   }
 
@@ -362,6 +358,26 @@ class GameActor extends Actor with Match with ActorLogging {
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
     }
   }
+
+  implicit def defineTaker(hand: mutable.ListBuffer[(Card, PlayerActor)]): PlayerActor = {
+    var max: Card = hand.head._1
+
+    hand foreach (tuple => {
+      val card = tuple._1
+      if (card.cardSeed == currentBriscola.get) {
+        if (max.cardSeed != currentBriscola.get) {
+          max = card
+        } else if (max < card) {
+          max = card
+        }
+      } else if (max.cardSeed != currentBriscola.get && card.cardSeed == currentSuit.get && max < card) {
+        max = card
+      }
+    })
+
+    hand.filter(_._1 == max).head._2
+  }
+
 }
 
 
