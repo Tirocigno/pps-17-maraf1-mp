@@ -7,9 +7,11 @@ import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.client.{HttpResponse, WebClient}
 import it.unibo.pps2017.client.controller.ClientController
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
+import it.unibo.pps2017.server.model.ServerContextEncoder
 import it.unibo.pps2017.utils.remote.RestAPI
-import it.unibo.pps2017.utils.remote.RestUtils.{IPAddress, Port, ServerContext}
+import it.unibo.pps2017.utils.remote.RestUtils.{IPAddress, Port, ServerContext, formats}
 import it.unibo.pps2017.utils.remote.exceptions.NotValidHttpMethodException
+import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,6 +33,8 @@ sealed trait RestWebClient {
     * @param apiToCall the API to call.
     */
   def callRemoteAPI(apiToCall: RestAPI): Unit
+
+  def getCurrentServerContext: ServerContext = assignedServerContext.get
 }
 
 object RestWebClient {
@@ -53,8 +57,8 @@ object RestWebClient {
       case Some(context) => invokeAPI(context.port, context.ipAddress, restAPI)
       case None => callAPIAsAFuture(discoveryServerContext.port, discoveryServerContext.IPAddress,
         GetServerAPI)
-        .map(_.bodyAsString().get)
-        .map(ServerContext(_, 0))
+        .map(getResponseBody)
+        .map(deserializeServerContext)
         .onComplete {
           case scala.util.Success(server) => invokeAPI(server.port, server.IPAddress, restAPI)
           case scala.util.Failure(exception) => clientController.notifyError(exception)
@@ -79,8 +83,17 @@ object RestWebClient {
     /**
       * Retrieve the body of an async response as a Future[String], if body is not present, throw NoSuchField exception.
       */
-    private def getResponseBodyAsFuture(response: AsyncResponse) =
-      response.map(_.bodyAsString().getOrElse(throw new NoSuchFieldException("Response body not found")))
+    private def getResponseBody(response: HttpResponse[Buffer]): String =
+      response.bodyAsString().getOrElse(throw new NoSuchFieldException("Response body not found"))
+
+    /**
+      * Deserialize a json string and return a ServerContext.
+      *
+      * @param jsonSource the source to deserialize.
+      * @return a ServerContext object.
+      */
+    private def deserializeServerContext(jsonSource: String): ServerContext = read[ServerContextEncoder](jsonSource)
+
 
     private def invokeAPI(port: Port, host: IPAddress, api: RestAPI): Unit = {
 
