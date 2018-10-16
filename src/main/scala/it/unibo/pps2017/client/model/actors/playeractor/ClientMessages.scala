@@ -44,4 +44,8 @@ object ClientMessages {
 
   case class CardPlayedAck() extends ActorMessage
 
+  case class ComputePartialGameScore(user: String, winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
+
+  case class ComputeFinalGameScore(user: String, winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
+
 }
