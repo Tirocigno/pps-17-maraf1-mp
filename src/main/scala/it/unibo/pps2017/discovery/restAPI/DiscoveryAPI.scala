@@ -14,8 +14,9 @@ object DiscoveryAPI {
     */
   sealed trait DiscoveryAPI extends RestAPI {
 
-    val IP_KEY = "ip"
-    val PORT_KEY = "port"
+    def getIpKey = "ip"
+
+    def getPortKey = "port"
 
 
     /**
@@ -26,8 +27,8 @@ object DiscoveryAPI {
       * @return a Request object build from the RestAPI.
       */
     def asRequest(router: Router, handle:(RoutingContext, RouterResponse) => Unit):Request
-
   }
+
 
   /**
     * RestAPI to register a new server on RestUtils server.
@@ -125,5 +126,6 @@ object DiscoveryAPI {
   def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
     IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
     RemoveMatchAPI, GetAllMatchesAPI)
+
 
 }

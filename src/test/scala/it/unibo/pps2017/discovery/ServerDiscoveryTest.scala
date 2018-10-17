@@ -157,7 +157,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val restCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RegisterMatchAPI.path)
     val paramMap = MultiMap.caseInsensitiveMultiMap()
-    paramMap.add(RegisterMatchAPI.matchIdKey, mockMatchRef)
+    paramMap.add(RegisterMatchAPI.MATCH_ID_KEY, mockMatchRef)
     val insertResult = executeAPICallAndWait(restCall, paramMap)
     assert(insertResult.statusCode() == ResponseStatus.OK_CODE)
     val callResult = executeAPICallAndWait(webClient, defaultDiscoveryPort,
@@ -172,7 +172,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val insertCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RegisterMatchAPI.path)
     val paramMap = MultiMap.caseInsensitiveMultiMap()
-    paramMap.add(RegisterMatchAPI.matchIdKey, mockMatchRef)
+    paramMap.add(RegisterMatchAPI.MATCH_ID_KEY, mockMatchRef)
     val insertResult = executeAPICallAndWait(insertCall, paramMap)
     assert(insertResult.statusCode() == ResponseStatus.OK_CODE)
     val removeCall = webClient.post(defaultDiscoveryPort,defaultHost,
