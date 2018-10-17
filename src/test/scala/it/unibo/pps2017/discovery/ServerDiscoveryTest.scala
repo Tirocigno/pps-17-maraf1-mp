@@ -89,8 +89,8 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     val webClient = generateMockClient(defaultPort)
     val result = registerAServer(webClient, defaultDiscoveryPort)
     assert(result.statusCode() == ResponseStatus.OK_CODE)
-    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI)
-    assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
+    val getResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI)
+    assert(getResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
   test("Trying to get a server when no server is registered") {
@@ -167,8 +167,8 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
 
   test("Register a match and delete it") {
     val webClient = generateMockClient(defaultPort)
-    /* val result = registerAServer(webClient, defaultDiscoveryPort)
-     assert(result.statusCode() == ResponseStatus.OK_CODE)*/
+    val result = registerAServer(webClient, defaultDiscoveryPort)
+    assert(result.statusCode() == ResponseStatus.OK_CODE)
     val insertCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RegisterMatchAPI.path)
     val paramMap = MultiMap.caseInsensitiveMultiMap()
