@@ -53,7 +53,7 @@ class GameActor extends Actor with Match with ActorLogging {
 
   def receive = {
 
-    case RegisterPlayer(team1, team2) => {
+   /* case RegisterPlayer(team1, team2) => {
 
       team1.getMembers.foreach(player =>{
         addPlayer(player,RANDOM_TEAM)
@@ -66,6 +66,14 @@ class GameActor extends Actor with Match with ActorLogging {
       })
 
       onFullTable()
+    }*/
+
+    case PlayersRefAck =>{
+      numAck = numAck +1
+      if(numAck==TOT_PLAYERS) {
+        onFullTable()
+      }
+      numAck = 0
     }
 
     case BriscolaChosen(seed) => {

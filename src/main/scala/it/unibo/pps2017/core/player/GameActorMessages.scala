@@ -7,7 +7,7 @@ import scala.collection.mutable.ListBuffer
 
 
 //#messages
-final case class RegisterPlayer(team1: Team, team2: Team)
+final case class PlayersRefAck()
 final case class DistributedCard(cards: List[String],player: PlayerActor)
 final case class PlayersRef(players: ListBuffer[String])
 final case class Turn(player: PlayerActor, endPartialTurn: Boolean, isFirstPlayer: Boolean)
