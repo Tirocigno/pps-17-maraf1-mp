@@ -156,7 +156,7 @@ class GameController extends ActorController {
   }
 
   /**
-    * Method to send to the actor the clicked command from actual player.
+    * Method to send to PlayerActorClient the clicked command from actual player.
     *
     * @param command
     * Clicked command from actual player.
@@ -169,7 +169,7 @@ class GameController extends ActorController {
     actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
 
   /**
-    * Method to send to actor to inform it of played card.
+    * Method to send to PlayerActorClient to inform it of played card.
     *
     * @param cardIndex
     * Index of played card.
@@ -179,13 +179,23 @@ class GameController extends ActorController {
   }
 
   /**
-    * Method to send to actor his username.
+    * Method to send to PlayerActorClient his username.
     *
     * @param playerUsername
     * Player's username
     */
   def setUsernamePlayer(playerUsername: String): Unit = {
     currentActorRef ! SetUsernamePlayer(playerUsername)
+  }
+
+  /**
+    * Method to send to PlayerActorClient id of match.
+    *
+    * @param id
+    * Match's id
+    */
+  def joinPlayerToMatch(id: String): Unit = {
+    currentActorRef ! IdChannelPublishSubscribe(id)
   }
 
   /**
@@ -240,7 +250,7 @@ class GameController extends ActorController {
   }
 
   /**
-    * Method to send to actor to inform of briscola chosen.
+    * Method to send to PlayerActorClient to inform of briscola chosen.
     *
     * @param briscola
     * Briscola chosen from current player.
