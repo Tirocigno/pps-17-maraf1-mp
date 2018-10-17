@@ -10,6 +10,8 @@ object ClientMessages {
 
   case class PlayersRef(playersList: ListBuffer[String]) extends ActorMessage
 
+  case class PlayersRefAck() extends ActorMessage
+
   case class DistributedCard(cards: List[String], player: String) extends ActorMessage
 
   case class SelectBriscola(player: String) extends ActorMessage

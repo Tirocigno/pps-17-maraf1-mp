@@ -32,6 +32,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       this.gameActor = sender()
       val finalList: ListBuffer[String] = this.orderPlayersList(playersList)
       controller.updateGUI(PlayersRef(finalList))
+      gameActor ! PlayersRefAck
 
     case DistributedCard(cards, player) =>
       if (this.user.eq(player))
