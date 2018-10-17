@@ -15,11 +15,17 @@ import it.unibo.pps2017.server.model.{Error, Message, RouterResponse}
   */
 trait ServerDiscovery extends ScalaVerticle{
 
+  /**
+    * This method deploy all the rest api exposed by the verticle.
+    */
   def developAPI():Unit
 
 }
 
 object ServerDiscovery {
+  /**
+    * Alias for a request handler.
+    */
   type APIHandler = (RoutingContext, RouterResponse) => Unit
 
   def apply(port: Port, timeout: Int): ServerDiscovery = new ServerDiscoveryImpl(port, timeout)
@@ -30,22 +36,25 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   val serverMap: ServerMap = ServerMap()
   val matchesSet: MatchesSet = MatchesSet()
 
-
-  private def setErrorAndRespond(response: RouterResponse, body: String): Unit =
-    response.setError().sendResponse(Error(Some(body)))
-
+  /**
+    * Handler for the GetServerAPI
+    */
   private val getServerAPIHandler: APIHandler = (_, response) => {
     serverMap.getLessBusyServer match {
       case Some(server) => response.sendResponse(server)
       case _ => setErrorAndRespond(response, "NO SERVER FOUND")
     }
   }
-
+  /**
+    * Handler for the RegisterServerAPI.
+    */
   private val registerServerAPIHandler: APIHandler = (router, response) => {
     serverMap.addServer(router.senderSocket)
     response.sendResponse(Message("SERVER REGISTERED SUCCESSFULLY"))
   }
-
+  /**
+    * Handler for the IncreaseServerMatchesAPI.
+    */
   private val increaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
       serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
@@ -54,7 +63,9 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       case e: IllegalArgumentException => setErrorAndRespond(response, "BAD REQUEST")
     }
   }
-
+  /**
+    * Handler for the DecreaseServerMatchesAPI
+    */
   private val decreaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
       serverMap.decreaseMatchesPlayedOnServer(router.senderSocket)
@@ -64,12 +75,16 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       case e: IllegalStateException => setErrorAndRespond(response, e.getMessage)
     }
   }
-
+  /**
+    * Handler for the GetMatchesSetAPI.
+    */
   private val getMatchesSetAPIHandler: APIHandler = (_, response) => {
     val returnSet = matchesSet.getAllMatches
     response.sendResponse(returnSet)
   }
-
+  /**
+    * Handler for the RegisterMatchAPi.
+    */
   private val registerMatchAPIHandler: APIHandler = (router, response) => {
     try {
       val matchId = router.request().getFormAttribute(RegisterMatchAPI.matchIdKey)
@@ -81,7 +96,9 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
         "NO MATCHID FOUND IN REQUEST")
     }
   }
-
+  /**
+    * Handler for the RemoveMatchAPI.
+    */
   private val removeMatchAPIHandler: APIHandler = (router, response) => {
     try {
       val matchId = router.request().getFormAttribute(RegisterMatchAPI.matchIdKey)
@@ -94,6 +111,18 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     }
   }
 
+  /**
+    * Private method to set an error inside the body of a response call and send it.
+    *
+    * @param response the response to complete with an error.
+    * @param body     the description of the error.
+    */
+  private def setErrorAndRespond(response: RouterResponse, body: String): Unit =
+    response.setError().sendResponse(Error(Some(body)))
+
+  /**
+    * Mock handler.
+    */
   private def mockHandler: (RoutingContext, RouterResponse) => Unit = (_, res) =>
     res.sendResponse(Message("RestAPI CALLED"))
 
