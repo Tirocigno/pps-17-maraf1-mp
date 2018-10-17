@@ -14,11 +14,6 @@ object DiscoveryAPI {
     */
   sealed trait DiscoveryAPI extends RestAPI {
 
-    def getIpKey = "ip"
-
-    def getPortKey = "port"
-
-
     /**
       * Convert the RestAPI to a request object to register into a router.
       *
@@ -127,5 +122,9 @@ object DiscoveryAPI {
     IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
     RemoveMatchAPI, GetAllMatchesAPI)
 
+  object StandardParameters {
+    val IP_KEY = "ip"
+    val PORT_KEY = "port"
+  }
 
 }
