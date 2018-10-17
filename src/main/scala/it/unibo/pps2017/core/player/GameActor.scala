@@ -20,7 +20,7 @@ import scala.collection.mutable
 import scala.util.Random
 
 
-class GameActor extends Actor with Match with ActorLogging {
+class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameEnd:()=>Unit) extends Actor with Match with ActorLogging {
   type ActorName = String
 
   var currentBriscola: Option[Seed] = None
@@ -32,8 +32,6 @@ class GameActor extends Actor with Match with ActorLogging {
   var nextHandStarter: Option[PlayerActor] = None
   var setEnd: Boolean = false
   var gameEnd: Boolean = false
-  var team1: Team = _
-  var team2: Team = _
   val actors : ListBuffer[PlayerActor] = ListBuffer[PlayerActor]()
   var cardsInHand :  collection.Map[PlayerActor, ArrayBuffer[Card]] =  Map[PlayerActor, ArrayBuffer[Card]]()
   var cardsInTable : ListBuffer[Card] = ListBuffer[Card]()
@@ -349,6 +347,7 @@ class GameActor extends Actor with Match with ActorLogging {
   def notifyWinner(team: Team): Unit = {
     gameEnd = true
     mediator ! Publish(TOPIC_NAME, FinalGameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore))
+    onGameEnd()
   }
 
   private def checkMarafona(hand: Set[Card], player: PlayerActor): Unit = {
@@ -415,7 +414,9 @@ object GameActor {
   val IMG_PATH = "src/main/java/it/unibo/pps2017/core/gui/cards/"
   val PNG_FILE = ".png"
 
-  def main(args: Array[String]): Unit = {
+  def apply(topicName: String, team1: Team, team2: Team, func:()=>Unit): GameActor = new GameActor(topicName, team1, team2,func)
+
+ /* def main(args: Array[String]): Unit = {
     // Override the configuration of the port when specified as program argument
     val port = if (args.isEmpty) "0" else args(0)
     val config = ConfigFactory.parseString(s"""
@@ -427,6 +428,6 @@ object GameActor {
 
     val system = ActorSystem("ClusterSystem", config)
     system.actorOf(Props[GameActor], name = "GameActor")
-  }
+  }*/
 }
 
