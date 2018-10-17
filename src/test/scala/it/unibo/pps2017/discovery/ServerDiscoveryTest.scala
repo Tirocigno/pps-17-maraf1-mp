@@ -4,7 +4,7 @@ package it.unibo.pps2017.discovery
 
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
-import io.vertx.scala.core.Vertx
+import io.vertx.scala.core.{MultiMap, Vertx}
 import io.vertx.scala.ext.web.client.{HttpRequest, WebClient, WebClientOptions}
 import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, MatchRef, Port}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
@@ -29,6 +29,7 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
   val mockMatchRef:MatchRef = "MockMatch"
   var serverDiscovery: ServerDiscovery = ServerDiscovery(defaultDiscoveryPort, timeOut)
   private var vertx = Vertx.vertx()
+
 
   /**
     * Create the vertx environment every test.
@@ -68,8 +69,8 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     }
   }
 
-  private def executeAPICallAndWait(request:HttpRequest[Buffer]) = {
-    Await.result(request.sendFuture(),timeOut seconds)
+  private def executeAPICallAndWait(request: HttpRequest[Buffer], paramMap: MultiMap) = {
+    Await.result(request.sendFormFuture(paramMap), timeOut seconds)
   }
 
   private def registerAServer(webClient: WebClient, port: Port) = {
@@ -151,10 +152,13 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
 
   test("Register a match and retrieve the non empty list") {
     val webClient = generateMockClient(defaultPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort)
+    assert(result.statusCode() == ResponseStatus.OK_CODE)
     val restCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RegisterMatchAPI.path)
-      .addQueryParam(RegisterMatchAPI.matchIdKey, mockMatchRef)
-    val insertResult = executeAPICallAndWait(restCall)
+    val paramMap = MultiMap.caseInsensitiveMultiMap()
+    paramMap.add(RegisterMatchAPI.matchIdKey, mockMatchRef)
+    val insertResult = executeAPICallAndWait(restCall, paramMap)
     assert(insertResult.statusCode() == ResponseStatus.OK_CODE)
     val callResult = executeAPICallAndWait(webClient, defaultDiscoveryPort,
       defaultHost, GetAllMatchesAPI)
@@ -163,15 +167,18 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
 
   test("Register a match and delete it") {
     val webClient = generateMockClient(defaultPort)
+    /* val result = registerAServer(webClient, defaultDiscoveryPort)
+     assert(result.statusCode() == ResponseStatus.OK_CODE)*/
     val insertCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RegisterMatchAPI.path)
-      .addQueryParam(RegisterMatchAPI.matchIdKey, mockMatchRef)
-    val insertResult = executeAPICallAndWait(insertCall)
+    val paramMap = MultiMap.caseInsensitiveMultiMap()
+    paramMap.add(RegisterMatchAPI.matchIdKey, mockMatchRef)
+    val insertResult = executeAPICallAndWait(insertCall, paramMap)
     assert(insertResult.statusCode() == ResponseStatus.OK_CODE)
     val removeCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RemoveMatchAPI.path)
-      .addQueryParam(RemoveMatchAPI.matchIdKey, mockMatchRef)
-    val removeResult = executeAPICallAndWait(removeCall)
+    val removeResult = executeAPICallAndWait(removeCall, paramMap)
+    println(removeResult.bodyAsString())
     assert(removeResult.statusCode() == ResponseStatus.OK_CODE)
   }
 

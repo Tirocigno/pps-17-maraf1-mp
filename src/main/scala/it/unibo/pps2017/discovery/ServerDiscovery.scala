@@ -71,8 +71,8 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       serverMap.decreaseMatchesPlayedOnServer(router.senderSocket)
       response.sendResponse(Message("DECREASED MATCHES ON SERVER"))
     } catch {
-      case e: IllegalArgumentException => setErrorAndRespond(response, e.getMessage)
-      case e: IllegalStateException => setErrorAndRespond(response, e.getMessage)
+      case e: IllegalArgumentException => setErrorAndRespond(response, "INVALID SERVER ID")
+      case e: IllegalStateException => setErrorAndRespond(response, "NO MATCH SERVER TO REMOVE")
     }
   }
   /**
@@ -90,7 +90,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       val matchId = router.request().getFormAttribute(RegisterMatchAPI.matchIdKey)
         .getOrElse(throw new IllegalStateException())
       matchesSet.addMatch(matchId)
-      response.sendResponse(Message("MATCH ADDED SUCCESSFULLY"))
+      increaseServerMatchesAPIHandler(router, response)
     } catch {
       case _: IllegalStateException => setErrorAndRespond(response,
         "NO MATCHID FOUND IN REQUEST")
@@ -102,11 +102,11 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private val removeMatchAPIHandler: APIHandler = (router, response) => {
     try {
       val matchId = router.request().getFormAttribute(RegisterMatchAPI.matchIdKey)
-        .getOrElse(throw new IllegalStateException())
+        .getOrElse(throw new NoSuchFieldException())
       matchesSet.removeMatch(matchId)
       decreaseServerMatchesAPIHandler(router, response)
     } catch {
-      case _: IllegalStateException => setErrorAndRespond(response,
+      case _: NoSuchFieldException => setErrorAndRespond(response,
         "NO MATCHID FOUND IN REQUEST")
     }
   }
