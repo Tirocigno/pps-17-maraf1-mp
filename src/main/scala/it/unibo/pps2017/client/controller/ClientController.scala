@@ -36,7 +36,7 @@ object ClientController {
     override def setPlayGameController(guiController: PlayGameController): Unit =
       gameController.playGameController = guiController
 
-    override def setGameID(gameID: String): Unit = ???
+    override def setGameID(gameID: String): Unit = println("Game ID is: " + gameID)
 
   }
 }

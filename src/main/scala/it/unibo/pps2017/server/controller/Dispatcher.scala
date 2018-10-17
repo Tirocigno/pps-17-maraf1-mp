@@ -120,7 +120,9 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     val params = routingContext.request().formAttributes()
 
     val player = params.get("me")
+    println(player)
     val friend = params.get("partner")
+    println(friend)
 
     val gameFoundEvent: String => Unit = gameId => {
       res.sendResponse(GameFound(gameId))
