@@ -5,6 +5,7 @@ import com.github.agourlay.cornichon.CornichonFeature
 import com.github.agourlay.cornichon.core.FeatureDef
 import io.vertx.scala.core.Vertx
 import it.unibo.pps2017.server.controller.DispatcherTest.{GAME_ID, PRIMARY_URL}
+import it.unibo.pps2017.server.model.ClusterUtils
 import it.unibo.pps2017.server.model.ResponseStatus._
 import org.json4s._
 
@@ -18,7 +19,7 @@ object DispatcherTest {
 class DispatcherTest extends CornichonFeature {
   implicit val formats: DefaultFormats.type = DefaultFormats
 
-  val verticle = new Dispatcher()
+  val verticle = Dispatcher(ClusterUtils())
   var verticleId: Option[String] = None
   var lobbyId: String = _
   beforeFeature {
