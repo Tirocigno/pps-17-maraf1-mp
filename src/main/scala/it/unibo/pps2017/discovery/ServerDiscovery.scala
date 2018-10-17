@@ -118,7 +118,8 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     * @param body     the description of the error.
     */
   private def setErrorAndRespond(response: RouterResponse, body: String): Unit =
-    response.setError().sendResponse(Error(Some(body)))
+    response.setGenericError(Some(body))
+      .sendResponse(Error())
 
   /**
     * Mock handler.
