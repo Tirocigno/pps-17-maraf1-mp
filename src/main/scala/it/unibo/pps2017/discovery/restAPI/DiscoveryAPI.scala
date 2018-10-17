@@ -14,6 +14,9 @@ object DiscoveryAPI {
     */
   sealed trait DiscoveryAPI extends RestAPI {
 
+    val IP_KEY = "ip"
+    val PORT_KEY = "port"
+
 
     /**
       * Convert the RestAPI to a request object to register into a router.
@@ -23,6 +26,7 @@ object DiscoveryAPI {
       * @return a Request object build from the RestAPI.
       */
     def asRequest(router: Router, handle:(RoutingContext, RouterResponse) => Unit):Request
+
   }
 
   /**
@@ -56,6 +60,7 @@ object DiscoveryAPI {
     */
   case object IncreaseServerMatchesAPI extends DiscoveryAPI {
 
+
     override def httpMethod: HttpMethod = HttpMethod.POST
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
@@ -69,6 +74,7 @@ object DiscoveryAPI {
     */
   case object DecreaseServerMatchesAPI extends DiscoveryAPI {
 
+
     override def httpMethod: HttpMethod = HttpMethod.POST
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
@@ -79,7 +85,7 @@ object DiscoveryAPI {
 
   case object RegisterMatchAPI extends DiscoveryAPI {
 
-    val matchIdKey = "matchID"
+    val MATCH_ID_KEY = "matchID"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -91,7 +97,7 @@ object DiscoveryAPI {
 
   case object RemoveMatchAPI extends DiscoveryAPI {
 
-    val matchIdKey = "matchID"
+    val MATCH_ID_KEY = "matchID"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
