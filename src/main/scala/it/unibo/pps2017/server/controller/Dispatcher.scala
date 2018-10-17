@@ -41,7 +41,6 @@ class Dispatcher extends ScalaVerticle {
 
   override def start(): Unit = {
 
-
     val router = Router.router(vertx)
 
     ServerApi.values.map({
@@ -66,7 +65,7 @@ class Dispatcher extends ScalaVerticle {
       .requestHandler(router.accept _).listen(port)
 
 
-    akkaSystem.scheduler.scheduleOnce(5 second) {
+    akkaSystem.scheduler.scheduleOnce(3 second) {
       PostRequest(Dispatcher.DISCOVERY_URL, RegisterServerAPI.path, {
         case Some(res) => try {
           val msgFromDiscovery = read[Message](res)

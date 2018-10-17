@@ -3,8 +3,7 @@ package it.unibo.pps2017.client.model.remote
 
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
-import io.vertx.scala.core.Vertx
-import io.vertx.scala.ext.web.client.{HttpResponse, WebClient}
+import io.vertx.scala.ext.web.client.HttpResponse
 import it.unibo.pps2017.client.controller.ClientController
 import it.unibo.pps2017.commons.remote.API.RestAPI
 import it.unibo.pps2017.commons.remote.RestUtils.{ServerContext, formats}
@@ -26,7 +25,6 @@ sealed trait RestWebClient {
   val discoveryServerContext: ServerContext
   val clientController: ClientController = ClientController getSingletonController
   var assignedServerContext: Option[ServerContext] = None
-  val webClient: WebClient
 
   /**
     * Start a Rest RestAPI call.
@@ -42,9 +40,10 @@ object RestWebClient {
 
   type AsyncResponse = Future[HttpResponse[Buffer]]
 
+  def apply(discoveryServerContext: ServerContext): RestWebClient = new RestWebClientImpl(discoveryServerContext)
+
   private class RestWebClientImpl(override val discoveryServerContext: ServerContext) extends RestWebClient {
 
-    override val webClient: WebClient = WebClient.create(Vertx.vertx())
 
     override def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]]): Unit =
       checkOrSetServer(apiToCall, paramMap)
@@ -56,7 +55,7 @@ object RestWebClient {
       * @param restAPI the RestAPI to call.
       */
     def checkOrSetServer(restAPI: RestAPI, paramMap: Option[Map[String, Any]]): Unit = assignedServerContext match {
-      case Some(_) => callRemoteAPI(restAPI, paramMap)
+      case Some(_) => executeAPICall(restAPI, paramMap)
       case None => GetRequest(discoveryServerContext.ipAddress, GetServerAPI.path,
         getServerAPIHandler(restAPI)(paramMap), reportErrorToController, None, Some(discoveryServerContext.port))
     }
@@ -72,7 +71,7 @@ object RestWebClient {
     private def getServerAPIHandler(apiToInvokeWhenReady: RestAPI)(paramMap: Option[Map[String, Any]])
                                    (jsonSource: Option[String]): Unit = {
       assignedServerContext = Some(deserializeServerContext(jsonSource.get))
-      callRemoteAPI(apiToInvokeWhenReady, paramMap)
+      executeAPICall(apiToInvokeWhenReady, paramMap)
     }
 
 
@@ -103,11 +102,10 @@ object RestWebClient {
       *
       * @param api             the api to execute.
       * @param paramMap        the parameters to pass to the request.
-      * @param successCallBack the callback to call when the result is ready.
       */
-    private def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]],
-                               successCallBack: Option[String] => Unit): Unit = api match {
+    private def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
       case FoundGameRestAPI$ => invokeAPI(api, paramMap, handleFoundGameRestAPI)
+      case _ => println("Api call executed")
 
     }
 
