@@ -179,6 +179,16 @@ class GameController extends ActorController {
   }
 
   /**
+    * Method to send to actor his username.
+    *
+    * @param playerUsername
+    * Player's username
+    */
+  def setUsernamePlayer(playerUsername: String): Unit = {
+    currentActorRef ! SetUsernamePlayer(playerUsername)
+  }
+
+  /**
     * Method to create a new PlayerActorClient.
     *
     * @param actorId

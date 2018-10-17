@@ -92,6 +92,9 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     case FinalGameScore(winner1, winner2, score1, score2) =>
       controller.updateGUI(ComputeFinalGameScore(user, winner1, winner2, score1, score2))
 
+    case SetUsernamePlayer(playerUsername) =>
+      user = playerUsername
+
     case IdChannelPublishSubscribe(id) =>
       val mediator = DistributedPubSub(context.system).mediator
       mediator ! Subscribe(id, self)
