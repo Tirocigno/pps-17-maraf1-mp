@@ -7,15 +7,17 @@ import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.client.{HttpResponse, WebClient}
 import it.unibo.pps2017.client.controller.ClientController
 import it.unibo.pps2017.commons.remote.API.RestAPI
-import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, Port, ServerContext, formats}
+import it.unibo.pps2017.commons.remote.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
-import it.unibo.pps2017.server.model.{GameFound, PostRequest, ServerContextEncoder}
+import it.unibo.pps2017.server.model.{GameFound, GetRequest, PostRequest, ServerContextEncoder}
+import it.unibo.pps2017.utils.remote.RestAPI
+import it.unibo.pps2017.utils.remote.exceptions.NotValidHttpMethodException
 import org.json4s.jackson.Serialization.read
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.language.postfixOps
 
 /**
   * This module is responsable for sending remote calls via rest apis and
@@ -56,45 +58,27 @@ object RestWebClient {
       * @param restAPI the RestAPI to call.
       */
     def checkOrSetServer(restAPI: RestAPI, paramMap: Option[Map[String, Any]]): Unit = assignedServerContext match {
-      case Some(_) => invokeAPI(restAPI, paramMap)
-      case None => callAPIAsAFuture(discoveryServerContext.port, discoveryServerContext.ipAddress,
-        GetServerAPI)
-        .map(getResponseBody)
-        .map(deserializeServerContext)
-        .onComplete {
-          case scala.util.Success(server) => assignedServerContext =
-            Some(server)
-            invokeAPI(restAPI, paramMap)
-          case scala.util.Failure(exception) => clientController.notifyError(exception)
-        }
+      case Some(_) => callRemoteAPI(restAPI, paramMap)
+      case None => GetRequest(discoveryServerContext.ipAddress, GetServerAPI.path,
+        getServerAPIHandler(restAPI)(paramMap), reportErrorToController, None, Some(discoveryServerContext.port))
     }
 
     /**
-      * This method execute an asynchronous call on the specified ip and port and return the result as a future.
+      * Handle a response for a GetRequest API, can be used as a Option[String] => Unit function if the parameters
+      * are passed correctly.
       *
-      * @param port the port opened by the host to contact.
-      * @param host the ip address of the host to contact.
-      * @param api  the api to call on that server.
-      * @return a future containing an HttpResponse[Buffer] object to handle.
+      * @param apiToInvokeWhenReady the api to invoke when the server to contact is configured.
+      * @param paramMap             the map of parameters needed in the request to invoke.
+      * @param jsonSource           the result of the GetServer call as a string.
       */
-    private def callAPIAsAFuture(port: Port, host: IPAddress, api: RestAPI) =
-      api.httpMethod match {
-        case HttpMethod.POST => webClient.post(port, host, api.path).sendFuture()
-        case HttpMethod.GET => webClient.get(port, host, api.path).sendFuture()
-        case _ => throw new NotValidHttpMethodException()
-      }
+    private def getServerAPIHandler(apiToInvokeWhenReady: RestAPI)(paramMap: Option[Map[String, Any]])
+                                   (jsonSource: Option[String]): Unit = {
+      assignedServerContext = Some(deserializeServerContext(jsonSource.get))
+      callRemoteAPI(apiToInvokeWhenReady, paramMap)
+    }
+
 
     private def reportErrorToController(throwable: Throwable): Unit = clientController.notifyError(throwable)
-
-    /**
-      * Invoke a Rest API on the current Server.
-      *
-      * @param api      the api to invoke
-      * @param paramMap a map containing all the parameters to pass to the query.
-      */
-    private def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
-      case FoundGameRestAPI$ => callAPIWithParameter(api, paramMap, handleFoundGameRestAPI)
-    }
 
 
     /**
@@ -111,11 +95,37 @@ object RestWebClient {
       */
     private def deserializeServerContext(jsonSource: String): ServerContext = read[ServerContextEncoder](jsonSource)
 
-    private def callAPIWithParameter(api: RestAPI, paramMap: Option[Map[String, Any]],
-                                     successCallBack: Option[String] => Unit) = {
+    /**
+      * Execute an api call switching between all the possible API.
+      *
+      * @param api             the api to execute.
+      * @param paramMap        the parameters to pass to the request.
+      * @param successCallBack the callback to call when the result is ready.
+      */
+    private def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]],
+                               successCallBack: Option[String] => Unit): Unit = api match {
+      case FoundGameRestAPI$ => invokeAPI(api, paramMap, handleFoundGameRestAPI)
+
+    }
+
+    /**
+      * Create a request and send it to the specified server.
+      *
+      * @param api             the api to call
+      * @param paramMap        the parameters inside the request.
+      * @param successCallBack the callback to resume when the response is ready.
+      */
+    private def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
+                          successCallBack: Option[String] => Unit): Unit = {
       val context = assignedServerContext.get
-      PostRequest(context.ipAddress, api.path, successCallBack, reportErrorToController, paramMap,
-        Some(context.port))
+      api.httpMethod match {
+        case HttpMethod.POST => PostRequest(context.ipAddress, api.path, successCallBack, reportErrorToController,
+          paramMap, Some(context.port))
+        case HttpMethod.GET => GetRequest(context.ipAddress, api.path, successCallBack, reportErrorToController,
+          paramMap, Some(context.port))
+        case _ => throw new NotValidHttpMethodException()
+      }
+
     }
 
     /**
