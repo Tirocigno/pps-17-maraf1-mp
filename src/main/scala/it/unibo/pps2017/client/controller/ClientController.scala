@@ -11,6 +11,8 @@ sealed trait ClientController {
 
   def setPlayGameController(guiController: PlayGameController)
 
+  def setGameID(gameID: String)
+
 }
 
 object ClientController {
@@ -28,12 +30,13 @@ object ClientController {
     val gameController = new GameController()
     private val actorSystem = ActorSystem("ClientActorSystem")
     gameController.createActor("player:14648511988945088", actorSystem)
-    println("Creation endede")
 
     override def notifyError(throwable: Throwable): Unit = ???
 
     override def setPlayGameController(guiController: PlayGameController): Unit =
       gameController.playGameController = guiController
+
+    override def setGameID(gameID: String): Unit = ???
 
   }
 }
