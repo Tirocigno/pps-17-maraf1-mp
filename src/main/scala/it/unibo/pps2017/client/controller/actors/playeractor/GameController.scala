@@ -13,12 +13,7 @@ import scala.collection.JavaConverters._
 
 class GameController extends ActorController {
 
-
-  /** oggetto gui */
   var playGameController: PlayGameController = _
-  val system = ActorSystem("mySystem")
-  /**
-    * ActorRef of the actor*/
   var currentActorRef: ActorRef = _
   var myTurn: Boolean = false
   var amIWinner: Boolean = false
@@ -167,20 +162,20 @@ class GameController extends ActorController {
     * Clicked command from actual player.
     */
   def setCommandFromPlayer(command: String): Unit = {
-    currentActorRef ! ClickedCommand(command, null)
+    currentActorRef ! ClickedCommandActualPlayer(command)
   }
 
   def getOrThrow(actorRef: Option[ActorRef]): ActorRef =
     actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
 
   /**
-    * Method to send to actor to informe of played card.
+    * Method to send to actor to inform it of played card.
     *
     * @param cardIndex
     * Index of played card.
     */
   def setPlayedCard(cardIndex: Int): Unit = {
-    currentActorRef ! ClickedCard(cardIndex, null)
+    currentActorRef ! ClickedCardActualPlayer(cardIndex)
   }
 
   /**
