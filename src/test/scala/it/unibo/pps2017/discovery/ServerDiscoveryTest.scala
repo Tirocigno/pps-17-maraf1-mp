@@ -58,10 +58,8 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
 
   private def generateIPMultiMap(port: Port): MultiMap = {
     val map = MultiMap caseInsensitiveMultiMap()
-    map.add(GetServerAPI.getIpKey, defaultHost)
-    map.add(GetServerAPI.getPortKey, port.toString)
-    println(map.get(GetServerAPI.getPortKey))
-    map
+    map.add(StandardParameters.IP_KEY, defaultHost)
+    map.add(StandardParameters.PORT_KEY, port.toString)
   }
 
   private def generateMockClient(port: Int): WebClient = {
