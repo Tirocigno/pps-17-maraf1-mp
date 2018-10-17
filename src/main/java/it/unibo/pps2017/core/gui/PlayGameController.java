@@ -38,28 +38,16 @@ public class PlayGameController implements PlayGame {
     ImageView wallpaper = new ImageView();
 
     @FXML
-    ImageView firstCard = new ImageView(), secondCard = new ImageView(), thirdCard = new ImageView(),
-            fourthCard = new ImageView(), fifthCard = new ImageView(), sixthCard = new ImageView(),
-            seventhCard = new ImageView(), eighthCard = new ImageView(), ninthCard = new ImageView(),
-            tenthCard = new ImageView();
+    ImageView firstCard = new ImageView(), secondCard = new ImageView(), thirdCard = new ImageView(), fourthCard = new ImageView(), fifthCard = new ImageView(), sixthCard = new ImageView(), seventhCard = new ImageView(), eighthCard = new ImageView(), ninthCard = new ImageView(), tenthCard = new ImageView();
 
     @FXML
-    ImageView firstCardUser2 = new ImageView(), secondCardUser2 = new ImageView(), thirdCardUser2 = new ImageView(),
-            fourthCardUser2 = new ImageView(), fifthCardUser2 = new ImageView(), sixthCardUser2 = new ImageView(),
-            seventhCardUser2 = new ImageView(), eighthCardUser2 = new ImageView(), ninthCardUser2 = new ImageView(),
-            tenthCardUser2 = new ImageView();
+    ImageView firstCardUser2 = new ImageView(), secondCardUser2 = new ImageView(), thirdCardUser2 = new ImageView(), fourthCardUser2 = new ImageView(), fifthCardUser2 = new ImageView(), sixthCardUser2 = new ImageView(), seventhCardUser2 = new ImageView(), eighthCardUser2 = new ImageView(), ninthCardUser2 = new ImageView(), tenthCardUser2 = new ImageView();
 
     @FXML
-    ImageView firstCardUser3 = new ImageView(), secondCardUser3 = new ImageView(), thirdCardUser3 = new ImageView(),
-            fourthCardUser3 = new ImageView(), fifthCardUser3 = new ImageView(), sixthCardUser3 = new ImageView(),
-            seventhCardUser3 = new ImageView(), eighthCardUser3 = new ImageView(), ninthCardUser3 = new ImageView(),
-            tenthCardUser3 = new ImageView();
+    ImageView firstCardUser3 = new ImageView(), secondCardUser3 = new ImageView(), thirdCardUser3 = new ImageView(), fourthCardUser3 = new ImageView(), fifthCardUser3 = new ImageView(), sixthCardUser3 = new ImageView(), seventhCardUser3 = new ImageView(), eighthCardUser3 = new ImageView(), ninthCardUser3 = new ImageView(), tenthCardUser3 = new ImageView();
 
     @FXML
-    ImageView firstCardUser4 = new ImageView(), secondCardUser4 = new ImageView(), thirdCardUser4 = new ImageView(),
-            fourthCardUser4 = new ImageView(), fifthCardUser4 = new ImageView(), sixthCardUser4 = new ImageView(),
-            seventhCardUser4 = new ImageView(), eighthCardUser4 = new ImageView(), ninthCardUser4 = new ImageView(),
-            tenthCardUser4 = new ImageView();
+    ImageView firstCardUser4 = new ImageView(), secondCardUser4 = new ImageView(), thirdCardUser4 = new ImageView(), fourthCardUser4 = new ImageView(), fifthCardUser4 = new ImageView(), sixthCardUser4 = new ImageView(), seventhCardUser4 = new ImageView(), eighthCardUser4 = new ImageView(), ninthCardUser4 = new ImageView(), tenthCardUser4 = new ImageView();
 
     @FXML
     Button buttonStart, bussoButton, voloButton, striscioButton;
@@ -269,8 +257,7 @@ public class PlayGameController implements PlayGame {
     }
 
     @Override
-    public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam,
-                                       boolean endedMatch) {
+    public void cleanFieldEndTotalTurn(final int actualScoreMyTeam, final int actualScoreOpponentTeam, boolean endedMatch) {
         cleanField();
         this.briscolaLabel.setVisible(false);
         showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
@@ -340,9 +327,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private void createTimeline(final ImageView imageViewToShow, final Image imageCreateFromFile) {
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(imageViewToShow.imageProperty(), imageCreateFromFile)),
-                new KeyFrame(Duration.seconds(2), new KeyValue(imageViewToShow.imageProperty(), null)));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(imageViewToShow.imageProperty(), imageCreateFromFile)), new KeyFrame(Duration.seconds(2), new KeyValue(imageViewToShow.imageProperty(), null)));
         timeline.play();
     }
 
