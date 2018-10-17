@@ -76,6 +76,11 @@ object RestWebClient {
     }
 
 
+    /**
+      * Catch an error and it report back to controller.
+      *
+      * @param throwable the throwable to notify.
+      */
     private def reportErrorToController(throwable: Throwable): Unit = clientController.notifyError(throwable)
 
 
