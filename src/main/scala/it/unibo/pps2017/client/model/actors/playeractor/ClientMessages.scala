@@ -22,9 +22,13 @@ object ClientMessages {
 
   case class ClickedCard(index: Int, player: String) extends ActorMessage
 
+  case class ClickedCardActualPlayer(index: Int) extends ActorMessage
+
   case class PlayedCard(card: String, player: String) extends ActorMessage
 
   case class ClickedCommand(command: String, player: String) extends ActorMessage
+
+  case class ClickedCommandActualPlayer(command: String) extends ActorMessage
 
   case class NotifyCommandChosen(command: String, player: String) extends ActorMessage
 
