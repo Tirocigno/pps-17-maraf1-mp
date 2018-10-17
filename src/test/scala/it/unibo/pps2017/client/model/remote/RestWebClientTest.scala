@@ -9,7 +9,7 @@ import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
 class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
 
-  val genericHost = "127.0.0.1"
+  val genericHost = "localhost"
   val discoveryPort = 2000
   val serverPort = 4700
   val defautlTimeOut = 5
