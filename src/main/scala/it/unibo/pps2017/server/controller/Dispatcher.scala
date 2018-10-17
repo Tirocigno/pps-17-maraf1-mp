@@ -7,7 +7,7 @@ import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterServerAPI
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterServerAPI, StandardParameters}
 import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
 import it.unibo.pps2017.server.model.ServerApi.{ErrorRestAPI$, FoundGameRestAPI$, GameRestAPI$, HelloRestAPI$}
@@ -38,6 +38,7 @@ class Dispatcher extends ScalaVerticle {
 
 
   val lobbyManager: ActorRef = ActorSystem("Lobby").actorOf(Props[LobbyActor])
+  val currentIPAndPortParams = Map(StandardParameters.IP_KEY -> Dispatcher.HOST, StandardParameters.PORT_KEY -> PORT)
 
   override def start(): Unit = {
 
@@ -61,6 +62,7 @@ class Dispatcher extends ScalaVerticle {
 
     if (System.getenv("PORT") != null) port = System.getenv("PORT").toInt
 
+
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
 
@@ -77,7 +79,7 @@ class Dispatcher extends ScalaVerticle {
         case None => println("No response from the discovery")
       }, cause => {
         println("Error on the discovery registration! \nDetails: " + cause.getMessage)
-      }, None, Some(Dispatcher.DISCOVERY_PORT))
+      }, Some(currentIPAndPortParams), Some(Dispatcher.DISCOVERY_PORT))
     }
   }
 
