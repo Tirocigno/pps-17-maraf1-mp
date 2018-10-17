@@ -10,7 +10,7 @@ import scala.language.implicitConversions
 
 package object discovery {
 
-  implicit def retreiveContextFromRequest(router: RoutingContext): ServerContext = {
+  implicit def retrieveContextFromRequest(router: RoutingContext): ServerContext = {
     val request = router.request()
     ServerContext(request.getFormAttribute(GetServerAPI.getIpKey).get,
       Integer.valueOf(request.getFormAttribute(GetServerAPI.getPortKey).get))
