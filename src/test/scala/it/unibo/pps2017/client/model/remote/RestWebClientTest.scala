@@ -5,6 +5,7 @@ import it.unibo.pps2017.commons.remote.RestUtils.ServerContext
 import it.unibo.pps2017.discovery.ServerDiscovery
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.controller.Dispatcher
+import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
 class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
@@ -14,6 +15,7 @@ class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
   val serverPort = 4700
   val defautlTimeOut = 5
   var vertx: Vertx = _
+  val DEFAULT_PLAYERID = "C00lPlayer"
   var discoveryVerticle: ServerDiscovery = _
   var serverVerticle: Dispatcher = _
   var webClient: RestWebClient = _
@@ -33,9 +35,10 @@ class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
   override def afterEach() {
     vertx.close()
     waitAsyncOpeartion
+    waitAsyncOpeartion
   }
 
-  private def waitAsyncOpeartion = Thread.sleep(2000)
+  private def waitAsyncOpeartion: Unit = Thread.sleep(2000)
 
   test("testGetCurrentServerContext") {
     waitAsyncOpeartion // this waiting is necessary because the async operation is very heavy.
@@ -43,6 +46,15 @@ class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
     waitAsyncOpeartion
     assert(webClient.assignedServerContext.get == ServerContext(genericHost, serverPort))
 
+  }
+
+  test("testGetGameID") {
+    waitAsyncOpeartion // this waiting is necessary because the async operation is very heavy.
+    val map = Map(FoundGameRestAPI$.meParamKey -> DEFAULT_PLAYERID)
+    webClient.callRemoteAPI(FoundGameRestAPI$, Some(map))
+    waitAsyncOpeartion
+    Thread.sleep(5000)
+    assert(webClient.assignedServerContext.get == ServerContext(genericHost, serverPort))
   }
 
 }
