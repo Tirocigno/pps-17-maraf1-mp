@@ -56,6 +56,14 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     Thread.sleep(asyncTimerDuration)
   }
 
+  private def generateIPMultiMap(port: Port): MultiMap = {
+    val map = MultiMap caseInsensitiveMultiMap()
+    map.add(GetServerAPI.getIpKey, defaultHost)
+    map.add(GetServerAPI.getPortKey, port.toString)
+    println(map.get(GetServerAPI.getPortKey))
+    map
+  }
+
   private def generateMockClient(port: Int): WebClient = {
     val options = WebClientOptions() setDefaultPort defaultPort
     WebClient.create(vertx, options)
@@ -69,116 +77,128 @@ class ServerDiscoveryTest extends FunSuite with BeforeAndAfterEach {
     }
   }
 
+  private def registerAServer(webClient: WebClient, port: Port, params: MultiMap) = {
+    executeAPICallAndWait(webClient, port, defaultHost, RegisterServerAPI, params)
+  }
+
   private def executeAPICallAndWait(request: HttpRequest[Buffer], paramMap: MultiMap) = {
     Await.result(request.sendFormFuture(paramMap), timeOut seconds)
   }
 
-  private def registerAServer(webClient: WebClient, port: Port) = {
-    executeAPICallAndWait(webClient, port, defaultHost, RegisterServerAPI)
+  private def executeAPICallAndWait(webClient: WebClient, port: Port, host: IPAddress, api: DiscoveryAPI,
+                                    params: MultiMap) = {
+    api.httpMethod match {
+      case HttpMethod.POST => Await.result(webClient.post(port, host, api.path).sendFormFuture(params), timeOut seconds)
+      case HttpMethod.GET => Await.result(webClient.get(port, host, api.path).sendFormFuture(params), timeOut seconds)
+      case _ => fail()
+    }
   }
 
 
   test("Adding a server to  server Discovery") {
     val webClient = generateMockClient(defaultPort)
-    val result = registerAServer(webClient, defaultDiscoveryPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort, generateIPMultiMap(defaultPort))
     assert(result.statusCode() == ResponseStatus.OK_CODE)
   }
 
 
   test("Getting a registered server") {
     val webClient = generateMockClient(defaultPort)
-    val result = registerAServer(webClient, defaultDiscoveryPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort, generateIPMultiMap(defaultPort))
     assert(result.statusCode() == ResponseStatus.OK_CODE)
-    val getResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI)
+    val getResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI,
+      generateIPMultiMap(defaultPort))
     assert(getResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
   test("Trying to get a server when no server is registered") {
     val webClient = generateMockClient(defaultPort)
-    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI)
+    val increaseResult = executeAPICallAndWait(webClient, defaultDiscoveryPort, defaultHost, GetServerAPI,
+      generateIPMultiMap(defaultPort))
     assert(increaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
 
 
   test("Increasing number of matches on a server") {
     val webClient = generateMockClient(defaultPort)
-    val result = registerAServer(webClient, defaultDiscoveryPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort, generateIPMultiMap(defaultPort))
     assert(result.statusCode() == ResponseStatus.OK_CODE)
     val increaseResult = executeAPICallAndWait(webClient,
-      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI)
+      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI, generateIPMultiMap(defaultPort))
     assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
   test("Increasing number of matches on a non registered server") {
     val webClient = generateMockClient(defaultPort)
     val increaseResult = executeAPICallAndWait(webClient,
-      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI)
+      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI, generateIPMultiMap(defaultPort))
     assert(increaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
 
   test("Decreasing number of matches on a server") {
     val webClient = generateMockClient(defaultPort)
-    val result = registerAServer(webClient, defaultDiscoveryPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort, generateIPMultiMap(defaultPort))
     assert(result.statusCode() == ResponseStatus.OK_CODE)
     val increaseResult = executeAPICallAndWait(webClient,
-      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI)
+      defaultDiscoveryPort, defaultHost, IncreaseServerMatchesAPI, generateIPMultiMap(defaultPort))
     val decreaseResult = executeAPICallAndWait(webClient,
-      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI)
+      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI, generateIPMultiMap(defaultPort))
     assert(increaseResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
   test("Decreasing number of matches on a server with no matches") {
     val webClient = generateMockClient(defaultPort)
-    val result = registerAServer(webClient, defaultDiscoveryPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort, generateIPMultiMap(defaultPort))
     assert(result.statusCode() == ResponseStatus.OK_CODE)
     val decreaseResult = executeAPICallAndWait(webClient,
-      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI)
+      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI, generateIPMultiMap(defaultPort))
     assert(decreaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
 
   test("Decreasing number of matches on a not registered server") {
     val webClient = generateMockClient(defaultPort)
     val decreaseResult = executeAPICallAndWait(webClient,
-      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI)
+      defaultDiscoveryPort, defaultHost, DecreaseServerMatchesAPI, generateIPMultiMap(defaultPort))
     assert(decreaseResult.statusCode() == ResponseStatus.EXCEPTION_CODE)
   }
 
   test("Get an empty set of matches") {
     val webClient = generateMockClient(defaultPort)
     val callResult = executeAPICallAndWait(webClient, defaultDiscoveryPort,
-      defaultHost, GetAllMatchesAPI)
+      defaultHost, GetAllMatchesAPI, generateIPMultiMap(defaultPort))
     assert(callResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
   test("Register a match and retrieve the non empty list") {
     val webClient = generateMockClient(defaultPort)
-    val result = registerAServer(webClient, defaultDiscoveryPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort, generateIPMultiMap(defaultPort))
     assert(result.statusCode() == ResponseStatus.OK_CODE)
     val restCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RegisterMatchAPI.path)
     val paramMap = MultiMap.caseInsensitiveMultiMap()
     paramMap.add(RegisterMatchAPI.MATCH_ID_KEY, mockMatchRef)
+    paramMap.addAll(generateIPMultiMap(defaultPort))
     val insertResult = executeAPICallAndWait(restCall, paramMap)
     assert(insertResult.statusCode() == ResponseStatus.OK_CODE)
     val callResult = executeAPICallAndWait(webClient, defaultDiscoveryPort,
-      defaultHost, GetAllMatchesAPI)
+      defaultHost, GetAllMatchesAPI, generateIPMultiMap(defaultPort))
     assert(callResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
   test("Register a match and delete it") {
     val webClient = generateMockClient(defaultPort)
-    val result = registerAServer(webClient, defaultDiscoveryPort)
+    val result = registerAServer(webClient, defaultDiscoveryPort, generateIPMultiMap(defaultPort))
     assert(result.statusCode() == ResponseStatus.OK_CODE)
     val insertCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RegisterMatchAPI.path)
     val paramMap = MultiMap.caseInsensitiveMultiMap()
     paramMap.add(RegisterMatchAPI.MATCH_ID_KEY, mockMatchRef)
+    paramMap.addAll(generateIPMultiMap(defaultPort))
     val insertResult = executeAPICallAndWait(insertCall, paramMap)
     assert(insertResult.statusCode() == ResponseStatus.OK_CODE)
     val removeCall = webClient.post(defaultDiscoveryPort,defaultHost,
       RemoveMatchAPI.path)
     val removeResult = executeAPICallAndWait(removeCall, paramMap)
-    println(removeResult.bodyAsString())
     assert(removeResult.statusCode() == ResponseStatus.OK_CODE)
   }
 
