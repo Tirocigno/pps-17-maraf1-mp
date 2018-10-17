@@ -1,15 +1,23 @@
 
 package it.unibo.pps2017.server.actor
 
-import akka.actor.Actor
+import akka.actor.{Actor, Props}
 import it.unibo.pps2017.core.game.SimpleTeam
+import it.unibo.pps2017.core.player.GameActor
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{IncreaseServerMatchesAPI, RegisterMatchAPI}
+import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model._
+import it.unibo.pps2017.server.server
+import org.json4s.DefaultFormats
+import org.json4s.jackson.Serialization.read
 
 import scala.collection.mutable.ListBuffer
 
 
 //noinspection ScalaStyle
 class LobbyActor extends Actor {
+  implicit val formats: DefaultFormats.type = DefaultFormats
+
   val allLobby: ListBuffer[Lobby] = ListBuffer()
 
   override def receive: Receive = {
@@ -89,7 +97,7 @@ class LobbyActor extends Actor {
   private def notifyGameFound(game: Lobby, onGameFound: String => Unit): Unit = {
     if (game.isFull) {
       allLobby -= game
-      //TODO Deploy to match
+      createActorAndNotifyTheDiscovery(game)
     }
     onGameFound(game.id)
   }
@@ -130,5 +138,62 @@ class LobbyActor extends Actor {
     onGameFound(newLobby.id)
 
     newLobby
+  }
+
+  private def createActorAndNotifyTheDiscovery(game: Lobby): Unit = {
+    val onGameEnd: Unit = {
+      PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
+        case Some(res) => try {
+          val msgFromDiscovery = read[Message](res)
+
+          println("Discovery match registration response: " + msgFromDiscovery.message)
+        } catch {
+          case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
+        }
+        case None =>
+      }, cause => {}, Some(Map("matchID" -> game.id)), Some(Dispatcher.DISCOVERY_PORT))
+
+      PostRequest(Dispatcher.DISCOVERY_URL, IncreaseServerMatchesAPI.path, {
+        case Some(res) => try {
+          val msgFromDiscovery = read[Message](res)
+
+          println("Discovery match registration response: " + msgFromDiscovery.message)
+        } catch {
+          case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
+        }
+        case None =>
+      }, cause => {
+        println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
+      }, None, Some(Dispatcher.DISCOVERY_PORT))
+    }
+
+    //TODO GameActor creating
+    //context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, onGameEnd))
+
+
+    PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
+      case Some(res) => try {
+        val msgFromDiscovery = read[Message](res)
+
+        println("Discovery match registration response: " + msgFromDiscovery.message)
+      } catch {
+        case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
+      }
+      case None =>
+    }, cause => {}, Some(Map("matchID" -> game.id)), Some(Dispatcher.DISCOVERY_PORT))
+
+
+    PostRequest(Dispatcher.DISCOVERY_URL, IncreaseServerMatchesAPI.path, {
+      case Some(res) => try {
+        val msgFromDiscovery = read[Message](res)
+
+        println("Discovery match registration response: " + msgFromDiscovery.message)
+      } catch {
+        case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
+      }
+      case None =>
+    }, cause => {
+      println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
+    }, None, Some(Dispatcher.DISCOVERY_PORT))
   }
 }
