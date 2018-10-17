@@ -87,7 +87,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       val matchId = router.request().getFormAttribute(RegisterMatchAPI.matchIdKey)
         .getOrElse(throw new IllegalStateException())
       matchesSet.removeMatch(matchId)
-      response.sendResponse(Message("MATCH REMOVED SUCCESSFULLY"))
+      decreaseServerMatchesAPIHandler(router, response)
     } catch {
       case _: IllegalStateException => setErrorAndRespond(response,
         "NO MATCHID FOUND IN REQUEST")
