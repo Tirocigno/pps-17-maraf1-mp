@@ -1,8 +1,6 @@
 package it.unibo.pps2017.core.player
 
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
-import it.unibo.pps2017.core.game.Team
-
 import scala.collection.mutable.ListBuffer
 
 

@@ -20,7 +20,7 @@ import scala.collection.mutable
 import scala.util.Random
 
 
-class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameEnd:()=>Unit) extends Actor with Match with ActorLogging {
+class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGameEnd:()=>Unit) extends Actor with Match with ActorLogging {
   type ActorName = String
 
   var currentBriscola: Option[Seed] = None
@@ -34,7 +34,6 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
   var gameEnd: Boolean = false
   val actors : ListBuffer[PlayerActor] = ListBuffer[PlayerActor]()
   var cardsInHand :  collection.Map[PlayerActor, ArrayBuffer[Card]] =  Map[PlayerActor, ArrayBuffer[Card]]()
-  var cardsInTable : ListBuffer[Card] = ListBuffer[Card]()
   var mediator : ActorRef  = _
   val cluster = Cluster(context.system)
   var task : TimerTask = _
@@ -45,26 +44,28 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     cluster.subscribe(self, classOf[MemberUp])
     mediator = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(TOPIC_NAME, self)
+
+    team1.getMembers.foreach(player =>{
+      //addPlayer(player,RANDOM_TEAM)
+      //actors += player.getUsername()
+    })
+
+    team2.getMembers.foreach(player =>{
+      //addPlayer(player,RANDOM_TEAM)
+      //actors += player.getUsername()
+    })
+
+    var actorReferences: List[ActorName] = List[ActorName]()
+    actors.foreach(p => {
+      //actorReferences += p.getUsername()
+    })
+    //mediator ! Publish(TOPIC_NAME,PlayersRef(actorReferences))
+
   }
 
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   def receive = {
-
-   /* case RegisterPlayer(team1, team2) => {
-
-      team1.getMembers.foreach(player =>{
-        addPlayer(player,RANDOM_TEAM)
-        //actors += player.getUsername()
-      })
-
-      team2.getMembers.foreach(player =>{
-        addPlayer(player,RANDOM_TEAM)
-        //actors += player.getUsername()
-      })
-
-      onFullTable()
-    }*/
 
     case PlayersRefAck =>{
       numAck = numAck +1
@@ -116,9 +117,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
         tmp = tmp + 1
             if(tmp == TURN_TIME_SEC) {
               val randCard: Card = forcePlay(nextHandStarter.get)
-              val cardPath: String = IMG_PATH + randCard.cardValue + randCard.cardSeed + PNG_FILE
-
-              mediator ! Publish(TOPIC_NAME,ForcedCardPlayed(cardPath,nextHandStarter.get))
+              mediator ! Publish(TOPIC_NAME,ForcedCardPlayed(cardToPath(randCard),nextHandStarter.get))
             }
       }
     }
@@ -187,17 +186,12 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
 
 
   private def prepareSet(): Unit = {
-    var actorReferences: List[ActorName] = List[ActorName]()
-    actors.foreach(p => {
-      //actorReferences += p.getUsername()
-    })
-    //mediator ! Publish(TOPIC_NAME,PlayersRef(actorReferences))
     setEnd = false
     deck.shuffle()
     var i: Int = 0
     deck.distribute().foreach(hand => {
       actors.foreach(player => {
-        mediator ! Publish(TOPIC_NAME, DistributedCard(cardsToPath(hand),player))
+        mediator ! Publish(TOPIC_NAME, DistributedCard(allCardsToPath(hand),player))
       })
       if (firstHand && isFirstPlayer(hand)) {
           nextHandStarter = Some(getPlayers(i))
@@ -209,10 +203,12 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
 
   }
 
-  private def cardsToPath(cards: Set[Card]): List[String] = {
+  private def cardToPath(card: Card): String =  IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
+
+  private def allCardsToPath(cards: Set[Card]): List[String] = {
     var allCardsPath : ListBuffer[String] = ListBuffer[String]()
     cards.foreach(card =>
-      allCardsPath += IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
+      allCardsPath += cardToPath(card)
     )
     allCardsPath.toList
   }
@@ -277,8 +273,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
 
     cardsOnTable += ((card, gameCycle.getCurrent))
     cardPlayed = true
-    val cardPath: String = IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
-    mediator ! Publish(TOPIC_NAME,PlayedCard(cardPath, player))
+    mediator ! Publish(TOPIC_NAME,PlayedCard(cardToPath(card), player))
     cardsInHand.get(player).get -= card
   }
 
@@ -396,7 +391,6 @@ final case class TeamNotFoundException(message: String = "Team not found in this
 
 object GameActor {
   val TOT_PLAYERS: Int = 4
-  val TOPIC_NAME = "CHANNEL"
   val TURN_TIME_SEC: Int = 10
   val TIME_PERIOD: Long = 1000L
 
@@ -414,7 +408,7 @@ object GameActor {
   val IMG_PATH = "src/main/java/it/unibo/pps2017/core/gui/cards/"
   val PNG_FILE = ".png"
 
-  def apply(topicName: String, team1: Team, team2: Team, func:()=>Unit): GameActor = new GameActor(topicName, team1, team2,func)
+  def apply(topicName: String, team1: Team, team2: Team, onGameEnd:()=>Unit): GameActor = new GameActor(topicName, team1, team2, onGameEnd)
 
  /* def main(args: Array[String]): Unit = {
     // Override the configuration of the port when specified as program argument
