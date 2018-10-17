@@ -49,7 +49,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     * Handler for the RegisterServerAPI.
     */
   private val registerServerAPIHandler: APIHandler = (router, response) => {
-    serverMap.addServer(router.senderSocket)
+    serverMap.addServer(router)
     response.sendResponse(Message("SERVER REGISTERED SUCCESSFULLY"))
   }
   /**
@@ -57,7 +57,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     */
   private val increaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
-      serverMap.increaseMatchesPlayedOnServer(router.senderSocket)
+      serverMap.increaseMatchesPlayedOnServer(router)
       response.sendResponse(Message("INCREASE MATCHES ON SERVER"))
     } catch {
       case e: IllegalArgumentException => setErrorAndRespond(response, "BAD REQUEST")
@@ -68,7 +68,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     */
   private val decreaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
-      serverMap.decreaseMatchesPlayedOnServer(router.senderSocket)
+      serverMap.decreaseMatchesPlayedOnServer(router)
       response.sendResponse(Message("DECREASED MATCHES ON SERVER"))
     } catch {
       case e: IllegalArgumentException => setErrorAndRespond(response, "INVALID SERVER ID")
@@ -87,7 +87,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     */
   private val registerMatchAPIHandler: APIHandler = (router, response) => {
     try {
-      val matchId = router.request().getFormAttribute(RegisterMatchAPI.matchIdKey)
+      val matchId = router.request().getFormAttribute(RegisterMatchAPI.MATCH_ID_KEY)
         .getOrElse(throw new IllegalStateException())
       matchesSet.addMatch(matchId)
       increaseServerMatchesAPIHandler(router, response)
@@ -101,7 +101,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     */
   private val removeMatchAPIHandler: APIHandler = (router, response) => {
     try {
-      val matchId = router.request().getFormAttribute(RegisterMatchAPI.matchIdKey)
+      val matchId = router.request().getFormAttribute(RegisterMatchAPI.MATCH_ID_KEY)
         .getOrElse(throw new NoSuchFieldException())
       matchesSet.removeMatch(matchId)
       decreaseServerMatchesAPIHandler(router, response)
