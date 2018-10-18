@@ -1,5 +1,4 @@
 package it.unibo.pps2017.client.model.remote
-
 import akka.actor.ActorSystem
 import io.vertx.scala.core.Vertx
 import it.unibo.pps2017.commons.remote.RestUtils.ServerContext
@@ -26,6 +25,7 @@ class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
     discoveryVerticle = ServerDiscovery(discoveryPort, defautlTimeOut)
     vertx.deployVerticle(discoveryVerticle)
     waitAsyncOpeartion
+    serverVerticle = new Dispatcher(ActorSystem("dumpactor"))
     serverVerticle = new Dispatcher(ActorSystem("dumpactor"))
     vertx.deployVerticle(serverVerticle)
     waitAsyncOpeartion

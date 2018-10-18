@@ -62,6 +62,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
     if (System.getenv("PORT") != null) port = System.getenv("PORT").toInt
 
+
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
 
