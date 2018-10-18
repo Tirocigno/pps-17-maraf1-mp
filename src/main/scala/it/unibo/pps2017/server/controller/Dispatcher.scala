@@ -7,10 +7,10 @@ import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterServerAPI
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterServerAPI, StandardParameters}
 import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
-import it.unibo.pps2017.server.model.ServerApi.{ErrorAPI, FoundGameAPI, GameAPI, HelloAPI}
+import it.unibo.pps2017.server.model.ServerApi.{ErrorRestAPI$, FoundGameRestAPI$, GameRestAPI$, HelloRestAPI$}
 import it.unibo.pps2017.server.model._
 import org.json4s._
 import org.json4s.jackson.Serialization.read
@@ -38,18 +38,18 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
 
   val lobbyManager: ActorRef = akkaSystem.actorOf(Props[LobbyActor])
+  val currentIPAndPortParams = Map(StandardParameters.IP_KEY -> Dispatcher.HOST, StandardParameters.PORT_KEY -> PORT)
 
   override def start(): Unit = {
-
 
     val router = Router.router(vertx)
 
     ServerApi.values.map({
-      case api@HelloAPI => api.asRequest(router, hello)
-      case api@ErrorAPI => api.asRequest(router, responseError)
-      case api@GameAPI => api.asRequest(router, getGame)
-      case api@FoundGameAPI => api.asRequest(router, foundGame)
-      case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("API not founded.")).sendResponse(Error()))
+      case api@HelloRestAPI$ => api.asRequest(router, hello)
+      case api@ErrorRestAPI$ => api.asRequest(router, responseError)
+      case api@GameRestAPI$ => api.asRequest(router, getGame)
+      case api@FoundGameRestAPI$ => api.asRequest(router, foundGame)
+      case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 
 
@@ -62,11 +62,12 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
     if (System.getenv("PORT") != null) port = System.getenv("PORT").toInt
 
+
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
 
 
-    akkaSystem.scheduler.scheduleOnce(5 second) {
+    akkaSystem.scheduler.scheduleOnce(3 second) {
       PostRequest(Dispatcher.DISCOVERY_URL, RegisterServerAPI.path, {
         case Some(res) => try {
           val msgFromDiscovery = read[Message](res)
@@ -78,7 +79,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
         case None => println("No response from the discovery")
       }, cause => {
         println("Error on the discovery registration! \nDetails: " + cause.getMessage)
-      }, None, Some(Dispatcher.DISCOVERY_PORT))
+      }, Some(currentIPAndPortParams), Some(Dispatcher.DISCOVERY_PORT))
     }
   }
 
@@ -120,7 +121,9 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     val params = routingContext.request().formAttributes()
 
     val player = params.get("me")
+    println(player)
     val friend = params.get("partner")
+    println(friend)
 
     val gameFoundEvent: String => Unit = gameId => {
       res.sendResponse(GameFound(gameId))

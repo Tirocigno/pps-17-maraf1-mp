@@ -1,8 +1,8 @@
 
 package it.unibo.pps2017.server.model
 
-import it.unibo.pps2017.core.game.{FullTeamException, SimpleTeam, Team}
-import it.unibo.pps2017.core.player.PlayerImpl
+import it.unibo.pps2017.core.game.SimpleTeam
+import it.unibo.pps2017.core.player.FullTeamException
 
 sealed trait Lobby {
   /**

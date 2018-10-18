@@ -3,8 +3,9 @@ package it.unibo.pps2017.discovery.restAPI
 
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}
+import it.unibo.pps2017.commons.remote.API.RestAPI
 import it.unibo.pps2017.server.model.{GET, POST, Request, RouterResponse}
-import it.unibo.pps2017.utils.remote.RestAPI
+
 
 object DiscoveryAPI {
 
@@ -12,29 +13,20 @@ object DiscoveryAPI {
     * Trait of DiscoveryAPI.
     */
   sealed trait DiscoveryAPI extends RestAPI {
-    /**
-      * Path of the API
-      * @return a string containing the path of API.
-      */
-    def path:String
 
     /**
-      * Http method of API.
-      * @return an HTTP method to call.
-      */
-    def httpMethod:HttpMethod
-
-    /**
-      * Convert the API to a request object to register into a router.
+      * Convert the RestAPI to a request object to register into a router.
+      *
       * @param router the router on which request will be registered.
       * @param handle the handler of the request.
-      * @return a Request object build from the API.
+      * @return a Request object build from the RestAPI.
       */
     def asRequest(router: Router, handle:(RoutingContext, RouterResponse) => Unit):Request
   }
 
+
   /**
-    * API to register a new server on RestUtils server.
+    * RestAPI to register a new server on RestUtils server.
     */
   case object RegisterServerAPI extends DiscoveryAPI {
 
@@ -47,7 +39,7 @@ object DiscoveryAPI {
   }
 
   /**
-    * API to retrieve less busy server.
+    * RestAPI to retrieve less busy server.
     */
   case object GetServerAPI extends DiscoveryAPI {
 
@@ -60,9 +52,10 @@ object DiscoveryAPI {
   }
 
   /**
-    * API to increase the number of matches on a specified server.
+    * RestAPI to increase the number of matches on a specified server.
     */
   case object IncreaseServerMatchesAPI extends DiscoveryAPI {
+
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -73,9 +66,10 @@ object DiscoveryAPI {
   }
 
   /**
-    * API to decrease the number of matches on a specified server.
+    * RestAPI to decrease the number of matches on a specified server.
     */
   case object DecreaseServerMatchesAPI extends DiscoveryAPI {
+
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -87,7 +81,7 @@ object DiscoveryAPI {
 
   case object RegisterMatchAPI extends DiscoveryAPI {
 
-    val matchIdKey = "matchID"
+    val MATCH_ID_KEY = "matchID"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -99,7 +93,7 @@ object DiscoveryAPI {
 
   case object RemoveMatchAPI extends DiscoveryAPI {
 
-    val matchIdKey = "matchID"
+    val MATCH_ID_KEY = "matchID"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -127,5 +121,10 @@ object DiscoveryAPI {
   def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
     IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
     RemoveMatchAPI, GetAllMatchesAPI)
+
+  object StandardParameters {
+    val IP_KEY = "ip"
+    val PORT_KEY = "port"
+  }
 
 }
