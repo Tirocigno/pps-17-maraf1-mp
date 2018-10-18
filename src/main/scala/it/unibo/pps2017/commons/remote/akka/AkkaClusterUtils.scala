@@ -9,7 +9,6 @@ object AkkaClusterUtils {
     * Standard name for actorsystems, must be the same on all the actorsystem.
     */
   val STANDARD_SYSTEM_NAME = "Maraph1System"
-  val STANDARD_HOST = "192.168.1.103"
 
   /**
     * Create the two nodes for the cluster.
@@ -35,11 +34,12 @@ object AkkaClusterUtils {
   }
 
   /**
-    * Create a new actorsystem, running on a random port.
+    * Create a new actorsystem, running on a random port which will join the cluster with the specified nodes.
     *
     * @return an actorsystem which will eventually join the cluster.
     */
-  def startJoiningActorSystemOnRandomPort(): ActorSystem = startJoiningActorSystemWithRemoteSeed(STANDARD_HOST, "0")
+  def startJoiningActorSystemOnRandomPort(seedHost: String): ActorSystem =
+    startJoiningActorSystemWithRemoteSeed(seedHost, "0")
 
   /**
     * Create a new node which will join the cluster.
