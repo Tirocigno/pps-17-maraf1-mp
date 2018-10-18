@@ -1,7 +1,7 @@
 package it.unibo.pps2017.core.game
 
+import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.core.deck.cards.{Card, Seed}
-import it.unibo.pps2017.core.player.{PlayerActor}
 
 
 trait Match {
@@ -13,7 +13,7 @@ trait Match {
     * @param team
     * Team name to add the player. Not specify for random imputation.
     */
-  def addPlayer(newPlayer: PlayerActor, team: String): Unit
+  def addPlayer(newPlayer: ClientGameActor, team: String): Unit
 
   /**
     * Starting the game.
@@ -43,7 +43,7 @@ trait Match {
     * @param player
     * The played that played the card
     */
-  def isCardOk(card: Card, player: PlayerActor): Unit
+  def isCardOk(card: Card, player: ClientGameActor): Unit
 
   /**
     * Play a random card in the hand of the player.
@@ -53,7 +53,7 @@ trait Match {
     * @return
     * A random card among those that the player can drop.
     */
-  def forcePlay(player: PlayerActor): Card
+  def forcePlay(player: ClientGameActor): Card
 
   /**
     * If set is end return the score of teams, and a true if the game is end, false otherwise.

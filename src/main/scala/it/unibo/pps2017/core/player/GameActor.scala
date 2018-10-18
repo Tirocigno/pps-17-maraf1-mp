@@ -2,21 +2,20 @@ package it.unibo.pps2017.core.player
 
 import java.util.TimerTask
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
-import com.typesafe.config.ConfigFactory
-import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
-import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
-import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
-import it.unibo.pps2017.core.game._
-
-import scala.collection.mutable.{ArrayBuffer, ListBuffer, Map}
-import it.unibo.pps2017.core.player.GameActor._
-import akka.cluster.pubsub.{DistributedPubSub, DistributedPubSubMediator}
-import DistributedPubSubMediator.{Publish, Subscribe}
+import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
+import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Subscribe}
+import akka.cluster.pubsub.{DistributedPubSub, DistributedPubSubMediator}
+import it.unibo.pps2017.client.model.actors.ClientGameActor
+import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
+import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
+import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
+import it.unibo.pps2017.core.game._
+import it.unibo.pps2017.core.player.GameActor._
 
 import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer, Map}
 import scala.util.Random
 
 
@@ -28,12 +27,12 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
   var gameCycle: GameCycle = _
   var deck: GameDeck = ComposedDeck()
   var firstHand: Boolean = true
-  val cardsOnTable: mutable.ListBuffer[(Card, PlayerActor)] = mutable.ListBuffer()
-  var nextHandStarter: Option[PlayerActor] = None
+  val cardsOnTable: mutable.ListBuffer[(Card, ClientGameActor)] = mutable.ListBuffer()
+  var nextHandStarter: Option[ClientGameActor] = None
   var setEnd: Boolean = false
   var gameEnd: Boolean = false
-  val actors : ListBuffer[PlayerActor] = ListBuffer[PlayerActor]()
-  var cardsInHand :  collection.Map[PlayerActor, ArrayBuffer[Card]] =  Map[PlayerActor, ArrayBuffer[Card]]()
+  val actors: ListBuffer[ClientGameActor] = ListBuffer[ClientGameActor]()
+  var cardsInHand: collection.Map[ClientGameActor, ArrayBuffer[Card]] = Map[ClientGameActor, ArrayBuffer[Card]]()
   var mediator : ActorRef  = _
   val cluster = Cluster(context.system)
   var task : TimerTask = _
@@ -130,7 +129,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     task.cancel()
   }
 
-  override def addPlayer(newPlayer: PlayerActor, team: String = RANDOM_TEAM): Unit = {
+  override def addPlayer(newPlayer: ClientGameActor, team: String = RANDOM_TEAM): Unit = {
     try {
       addPlayerToTeam(newPlayer, team)
     } catch {
@@ -141,7 +140,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
 
   @throws(classOf[FullTeamException])
   @throws(classOf[TeamNotFoundException])
-  private def addPlayerToTeam(player: PlayerActor, teamName: String = RANDOM_TEAM): Unit = {
+  private def addPlayerToTeam(player: ClientGameActor, teamName: String = RANDOM_TEAM): Unit = {
     if (teamName.equals(RANDOM_TEAM)) {
       try {
         team1.addPlayer(player)
@@ -215,7 +214,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     allCardsPath.toList
   }
 
-  def getPlayers: Seq[PlayerActor] = {
+  def getPlayers: Seq[ClientGameActor] = {
     if (gameCycle != null) return gameCycle.queue
 
     team1.getMembers ++ team2.getMembers
@@ -236,7 +235,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     None
   }
 
-  override def forcePlay(player: PlayerActor): Card = {
+  override def forcePlay(player: ClientGameActor): Card = {
     currentSuit match {
       case Some(seed) =>
         val rightCards: Seq[Card] = cardsInHand.get(player).get.filter(_.cardSeed == seed).toList
@@ -251,7 +250,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     }
   }
 
-  override def isCardOk(card: Card, player: PlayerActor): Unit = currentSuit match {
+  override def isCardOk(card: Card, player: ClientGameActor): Unit = currentSuit match {
     case Some(seed) =>
       val playerHand: Seq[Card] = cardsInHand.get(player).get.toStream
 
@@ -268,7 +267,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
       onCardPlayed(card, player)
   }
 
-  private def onCardPlayed(card: Card, player: PlayerActor): Unit = {
+  private def onCardPlayed(card: Card, player: ClientGameActor): Unit = {
     mediator ! Publish(topicName, CardOk(true, player))
 
     if (gameCycle.isFirst) onFirstCardOfHand(card)
@@ -287,7 +286,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     currentSuit = Option(card.cardSeed)
   }
 
-  private def onHandEnd(lastTaker: PlayerActor): Unit = {
+  private def onHandEnd(lastTaker: ClientGameActor): Unit = {
     setEnd = true
     deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
     nextHandStarter = Some(lastTaker)
@@ -308,12 +307,12 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     }
   }
 
-  private def getTeamOfPlayer(player: PlayerActor): Team = getTeamIndexOfPlayer(player) match {
+  private def getTeamOfPlayer(player: ClientGameActor): Team = getTeamIndexOfPlayer(player) match {
     case 0 => team1
     case 1 => team2
   }
 
-  private def getTeamIndexOfPlayer(player: PlayerActor): Int = {
+  private def getTeamIndexOfPlayer(player: ClientGameActor): Int = {
     if (team1.getMembers.contains(player)) return 0
     1
   }
@@ -347,7 +346,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     onGameEnd()
   }
 
-  private def checkMarafona(hand: Set[Card], player: PlayerActor): Unit = {
+  private def checkMarafona(hand: Set[Card], player: ClientGameActor): Unit = {
     if (hand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
       .count(c => c.cardValue == ACE_VALUE || c.cardValue == TWO_VALUE || c.cardValue == THREE_VALUE) == REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA) {
       deck.registerMarafona(getTeamOfPlayer(player))
@@ -363,7 +362,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     }
   }
 
-  implicit def defineTaker(hand: mutable.ListBuffer[(Card, PlayerActor)]): PlayerActor = {
+  implicit def defineTaker(hand: mutable.ListBuffer[(Card, ClientGameActor)]): ClientGameActor = {
     var max: Card = hand.head._1
 
     hand foreach (tuple => {

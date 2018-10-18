@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.model.actors
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 
 /**
-  * Trait PlayerActor outline the model for real time comunication structure,
+  * Trait ClientGameActor outline the model for real time comunication structure,
   * based on akka actors, used for playing
   * a remote Maraphone match.
   */

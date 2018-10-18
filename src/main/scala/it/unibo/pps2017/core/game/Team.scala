@@ -2,8 +2,9 @@
 package it.unibo.pps2017.core.game
 
 
+import it.unibo.pps2017.client.model.actors.ClientGameActor
+import it.unibo.pps2017.core.player.FullTeamException
 import it.unibo.pps2017.core.player.GameActor._
-import it.unibo.pps2017.core.player.{FullTeamException, PlayerActor}
 import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable.ListBuffer
@@ -108,8 +109,8 @@ sealed trait BaseTeam[A] {
   */
 
 case class Team(var name: String = Random.nextInt().toString,
-                private var members: ListBuffer[PlayerActor] = ListBuffer(),
-                private var score: Int = 0) extends BaseTeam[PlayerActor] {
+                private var members: ListBuffer[ClientGameActor] = ListBuffer(),
+                private var score: Int = 0) extends BaseTeam[ClientGameActor] {
 
 
   /**
@@ -121,7 +122,7 @@ case class Team(var name: String = Random.nextInt().toString,
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
-  def addPlayer(newPlayer: PlayerActor): Unit = {
+  def addPlayer(newPlayer: ClientGameActor): Unit = {
     if (members.length >= TEAM_MEMBERS_LIMIT) {
       throw FullTeamException()
     }
@@ -129,22 +130,36 @@ case class Team(var name: String = Random.nextInt().toString,
     members += newPlayer
   }
 
-
   /**
-    * Return the first player of the team.
+    * Return the members of the team.
     *
     * @return
-    * the first player of the team.
+    * the members of the team
     */
-  def firstMember: Option[PlayerActor] = members.headOption
+  def getMembers: Seq[ClientGameActor] = members
 
   /**
-    * Return the second player of the team.
+    * Return the team composition with both player's username.
     *
     * @return
-    * the second player of the team.
+    * the team composition with both player's username.
     */
-  def secondMember: Option[PlayerActor] = members.lastOption
+  override def asSide: Side = {
+    val app: ListBuffer[String] = ListBuffer()
+    firstMember match {
+      case Some(member) =>
+        app += member.getUsername
+      case None =>
+    }
+
+    secondMember match {
+      case Some(member) =>
+        app += member.getUsername
+      case None =>
+    }
+
+    Side(app)
+  }
 
   /**
     * Return the actual number of players in the team.
@@ -155,12 +170,12 @@ case class Team(var name: String = Random.nextInt().toString,
   def numberOfMembers: Int = members.length
 
   /**
-    * Return the members of the team.
+    * Return the first player of the team.
     *
     * @return
-    * the members of the team
+    * the first player of the team.
     */
-  def getMembers: Seq[PlayerActor] = members
+  def firstMember: Option[ClientGameActor] = members.headOption
 
   /**
     * Add set's point to the team score.
@@ -196,27 +211,12 @@ case class Team(var name: String = Random.nextInt().toString,
   def hasMember: Boolean = members.nonEmpty
 
   /**
-    * Return the team composition with both player's username.
+    * Return the second player of the team.
     *
     * @return
-    * the team composition with both player's username.
+    * the second player of the team.
     */
-  override def asSide: Side = {
-    val app: ListBuffer[String] = ListBuffer()
-    firstMember match {
-      case Some(member) =>
-        app += member.username
-      case None =>
-    }
-
-    secondMember match {
-      case Some(member) =>
-        app += member.username
-      case None =>
-    }
-
-    Side(app)
-  }
+  def secondMember: Option[ClientGameActor] = members.lastOption
 }
 
 

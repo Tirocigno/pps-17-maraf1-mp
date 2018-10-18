@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.core.player.{PlayerActor}
+import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.core.player.GameActor._
 
 
@@ -23,11 +23,11 @@ case class GameCycle(team1: Team,
     throw TeamNotReadyException()
   }
 
-  val queue: Seq[PlayerActor] = Seq[PlayerActor](team1.firstMember.get,
+  val queue: Seq[ClientGameActor] = Seq[ClientGameActor](team1.firstMember.get,
     team2.firstMember.get, team1.secondMember.get, team2.secondMember.get)
 
   private var tokenIndex: Int = 0
-  private var firstPlayer: Option[PlayerActor] = None
+  private var firstPlayer: Option[ClientGameActor] = None
 
   /**
     * Return a player and update the index to the next.
@@ -35,7 +35,7 @@ case class GameCycle(team1: Team,
     * @return
     * The player who must play his card.
     */
-  def next(): PlayerActor = {
+  def next(): ClientGameActor = {
     tokenIndex = getNextIndex
 
     queue(tokenIndex)
@@ -48,7 +48,7 @@ case class GameCycle(team1: Team,
     * @param player
     * The player who have to open the hand.
     */
-  def setFirst(player: PlayerActor): Unit = {
+  def setFirst(player: ClientGameActor): Unit = {
     tokenIndex = queue.indexOf(player)
     firstPlayer = Option(player)
   }
@@ -89,7 +89,7 @@ case class GameCycle(team1: Team,
     * @return
     * The player who have to play his card.
     */
-  def getCurrent: PlayerActor = queue(tokenIndex)
+  def getCurrent: ClientGameActor = queue(tokenIndex)
 
   /**
     * Return the next player in the queue.
@@ -97,7 +97,7 @@ case class GameCycle(team1: Team,
     * @return
     * the next player in the queue.
     */
-  def getNext: PlayerActor = queue(getNextIndex)
+  def getNext: ClientGameActor = queue(getNextIndex)
 
   /**
     * Return a sequence of all the players in the game.
@@ -105,7 +105,7 @@ case class GameCycle(team1: Team,
     * @return
     * a sequence of all the players in the game.
     */
-  def getPlayers: Seq[PlayerActor] = queue
+  def getPlayers: Seq[ClientGameActor] = queue
 
   /**
     * Calculate the next index for the queue. If it's end, the index will reset.
@@ -123,7 +123,7 @@ case class GameCycle(team1: Team,
     * @return
     * The previous player.
     */
-  private def getPrevOf(player: PlayerActor): PlayerActor = {
+  private def getPrevOf(player: ClientGameActor): ClientGameActor = {
     val prevIndex: Int = (MAX_PLAYER_NUMBER + (getPlayers.indexOf(player) - 1)) % MAX_PLAYER_NUMBER
 
     getPlayers(prevIndex)
