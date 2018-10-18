@@ -1,14 +1,10 @@
 
 package it.unibo.pps2017.core.game
 
-<<<<<<< HEAD
-import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.Player
-import it.unibo.pps2017.server.model.Side
-=======
+
 import it.unibo.pps2017.core.player.GameActor._
 import it.unibo.pps2017.core.player.{FullTeamException, PlayerActor}
->>>>>>> feature/gameActor
+import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
@@ -21,7 +17,7 @@ sealed trait BaseTeam[A] {
     *
     * @param newPlayer
     * The player who join the team.
-    * @throws it.unibo.pps2017.core.game.FullTeamException
+    * @throws FullTeamException
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
@@ -110,15 +106,11 @@ sealed trait BaseTeam[A] {
   * @param members
   * Members of the team. Limited at max 2.
   */
-<<<<<<< HEAD
+
 case class Team(var name: String = Random.nextInt().toString,
-                private var members: ListBuffer[Player] = ListBuffer(),
-                private var score: Int = 0) extends BaseTeam[Player] {
-=======
-case class Team(var name: String,
                 private var members: ListBuffer[PlayerActor] = ListBuffer(),
-                private var score: Int = 0) {
->>>>>>> feature/gameActor
+                private var score: Int = 0) extends BaseTeam[PlayerActor] {
+
 
   /**
     * Add a player to the team.
@@ -213,13 +205,13 @@ case class Team(var name: String,
     val app: ListBuffer[String] = ListBuffer()
     firstMember match {
       case Some(member) =>
-        app += member.userName
+        app += member.username
       case None =>
     }
 
     secondMember match {
       case Some(member) =>
-        app += member.userName
+        app += member.username
       case None =>
     }
 
@@ -235,7 +227,7 @@ case class SimpleTeam(private var members: ListBuffer[String] = ListBuffer(),
     *
     * @param newPlayer
     * The player who join the team.
-    * @throws it.unibo.pps2017.core.game.FullTeamException
+    * @throws FullTeamException
     * If the team has already 2 members.
     */
   override def addPlayer(newPlayer: String): Unit = {
