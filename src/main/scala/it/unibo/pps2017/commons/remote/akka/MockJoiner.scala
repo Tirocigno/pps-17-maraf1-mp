@@ -1,11 +1,11 @@
 package it.unibo.pps2017.commons.remote.akka
 
-import akka.actor.{Actor, Props}
+import akka.actor.{Actor, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 
 object MockJoiner extends App {
-  val actor = AkkaClusterUtils.startJoiningActorSystemOnRandomPort()
+  val actor = AkkaClusterUtils.startJoiningActorSystemOnRandomPort("127.0.0.1")
 
 
   val actorRef = actor.actorOf(Props[PongoActorResponder])
@@ -13,7 +13,7 @@ object MockJoiner extends App {
 
 class PongoActorResponder extends Actor {
 
-  val mediator = DistributedPubSub(context.system).mediator
+  val mediator: ActorRef = DistributedPubSub(context.system).mediator
   mediator ! Subscribe("Il regno del pongo", self)
   println("Subscription done")
 

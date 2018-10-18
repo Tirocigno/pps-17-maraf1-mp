@@ -8,7 +8,7 @@ object MockDiscovery extends App {
 
   AkkaClusterUtils.startSeedCluster
 
-  val actorsystem = AkkaClusterUtils.startJoiningActorSystemOnRandomPort()
+  val actorsystem = AkkaClusterUtils.startJoiningActorSystemOnRandomPort("127.0.0.1")
 
   val actorRef = actorsystem.actorOf(Props[PongoActorDistributor], "Distributor")
 
@@ -25,12 +25,12 @@ object MockDiscovery extends App {
 
 class PongoActorDistributor extends Actor with ActorLogging {
 
-  val mediator = DistributedPubSub(context.system).mediator
+  val mediator: ActorRef = DistributedPubSub(context.system).mediator
 
   log.info("Actor created")
 
   override def receive: Receive = {
-    case PongoMessage(_, _) => log.info("Received message");
+    case PongoMessage(_, _) => log.info("Received message")
       mediator ! Publish("Il regno del pongo", PongoMessage("W " +
         "il " +
         "pongo", self))
