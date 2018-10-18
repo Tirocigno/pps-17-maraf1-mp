@@ -7,7 +7,8 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.client.{HttpRequest, WebClient, WebClientOptions}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
-import it.unibo.pps2017.server.model.{MatchesSetEncoder, ResponseStatus}
+import it.unibo.pps2017.server.model.ResponseStatus
+import it.unibo.pps2017.utils.remote.RestUtils.{IPAddress, MatchRef, Port}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}

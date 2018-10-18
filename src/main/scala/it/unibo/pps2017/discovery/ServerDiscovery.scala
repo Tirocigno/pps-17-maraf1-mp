@@ -9,9 +9,10 @@ import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap}
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse}
+import it.unibo.pps2017.utils.remote.RestUtils.Port
 
 /**
-  * Basic trait for a server discovery implementation.
+  * Basic trait for a server RestUtils implementation.
   */
 trait ServerDiscovery extends ScalaVerticle{
 

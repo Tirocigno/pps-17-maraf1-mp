@@ -7,15 +7,27 @@ package it.unibo.pps2017.core.deck.cards
 
 object Seed {
 
-  sealed trait Seed
+  sealed trait Seed {
+    def asString:String
+  }
 
-  case object Sword extends Seed
+  case object Sword extends Seed {
+    override val asString: String = "Sword"
+  }
 
-  case object Cup extends Seed
+  case object Cup extends Seed {
+    override val asString: String = "Cup"
+  }
 
-  case object Coin extends Seed
+  case object Coin extends Seed {
+    override val asString: String = "Coin"
+  }
 
-  case object Club extends Seed
+  case object Club extends Seed {
+    override val asString: String = "Club"
+  }
+
+
 
   /**
     * This method is used to get all the available seeds
