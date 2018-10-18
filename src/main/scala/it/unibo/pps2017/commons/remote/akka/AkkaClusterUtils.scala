@@ -6,19 +6,22 @@ import com.typesafe.config.ConfigFactory
 object AkkaClusterUtils {
 
   def startSeedCluster: Unit = {
-    val ports = Set(2551, 2551)
+    val ports = Set("2551", "2552")
     ports foreach {
       startJoiningActorSystem("DiscoverySystem", _)
     }
   }
 
-  def startJoiningActorSystem(systemName: String, port: Int): ActorSystem = {
+  def startJoiningActorSystem(systemName: String, port: String): ActorSystem = {
     val config = ConfigFactory.parseString(
       s"""
         akka.remote.netty.tcp.port=$port
         akka.remote.artery.canonical.port=$port
         """).withFallback(ConfigFactory.load())
-    ActorSystem(systemName, config)
+    println("Config loaded")
+    val actorsystem = ActorSystem(systemName, config)
+    println("ActorSystem created")
+    actorsystem
   }
 
 }
