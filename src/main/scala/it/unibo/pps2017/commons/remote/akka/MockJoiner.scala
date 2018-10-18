@@ -5,7 +5,7 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 
 object MockJoiner extends App {
-  val actor = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed("192.168.5.6", "0")
+  val actor = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed("192.168.43.23", "0")
 
 
   val actorRef = actor.actorOf(Props[PongoActorResponder])
