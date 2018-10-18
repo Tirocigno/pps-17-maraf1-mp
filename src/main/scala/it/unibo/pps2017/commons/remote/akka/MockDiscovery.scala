@@ -8,7 +8,7 @@ object MockDiscovery extends App {
 
   AkkaClusterUtils.startSeedCluster
 
-  val actorsystem = AkkaClusterUtils.startJoiningActorSystem("0")
+  val actorsystem = AkkaClusterUtils.startJoiningActorSystemOnRandomPort()
 
   val actorRef = actorsystem.actorOf(Props[PongoActorDistributor], "Distributor")
 
