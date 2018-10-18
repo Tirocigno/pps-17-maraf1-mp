@@ -48,11 +48,12 @@ object AkkaClusterUtils {
     * @return an actorsystem joined to the cluster.
     */
   def startJoiningActorSystemWithRemoteSeed(host: String, port: String): ActorSystem = {
+    println(host)
     val config = ConfigFactory.parseString(
       s"""
         akka.remote.netty.tcp.port=$port
         akka.remote.artery.canonical.port=$port
-        cluster.seed-nodes = ["akka://Maraph1System@$host:2551","akka://Maraph1System@$host:2552"]
+        akka.cluster.seed-nodes = ["akka://Maraph1System@$host:2551","akka://Maraph1System@$host:2552"]
         """).withFallback(ConfigFactory.load())
     ActorSystem(STANDARD_SYSTEM_NAME, config)
   }

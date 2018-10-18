@@ -3,6 +3,8 @@ package it.unibo.pps2017.client.controller
 
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
+import it.unibo.pps2017.commons.remote.RestUtils.IPAddress
+import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.core.gui.PlayGameController
 
 sealed trait ClientController {
@@ -12,6 +14,15 @@ sealed trait ClientController {
   def setPlayGameController(guiController: PlayGameController)
 
   def setGameID(gameID: String)
+
+  /**
+    * Start an actorsystem which will join the seed disposed by the discovery.
+    *
+    * @param seedHost
+    */
+  def startActorSystem(seedHost: IPAddress)
+
+  def setPlayerName(playerName: String)
 
 }
 
@@ -24,12 +35,12 @@ object ClientController {
     *
     * @return the singleton clientController
     */
-  def getSingletonController: ClientControllerImpl = staticController
+  def getSingletonController: ClientController = staticController
 
-  class ClientControllerImpl() extends ClientController {
+  private class ClientControllerImpl() extends ClientController {
     val gameController = new GameController()
-    private val actorSystem = ActorSystem("ClientActorSystem")
-    gameController.createActor("player:14648511988945088", actorSystem)
+    var playerName: String = getRandomID
+    private var actorSystem: Option[ActorSystem] = None
 
     override def notifyError(throwable: Throwable): Unit = ???
 
@@ -37,6 +48,13 @@ object ClientController {
       gameController.playGameController = guiController
 
     override def setGameID(gameID: String): Unit = println("Game ID is: " + gameID)
+
+    override def startActorSystem(seedHost: IPAddress): Unit = {
+      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0"))
+      gameController.createActor("player:14648511988945088", actorSystem.get)
+    }
+
+    override def setPlayerName(playerName: String): Unit = this.playerName = playerName
 
   }
 }
