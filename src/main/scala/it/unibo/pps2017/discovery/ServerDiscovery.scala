@@ -5,6 +5,7 @@ import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.commons.remote.RestUtils.Port
+import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap}
@@ -19,6 +20,11 @@ trait ServerDiscovery extends ScalaVerticle{
     * This method deploy all the rest api exposed by the verticle.
     */
   def developAPI():Unit
+
+  /**
+    * Starts the seed for the cluster.
+    */
+  def startAkkaCluster() = AkkaClusterUtils.startSeedCluster()
 
 }
 
@@ -151,6 +157,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     val options = HttpServerOptions()
     options.setCompressionSupported(true)
       .setIdleTimeout(timeout)
+
 
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
