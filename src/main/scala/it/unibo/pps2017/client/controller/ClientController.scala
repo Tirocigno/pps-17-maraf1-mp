@@ -50,7 +50,7 @@ object ClientController {
     override def setGameID(gameID: String): Unit = println("Game ID is: " + gameID)
 
     override def startActorSystem(seedHost: IPAddress): Unit = {
-      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0"))
+      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", ""))
       gameController.createActor("player:14648511988945088", actorSystem.get)
     }
 
