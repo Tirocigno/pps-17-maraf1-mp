@@ -15,7 +15,9 @@ object AkkaClusterUtils {
     */
   def startSeedCluster(): Unit = {
     val ports = Set("2551", "2552")
-    ports foreach startJoiningActorSystem
+    ports foreach { port =>
+      startJoiningActorSystem(port)
+    }
   }
 
   /**
@@ -28,7 +30,6 @@ object AkkaClusterUtils {
     val config = ConfigFactory.parseString(
       s"""
         akka.remote.netty.tcp.port=$port
-        akka.remote.artery.canonical.port=$port
         """).withFallback(ConfigFactory.load())
     ActorSystem(STANDARD_SYSTEM_NAME, config)
   }
@@ -52,8 +53,7 @@ object AkkaClusterUtils {
     val config = ConfigFactory.parseString(
       s"""
         akka.remote.netty.tcp.port=$port
-        akka.remote.artery.canonical.port=$port
-        akka.cluster.seed-nodes = ["akka://Maraph1System@$host:2551","akka://Maraph1System@$host:2552"]
+        akka.cluster.seed-nodes = ["akka.tcp://Maraph1System@$host:2551","akka.tcp://Maraph1System@$host:2552"]
         """).withFallback(ConfigFactory.load())
     ActorSystem(STANDARD_SYSTEM_NAME, config)
   }
