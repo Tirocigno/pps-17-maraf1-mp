@@ -1,19 +1,10 @@
 
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
-import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
-<<<<<<< HEAD
-import it.unibo.pps2017.core.game.MatchManager.TEAM_MEMBERS_LIMIT
-import it.unibo.pps2017.core.player.Player
+
 import org.junit.runner.RunWith
-=======
- import org.junit.runner.RunWith
->>>>>>> feature/gameActor
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-
-import scala.collection.mutable
 
 @RunWith(classOf[JUnitRunner])
 class MatchManagerTest extends FunSuite {
