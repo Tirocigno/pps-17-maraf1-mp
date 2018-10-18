@@ -18,6 +18,7 @@ plugins {
     id 'scala'
     id 'org.scoverage' version '2.3.0'
     id 'com.github.maiflai.scalatest' version '0.22'
+    id 'application'
 }
 
 //group and version.
@@ -25,6 +26,7 @@ group 'it.unibo.pps2017'
 version '0.3.1'
 
 sourceCompatibility = 1.8
+
 
 //List of variables used in the file.
 ext {
@@ -35,7 +37,7 @@ ext {
     scalaVersion = "$scalaBinaryVersion.$scalaMinorVersion"
 
     //Version for Vertx.
-    vertxVersion = '3.5.3'
+    vertxVersion = '3.5.4'
 
     //Version for Akka.
     akkaVersion = '2.5.14'
@@ -94,10 +96,17 @@ dependencies {
     implementation "io.vertx:vertx-web-scala_2.12:$vertxVersion"
     implementation "io.vertx:vertx-web-client-scala_2.12:$vertxVersion"
 
+
     // Simple Logging Facade for Java
     implementation "org.slf4j:slf4j-api:$slf4jApiVersion"
     // Logback Classic
     implementation "ch.qos.logback:logback-classic:$logbackVersion"
+
+    // JSON4S Json Library
+    compile group: 'org.json4s', name: 'json4s-native_2.12', version: '3.6.0'
+    compile group: 'org.json4s', name: 'json4s-jackson_2.12', version: '3.6.0'
+
+
 
     //Basic support for Akka.
     implementation "com.typesafe.akka:akka-actor_$scalaMajor:$akkaVersion"
@@ -139,6 +148,8 @@ dependencies {
     //Dependency for sCoverage.
     scoverage "org.scoverage:scalac-scoverage-plugin_2.12:$sCoveragePluginVersion"
     scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
+
+
 }
 
 /**
@@ -158,4 +169,9 @@ testScoverage {
 defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
 
 
+mainClassName = 'it.unibo.pps2017.server.Runner'
 
+
+task stage {
+    dependsOn installDist
+}
