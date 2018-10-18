@@ -49,7 +49,7 @@ object ClientController {
     override def setPlayGameController(guiController: PlayGameController): Unit =
       gameController.playGameController = guiController
 
-    override def setGameID(gameID: String): Unit = println("Game ID is: " + gameID)
+    override def setGameID(gameID: String): Unit = gameController.joinPlayerToMatch(gameID)
 
     override def startActorSystem(seedHost: IPAddress): Unit = {
       val localIpAddress: String = InetAddress.getLocalHost.getHostAddress
