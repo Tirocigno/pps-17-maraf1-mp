@@ -1,8 +1,6 @@
 
 package it.unibo.pps2017.discovery
 
-import java.net.InetAddress
-
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
@@ -26,7 +24,7 @@ trait ServerDiscovery extends ScalaVerticle{
   /**
     * Starts the seed for the cluster.
     */
-  def startAkkaCluster(): Unit = AkkaClusterUtils.startSeedCluster(InetAddress.getLocalHost.getHostAddress)
+  def startAkkaCluster(ipAddress: String): Unit = AkkaClusterUtils.startSeedCluster(ipAddress)
 
 }
 
