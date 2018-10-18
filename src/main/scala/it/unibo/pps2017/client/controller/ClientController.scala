@@ -5,9 +5,12 @@ import java.net.InetAddress
 
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
-import it.unibo.pps2017.commons.remote.RestUtils.IPAddress
+import it.unibo.pps2017.client.model.remote.RestWebClient
+import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, Port, ServerContext}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.core.gui.PlayGameController
+import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
+
 
 sealed trait ClientController {
 
@@ -26,6 +29,10 @@ sealed trait ClientController {
 
   def setPlayerName(playerName: String)
 
+  def createRestClient(discoveryIP: String, discoveryPort: Port)
+
+  def sendMatchRequest(): Unit
+
 }
 
 object ClientController {
@@ -43,6 +50,7 @@ object ClientController {
     val gameController = new GameController()
     var playerName: String = getRandomID
     private var actorSystem: Option[ActorSystem] = None
+    var webClient: Option[RestWebClient] = None
 
     override def notifyError(throwable: Throwable): Unit = ???
 
@@ -58,6 +66,15 @@ object ClientController {
     }
 
     override def setPlayerName(playerName: String): Unit = this.playerName = playerName
+
+    override def createRestClient(discoveryIP: String, discoveryPort: Port): Unit = {
+      webClient = Some(RestWebClient(ServerContext(discoveryIP, discoveryPort)))
+    }
+
+    override def sendMatchRequest(): Unit = {
+      val map = Map(FoundGameRestAPI$.meParamKey -> playerName)
+      webClient.get.callRemoteAPI(FoundGameRestAPI$, Some(map))
+    }
 
   }
 }

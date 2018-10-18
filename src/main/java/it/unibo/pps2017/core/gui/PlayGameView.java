@@ -25,6 +25,8 @@ public class PlayGameView extends Application {
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
             ClientController$.MODULE$.getSingletonController().setPlayGameController(gameController);
+            ClientController$.MODULE$.getSingletonController().startActorSystem("SEEDHOSTTORUN");
+            ClientController$.MODULE$.getSingletonController().startActorSystem("SEEDHOSTTORUN");
 			primaryStage.show();
 
 
