@@ -31,13 +31,13 @@ object Dispatcher {
 }
 
 
-class Dispatcher extends ScalaVerticle {
+case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
-  implicit val akkaSystem: ActorSystem = akka.actor.ActorSystem()
+  implicit val akkaSystem: ActorSystem = actorSystem
   implicit val formats: DefaultFormats.type = DefaultFormats
 
 
-  val lobbyManager: ActorRef = ActorSystem("Lobby").actorOf(Props[LobbyActor])
+  val lobbyManager: ActorRef = akkaSystem.actorOf(Props[LobbyActor])
 
   override def start(): Unit = {
 

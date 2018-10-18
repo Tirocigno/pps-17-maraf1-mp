@@ -5,7 +5,7 @@ import java.lang.Thread.sleep
 
 import io.vertx.scala.core.Vertx
 import it.unibo.pps2017.server.controller.LobbyFoundTest.{FOUND_GAME_URI, ME_PARAM, PARTNER_PARAM, WAIT_TIMEOUT}
-import it.unibo.pps2017.server.model.{GameFound, PostRequest}
+import it.unibo.pps2017.server.model.{ClusterUtils, GameFound, PostRequest}
 import org.json4s._
 import org.json4s.jackson.Serialization.read
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
@@ -22,7 +22,7 @@ class LobbyFoundTest extends FunSuite with BeforeAndAfterEach {
 
   implicit val formats: DefaultFormats.type = DefaultFormats
 
-  val verticle = new Dispatcher()
+  val verticle = Dispatcher(ClusterUtils())
   var verticleId: Option[String] = None
   var lobbyId: String = _
   val player1 = "player1"
