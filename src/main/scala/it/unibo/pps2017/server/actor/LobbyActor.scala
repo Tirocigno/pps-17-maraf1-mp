@@ -2,10 +2,8 @@
 package it.unibo.pps2017.server.actor
 
 import akka.actor.{Actor, ActorRef}
-import akka.cluster.Cluster
 import akka.cluster.pubsub.DistributedPubSub
 import it.unibo.pps2017.core.game.SimpleTeam
-import it.unibo.pps2017.core.player.DistributedCard
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{IncreaseServerMatchesAPI, RegisterMatchAPI}
 import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model._
@@ -18,7 +16,6 @@ import scala.collection.mutable.ListBuffer
 //noinspection ScalaStyle
 class LobbyActor extends Actor {
   implicit val formats: DefaultFormats.type = DefaultFormats
-  import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 
   val mediator: ActorRef = DistributedPubSub(context.system).mediator
 

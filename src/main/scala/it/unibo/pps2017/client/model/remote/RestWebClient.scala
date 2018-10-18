@@ -11,8 +11,6 @@ import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
 import it.unibo.pps2017.server.model.{GameFound, GetRequest, PostRequest, ServerContextEncoder}
-import it.unibo.pps2017.utils.remote.RestAPI
-import it.unibo.pps2017.utils.remote.exceptions.NotValidHttpMethodException
 import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.Future

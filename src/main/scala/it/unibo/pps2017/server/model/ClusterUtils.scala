@@ -9,8 +9,9 @@ object ClusterUtils {
 
   /**
     * Join the cluster and return the ActorSystem.
+    *
     * @return
-    *         the ActorSystem.
+    * the ActorSystem.
     */
   def apply(): ActorSystem = {
 

@@ -2,6 +2,7 @@ package it.unibo.pps2017.server.controller
 
 import java.lang.Thread.sleep
 
+import akka.actor.ActorSystem
 import io.vertx.scala.core.Vertx
 import it.unibo.pps2017.server.controller.LobbyFoundTest.{FOUND_GAME_URI, ME_PARAM, PARTNER_PARAM, WAIT_TIMEOUT}
 import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
@@ -22,7 +23,7 @@ class LobbyFoundTest extends FunSuite with BeforeAndAfterEach {
 
   implicit val formats: DefaultFormats.type = DefaultFormats
 
-  val verticle = new Dispatcher()
+  val verticle = new Dispatcher(ActorSystem("Bombosystem"))
   var verticleId: Option[String] = None
   var lobbyId: String = _
   val player1 = "player1"

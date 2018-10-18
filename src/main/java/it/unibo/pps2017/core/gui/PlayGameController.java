@@ -1,10 +1,6 @@
 package it.unibo.pps2017.core.gui;
 
-import java.io.File;
-import java.util.*;
-import java.util.Map.Entry;
-
-
+import it.unibo.pps2017.client.controller.actors.playeractor.GameController;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ScaleTransition;
@@ -18,7 +14,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import it.unibo.pps2017.client.controller.actors.playeractor.GameController;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class PlayGameController implements PlayGame {
 

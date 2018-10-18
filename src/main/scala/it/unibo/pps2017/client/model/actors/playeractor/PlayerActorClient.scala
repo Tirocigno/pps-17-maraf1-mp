@@ -37,8 +37,8 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     case DistributedCard(cards, player) =>
       if (this.user.eq(player))
         controller.updateGUI(DistributedCard(cards, player))
-        cardArrived = true
-        unstashAll()
+      cardArrived = true
+      unstashAll()
 
     case SelectBriscola(player) =>
       if (this.user.eq(player))
@@ -102,11 +102,6 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       mediator ! Subscribe(id, self)
   }
 
-  override
-  def getUsername: String = {
-    user
-  }
-
   private def orderPlayersList(playersList: ListBuffer[String]): ListBuffer[String] = {
     val tempList = playersList ++ playersList
     var searchPlayer = START_SEARCH
@@ -122,5 +117,10 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       }
     }
     orderedList
+  }
+
+  override
+  def getUsername: String = {
+    user
   }
 }
