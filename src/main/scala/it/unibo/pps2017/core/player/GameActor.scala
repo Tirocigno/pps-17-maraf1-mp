@@ -20,7 +20,7 @@ import scala.collection.mutable
 import scala.util.Random
 
 
-class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGameEnd:()=>Unit) extends Actor with Match with ActorLogging {
+class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameEnd:()=>Unit) extends Actor with Match with ActorLogging {
   type ActorName = String
 
   var currentBriscola: Option[Seed] = None
@@ -43,16 +43,18 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
   override def preStart(): Unit = {
     cluster.subscribe(self, classOf[MemberUp])
     mediator = DistributedPubSub(context.system).mediator
-    mediator ! Subscribe(TOPIC_NAME, self)
+    mediator ! Subscribe(topicName, self)
 
     team1.getMembers.foreach(player =>{
       //addPlayer(player,RANDOM_TEAM)
-      //actors += player.getUsername()
+      //actorReferences += player.getUsername()
+      actors += player
     })
 
     team2.getMembers.foreach(player =>{
       //addPlayer(player,RANDOM_TEAM)
-      //actors += player.getUsername()
+      //actorReferences += player.getUsername()
+      actors += player
     })
 
     var actorReferences: List[ActorName] = List[ActorName]()
@@ -77,13 +79,13 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
 
     case BriscolaChosen(seed) => {
       setBriscola(seed)
-      mediator ! Publish(TOPIC_NAME, NotifyBriscolaChosen(seed))
+      mediator ! Publish(topicName, NotifyBriscolaChosen(seed))
     }
 
     case BriscolaAck =>{
       numAck = numAck + 1
       if(numAck==TOT_PLAYERS){
-        mediator ! Publish(TOPIC_NAME, Turn(nextHandStarter.get, setEnd, true))
+        mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, true))
         startTimer()
         numAck = 0
       }
@@ -99,13 +101,13 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
         if(gameCycle.isLast){
           onHandEnd(defineTaker(cardsOnTable))
         }
-        mediator ! Publish(TOPIC_NAME, Turn(gameCycle.next(),setEnd, gameCycle.isFirst))
+        mediator ! Publish(topicName, Turn(gameCycle.next(),setEnd, gameCycle.isFirst))
         numAck = 0
       }
     }
 
     case ClickedCommand(command, player) => {
-      mediator ! Publish(TOPIC_NAME, NotifyCommandChosen(command,player))
+      mediator ! Publish(topicName, NotifyCommandChosen(command,player))
     }
   }
 
@@ -117,7 +119,7 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
         tmp = tmp + 1
             if(tmp == TURN_TIME_SEC) {
               val randCard: Card = forcePlay(nextHandStarter.get)
-              mediator ! Publish(TOPIC_NAME,ForcedCardPlayed(cardToPath(randCard),nextHandStarter.get))
+              mediator ! Publish(topicName,ForcedCardPlayed(cardToPath(randCard),nextHandStarter.get))
             }
       }
     }
@@ -191,7 +193,7 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
     var i: Int = 0
     deck.distribute().foreach(hand => {
       actors.foreach(player => {
-        mediator ! Publish(TOPIC_NAME, DistributedCard(allCardsToPath(hand),player))
+        mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand),player))
       })
       if (firstHand && isFirstPlayer(hand)) {
           nextHandStarter = Some(getPlayers(i))
@@ -199,7 +201,7 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
       }
       i += 1
     })
-    mediator ! Publish(TOPIC_NAME,SelectBriscola(nextHandStarter.get))
+    mediator ! Publish(topicName,SelectBriscola(nextHandStarter.get))
 
   }
 
@@ -260,20 +262,20 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
         onCardPlayed(card, player)
       }
       else {
-        mediator ! Publish(TOPIC_NAME, CardOk(false, player))
+        mediator ! Publish(topicName, CardOk(false, player))
       }
     case None =>
       onCardPlayed(card, player)
   }
 
   private def onCardPlayed(card: Card, player: PlayerActor): Unit = {
-    mediator ! Publish(TOPIC_NAME, CardOk(true, player))
+    mediator ! Publish(topicName, CardOk(true, player))
 
     if (gameCycle.isFirst) onFirstCardOfHand(card)
 
     cardsOnTable += ((card, gameCycle.getCurrent))
     cardPlayed = true
-    mediator ! Publish(TOPIC_NAME,PlayedCard(cardToPath(card), player))
+    mediator ! Publish(topicName,PlayedCard(cardToPath(card), player))
     cardsInHand.get(player).get -= card
   }
 
@@ -297,10 +299,10 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
       case _ => {
         if(team1.getScore > team2.getScore){
-          mediator ! Publish(TOPIC_NAME, PartialGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
+          mediator ! Publish(topicName, PartialGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
         }
         else{
-          mediator ! Publish(TOPIC_NAME, PartialGameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore))
+          mediator ! Publish(topicName, PartialGameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore))
         }
       }
     }
@@ -341,7 +343,7 @@ class GameActor(val TOPIC_NAME: String, val team1: Team, val team2: Team, onGame
 
   def notifyWinner(team: Team): Unit = {
     gameEnd = true
-    mediator ! Publish(TOPIC_NAME, FinalGameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore))
+    mediator ! Publish(topicName, FinalGameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore))
     onGameEnd()
   }
 
