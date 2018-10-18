@@ -2,6 +2,7 @@
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.core.player.{PlayerActor}
+import it.unibo.pps2017.core.player.GameActor._
 
 
 
@@ -18,7 +19,7 @@ case class GameCycle(team1: Team,
                      team2: Team) {
 
 
-  if (team1.numberOfMembers != MatchManager.TEAM_MEMBERS_LIMIT || team2.numberOfMembers != MatchManager.TEAM_MEMBERS_LIMIT) {
+  if (team1.numberOfMembers != TEAM_MEMBERS_LIMIT || team2.numberOfMembers != TEAM_MEMBERS_LIMIT) {
     throw TeamNotReadyException()
   }
 
@@ -112,7 +113,7 @@ case class GameCycle(team1: Team,
     * @return
     * The next player index in the queue.
     */
-  private def getNextIndex: Int = (tokenIndex + 1) % MatchManager.MAX_PLAYER_NUMBER
+  private def getNextIndex: Int = (tokenIndex + 1) % MAX_PLAYER_NUMBER
 
   /**
     * Calculate the previous element of the queue.
@@ -123,7 +124,7 @@ case class GameCycle(team1: Team,
     * The previous player.
     */
   private def getPrevOf(player: PlayerActor): PlayerActor = {
-    val prevIndex: Int = (MatchManager.MAX_PLAYER_NUMBER + (getPlayers.indexOf(player) - 1)) % MatchManager.MAX_PLAYER_NUMBER
+    val prevIndex: Int = (MAX_PLAYER_NUMBER + (getPlayers.indexOf(player) - 1)) % MAX_PLAYER_NUMBER
 
     getPlayers(prevIndex)
   }

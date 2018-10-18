@@ -1,7 +1,7 @@
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.{ PlayerActor}
+import it.unibo.pps2017.core.player.GameActor._
+import it.unibo.pps2017.core.player.{FullTeamException, PlayerActor}
 
 import scala.collection.mutable.ListBuffer
 
@@ -22,7 +22,7 @@ case class Team(var name: String,
     *
     * @param newPlayer
     * The player who join the team.
-    * @throws it.unibo.pps2017.core.game.FullTeamException
+    * @throws FullTeamException
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
