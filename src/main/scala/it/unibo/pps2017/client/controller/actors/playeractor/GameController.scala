@@ -2,7 +2,7 @@
 package it.unibo.pps2017.client.controller.actors.playeractor
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import it.unibo.pps2017.client.controller.ActorController
+import it.unibo.pps2017.client.controller.MatchController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient
@@ -11,7 +11,7 @@ import it.unibo.pps2017.core.gui.PlayGameController
 
 import scala.collection.JavaConverters._
 
-class GameController extends ActorController {
+class GameController extends MatchController {
 
   var playGameController: PlayGameController = _
   var currentActorRef: ActorRef = _
