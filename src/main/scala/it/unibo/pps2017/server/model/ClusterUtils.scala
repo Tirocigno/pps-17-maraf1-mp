@@ -20,7 +20,6 @@ object ClusterUtils {
         val config = ConfigFactory.parseString(
           s"""
         akka.remote.netty.tcp.port=$port
-        akka.remote.artery.canonical.port=$port
         """).withFallback(ConfigFactory.load(AKKA_CONFIG_FILE))
 
         ActorSystem(systemName, config)
