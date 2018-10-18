@@ -1,8 +1,9 @@
 
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.core.game.MatchManager._
-import it.unibo.pps2017.core.player.Player
+
+import it.unibo.pps2017.core.player.GameActor._
+import it.unibo.pps2017.core.player.{FullTeamException, PlayerActor}
 import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable.ListBuffer
@@ -16,7 +17,7 @@ sealed trait BaseTeam[A] {
     *
     * @param newPlayer
     * The player who join the team.
-    * @throws it.unibo.pps2017.core.game.FullTeamException
+    * @throws FullTeamException
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
@@ -105,20 +106,22 @@ sealed trait BaseTeam[A] {
   * @param members
   * Members of the team. Limited at max 2.
   */
+
 case class Team(var name: String = Random.nextInt().toString,
-                private var members: ListBuffer[Player] = ListBuffer(),
-                private var score: Int = 0) extends BaseTeam[Player] {
+                private var members: ListBuffer[PlayerActor] = ListBuffer(),
+                private var score: Int = 0) extends BaseTeam[PlayerActor] {
+
 
   /**
     * Add a player to the team.
     *
     * @param newPlayer
     * The player who join the team.
-    * @throws it.unibo.pps2017.core.game.FullTeamException
+    * @throws FullTeamException
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
-  def addPlayer(newPlayer: Player): Unit = {
+  def addPlayer(newPlayer: PlayerActor): Unit = {
     if (members.length >= TEAM_MEMBERS_LIMIT) {
       throw FullTeamException()
     }
@@ -133,7 +136,7 @@ case class Team(var name: String = Random.nextInt().toString,
     * @return
     * the first player of the team.
     */
-  def firstMember: Option[Player] = members.headOption
+  def firstMember: Option[PlayerActor] = members.headOption
 
   /**
     * Return the second player of the team.
@@ -141,7 +144,7 @@ case class Team(var name: String = Random.nextInt().toString,
     * @return
     * the second player of the team.
     */
-  def secondMember: Option[Player] = members.lastOption
+  def secondMember: Option[PlayerActor] = members.lastOption
 
   /**
     * Return the actual number of players in the team.
@@ -157,7 +160,7 @@ case class Team(var name: String = Random.nextInt().toString,
     * @return
     * the members of the team
     */
-  def getMembers: Seq[Player] = members
+  def getMembers: Seq[PlayerActor] = members
 
   /**
     * Add set's point to the team score.
@@ -202,13 +205,13 @@ case class Team(var name: String = Random.nextInt().toString,
     val app: ListBuffer[String] = ListBuffer()
     firstMember match {
       case Some(member) =>
-        app += member.userName
+        app += member.username
       case None =>
     }
 
     secondMember match {
       case Some(member) =>
-        app += member.userName
+        app += member.username
       case None =>
     }
 
@@ -224,7 +227,7 @@ case class SimpleTeam(private var members: ListBuffer[String] = ListBuffer(),
     *
     * @param newPlayer
     * The player who join the team.
-    * @throws it.unibo.pps2017.core.game.FullTeamException
+    * @throws FullTeamException
     * If the team has already 2 members.
     */
   override def addPlayer(newPlayer: String): Unit = {
