@@ -13,10 +13,10 @@ object AkkaClusterUtils {
   /**
     * Create the two nodes for the cluster.
     */
-  def startSeedCluster(): Unit = {
+  def startSeedCluster(currentHost: String): Unit = {
     val ports = Set("2551", "2552")
     ports foreach { port =>
-      startJoiningActorSystem(port)
+      startJoiningActorSystem(port, currentHost)
     }
   }
 
@@ -26,12 +26,12 @@ object AkkaClusterUtils {
     * @param port the port on which the cluster will be run.
     * @return an actorsystem joined to the cluster.
     */
-  def startJoiningActorSystem(port: String): ActorSystem = {
+  def startJoiningActorSystem(port: String, currentHost: String): ActorSystem = {
     val config = ConfigFactory.parseString(
       s"""
-        akka.remote.netty.tcp.hostname = "192.168.5.5"
+        akka.remote.netty.tcp.hostname = "$currentHost"
         akka.remote.netty.tcp.port=$port
-        akka.cluster.seed-nodes = ["akka.tcp://Maraph1System@192.168.5.5:2551","akka.tcp://Maraph1System@192.168.5.5:2552"]
+        akka.cluster.seed-nodes = ["akka.tcp://Maraph1System@$currentHost:2551","akka.tcp://Maraph1System@$currentHost:2552"]
         """).withFallback(ConfigFactory.load())
     ActorSystem(STANDARD_SYSTEM_NAME, config)
   }
@@ -44,13 +44,12 @@ object AkkaClusterUtils {
     * @param port the port on which the cluster will be run.
     * @return an actorsystem joined to the cluster.
     */
-  def startJoiningActorSystemWithRemoteSeed(host: String, port: String, myIP: String): ActorSystem = {
-    println(host)
+  def startJoiningActorSystemWithRemoteSeed(remoteHost: String, port: String, myIP: String): ActorSystem = {
     val config = ConfigFactory.parseString(
       s"""
         akka.remote.netty.tcp.hostname = "$myIP"
         akka.remote.netty.tcp.port=$port
-        akka.cluster.seed-nodes = ["akka.tcp://Maraph1System@$host:2551","akka.tcp://Maraph1System@$host:2552"]
+        akka.cluster.seed-nodes = ["akka.tcp://Maraph1System@$remoteHost:2551","akka.tcp://Maraph1System@$remoteHost:2552"]
         """).withFallback(ConfigFactory.load())
     ActorSystem(STANDARD_SYSTEM_NAME, config)
   }
