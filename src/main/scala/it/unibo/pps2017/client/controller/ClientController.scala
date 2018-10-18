@@ -1,6 +1,8 @@
 
 package it.unibo.pps2017.client.controller
 
+import java.net.InetAddress
+
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.commons.remote.RestUtils.IPAddress
@@ -50,8 +52,9 @@ object ClientController {
     override def setGameID(gameID: String): Unit = println("Game ID is: " + gameID)
 
     override def startActorSystem(seedHost: IPAddress): Unit = {
-      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", ""))
-      gameController.createActor("player:14648511988945088", actorSystem.get)
+      val localIpAddress: String = InetAddress.getLocalHost.getHostAddress
+      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", localIpAddress))
+      gameController.createActor(this.playerName, actorSystem.get)
     }
 
     override def setPlayerName(playerName: String): Unit = this.playerName = playerName

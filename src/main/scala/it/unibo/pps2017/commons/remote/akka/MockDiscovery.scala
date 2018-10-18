@@ -3,13 +3,12 @@ package it.unibo.pps2017.commons.remote.akka
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
-import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils.STANDARD_SYSTEM_NAME
 
 object MockDiscovery extends App {
 
-  AkkaClusterUtils.startSeedCluster
+  AkkaClusterUtils.startSeedCluster("mockdiscovery")
 
-  val actorsystem:ActorSystem =  ActorSystem(STANDARD_SYSTEM_NAME)//AkkaClusterUtils.startJoiningActorSystemOnRandomPort("192.168.5.5")
+  val actorsystem: ActorSystem = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed("", "0", "0")
 
   val actorRef = actorsystem.actorOf(Props[PongoActorDistributor], "Distributor")
 
