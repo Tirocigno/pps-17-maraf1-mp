@@ -29,7 +29,9 @@ object AkkaClusterUtils {
   def startJoiningActorSystem(port: String): ActorSystem = {
     val config = ConfigFactory.parseString(
       s"""
+        akka.remote.netty.tcp.hostname = "192.168.5.5"
         akka.remote.netty.tcp.port=$port
+        akka.cluster.seed-nodes = ["akka.tcp://Maraph1System@192.168.5.5:2551","akka.tcp://Maraph1System@192.168.5.5:2552"]
         """).withFallback(ConfigFactory.load())
     ActorSystem(STANDARD_SYSTEM_NAME, config)
   }
