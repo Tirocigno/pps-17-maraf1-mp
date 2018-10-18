@@ -1,5 +1,6 @@
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.ClientController;
 import it.unibo.pps2017.client.controller.ClientController$;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -24,9 +25,13 @@ public class PlayGameView extends Application {
 			primaryStage.setFullScreen(true);
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
-            ClientController$.MODULE$.getSingletonController().setPlayGameController(gameController);
-            ClientController$.MODULE$.getSingletonController().startActorSystem("SEEDHOSTTORUN");
-            ClientController$.MODULE$.getSingletonController().startActorSystem("SEEDHOSTTORUN");
+            ClientController c =
+                    ClientController$.MODULE$.getSingletonController();
+            c.setPlayGameController(gameController);
+            gameController.setGameController(c.getGameController());
+            c.startActorSystem("SEEDHOSTTORUN");
+            c.createRestClient("IP_toRunOn", 2000);
+            c.sendMatchRequest();
 			primaryStage.show();
 
 

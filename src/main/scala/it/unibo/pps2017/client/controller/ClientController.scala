@@ -33,6 +33,8 @@ sealed trait ClientController {
 
   def sendMatchRequest(): Unit
 
+  def getGameController: GameController
+
 }
 
 object ClientController {
@@ -75,6 +77,8 @@ object ClientController {
       val map = Map(FoundGameRestAPI$.meParamKey -> playerName)
       webClient.get.callRemoteAPI(FoundGameRestAPI$, Some(map))
     }
+
+    override def getGameController: GameController = gameController
 
   }
 }

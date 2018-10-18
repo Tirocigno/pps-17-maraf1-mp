@@ -99,6 +99,10 @@ public class PlayGameController implements PlayGame {
         this.createListWithCardsId();  // creo la lista degli id delle carte del player
     }
 
+    public void setGameController(final GameController controller) {
+        this.gameController = controller;
+    }
+
 
     /**
      * This method permits to view the command that first user selected.
