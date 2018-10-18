@@ -114,6 +114,9 @@ dependencies {
     implementation "com.typesafe.akka:akka-cluster-tools_$scalaMajor:$akkaVersion"
 
 
+    compile group: 'com.typesafe.akka', name: 'akka-cluster-metrics_2.12', version: '2.5.17'
+
+
     //Dependency for Junit.
     testImplementation "junit:junit:$jUnitVersion"
 
