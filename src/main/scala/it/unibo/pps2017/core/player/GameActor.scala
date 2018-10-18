@@ -5,8 +5,8 @@ import java.util.TimerTask
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
+import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Subscribe}
-import akka.cluster.pubsub.{DistributedPubSub, DistributedPubSubMediator}
 import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
@@ -129,33 +129,7 @@ class GameActor(val topicName: String, val team1: Team, val team2: Team, onGameE
     task.cancel()
   }
 
-  override def addPlayer(newPlayer: ClientGameActor, team: String = RANDOM_TEAM): Unit = {
-    try {
-      addPlayerToTeam(newPlayer, team)
-    } catch {
-      case teamNotFoundException: TeamNotFoundException => println("EXCEPTION /" + teamNotFoundException.message)
-      case fullTeamException: FullTeamException => println("EXCEPTION /" + fullTeamException.message)
-    }
-  }
 
-  @throws(classOf[FullTeamException])
-  @throws(classOf[TeamNotFoundException])
-  private def addPlayerToTeam(player: ClientGameActor, teamName: String = RANDOM_TEAM): Unit = {
-    if (teamName.equals(RANDOM_TEAM)) {
-      try {
-        team1.addPlayer(player)
-      } catch {
-        case _: FullTeamException =>
-          try {
-            team2.addPlayer(player)
-          } catch {
-            case _: FullTeamException => throw FullTeamException()
-          }
-      }
-    } else {
-      getTeamForName(teamName).addPlayer(player)
-    }
-  }
 
   @throws(classOf[TeamNotFoundException])
   private def getTeamForName(teamName: String): Team = {

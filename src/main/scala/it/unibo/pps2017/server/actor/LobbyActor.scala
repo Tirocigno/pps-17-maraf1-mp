@@ -1,9 +1,10 @@
 
 package it.unibo.pps2017.server.actor
 
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Actor, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import it.unibo.pps2017.core.game.SimpleTeam
+import it.unibo.pps2017.core.player.GameActor
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{IncreaseServerMatchesAPI, RegisterMatchAPI}
 import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model._
@@ -170,7 +171,7 @@ class LobbyActor extends Actor {
     }
 
     //TODO GameActor creating
-    //context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, onGameEnd))
+    context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, onGameEnd))
 
 
     PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {

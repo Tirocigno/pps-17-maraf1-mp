@@ -5,15 +5,6 @@ import it.unibo.pps2017.core.deck.cards.{Card, Seed}
 
 
 trait Match {
-  /**
-    * Add a player to the match.
-    *
-    * @param newPlayer
-    * new player to add.
-    * @param team
-    * Team name to add the player. Not specify for random imputation.
-    */
-  def addPlayer(newPlayer: ClientGameActor, team: String): Unit
 
   /**
     * Starting the game.
