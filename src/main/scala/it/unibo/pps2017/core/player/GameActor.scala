@@ -338,6 +338,13 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
 }
 
+final case class FullTeamException(message: String = "The team has reached the maximum number of players",
+                                   private val cause: Throwable = None.orNull) extends Exception(message, cause)
+
+final case class TeamNotFoundException(message: String = "Team not found in this match",
+                                       private val cause: Throwable = None.orNull) extends Exception(message, cause)
+
+
 object GameActor {
   val TOT_PLAYERS: Int = 4
   val TURN_TIME_SEC: Int = 10
