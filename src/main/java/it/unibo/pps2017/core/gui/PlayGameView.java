@@ -25,12 +25,11 @@ public class PlayGameView extends Application {
 			primaryStage.setFullScreen(true);
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
-            ClientController c =
-                    ClientController$.MODULE$.getSingletonController();
+            ClientController c = ClientController$.MODULE$.getSingletonController();
             c.setPlayGameController(gameController);
             gameController.setGameController(c.getGameController());
-            c.startActorSystem("SEEDHOSTTORUN");
-            c.createRestClient("IP_toRunOn", 2000);
+            c.startActorSystem("192.168.1.9");
+            c.createRestClient("192.168.1.9", 2000);
             c.sendMatchRequest();
 			primaryStage.show();
 

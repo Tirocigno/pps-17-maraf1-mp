@@ -29,6 +29,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>
+      System.out.println("ARRIVATI I QUATTRO PLAYERS")
       this.gameActor = sender()
       val finalList: ListBuffer[String] = this.orderPlayersList(playersList)
       controller.updateGUI(PlayersRef(finalList))
@@ -59,8 +60,9 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     case ClickedCardActualPlayer(index) =>
       gameActor ! ClickedCard(index, user)
 
-    case CardOk(correctClickedCard) =>
-      controller.updateGUI(CardOk(correctClickedCard))
+    case CardOk(correctClickedCard, player) =>
+      if (this.user.eq(player))
+        controller.updateGUI(CardOk(correctClickedCard, player))
 
     case ClickedCommandActualPlayer(command) =>
       gameActor ! ClickedCommand(command, user)
@@ -100,6 +102,9 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     case IdChannelPublishSubscribe(id) =>
       val mediator = DistributedPubSub(context.system).mediator
       mediator ! Subscribe(id, self)
+
+    case  m @ _ =>
+      System.out.println(m)
   }
 
   private def orderPlayersList(playersList: ListBuffer[String]): ListBuffer[String] = {

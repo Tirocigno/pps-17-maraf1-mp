@@ -54,7 +54,9 @@ object ClientController {
     private var actorSystem: Option[ActorSystem] = None
     var webClient: Option[RestWebClient] = None
 
-    override def notifyError(throwable: Throwable): Unit = ???
+    override def notifyError(throwable: Throwable): Unit = {
+      throwable.printStackTrace()
+    }
 
     override def setPlayGameController(guiController: PlayGameController): Unit =
       gameController.playGameController = guiController
@@ -63,7 +65,7 @@ object ClientController {
 
     override def startActorSystem(seedHost: IPAddress): Unit = {
       val localIpAddress: String = InetAddress.getLocalHost.getHostAddress
-      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", localIpAddress))
+      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", "192.168.1.5"))
       gameController.createActor(this.playerName, actorSystem.get)
     }
 
