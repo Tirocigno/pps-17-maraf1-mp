@@ -6,9 +6,9 @@ import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 
 object MockDiscovery extends App {
 
-  AkkaClusterUtils.startSeedCluster("mockdiscovery")
+  AkkaClusterUtils.startSeedCluster("127.0.0.1")
 
-  val actorsystem: ActorSystem = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed("", "0", "0")
+  val actorsystem: ActorSystem = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed("127.0.0.1", "0", "127.0.0.1")
 
   val actorRef = actorsystem.actorOf(Props[PongoActorDistributor], "Distributor")
 

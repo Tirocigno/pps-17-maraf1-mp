@@ -13,3 +13,4 @@
 | | Social Game Gui | ? | 5 | ?|
 |**As a user, i want add my friends**|||||
 | | Create a list of all online friends | Naldini | 1 | ?|
+| | Send a request of friendship to an online player| Naldini | 4 | ?|
