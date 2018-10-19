@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
 
 //Script for sCoverage task.
 buildscript {
@@ -9,6 +10,7 @@ buildscript {
     dependencies {
         classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.3.0"
         classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.22"
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.2"
     }
 }
 //List of plugins to apply.
@@ -71,10 +73,20 @@ ext {
 
 //create a single Jar with all dependencies
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'it.unibo.pps2017.discovery.DiscoveryMain'
+//jar {
+//    manifest {
+//        attributes 'Main-Class': 'it.unibo.pps2017.commons.remote.akka.MockDiscovery'
+//    }
+//}
+
+shadowJar {
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
+        resource = 'reference.conf'
     }
+}
+
+runShadow {
+    mainClassName = 'it.unibo.pps2017.commons.remote.akka.MockDiscovery'
 }
 
 repositories {
@@ -180,7 +192,7 @@ testScoverage {
 
 defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
 
-
+//TO CHANGE FOR SHADOWJAR
 mainClassName = 'it.unibo.pps2017.server.Runner'
 
 
