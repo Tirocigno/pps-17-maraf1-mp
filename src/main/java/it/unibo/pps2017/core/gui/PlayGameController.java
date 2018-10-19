@@ -197,6 +197,7 @@ public class PlayGameController implements PlayGame {
             /* mi salvo le carte in ordine nella mappa */
             indexOfMyCards.put(idUserCards.get(cardIndex), firstUserCards.get(cardIndex));
 
+            System.out.println(firstUserCards.get(cardIndex));
             switch (cardIndex) {
                 case 0:
                     this.firstCard.setImage(userCard);
