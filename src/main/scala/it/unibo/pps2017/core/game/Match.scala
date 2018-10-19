@@ -34,7 +34,7 @@ trait Match {
     * @param player
     * The played that played the card
     */
-  def isCardOk(card: Card, player: ClientGameActor): Unit
+  def isCardOk(card: Card, player: String): Unit
 
   /**
     * Play a random card in the hand of the player.
@@ -44,7 +44,7 @@ trait Match {
     * @return
     * A random card among those that the player can drop.
     */
-  def forcePlay(player: ClientGameActor): Card
+  def forcePlay(player: String): Card
 
   /**
     * If set is end return the score of teams, and a true if the game is end, false otherwise.
