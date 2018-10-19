@@ -7,7 +7,6 @@ import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Subscribe}
-import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
@@ -40,6 +39,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   var numAck: Int = 0
 
   override def preStart(): Unit = {
+    println("GAME ACTOR -> Starting..")
     cluster.subscribe(self, classOf[MemberUp])
     mediator = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(topicName, self)
@@ -52,8 +52,10 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       actors += player
     })
 
+    println("GAME ACTOR Actor system -> " + context.system)
+    println("GAME ACTOR -> Topic : " + topicName)
     mediator ! Publish(topicName,PlayersRef(actors))
-
+    println("GAME ACTOR -> Start done!!!")
   }
 
   override def postStop(): Unit = cluster.unsubscribe(self)
@@ -63,7 +65,9 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     case PlayersRefAck =>
       numAck = numAck +1
       if(numAck==TOT_PLAYERS) {
+        println("GAME ACTOR -> qui parte il gioco!!")
         onFullTable()
+
       }
       numAck = 0
 
@@ -99,6 +103,9 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
     case ClickedCommand(command, player) =>
       mediator ! Publish(topicName, NotifyCommandChosen(command,player))
+
+    case m@ _ =>
+      println("MESSAGGIO -> " + m)
   }
 
 

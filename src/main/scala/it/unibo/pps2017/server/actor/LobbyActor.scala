@@ -1,10 +1,11 @@
 
 package it.unibo.pps2017.server.actor
 
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Actor, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import it.unibo.pps2017.core.game.SimpleTeam
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{IncreaseServerMatchesAPI, RegisterMatchAPI}
+import it.unibo.pps2017.core.player.GameActor
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{IncreaseServerMatchesAPI, RegisterMatchAPI, StandardParameters}
 import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model._
 import org.json4s.DefaultFormats
@@ -143,7 +144,9 @@ class LobbyActor extends Actor {
   }
 
   private def createActorAndNotifyTheDiscovery(game: Lobby): Unit = {
-    val onGameEnd: Unit = {
+
+    //TODO GameActor creating
+    context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, () => {
       PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
         case Some(res) => try {
           val msgFromDiscovery = read[Message](res)
@@ -167,10 +170,7 @@ class LobbyActor extends Actor {
       }, cause => {
         println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
       }, None, Some(Dispatcher.DISCOVERY_PORT))
-    }
-
-    //TODO GameActor creating
-    //context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, onGameEnd))
+    })))
 
 
     PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
@@ -182,7 +182,7 @@ class LobbyActor extends Actor {
         case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
       }
       case None =>
-    }, cause => {}, Some(Map("matchID" -> game.id)), Some(Dispatcher.DISCOVERY_PORT))
+    }, cause => {}, Some(Map("matchID" -> game.id, StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
 
 
     PostRequest(Dispatcher.DISCOVERY_URL, IncreaseServerMatchesAPI.path, {
@@ -196,6 +196,6 @@ class LobbyActor extends Actor {
       case None =>
     }, cause => {
       println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
-    }, None, Some(Dispatcher.DISCOVERY_PORT))
+    }, Some(Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
   }
 }

@@ -11,8 +11,8 @@ object Runner extends App {
 
   VERTX.deployVerticle(Dispatcher(
     AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(
-      "192.168.1.103",
+      Dispatcher.DISCOVERY_URL,
       "0",
-      "192.168.1.103")))
+      Dispatcher.MY_IP)))
 }
 
