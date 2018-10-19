@@ -29,20 +29,22 @@ class PlayerActorClient(override val controller: GameController, username: Strin
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>
-      System.out.println("ARRIVATI I QUATTRO PLAYERS")
-      this.gameActor = sender()
-      val finalList: ListBuffer[String] = this.orderPlayersList(playersList)
+      gameActor = sender()
+      var finalList: ListBuffer[String] = ListBuffer[String]()
+      finalList = orderPlayersList(playersList)
       controller.updateGUI(PlayersRef(finalList))
       gameActor ! PlayersRefAck
 
     case DistributedCard(cards, player) =>
-      if (this.user.eq(player))
+      if (user.equals(player)) {
         controller.updateGUI(DistributedCard(cards, player))
-      cardArrived = true
-      unstashAll()
+        cardArrived = true
+        unstashAll()
+      }
+
 
     case SelectBriscola(player) =>
-      if (this.user.eq(player))
+      if (user.equals(player))
         if (!cardArrived) {
           stash()
         } else {
@@ -61,14 +63,14 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       gameActor ! ClickedCard(index, user)
 
     case CardOk(correctClickedCard, player) =>
-      if (this.user.eq(player))
+      if (user.equals(player))
         controller.updateGUI(CardOk(correctClickedCard, player))
 
     case ClickedCommandActualPlayer(command) =>
       gameActor ! ClickedCommand(command, user)
 
     case Turn(player, endPartialTurn, isFirstPlayer) =>
-      if (this.user.eq(player)) {
+      if (user.equals(player)) {
         controller.setMyTurn(true)
       } else {
         controller.setMyTurn(false)
@@ -76,7 +78,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
 
     case PlayedCard(card, player) =>
-      if (this.user.eq(player))
+      if (user.equals(player))
         controller.updateGUI(PlayedCard(card, player))
       gameActor ! CardPlayedAck
 
@@ -114,9 +116,9 @@ class PlayerActorClient(override val controller: GameController, username: Strin
 
     for (player <- tempList) {
       player match {
-        case `player` if player.eq(user) & searchPlayer == START_SEARCH
+        case player if player.equals(user) & searchPlayer == START_SEARCH
         => (orderedList += player, searchPlayer += FOUNDED)
-        case `player` if player.eq(user) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
+        case player if !player.equals(user) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
         => (orderedList += player, searchPlayer += FOUNDED)
         case _ => tempList.clear
       }
