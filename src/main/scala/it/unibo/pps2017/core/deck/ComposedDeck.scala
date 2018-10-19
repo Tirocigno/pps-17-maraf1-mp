@@ -2,7 +2,7 @@
 package it.unibo.pps2017.core.deck
 
 import it.unibo.pps2017.core.deck.cards.Card
-import it.unibo.pps2017.core.game.Team
+import it.unibo.pps2017.core.game.BaseTeam
 
 import scala.language.implicitConversions
 
@@ -19,12 +19,12 @@ class ComposedDeck(val simpleDeck: SimpleDeck, val scoreCounter: ScoreCounter) e
 
   override def computeSetScore(): (Int, Int) = scoreCounter.computeSetScore()
 
-  override def registerTurnPlayedCards(playedCards: Seq[Card], team: Team): Unit =
+  override def registerTurnPlayedCards(playedCards: Seq[Card], team: BaseTeam[String]): Unit =
     scoreCounter.registerSetPlayedCards(playedCards, team)
 
   override def distribute(): Seq[Set[Card]] = simpleDeck.distribute()
 
-  override def registerMarafona(team: Team): Unit = scoreCounter registerMarafona team
+  override def registerMarafona(team: BaseTeam[String]): Unit = scoreCounter registerMarafona team
 }
 
 /**

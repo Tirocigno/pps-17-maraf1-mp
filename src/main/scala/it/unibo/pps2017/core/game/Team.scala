@@ -13,6 +13,8 @@ import scala.util.Random
 
 sealed trait BaseTeam[A] {
 
+  var teamIndex: String
+
   /**
     * Add a player to the team.
     *
@@ -108,7 +110,7 @@ sealed trait BaseTeam[A] {
   * Members of the team. Limited at max 2.
   */
 
-case class Team(var name: String = Random.nextInt().toString,
+case class Team(override var teamIndex: String = Random.nextInt().toString,
                 private var members: ListBuffer[ClientGameActor] = ListBuffer(),
                 private var score: Int = 0) extends BaseTeam[ClientGameActor] {
 
@@ -220,8 +222,9 @@ case class Team(var name: String = Random.nextInt().toString,
 }
 
 
-case class SimpleTeam(private var members: ListBuffer[String] = ListBuffer(),
+case class SimpleTeam(override var teamIndex: String, private var members: ListBuffer[String] = ListBuffer(),
                       private var score: Int = 0) extends BaseTeam[String] {
+
   /**
     * Add a player to the team.
     *

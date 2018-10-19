@@ -33,7 +33,7 @@ class LobbyActor extends Actor {
       * Search a game for a team.
       */
     case MultiPlayerMsg(player, mate, gameFoundEvent) =>
-      val team: SimpleTeam = SimpleTeam(ListBuffer(player, mate))
+      val team: SimpleTeam = SimpleTeam("", ListBuffer(player, mate))
 
       self ! SearchTeamMsg(allLobby.headOption, team, gameFoundEvent)
 
