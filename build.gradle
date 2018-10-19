@@ -41,7 +41,7 @@ ext {
     vertxVersion = '3.5.4'
 
     //Version for Akka.
-    akkaVersion = '2.5.14'
+    akkaVersion = '2.5.17'
 
     //Version for ScalaTest library.
     scalaTestVersion = '3.0.1'
