@@ -135,6 +135,7 @@ object RestWebClient {
       * @param jSonSource the body of the response.
       */
     private def handleFoundGameRestAPI(jSonSource: Option[String]): Unit = {
+      System.out.println("ho mandato il maledetto id della partita")
       val gameID = read[GameFound](jSonSource.get).gameId
       clientController.setGameID(gameID)
     }

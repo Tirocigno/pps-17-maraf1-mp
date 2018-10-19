@@ -7,7 +7,7 @@ import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Subscribe}
-import it.unibo.pps2017.client.model.actors.ClientGameActor
+import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
@@ -86,7 +86,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       isCardOk(cardsInHand(player)(index),player)
 
 
-    case PlayedCardAck =>
+    case CardPlayedAck =>
       numAck = numAck + 1
       if(numAck==TOT_PLAYERS) {
         if(gameCycle.isLast){

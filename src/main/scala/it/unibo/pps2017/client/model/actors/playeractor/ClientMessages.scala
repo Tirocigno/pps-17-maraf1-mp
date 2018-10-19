@@ -36,7 +36,7 @@ object ClientMessages {
 
   case class ForcedCardPlayed(card: String, player: String) extends ActorMessage
 
-  case class CardOk(correctClickedCard: Boolean) extends ActorMessage
+  case class CardOk(correctClickedCard: Boolean, player: String) extends ActorMessage
 
   case class SetTimer(timer: Int) extends ActorMessage
 
@@ -55,5 +55,7 @@ object ClientMessages {
   case class ComputeFinalGameScore(user: String, winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
 
   case class SetUsernamePlayer(playerUsername: String) extends ActorMessage
+
+
 
 }

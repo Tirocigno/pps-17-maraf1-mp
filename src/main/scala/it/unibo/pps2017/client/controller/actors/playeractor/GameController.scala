@@ -123,7 +123,7 @@ class GameController extends MatchController {
     case DistributedCard(cards, _) => sendCardsFirstPlayer(cards)
     case SelectBriscola(_) => selectBriscola()
     case NotifyBriscolaChosen(seed) => sendBriscolaChosen(briscola = seed.asString)
-    case CardOk(correctClickedCard) => setCardOK(correctClickedCard)
+    case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
     case ForcedCardPlayed(card, player) => showOtherPlayersPlayedCard(card, player = player)
     case SetTimer(timer) => setTimer(timer)
