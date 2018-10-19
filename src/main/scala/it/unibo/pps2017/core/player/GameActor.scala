@@ -372,7 +372,7 @@ object GameActor {
   val THREE_VALUE: Int = 3
   val REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA: Int = 3
   val EXTRA_POINTS_FOR_MARAFFA: Int = 3
-  val IMG_PATH = "resources/it/unibo/pps2017/core/gui/cards/"
+  val IMG_PATH = "src/main/resources/it/unibo/pps2017/core/gui/cards/"
   val PNG_FILE = ".png"
 
   def apply(topicName: String, team1: BaseTeam[String], team2: BaseTeam[String], onGameEnd:()=>Unit): GameActor = new GameActor(topicName, team1, team2, onGameEnd)
