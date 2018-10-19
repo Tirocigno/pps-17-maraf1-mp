@@ -12,11 +12,14 @@ import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization.read
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 
 //noinspection ScalaStyle
 class LobbyActor extends Actor {
   implicit val formats: DefaultFormats.type = DefaultFormats
+  //implicit val akkaSystem: ActorSystem = context.system
 
   val mediator: ActorRef = DistributedPubSub(context.system).mediator
 
@@ -144,9 +147,35 @@ class LobbyActor extends Actor {
   }
 
   private def createActorAndNotifyTheDiscovery(game: Lobby): Unit = {
+    context.system.scheduler.scheduleOnce(5 second) {
+      //TODO GameActor creating
+      context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, () => {
+        PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
+          case Some(res) => try {
+            val msgFromDiscovery = read[Message](res)
 
-    //TODO GameActor creating
-    context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, () => {
+            println("Discovery match registration response: " + msgFromDiscovery.message)
+          } catch {
+            case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
+          }
+          case None =>
+        }, cause => {}, Some(Map("matchID" -> game.id)), Some(Dispatcher.DISCOVERY_PORT))
+
+        PostRequest(Dispatcher.DISCOVERY_URL, IncreaseServerMatchesAPI.path, {
+          case Some(res) => try {
+            val msgFromDiscovery = read[Message](res)
+
+            println("Discovery match registration response: " + msgFromDiscovery.message)
+          } catch {
+            case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
+          }
+          case None =>
+        }, cause => {
+          println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
+        }, None, Some(Dispatcher.DISCOVERY_PORT))
+      })))
+
+
       PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
         case Some(res) => try {
           val msgFromDiscovery = read[Message](res)
@@ -156,7 +185,8 @@ class LobbyActor extends Actor {
           case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
         }
         case None =>
-      }, cause => {}, Some(Map("matchID" -> game.id)), Some(Dispatcher.DISCOVERY_PORT))
+      }, cause => {}, Some(Map("matchID" -> game.id, StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
+
 
       PostRequest(Dispatcher.DISCOVERY_URL, IncreaseServerMatchesAPI.path, {
         case Some(res) => try {
@@ -169,33 +199,7 @@ class LobbyActor extends Actor {
         case None =>
       }, cause => {
         println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
-      }, None, Some(Dispatcher.DISCOVERY_PORT))
-    })))
-
-
-    PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
-      case Some(res) => try {
-        val msgFromDiscovery = read[Message](res)
-
-        println("Discovery match registration response: " + msgFromDiscovery.message)
-      } catch {
-        case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
-      }
-      case None =>
-    }, cause => {}, Some(Map("matchID" -> game.id, StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
-
-
-    PostRequest(Dispatcher.DISCOVERY_URL, IncreaseServerMatchesAPI.path, {
-      case Some(res) => try {
-        val msgFromDiscovery = read[Message](res)
-
-        println("Discovery match registration response: " + msgFromDiscovery.message)
-      } catch {
-        case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
-      }
-      case None =>
-    }, cause => {
-      println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
-    }, Some(Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
+      }, Some(Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
+    }
   }
 }

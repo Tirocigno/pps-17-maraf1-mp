@@ -62,9 +62,11 @@ sealed trait Lobby {
 }
 
 case class LobbyImpl(onFullLobby: Lobby => Unit,
-                     id: String = System.currentTimeMillis().toString,
                      team1: SimpleTeam = SimpleTeam("Team1"),
                      team2: SimpleTeam = SimpleTeam("Team2")) extends Lobby {
+
+  val id = System.currentTimeMillis().toString
+  println("New lobby on ID -> " + id)
 
   /**
     * Try to add a player to the lobby.

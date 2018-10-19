@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Subscribe}
+import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
@@ -43,7 +43,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     println("GAME ACTOR -> Starting..")
     cluster.subscribe(self, classOf[MemberUp])
     mediator = DistributedPubSub(context.system).mediator
-    mediator ! Subscribe(topicName, self)
+    //mediator ! Subscribe(topicName, self)
 
     team1.getMembers.foreach(player =>{
       actors += player
@@ -64,13 +64,14 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   def receive = {
 
     case PlayersRefAck =>
+      println("PLAYERS REF ACK -> ne è arrivato uno")
       numAck = numAck +1
       if(numAck==TOT_PLAYERS) {
         println("GAME ACTOR -> qui parte il gioco!!")
         onFullTable()
-
+        numAck = 0
       }
-      numAck = 0
+
 
 
     case BriscolaChosen(seed) =>
@@ -154,9 +155,10 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     deck.shuffle()
     var i: Int = 0
     deck.distribute().foreach(hand => {
-      actors.foreach(player => {
-        mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand),player))
-      })
+     // actors.foreach(player => {
+        println("STO MANDANDO LE CARTE")
+        mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand),actors(i)))
+     // })
       if (firstHand && isFirstPlayer(hand)) {
           nextHandStarter = Some(getPlayers(i))
           firstHand = false
@@ -183,7 +185,8 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     team1.getMembers ++ team2.getMembers
   }
 
-  private def isFirstPlayer(hand: Set[Card]): Boolean = hand.contains(FOUR_OF_COIN)
+  private def isFirstPlayer(hand: Set[Card]): Boolean = hand.filter(_.equals(FOUR_OF_COIN)).size > 0
+
 
   override def setBriscola(seed: Seed.Seed): Unit = {
     currentBriscola = Option(seed)
@@ -369,7 +372,7 @@ object GameActor {
   val THREE_VALUE: Int = 3
   val REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA: Int = 3
   val EXTRA_POINTS_FOR_MARAFFA: Int = 3
-  val IMG_PATH = "src/main/java/it/unibo/pps2017/core/gui/cards/"
+  val IMG_PATH = "resources/it/unibo/pps2017/core/gui/cards/"
   val PNG_FILE = ".png"
 
   def apply(topicName: String, team1: BaseTeam[String], team2: BaseTeam[String], onGameEnd:()=>Unit): GameActor = new GameActor(topicName, team1, team2, onGameEnd)
