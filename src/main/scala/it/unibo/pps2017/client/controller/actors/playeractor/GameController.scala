@@ -126,6 +126,7 @@ class GameController extends MatchController {
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
     case ForcedCardPlayed(card, player) => showOtherPlayersPlayedCard(card, player = player)
+    case ForcedCardActualPlayer(card) => showForcedPlayedCard(card)
     case SetTimer(timer) => setTimer(timer)
     case PlayedCard(card, player) => showOtherPlayersPlayedCard(card, player)
     case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
@@ -183,6 +184,7 @@ class GameController extends MatchController {
     */
   def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
 
+    // aggiungere controllo se c'e' pareggio
     if (user.eq(winner1) | user.eq(winner2)) {
       if (score1 > score2)
         playGameController.cleanFieldEndTotalTurn(score1, score2, false)
@@ -275,6 +277,14 @@ class GameController extends MatchController {
     */
   def sendPlayersList(playersList: List[String]): Unit = {
     playGameController.setPlayersList(playersList.asJava)
+  }
+
+  /**
+    * Method to send to GUI card's path of forced card.
+    * @param card path of card.
+    */
+  def showForcedPlayedCard(card: String): Unit = {
+    playGameController.setForcedPlayedCard(card)
   }
 
 }

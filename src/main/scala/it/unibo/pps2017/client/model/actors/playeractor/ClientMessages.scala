@@ -56,6 +56,8 @@ object ClientMessages {
 
   case class SetUsernamePlayer(playerUsername: String) extends ActorMessage
 
+  case class ForcedCardActualPlayer(card: String) extends ActorMessage
+
 
 
 }

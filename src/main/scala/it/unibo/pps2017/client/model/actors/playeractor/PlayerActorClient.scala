@@ -29,10 +29,12 @@ class PlayerActorClient(override val controller: GameController, username: Strin
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>
+      println("LISTA GIOCATORI NON ORDINATI: " + playersList)
       gameActor = sender()
       var finalList: ListBuffer[String] = ListBuffer[String]()
       finalList = orderPlayersList(playersList)
       controller.updateGUI(PlayersRef(finalList))
+      println("LISTA GIOCATORI ORDINATI: " + finalList)
       gameActor ! PlayersRefAck
 
     case DistributedCard(cards, player) =>
@@ -70,6 +72,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       gameActor ! ClickedCommand(command, user)
 
     case Turn(player, endPartialTurn, isFirstPlayer) =>
+      println("E' IL MIO TURNO: " + player)
       if (user.equals(player)) {
         controller.setMyTurn(true)
       } else {
@@ -78,7 +81,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
 
     case PlayedCard(card, player) =>
-      if (user.equals(player))
+      if (!user.equals(player))
         controller.updateGUI(PlayedCard(card, player))
       gameActor ! CardPlayedAck
 
@@ -86,7 +89,11 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       controller.updateGUI(NotifyCommandChosen(command, player))
 
     case ForcedCardPlayed(card, player) =>
-      controller.updateGUI(ForcedCardPlayed(card, player))
+      if (user.equals(player)) {
+        controller.updateGUI(ForcedCardActualPlayer(card))
+      } else {
+        controller.updateGUI(ForcedCardPlayed(card, player))
+      }
       gameActor ! CardPlayedAck
 
     case SetTimer(timer) =>

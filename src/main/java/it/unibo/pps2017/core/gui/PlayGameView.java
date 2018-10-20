@@ -22,14 +22,14 @@ public class PlayGameView extends Application {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
-			primaryStage.setFullScreen(true);
+			//primaryStage.setFullScreen(true);
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
             ClientController c = ClientController$.MODULE$.getSingletonController();
             c.setPlayGameController(gameController);
             gameController.setGameController(c.getGameController());
-            c.startActorSystem("192.168.1.9");
-            c.createRestClient("192.168.1.9", 2000);
+            c.startActorSystem("192.168.1.173");
+            c.createRestClient("192.168.1.173", 2000);
             c.sendMatchRequest();
 			primaryStage.show();
 

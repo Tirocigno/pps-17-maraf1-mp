@@ -168,6 +168,8 @@ public class PlayGameController implements PlayGame {
             this.pathOfImageSelected = getPathFromMap(clickedCardId);
             int indexCardSelected = getIndexOfCardSelected(clickedCardId);
             gameController.setPlayedCard(indexCardSelected);
+
+            System.out.println("Carta giocata: " + indexCardSelected);
         }
     }
 
@@ -221,6 +223,11 @@ public class PlayGameController implements PlayGame {
                     this.tenthCard.setImage(userCard);
             }
         }
+    }
+
+    public void setForcedPlayedCard(final String card) {
+        //Image cardPlayed = getImageFromPath(card);
+        //this.user1Field.setImage(cardPlayed);
     }
 
     @Override
