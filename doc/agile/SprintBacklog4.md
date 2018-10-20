@@ -14,3 +14,5 @@
 |**As a user, i want add my friends**|||||
 | | Create a list of all online friends | Naldini | 1 | ?|
 | | Send a request of friendship to an online player| Naldini | 4 | ?|
+|**As a user, i want to register an account**|||||
+| | Put your task here Riciputi-San | Riciputi | Required Hours for deployment | ?|
