@@ -17,7 +17,6 @@ object PlayerActorClient {
   final val END_SEARCH: Int = 4
 }
 
-
 class PlayerActorClient(override val controller: GameController, username: String) extends ClientGameActor with Stash {
 
   var actorPlayer: ClientGameActor = this
@@ -29,12 +28,10 @@ class PlayerActorClient(override val controller: GameController, username: Strin
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>
-      println("LISTA GIOCATORI NON ORDINATI: " + playersList)
       gameActor = sender()
       var finalList: ListBuffer[String] = ListBuffer[String]()
       finalList = orderPlayersList(playersList)
       controller.updateGUI(PlayersRef(finalList))
-      println("LISTA GIOCATORI ORDINATI: " + finalList)
       gameActor ! PlayersRefAck
 
     case DistributedCard(cards, player) =>
@@ -72,7 +69,6 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       gameActor ! ClickedCommand(command, user)
 
     case Turn(player, endPartialTurn, isFirstPlayer) =>
-      println("E' IL MIO TURNO: " + player)
       if (user.equals(player)) {
         controller.setMyTurn(true)
       } else {
@@ -99,12 +95,8 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     case SetTimer(timer) =>
       controller.updateGUI(SetTimer(timer))
 
-    case PartialGameScore(winner1, winner2, score1, score2) =>{
-      println("Arrivo punteggio: " + score1 + " " + score2)
-      println("winner1 winner2: " + winner1 + " " + winner2)
+    case PartialGameScore(winner1, winner2, score1, score2) =>
       controller.updateGUI(ComputePartialGameScore(user, winner1, winner2, score1, score2))
-
-    }
 
     case FinalGameScore(winner1, winner2, score1, score2) =>
       controller.updateGUI(ComputeFinalGameScore(user, winner1, winner2, score1, score2))
