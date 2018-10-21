@@ -86,7 +86,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       numAck = numAck + 1
       if(numAck==TOT_PLAYERS){
         mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, true))
-        startTimer()
+        //startTimer()
         numAck = 0
       }
 
@@ -123,10 +123,11 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     task = new java.util.TimerTask {
       def run(): Unit = {
         tmp = tmp + 1
-        println("Controllo")
+       // println("Controllo")
         // da togliere false quando andra'
           if(tmp == TURN_TIME_SEC && !cardPlayed) {
               val randCard: Card = forcePlay(nextHandStarter.get)
+              println("Carta forzata: " +randCard)
               mediator ! Publish(topicName,ForcedCardPlayed(cardToPath(randCard),nextHandStarter.get))
             }
       }
