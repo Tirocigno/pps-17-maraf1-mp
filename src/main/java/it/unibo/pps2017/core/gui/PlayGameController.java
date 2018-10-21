@@ -5,6 +5,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -24,11 +25,11 @@ import java.util.Map.Entry;
 
 public class PlayGameController implements PlayGame {
 
-    private static final String COMMANDS_PATH = "src/main/java/it/unibo/pps2017/core/gui/commands/";
-    private static final String EMPTY_FIELD = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyField.png";
-    private static final String EMPTY_FIELD_MY_TURN = "src/main/java/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
-    private static final String WIN_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/win.png";
-    private static final String LOSE_MATCH = "src/main/java/it/unibo/pps2017/core/gui/images/lose.png";
+    private static final String COMMANDS_PATH = "src/main/resources/it/unibo/pps2017/core/gui/commands/";
+    private static final String EMPTY_FIELD = "src/main/resources/it/unibo/pps2017/core/gui/cards/emptyField.png";
+    private static final String EMPTY_FIELD_MY_TURN = "src/main/resources/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
+    private static final String WIN_MATCH = "src/main/resources/it/unibo/pps2017/core/gui/images/win.png";
+    private static final String LOSE_MATCH = "src/main/resources/it/unibo/pps2017/core/gui/images/lose.png";
     private static final int DURATION_ANIMATION = 3;
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
@@ -67,7 +68,7 @@ public class PlayGameController implements PlayGame {
     ImageView gameOverImage = new ImageView();
 
     @FXML
-    Label timer, score;
+    Label timer, scoreTeams;
 
     @FXML
     Text briscolaLabel, cardNotOk;
@@ -93,7 +94,6 @@ public class PlayGameController implements PlayGame {
         this.cardsPlayer2 = new ArrayList<>();
         this.cardsPlayer3 = new ArrayList<>();
         this.cardsPlayer4 = new ArrayList<>();
-
         this.playersList = new ArrayList<>();
         this.idUserCards = new ArrayList<>();
         this.createListWithCardsId();  // creo la lista degli id delle carte del player
@@ -102,7 +102,6 @@ public class PlayGameController implements PlayGame {
     public void setGameController(final GameController controller) {
         this.gameController = controller;
     }
-
 
     /**
      * This method permits to view the command that first user selected.
@@ -149,13 +148,6 @@ public class PlayGameController implements PlayGame {
         this.briscolaLabel.setVisible(true);
     }
 
-    /*
-    public void distributedCards(final ActionEvent buttonPressed) throws InterruptedException {
-        getCardsFirstPlayer(firstPlayerCards);
-        setCurrentPlayer(playersList.get(0), false, true); // simulo che tocchi all'utente 1
-    } */
-
-
     /**
      * Method to show which card is pressed by first.
      *
@@ -168,8 +160,6 @@ public class PlayGameController implements PlayGame {
             this.pathOfImageSelected = getPathFromMap(clickedCardId);
             int indexCardSelected = getIndexOfCardSelected(clickedCardId);
             gameController.setPlayedCard(indexCardSelected);
-
-            System.out.println("Carta giocata: " + indexCardSelected);
         }
     }
 
@@ -286,10 +276,11 @@ public class PlayGameController implements PlayGame {
     }
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
-        System.out.println("ARRIVATI I PUNTEGGI" + "My team's score: " + scoreFirstTeam + "\nOther team's score:" + scoreSecondTeam);
-        this.score.setText("My team's score: " + scoreFirstTeam + "\nOther team's score:" + scoreSecondTeam);
-        this.score.setVisible(true);
-        createLabelScaleTransition(this.score, endedMatch);
+        Platform.runLater( () -> {
+            scoreTeams.setText("My team's score: " + scoreFirstTeam + "\nOpponent team's score: " + scoreSecondTeam);
+            scoreTeams.setVisible(true);
+            createLabelScaleTransition(scoreTeams, endedMatch);
+        });
     }
 
     private void createLabelScaleTransition(final Label score, final boolean endedMatch) {
@@ -313,7 +304,7 @@ public class PlayGameController implements PlayGame {
                     createImageScaleTransition(finalImage);
                 }
             }
-            this.score.setText("");
+            this.scoreTeams.setText("");
         });
     }
 
