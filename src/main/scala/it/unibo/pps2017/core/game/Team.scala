@@ -104,15 +104,15 @@ sealed trait BaseTeam[A] {
 /**
   * This class manage a Team. Identified by a name and a list of members.
   *
-  * @param name
+  *
   * Name of the team
   * @param members
   * Members of the team. Limited at max 2.
   */
 
 case class Team(override var teamIndex: String = Random.nextInt().toString,
-                private var members: ListBuffer[ClientGameActor] = ListBuffer(),
-                private var score: Int = 0) extends BaseTeam[ClientGameActor] {
+                private var members: ListBuffer[String] = ListBuffer(),
+                private var score: Int = 0) extends BaseTeam[String] {
 
 
   /**
@@ -124,7 +124,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
-  def addPlayer(newPlayer: ClientGameActor): Unit = {
+  def addPlayer(newPlayer: String): Unit = {
     if (members.length >= TEAM_MEMBERS_LIMIT) {
       throw FullTeamException()
     }
@@ -138,7 +138,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * @return
     * the members of the team
     */
-  def getMembers: Seq[ClientGameActor] = members
+  def getMembers: Seq[String] = members
 
   /**
     * Return the team composition with both player's username.
@@ -150,13 +150,13 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     val app: ListBuffer[String] = ListBuffer()
     firstMember match {
       case Some(member) =>
-        app += member.getUsername
+        app += member
       case None =>
     }
 
     secondMember match {
       case Some(member) =>
-        app += member.getUsername
+        app += member
       case None =>
     }
 
@@ -177,7 +177,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * @return
     * the first player of the team.
     */
-  def firstMember: Option[ClientGameActor] = members.headOption
+  def firstMember: Option[String] = members.headOption
 
   /**
     * Add set's point to the team score.
@@ -218,7 +218,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * @return
     * the second player of the team.
     */
-  def secondMember: Option[ClientGameActor] = members.lastOption
+  def secondMember: Option[String] = members.lastOption
 }
 
 

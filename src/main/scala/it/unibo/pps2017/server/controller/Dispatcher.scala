@@ -27,7 +27,7 @@ object Dispatcher {
   val TIMEOUT = 1000
   val DISCOVERY_URL: String = "192.168.1.80"
   val DISCOVERY_PORT: Int = 2000
-  val MY_IP: String = "192.168.1.173"
+  val MY_IP: String = "192.168.1.80"
   val VERTX = Vertx.vertx()
 }
 

@@ -99,8 +99,12 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     case SetTimer(timer) =>
       controller.updateGUI(SetTimer(timer))
 
-    case PartialGameScore(winner1, winner2, score1, score2) =>
+    case PartialGameScore(winner1, winner2, score1, score2) =>{
+      println("Arrivo punteggio: " + score1 + " " + score2)
+      println("winner1 winner2: " + winner1 + " " + winner2)
       controller.updateGUI(ComputePartialGameScore(user, winner1, winner2, score1, score2))
+
+    }
 
     case FinalGameScore(winner1, winner2, score1, score2) =>
       controller.updateGUI(ComputeFinalGameScore(user, winner1, winner2, score1, score2))

@@ -65,7 +65,7 @@ object ClientController {
 
     override def startActorSystem(seedHost: IPAddress): Unit = {
       val localIpAddress: String = InetAddress.getLocalHost.getHostAddress
-      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", "192.168.1.173"))
+      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", "192.168.1.80"))
       gameController.createActor(this.playerName, actorSystem.get)
     }
 

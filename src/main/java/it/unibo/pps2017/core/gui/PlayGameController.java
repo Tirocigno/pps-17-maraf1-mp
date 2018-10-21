@@ -254,9 +254,11 @@ public class PlayGameController implements PlayGame {
             hideCommands();
         }
 
-        if (partialTurnIsEnded) {
+        /*if (partialTurnIsEnded) {
             cleanField();
-        }
+        }*/
+        if(isFirstPlayer) cleanField();
+
         Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
 
         if (player.equals(player1)) {
@@ -284,6 +286,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
+        System.out.println("ARRIVATI I PUNTEGGI" + "My team's score: " + scoreFirstTeam + "\nOther team's score:" + scoreSecondTeam);
         this.score.setText("My team's score: " + scoreFirstTeam + "\nOther team's score:" + scoreSecondTeam);
         this.score.setVisible(true);
         createLabelScaleTransition(this.score, endedMatch);
