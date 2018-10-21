@@ -9,7 +9,7 @@ import it.unibo.pps2017.commons.remote.API.RestAPI
 import it.unibo.pps2017.commons.remote.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
-import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
+import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
 import it.unibo.pps2017.server.model.{GameFound, GetRequest, PostRequest, ServerContextEncoder}
 import org.json4s.jackson.Serialization.read
 
@@ -104,7 +104,7 @@ object RestWebClient {
       * @param paramMap        the parameters to pass to the request.
       */
     private def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
-      case FoundGameRestAPI$ => invokeAPI(api, paramMap, handleFoundGameRestAPI)
+      case FoundGameRestAPI => invokeAPI(api, paramMap, handleFoundGameRestAPI)
       case _ => println("Api call executed")
 
     }

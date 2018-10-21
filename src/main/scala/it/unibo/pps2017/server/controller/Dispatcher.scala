@@ -10,7 +10,7 @@ import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterServerAPI, StandardParameters}
 import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
-import it.unibo.pps2017.server.model.ServerApi.{ErrorRestAPI$, FoundGameRestAPI$, GameRestAPI$, HelloRestAPI$}
+import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model._
 import org.json4s._
 import org.json4s.jackson.Serialization.read
@@ -27,7 +27,7 @@ object Dispatcher {
   val TIMEOUT = 1000
   val DISCOVERY_URL: String = "192.168.1.9"
   val DISCOVERY_PORT: Int = 2000
-  val MY_IP: String = "192.168.1.8"
+  val MY_IP: String = "192.168.0.12"
   val VERTX = Vertx.vertx()
 }
 
@@ -38,18 +38,24 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
   implicit val formats: DefaultFormats.type = DefaultFormats
 
 
+  val userMethods = UserDispatcher()
+
   val lobbyManager: ActorRef = akkaSystem.actorOf(Props[LobbyActor])
   val currentIPAndPortParams = Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> PORT)
+
 
   override def start(): Unit = {
 
     val router = Router.router(vertx)
 
     ServerApi.values.map({
-      case api@HelloRestAPI$ => api.asRequest(router, hello)
-      case api@ErrorRestAPI$ => api.asRequest(router, responseError)
-      case api@GameRestAPI$ => api.asRequest(router, getGame)
-      case api@FoundGameRestAPI$ => api.asRequest(router, foundGame)
+      case api@HelloRestAPI => api.asRequest(router, hello)
+      case api@ErrorRestAPI => api.asRequest(router, responseError)
+      case api@GameRestAPI => api.asRequest(router, getGame)
+      case api@FoundGameRestAPI => api.asRequest(router, foundGame)
+      case api@AddUserAPI => api.asRequest(router, userMethods.addUser)
+      case api@GetUserAPI => api.asRequest(router, userMethods.getUser)
+      case api@AddFriendAPI => api.asRequest(router, userMethods.addFriend)
       case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 

@@ -69,6 +69,7 @@ ext {
     slf4jApiVersion = '1.7.12'
     logbackVersion = '1.2.3'
 
+    redisScalaVersion = '1.8.0'
 }
 
 //create a single Jar with all dependencies
@@ -174,6 +175,8 @@ dependencies {
     scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
 
 
+
+    compile "com.github.etaty:rediscala_$scalaMajor:$redisScalaVersion"
 }
 
 /**

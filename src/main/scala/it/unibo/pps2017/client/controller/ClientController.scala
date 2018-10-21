@@ -9,7 +9,7 @@ import it.unibo.pps2017.client.model.remote.RestWebClient
 import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, Port, ServerContext}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.core.gui.PlayGameController
-import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
+import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
 
 
 sealed trait ClientController {
@@ -76,8 +76,8 @@ object ClientController {
     }
 
     override def sendMatchRequest(): Unit = {
-      val map = Map(FoundGameRestAPI$.meParamKey -> playerName)
-      webClient.get.callRemoteAPI(FoundGameRestAPI$, Some(map))
+      val map = Map(FoundGameRestAPI.meParamKey -> playerName)
+      webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
     }
 
     override def getGameController: GameController = gameController

@@ -11,12 +11,12 @@ object ServerApi {
     *
     * @return a Set containing all the objects in the DiscoveryAPI object.
     */
-  def values: Set[RestAPI] = Set(HelloRestAPI$, ErrorRestAPI$, GameRestAPI$, FoundGameRestAPI$)
+  def values: Set[RestAPI] = Set(HelloRestAPI, ErrorRestAPI, GameRestAPI, FoundGameRestAPI, AddUserAPI, GetUserAPI)
 
   /**
     * RestAPI for searching
     */
-  case object FoundGameRestAPI$ extends RestAPI {
+  case object FoundGameRestAPI extends RestAPI {
 
     val meParamKey = "me"
 
@@ -33,7 +33,7 @@ object ServerApi {
   /**
     * RestAPI for test a good communication.
     */
-  case object HelloRestAPI$ extends RestAPI {
+  case object HelloRestAPI extends RestAPI {
 
     override def path: String = "/"
 
@@ -46,7 +46,7 @@ object ServerApi {
   /**
     * RestAPI for test a wrong communication.
     */
-  case object ErrorRestAPI$ extends RestAPI {
+  case object ErrorRestAPI extends RestAPI {
 
     override def path: String = "/error"
 
@@ -59,7 +59,7 @@ object ServerApi {
   /**
     * RestAPI for retrieve a single game.
     */
-  case object GameRestAPI$ extends RestAPI {
+  case object GameRestAPI extends RestAPI {
 
     override def path: String = "/game/:gameId"
 
@@ -67,5 +67,35 @@ object ServerApi {
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       GET(router, path, handle)
+  }
+
+  case object AddUserAPI extends RestAPI {
+    override def path: String = "/user/addUser/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+  }
+
+  case object GetUserAPI extends RestAPI {
+    override def path: String = "/user/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
+  case object  AddFriendAPI extends RestAPI {
+
+    val friendUsername: String = "friend"
+
+    override def path: String = "/user/addFriend/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
   }
 }
