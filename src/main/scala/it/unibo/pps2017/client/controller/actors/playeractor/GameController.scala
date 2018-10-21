@@ -185,7 +185,7 @@ class GameController extends MatchController {
   def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
 
     // aggiungere controllo se c'e' pareggio
-    if (user.eq(winner1) | user.eq(winner2)) {
+    if (user.equals(winner1) | user.equals(winner2)) {
       if (score1 > score2)
         playGameController.cleanFieldEndTotalTurn(score1, score2, false)
       else playGameController.cleanFieldEndTotalTurn(score2, score1, false)
@@ -206,7 +206,7 @@ class GameController extends MatchController {
     */
   def cleanFieldEndMatch(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
 
-    if (user.eq(winner1) | user.eq(winner2)) {
+    if (user.equals(winner1) | user.equals(winner2)) {
       if (score1 > score2) {
         playGameController.cleanFieldEndTotalTurn(score1, score2, true)
         this.setWinner(true)
