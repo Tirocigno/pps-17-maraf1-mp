@@ -9,6 +9,8 @@ import org.scalatest.junit.JUnitRunner
 class ComposedDeckTest extends FunSuite {
 
   val gameDeck: GameDeck = ComposedDeck()
+  val SCORES_SUM: Int = 11
+  val MARAFONA_SCORES: Int = 3
 
   val team1 = SimpleTeam("Team1")
   val team2 = SimpleTeam("Team2")
@@ -36,13 +38,21 @@ class ComposedDeckTest extends FunSuite {
 
   test("Play a single match") {
     val gameResult = playSingleMatch()
-    assert((gameResult._1 + gameResult._2) % 11 == 0)
+    assert((gameResult._1 + gameResult._2) % SCORES_SUM == 0)
   }
 
   test("play multiple matches") {
     for (i <- 0 to 100) {
       val gameResult = playSingleMatch()
-      assert((gameResult._1 + gameResult._2) % 11 == 0)
+      assert((gameResult._1 + gameResult._2) % SCORES_SUM == 0)
+    }
+  }
+
+  test("play multiple matches with marafona") {
+    gameDeck.registerMarafona(team1)
+    for (i <- 0 to 100) {
+      val gameResult = playSingleMatch()
+      assert((gameResult._1 + gameResult._2) % SCORES_SUM == MARAFONA_SCORES)
     }
   }
 
