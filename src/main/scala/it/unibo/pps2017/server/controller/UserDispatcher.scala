@@ -1,13 +1,12 @@
 package it.unibo.pps2017.server.controller
 
 import io.vertx.scala.ext.web.RoutingContext
+import it.unibo.pps2017.server.model.database.RedisUserUtils
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse, User}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.util.{Failure, Success}
-
 case class UserDispatcher() {
+
+  val userDatabaseUtils = RedisUserUtils()
 
   def addUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
     val db = res.getDatabaseConnection
@@ -17,13 +16,13 @@ case class UserDispatcher() {
       case None => res.setGenericError(Some("Username not valid!")).sendResponse(Error())
     }
 
-    db.hmset("user:" + username, ctx.request().formAttributes().add("score", "0"))
-      .onComplete(queryRes => {
-        if (queryRes.isSuccess) {
-          res.sendResponse(Message("User entered correctly!"))
-        } else {
-          res.setGenericError(Some("Error on user registration!")).sendResponse(Error())
-        }
+    userDatabaseUtils.userSignIn(db,
+      username.toString,
+      ctx.request().formAttributes().add("score", "0"),
+      _ => {
+        res.sendResponse(Message("User entered correctly!"))
+      }, cause => {
+        res.setGenericError(Some(s"Error on user registration! Details: ${cause.getMessage}")).sendResponse(Error())
       })
   }
 
@@ -35,22 +34,20 @@ case class UserDispatcher() {
       case None => res.setGenericError(Some("Username not valid!")).sendResponse(Error())
     }
 
-    db.exists("user:" + username)
-      .onComplete {
-        case Success(founded) =>
-          if (founded) {
-            db.hgetall("user:" + username).onComplete {
-              case Success(values) =>
-                res.sendResponse(User(username.toString, values("score").utf8String.toInt))
-              case Failure(cause) =>
-                res.setGenericError(Some(s"Unexpected error on user retrieve! Details: ${cause.getMessage}")).sendResponse(Error())
-            }
-          } else {
-            res.setGenericError(Some(s"User ${username.toString} not found!")).sendResponse(Error())
-          }
-        case Failure(cause) =>
-          res.setGenericError(Some(s"Unexpected error on user retrieve! Details: ${cause.getMessage}")).sendResponse(Error())
+
+    userDatabaseUtils.checkUserExisting(db, username.toString, queryRes => {
+      if (queryRes) {
+        userDatabaseUtils.getUser(db, username.toString,
+          userData => {
+            res.sendResponse(User(username.toString, userData("score").utf8String.toInt))
+          }, cause => {
+            res.setGenericError(Some(s"Unexpected error on user retrieve! Details: ${cause.getMessage}")).sendResponse(Error())
+          })
+      } else {
+        res.setGenericError(Some(s"User ${username.toString} not found!")).sendResponse(Error())
       }
+    }, cause => res.setGenericError(Some(s"Unexpected error on user retrieve! Details: ${cause.getMessage}")).sendResponse(Error()))
+
   }
 
   def addFriend: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
@@ -65,73 +62,31 @@ case class UserDispatcher() {
 
     if (!params.contains("friend")) {
       res.setGenericError(Some("You didn't specify a friend!")).sendResponse(Error())
-    }
+    } else {
 
-    val friend: String = params("friend")
+      val friend: String = params("friend")
 
-    db.exists("user:" + username)
-      .onComplete {
-        case Success(founded) =>
-          if (founded) {
-            db.exists("user:" + friend)
-              .onComplete {
-                case Success(friendFounded) =>
-                  if (friendFounded) {
-                    addFriendship()
-                  } else {
-                    res.setGenericError(Some(s"Friend ${username.toString} not found!")).sendResponse(Error())
-                  }
-              }
-          } else {
-            res.setGenericError(Some(s"User ${username.toString} not found!")).sendResponse(Error())
-          }
-        case Failure(cause) =>
-          res.setGenericError(Some(s"Unexpected error on user retrieve! Details: ${cause.getMessage}")).sendResponse(Error())
-      }
-
-
-    def addFriendship: () => Unit = () => {
-      def removeFriend(user: String, friend: String): Future[Long] = {
-        db.srem("user:" + user + ":friends", friend)
-      }
-
-      def addFriend(user: String, friend: String): Future[Long] = {
-        db.sadd("user:" + user + ":friends", friend)
-      }
-
-     addFriend(username.toString, friend)
-        .onComplete {
-          case Success(userQueryRes) =>
-            if (userQueryRes > 0) {
-              addFriend(friend, username.toString)
-                .onComplete {
-                  case Success(friendQueryRes) =>
-                    if (friendQueryRes > 0) {
-                      res.sendResponse(Message(s"You and $friend are now friends!"))
-                    } else {
-                      removeFriend(username.toString, friend).onComplete(_ => {
-                        res
-                          .setGenericError(Some(s"You are already on the list of $friend's friends!"))
-                          .sendResponse(Error())
-                      })
-                    }
-                  case Failure(causeFriendQuery) =>
-                    removeFriend(username.toString, friend).onComplete(_ => {
-                      res
-                        .setGenericError(Some(s"Unexpected error on user friendship adding! Details: ${causeFriendQuery.getMessage}"))
-                        .sendResponse(Error())
-                    })
-                }
+      userDatabaseUtils.checkUserExisting(db, username.toString, userExist => {
+        if (userExist) {
+          userDatabaseUtils.checkUserExisting(db, friend, friendExist => {
+            if (friendExist) {
+              userDatabaseUtils.addFriendship(db, username.toString, friend, res)
             } else {
-              res
-                .setGenericError(Some(s"You and $friend are already friends!"))
-                .sendResponse(Error())
+              res.setGenericError(Some(s"Friend ${friend.toString} not found!")).sendResponse(Error())
             }
-          case Failure(causeUserQuery) =>
+          }, causeFriendError => {
             res
-              .setGenericError(Some(s"Unexpected error on user friendship adding! Details: ${causeUserQuery.getMessage}"))
+              .setGenericError(Some(s"Error on friend searching! Details: ${causeFriendError.getMessage}"))
               .sendResponse(Error())
+          })
+        } else {
+          res.setGenericError(Some(s"User ${username.toString} not found!")).sendResponse(Error())
         }
+      }, causeUserError => {
+        res
+          .setGenericError(Some(s"Unexpected error on user retrieve! Details: ${causeUserError.getMessage}"))
+          .sendResponse(Error())
+      })
     }
   }
 }

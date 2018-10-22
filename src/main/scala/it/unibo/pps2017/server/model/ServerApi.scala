@@ -11,7 +11,7 @@ object ServerApi {
     *
     * @return a Set containing all the objects in the DiscoveryAPI object.
     */
-  def values: Set[RestAPI] = Set(HelloRestAPI, ErrorRestAPI, GameRestAPI, FoundGameRestAPI, AddUserAPI, GetUserAPI)
+  def values: Set[RestAPI] = Set(HelloRestAPI, ErrorRestAPI, GameRestAPI, FoundGameRestAPI, AddUserAPI, GetUserAPI, AddFriendAPI)
 
   /**
     * RestAPI for searching
@@ -87,7 +87,7 @@ object ServerApi {
       GET(router, path, handle)
   }
 
-  case object  AddFriendAPI extends RestAPI {
+  case object AddFriendAPI extends RestAPI {
 
     val friendUsername: String = "friend"
 
