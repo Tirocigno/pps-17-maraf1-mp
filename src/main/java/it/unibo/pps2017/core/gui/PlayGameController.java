@@ -73,7 +73,6 @@ public class PlayGameController implements PlayGame {
     @FXML
     Text briscolaLabel, cardNotOk;
 
-
     private Map<String, String> indexOfMyCards;
     private List<String> playersList;
     private List<ImageView> cardsPlayer2;
@@ -83,7 +82,6 @@ public class PlayGameController implements PlayGame {
     private String player2;
     private String player3;
     private String player4;
-    /* Due variabili per gestire la carta giocata */
     private String pathOfImageSelected;
     private ImageView playedCard;
 
@@ -97,11 +95,21 @@ public class PlayGameController implements PlayGame {
         this.cardsPlayer4 = new ArrayList<>();
         this.playersList = new ArrayList<>();
         this.idUserCards = new ArrayList<>();
-        this.createListWithCardsId();  // creo la lista degli id delle carte del player
+        this.createListWithCardsId();
     }
 
+    @Override
     public void setGameController(final GameController controller) {
         this.gameController = controller;
+    }
+
+    @Override
+    public void setPlayersList(final List<String> playersList) {
+        this.playersList = playersList;
+        this.player1 = playersList.get(0);
+        this.player2 = playersList.get(1);
+        this.player3 = playersList.get(2);
+        this.player4 = playersList.get(3);
     }
 
     /**
@@ -181,14 +189,11 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
-
-        initializePlayersHand(); // mostro il retro delle carte degli altri giocatori
-        this.indexOfMyCards.clear(); // svuoto la mappa per i turni successivi
+        initializePlayersHand();
+        this.indexOfMyCards.clear();
 
         for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
-
             Image userCard = getImageFromPath(firstUserCards.get(cardIndex));
-            /* mi salvo le carte in ordine nella mappa */
             indexOfMyCards.put(idUserCards.get(cardIndex), firstUserCards.get(cardIndex));
 
             switch (cardIndex) {
@@ -242,7 +247,6 @@ public class PlayGameController implements PlayGame {
         } else if (player.equals(player4)) {
             this.user4Field.setImage(cardPlayed);
         }
-        /* dopo aver mostrato la carta ne devo eliminare una dalla mano dell'utente */
         deleteCardFromHand(player);
     }
 
@@ -325,6 +329,7 @@ public class PlayGameController implements PlayGame {
         scoreTransition.setOnFinished(endScore -> this.gameOverImage.setVisible(false));
     }
 
+    @Override
     public void showBriscolaCommands() {
         this.briscolaChosen = false;
         this.coinButton.setVisible(true);
@@ -392,16 +397,11 @@ public class PlayGameController implements PlayGame {
         }
     }
 
-    /* Inizializzo le liste con tutte le carte degli altri utenti e poi le mostro */
     private void initializePlayersHand() {
         createCardsListUser2();
         createCardsListUser3();
         createCardsListUser4();
     }
-
-    /* Questi metodi servono per avere una lista delle carte di ogni giocatore,
-     * cosi' ogni volta che ne viene giocata una la posso rimuovere e nascondere nella view
-     */
 
     private void createCardsListUser2() {
         this.cardsPlayer2.add(firstCardUser2);
@@ -445,7 +445,6 @@ public class PlayGameController implements PlayGame {
         this.showOtherPlayersHand(cardsPlayer4);
     }
 
-    /* Metodo per creare un'immagine dato un path */
     private Image getImageFromPath(final String path) {
         File file = new File(path);
         return new Image(file.toURI().toString());
@@ -466,19 +465,6 @@ public class PlayGameController implements PlayGame {
         return correctPath;
     }
 
-    /**
-     * This method sets four players of the game.
-     *
-     * @param playersList players' list
-     */
-    public void setPlayersList(final List<String> playersList) {
-        this.playersList = playersList;
-        this.player1 = playersList.get(0);
-        this.player2 = playersList.get(1);
-        this.player3 = playersList.get(2);
-        this.player4 = playersList.get(3);
-    }
-
     private void createListWithCardsId() {
         this.idUserCards.add("firstCard");
         this.idUserCards.add("secondCard");
@@ -491,5 +477,4 @@ public class PlayGameController implements PlayGame {
         this.idUserCards.add("ninthCard");
         this.idUserCards.add("tenthCard");
     }
-
 }

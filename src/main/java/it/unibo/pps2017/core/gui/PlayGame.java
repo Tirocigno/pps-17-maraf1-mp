@@ -1,5 +1,7 @@
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.actors.playeractor.GameController;
+
 import java.util.List;
 
 public interface PlayGame {
@@ -72,4 +74,21 @@ public interface PlayGame {
      * This method is called if the played card isn't ok to show error's label.
      */
     void showPlayedCardError();
+
+    /**
+     * This method is called to show commands for choose briscola.
+     */
+    void showBriscolaCommands();
+
+    /**
+     * This method is called to assign gameController at GUI.
+     * @param controller game controller's object.
+     */
+    void setGameController(final GameController controller);
+
+    /**
+     * This method is called to set four players in GUI.
+     * @param playersList players' list.
+     */
+    void setPlayersList(final List<String> playersList);
 }
