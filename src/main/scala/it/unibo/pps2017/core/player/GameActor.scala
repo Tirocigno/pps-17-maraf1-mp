@@ -298,12 +298,18 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
     setEnd = true
     currentBriscola = None
-    nextHandStarter = None
-    briscolaChooser = Some(gameCycle.getPrevOf(briscolaChooser.get))
-    val setScore = deck.computeSetScore()
-    team1.addPoints(setScore._1)
-    team2.addPoints(setScore._2)
+    //nextHandStarter = None
+    gameCycle.setFirst(briscolaChooser.get)
+    briscolaChooser = Some(gameCycle.getNext)
+    nextHandStarter = briscolaChooser
+    gameCycle.setFirst(briscolaChooser.get)
 
+    val setScore = deck.computeSetScore()
+    team1.setPoints(setScore._1)
+    team2.setPoints(setScore._2)
+
+
+    println("PRIMO PUNTEGGIO: " + setScore._1 + "SECONDO PUNTEGGIO: " + setScore._2)
     if(team1.getScore > team2.getScore){
       mediator ! Publish(topicName, PartialGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
     }

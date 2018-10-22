@@ -28,7 +28,7 @@ sealed trait Card {
     case CardImpl(_, otherValue) if otherValue < minValue && cardValue > minValue => false
     case CardImpl(_, otherValue) if otherValue > minValue && cardValue < minValue => true
     case CardImpl(_, otherValue) if otherValue > minValue && cardValue > minValue => cardValue > otherValue
-    case _ => true
+    case _ => false
   }
 
   /**

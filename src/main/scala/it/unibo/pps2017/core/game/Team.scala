@@ -2,7 +2,6 @@
 package it.unibo.pps2017.core.game
 
 
-import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.core.player.FullTeamException
 import it.unibo.pps2017.core.player.GameActor._
 import it.unibo.pps2017.server.model.Side
@@ -60,12 +59,12 @@ sealed trait BaseTeam[A] {
   def getMembers: Seq[A]
 
   /**
-    * Add set's point to the team score.
+    * Set set's point to the team score.
     *
     * @param score
     * Set's points.
     */
-  def addPoints(score: Int): Unit
+  def setPoints(score: Int): Unit
 
   /**
     * Return the current team's score.
@@ -180,12 +179,12 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
   def firstMember: Option[String] = members.headOption
 
   /**
-    * Add set's point to the team score.
+    * Set set's point to the team score.
     *
     * @param score
     * Set's points.
     */
-  def addPoints(score: Int): Unit = this.score += score
+  def setPoints(score: Int): Unit = this.score = score
 
   /**
     * Return the current team's score.
@@ -193,7 +192,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * @return
     * the current team's score.
     */
-  def getScore: Int = score
+  def getScore: Int = this.score
 
 
   /**
@@ -279,7 +278,9 @@ case class SimpleTeam(override var teamIndex: String, private var members: ListB
     * @param score
     * Set's points.
     */
-  override def addPoints(score: Int): Unit = this.score += score
+  override def setPoints(score: Int): Unit = {
+    this.score = score
+  }
 
   /**
     * Return the current team's score.

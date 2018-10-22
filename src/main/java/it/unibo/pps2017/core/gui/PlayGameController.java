@@ -76,6 +76,7 @@ public class PlayGameController implements PlayGame {
 
     private Map<String, String> indexOfMyCards;
     private List<String> playersList;
+    private List<ImageView> cardsPlayer1;
     private List<ImageView> cardsPlayer2;
     private List<ImageView> cardsPlayer3;
     private List<ImageView> cardsPlayer4;
@@ -91,12 +92,14 @@ public class PlayGameController implements PlayGame {
 
     public PlayGameController() {
         this.indexOfMyCards = new LinkedHashMap<>();
+        this.cardsPlayer1 = new ArrayList<>();
         this.cardsPlayer2 = new ArrayList<>();
         this.cardsPlayer3 = new ArrayList<>();
         this.cardsPlayer4 = new ArrayList<>();
         this.playersList = new ArrayList<>();
         this.idUserCards = new ArrayList<>();
         this.createListWithCardsId();  // creo la lista degli id delle carte del player
+        this.createCardsListUser1();
     }
 
     public void setGameController(final GameController controller) {
@@ -181,6 +184,9 @@ public class PlayGameController implements PlayGame {
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
 
+
+
+
         initializePlayersHand(); // mostro il retro delle carte degli altri giocatori
         this.indexOfMyCards.clear(); // svuoto la mappa per i turni successivi
 
@@ -190,28 +196,42 @@ public class PlayGameController implements PlayGame {
             indexOfMyCards.put(idUserCards.get(cardIndex), firstUserCards.get(cardIndex));
 
             System.out.println(firstUserCards.get(cardIndex));
+            System.out.println("CARTE ARRIVATE");
             switch (cardIndex) {
                 case 0:
                     this.firstCard.setImage(userCard);
+                    this.firstCard.setVisible(true);
                 case 1:
                     this.secondCard.setImage(userCard);
+                    this.secondCard.setVisible(true);
                 case 2:
                     this.thirdCard.setImage(userCard);
+                    this.thirdCard.setVisible(true);
                 case 3:
                     this.fourthCard.setImage(userCard);
+                    this.fourthCard.setVisible(true);
                 case 4:
                     this.fifthCard.setImage(userCard);
+                    this.fifthCard.setVisible(true);
                 case 5:
                     this.sixthCard.setImage(userCard);
+                    this.sixthCard.setVisible(true);
                 case 6:
                     this.seventhCard.setImage(userCard);
+                    this.seventhCard.setVisible(true);
                 case 7:
                     this.eighthCard.setImage(userCard);
+                    this.eighthCard.setVisible(true);
                 case 8:
                     this.ninthCard.setImage(userCard);
+                    this.ninthCard.setVisible(true);
                 case 9:
                     this.tenthCard.setImage(userCard);
+                    this.tenthCard.setVisible(true);
+
             }
+
+          //  showMyCards(); // mostro le mie carte
         }
     }
 
@@ -392,6 +412,19 @@ public class PlayGameController implements PlayGame {
     /* Questi metodi servono per avere una lista delle carte di ogni giocatore,
      * cosi' ogni volta che ne viene giocata una la posso rimuovere e nascondere nella view
      */
+    private void createCardsListUser1() {
+        this.cardsPlayer1.add(firstCard);
+        this.cardsPlayer1.add(secondCard);
+        this.cardsPlayer1.add(thirdCard);
+        this.cardsPlayer1.add(fourthCard);
+        this.cardsPlayer1.add(fifthCard);
+        this.cardsPlayer1.add(sixthCard);
+        this.cardsPlayer1.add(seventhCard);
+        this.cardsPlayer1.add(eighthCard);
+        this.cardsPlayer1.add(ninthCard);
+        this.cardsPlayer1.add(tenthCard);
+    }
+
     private void createCardsListUser2() {
         this.cardsPlayer2.add(firstCardUser2);
         this.cardsPlayer2.add(secondCardUser2);
@@ -479,5 +512,11 @@ public class PlayGameController implements PlayGame {
         this.idUserCards.add("eighthCard");
         this.idUserCards.add("ninthCard");
         this.idUserCards.add("tenthCard");
+    }
+
+    private void showMyCards() {
+        for (final ImageView image: cardsPlayer1) {
+            image.setVisible(true);
+        }
     }
 }
