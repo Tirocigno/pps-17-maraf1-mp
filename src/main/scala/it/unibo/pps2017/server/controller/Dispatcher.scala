@@ -27,7 +27,7 @@ object Dispatcher {
   val TIMEOUT = 1000
   val DISCOVERY_URL: String = "192.168.1.9"
   val DISCOVERY_PORT: Int = 2000
-  val MY_IP: String = "192.168.0.12"
+  val MY_IP: String = "192.168.0.8"
   val VERTX = Vertx.vertx()
 }
 
@@ -55,7 +55,10 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
       case api@FoundGameRestAPI => api.asRequest(router, foundGame)
       case api@AddUserAPI => api.asRequest(router, userMethods.addUser)
       case api@GetUserAPI => api.asRequest(router, userMethods.getUser)
+      case api@RemoveUserAPI => api.asRequest(router, userMethods.deleteUser)
       case api@AddFriendAPI => api.asRequest(router, userMethods.addFriend)
+      case api@GetFriendsAPI => api.asRequest(router, userMethods.getFriends)
+      case api@RemoveFriendAPI => api.asRequest(router, userMethods.removeFriend)
       case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 

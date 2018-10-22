@@ -11,7 +11,16 @@ object ServerApi {
     *
     * @return a Set containing all the objects in the DiscoveryAPI object.
     */
-  def values: Set[RestAPI] = Set(HelloRestAPI, ErrorRestAPI, GameRestAPI, FoundGameRestAPI, AddUserAPI, GetUserAPI, AddFriendAPI)
+  def values: Set[RestAPI] = Set(HelloRestAPI,
+    ErrorRestAPI,
+    GameRestAPI,
+    FoundGameRestAPI,
+    AddUserAPI,
+    GetUserAPI,
+    RemoveUserAPI,
+    AddFriendAPI,
+    GetFriendsAPI,
+    RemoveFriendAPI)
 
   /**
     * RestAPI for searching
@@ -87,6 +96,15 @@ object ServerApi {
       GET(router, path, handle)
   }
 
+  case object RemoveUserAPI extends RestAPI {
+    override def path: String = "/user/removeUser/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+  }
+
   case object AddFriendAPI extends RestAPI {
 
     val friendUsername: String = "friend"
@@ -97,5 +115,27 @@ object ServerApi {
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       POST(router, path, handle)
+  }
+
+  case object RemoveFriendAPI extends RestAPI {
+
+    val friendUsername: String = "friend"
+
+    override def path: String = "/user/removeFriend/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+  }
+
+  case object GetFriendsAPI extends RestAPI {
+
+    override def path: String = "/user/getFriends/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
   }
 }

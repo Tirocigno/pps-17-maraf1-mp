@@ -4,9 +4,9 @@ import akka.util.ByteString
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse}
 import redis.RedisClient
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 sealed trait UserDatabaseUtils {
 
@@ -68,6 +68,24 @@ sealed trait UserDatabaseUtils {
 
 
   /**
+    * Remove an user from the database.
+    *
+    * @param db
+    * database connection.
+    * @param username
+    * user to be removed.
+    * @param onSuccess
+    * on user removed.
+    * @param onFail
+    * error handler.
+    */
+  def deleteUser(db: RedisClient,
+                 username: String,
+                 onSuccess: Long => Unit,
+                 onFail: Throwable => Unit): Unit
+
+
+  /**
     * Add a friendship relation between user and friend.
     *
     * @param db
@@ -85,12 +103,58 @@ sealed trait UserDatabaseUtils {
                     username: String,
                     friend: String,
                     res: RouterResponse): Unit
+
+
+  /**
+    * Remove a friendship relation between user and friend.
+    *
+    * @param db
+    * database connection.
+    * @param username
+    * user.
+    * @param friend
+    * user's friend.
+    * @param res
+    * response to client.
+    * This method has more case and error handler.
+    * So it response directly to the client.
+    */
+  def removeFriendship(db: RedisClient,
+                       username: String,
+                       friend: String,
+                       res: RouterResponse): Unit
+
+
+  /**
+    * Search all friends of an user.
+    *
+    * @param db
+    * database connection.
+    * @param username
+    * user.
+    * @param onSuccess
+    * on friends founded.
+    * @param onFail
+    * error handler.
+    */
+  def getFriends(db: RedisClient,
+                 username: String,
+                 onSuccess: Seq[String] => Unit,
+                 onFail: Throwable => Unit): Unit
 }
 
 /**
   * This class encapsulate some method for manage user in the database
   */
 case class RedisUserUtils() extends UserDatabaseUtils {
+
+  private def removeFriend(db: RedisClient, user: String, friend: String): Future[Long] = {
+    db.srem(getUserFriendsKey(user), friend)
+  }
+
+  private def addFriend(db: RedisClient, user: String, friend: String): Future[Long] = {
+    db.sadd(getUserFriendsKey(user), friend)
+  }
 
   /**
     *
@@ -167,6 +231,30 @@ case class RedisUserUtils() extends UserDatabaseUtils {
 
 
   /**
+    * Remove an user from the database.
+    *
+    * @param db
+    * database connection.
+    * @param username
+    * user to be removed.
+    * @param onSuccess
+    * on user removed.
+    * @param onFail
+    * error handler.
+    */
+  override def deleteUser(db: RedisClient,
+                          username: String,
+                          onSuccess: Long => Unit,
+                          onFail: Throwable => Unit): Unit = {
+    db.del(getUserKey(username))
+      .onComplete {
+        case Success(queryRes) => onSuccess(queryRes) //TODO removing of all user references in friends list??
+        case Failure(cause) => onFail(cause)
+      }
+  }
+
+
+  /**
     *
     * @param db
     * database connection.
@@ -180,32 +268,26 @@ case class RedisUserUtils() extends UserDatabaseUtils {
     * So it response directly to the client.
     */
   override def addFriendship(db: RedisClient, username: String, friend: String, res: RouterResponse): Unit = {
-    def removeFriend(user: String, friend: String): Future[Long] = {
-      db.srem("user:" + user + ":friends", friend)
-    }
 
-    def addFriend(user: String, friend: String): Future[Long] = {
-      db.sadd("user:" + user + ":friends", friend)
-    }
 
-    addFriend(username.toString, friend)
+    addFriend(db, username.toString, friend)
       .onComplete {
         case Success(userQueryRes) =>
           if (userQueryRes > 0) {
-            addFriend(friend, username.toString)
+            addFriend(db, friend, username.toString)
               .onComplete {
                 case Success(friendQueryRes) =>
                   if (friendQueryRes > 0) {
                     res.sendResponse(Message(s"You and $friend are now friends!"))
                   } else {
-                    removeFriend(username.toString, friend).onComplete(_ => {
+                    removeFriend(db, username.toString, friend).onComplete(_ => {
                       res
                         .setGenericError(Some(s"You are already on the list of $friend's friends!"))
                         .sendResponse(Error())
                     })
                   }
                 case Failure(causeFriendQuery) =>
-                  removeFriend(username.toString, friend).onComplete(_ => {
+                  removeFriend(db, username.toString, friend).onComplete(_ => {
                     res
                       .setGenericError(Some(s"Unexpected error on user friendship adding! Details: ${causeFriendQuery.getMessage}"))
                       .sendResponse(Error())
@@ -220,6 +302,88 @@ case class RedisUserUtils() extends UserDatabaseUtils {
           res
             .setGenericError(Some(s"Unexpected error on user friendship adding! Details: ${causeUserQuery.getMessage}"))
             .sendResponse(Error())
+      }
+  }
+
+
+  /**
+    *
+    * @param db
+    * database connection.
+    * @param username
+    * user.
+    * @param friend
+    * user's friend.
+    * @param res
+    * response to client.
+    * This method has more case and error handler.
+    * So it response directly to the client.
+    */
+  override def removeFriendship(db: RedisClient, username: String, friend: String, res: RouterResponse): Unit = {
+
+
+    removeFriend(db, username.toString, friend)
+      .onComplete {
+        case Success(userQueryRes) =>
+          if (userQueryRes > 0) {
+            removeFriend(db, friend, username.toString)
+              .onComplete {
+                case Success(friendQueryRes) =>
+                  if (friendQueryRes > 0) {
+                    res.sendResponse(Message(s"You and $friend are now unfamiliar!"))
+                  } else {
+                    addFriend(db, username.toString, friend).onComplete(_ => {
+                      res
+                        .setGenericError(Some(s"You are not in the list of $friend's friends!"))
+                        .sendResponse(Error())
+                    })
+                  }
+                case Failure(causeFriendQuery) =>
+                  addFriend(db, username.toString, friend).onComplete(_ => {
+                    res
+                      .setGenericError(Some(s"Unexpected error on user friendship removing! Details: ${causeFriendQuery.getMessage}"))
+                      .sendResponse(Error())
+                  })
+              }
+          } else {
+            res
+              .setGenericError(Some(s"You and $friend are not friends!"))
+              .sendResponse(Error())
+          }
+        case Failure(causeUserQuery) =>
+          res
+            .setGenericError(Some(s"Unexpected error on user friendship adding! Details: ${causeUserQuery.getMessage}"))
+            .sendResponse(Error())
+      }
+  }
+
+
+
+
+  /**
+    * Search all friends of an user.
+    *
+    * @param db
+    * database connection.
+    * @param username
+    * user.
+    * @param onSuccess
+    * on friends founded.
+    * @param onFail
+    * error handler.
+    */
+  override def getFriends(db: RedisClient,
+                          username: String,
+                          onSuccess: Seq[String] => Unit,
+                          onFail: Throwable => Unit): Unit = {
+
+    db.smembers(getUserFriendsKey(username))
+      .onComplete {
+        case Success(friends) => {
+
+          onSuccess(friends.map(_.utf8String))
+        }
+        case Failure(cause) => onFail(cause)
       }
   }
 }
