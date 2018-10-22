@@ -326,7 +326,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   }
 
   private def checkMarafona(hand: Set[Card], player: PlayerName): Unit = {
-    if (hand.filter(searchAce => searchAce.cardSeed == currentSuit.get)
+    if (hand.filter(searchAce => searchAce.cardSeed == currentBriscola.get)
       .count(c => c.cardValue == ACE_VALUE || c.cardValue == TWO_VALUE || c.cardValue == THREE_VALUE) == REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA) {
       deck.registerMarafona(getTeamOfPlayer(player))
     }
