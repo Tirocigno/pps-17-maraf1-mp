@@ -12,6 +12,7 @@ public class PlayGameView extends Application {
 
 	private static final int MIN_WIDTH = 900;
 	private static final int MIN_HEIGHT = 685;
+	private static final int DISCOVERY_PORT = 2000;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -25,14 +26,13 @@ public class PlayGameView extends Application {
 			//primaryStage.setFullScreen(true);
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
-            ClientController c = ClientController$.MODULE$.getSingletonController();
-            c.setPlayGameController(gameController);
-            gameController.setGameController(c.getGameController());
-            c.startActorSystem("192.168.1.14");
-            c.createRestClient("192.168.1.14", 2000);
-            c.sendMatchRequest();
+            ClientController clientController = ClientController$.MODULE$.getSingletonController();
+            clientController.setPlayGameController(gameController);
+            gameController.setGameController(clientController.getGameController());
+            clientController.startActorSystem("192.168.1.14");
+            clientController.createRestClient("192.168.1.14", DISCOVERY_PORT);
+            clientController.sendMatchRequest();
 			primaryStage.show();
-
 
         } catch (Exception e) {
 			e.printStackTrace();
