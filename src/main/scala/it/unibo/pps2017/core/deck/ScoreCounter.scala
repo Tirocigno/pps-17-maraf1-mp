@@ -62,7 +62,7 @@ private class ScoreTracker {
   /**
     * This method approximates currentScoreValue to the smaller multiple of 3
     */
-  def discardThirdOfFigures() = {
+  def discardThirdOfFigures(): Unit = {
     currentScore -= (currentScore % 3)
   }
 }
@@ -80,8 +80,17 @@ private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) ext
     cardPlayedSeq foreach (registerPlayedCard(_, team))
 
   override def computeSetScore(): (Int, Int) = {
+    fixScores()
     finishSet()
     scores
+  }
+
+  /**
+    * Fix current scores of both player removing the unused thirds of figures.
+    */
+  def fixScores(): Unit = {
+    teamScores._1.discardThirdOfFigures()
+    teamScores._2.discardThirdOfFigures()
   }
 
 
@@ -89,7 +98,6 @@ private class ScoreCounterImpl(val teamScores: (ScoreTracker, ScoreTracker)) ext
     * Finish a game and register an additional score to the team who won the last set.
     */
   def finishSet(): Unit = matchTeam((team, value: Int) => {
-    team.discardThirdOfFigures()
     team.currentScore += value
   })(aceScore)
 
