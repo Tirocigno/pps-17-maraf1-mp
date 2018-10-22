@@ -41,7 +41,6 @@ class PlayerActorClient(override val controller: GameController, username: Strin
         unstashAll()
       }
 
-
     case SelectBriscola(player) =>
       if (user.equals(player))
         if (!cardArrived) {
