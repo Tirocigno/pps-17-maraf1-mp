@@ -295,22 +295,21 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   }
 
   private def onSetEnd(): Unit = {
-    println("Set Finito! Mando i punteggi!!!")
+
+    setEnd = true
+    currentBriscola = None
+    nextHandStarter = None
+    briscolaChooser = Some(gameCycle.getPrevOf(briscolaChooser.get))
+    val setScore = deck.computeSetScore()
+    team1.addPoints(setScore._1)
+    team2.addPoints(setScore._2)
+
     if(team1.getScore > team2.getScore){
       mediator ! Publish(topicName, PartialGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
     }
     else{
       mediator ! Publish(topicName, PartialGameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore))
     }
-    setEnd = true
-    currentBriscola = None
-    nextHandStarter = None
-    briscolaChooser = Some(gameCycle.getPrevOf(briscolaChooser.get))
-    val setScore = deck.computeSetScore()
-    println("Punti team1: " + setScore._1)
-    println("Punti team2: " + setScore._2)
-    team1.addPoints(setScore._1)
-    team2.addPoints(setScore._2)
 
     getGameWinner match {
       case Some(team) => notifyWinner(team)
