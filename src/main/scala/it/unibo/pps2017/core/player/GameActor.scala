@@ -45,16 +45,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     println("GAME ACTOR -> Starting..")
     cluster.subscribe(self, classOf[MemberUp])
     mediator = DistributedPubSub(context.system).mediator
-    //mediator ! Subscribe(topicName, self)
-
-    /*
-    team1.getMembers.foreach(player =>{
-      actors += player
-    })
-
-    team2.getMembers.foreach(player =>{
-      actors += player
-    }) */
 
     actors += team1.firstMember.get
     actors += team2.firstMember.get
@@ -101,7 +91,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       numAck = numAck + 1
       if(numAck == TOT_PLAYERS) {
         if(gameCycle.isLast){
-          println("FINE GIROOO")
           onHandEnd(defineTaker(cardsOnTable))
         }
         else {
@@ -232,7 +221,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   override def isCardOk(card: Card, player: PlayerName): Unit = currentSuit match {
     case Some(seed) =>
       val playerHand: Seq[Card] = cardsInHand(player).toStream
-      println("Carte in mano: " + playerHand)
       if (seed == card.cardSeed) {
         onCardPlayed(card, player)
       }
@@ -325,7 +313,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
   private def getGameWinner: Option[BaseTeam[PlayerName]] = {
     if (team1.getScore >= MAX_SCORE && team1.getScore > team2.getScore) return Some(team1)
-
     if (team2.getScore >= MAX_SCORE && team2.getScore > team1.getScore) return Some(team2)
 
     None
@@ -334,8 +321,8 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   private def notifyWinner(team: BaseTeam[PlayerName]): Unit = {
     println("Mando gamescore")
     gameEnd = true
-    //mediator ! Publish(topicName, FinalGameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore))
-    //onGameEnd()
+    mediator ! Publish(topicName, FinalGameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore))
+    onGameEnd()
   }
 
   private def checkMarafona(hand: Set[Card], player: PlayerName): Unit = {
