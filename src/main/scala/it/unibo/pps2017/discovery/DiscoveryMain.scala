@@ -13,5 +13,5 @@ object DiscoveryMain extends App {
 
   Vertx.vertx().deployVerticle(discovery)
 
-  discovery.startAkkaCluster("192.168.1.14")
+  discovery.startAkkaCluster("127.0.0.1")
 }

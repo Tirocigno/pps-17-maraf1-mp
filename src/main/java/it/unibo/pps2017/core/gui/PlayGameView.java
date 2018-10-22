@@ -29,8 +29,8 @@ public class PlayGameView extends Application {
             ClientController clientController = ClientController$.MODULE$.getSingletonController();
             clientController.setPlayGameController(gameController);
             gameController.setGameController(clientController.getGameController());
-            clientController.startActorSystem("192.168.1.14");
-            clientController.createRestClient("192.168.1.14", DISCOVERY_PORT);
+			clientController.startActorSystem("127.0.0.1", "127.0.0.1");
+			clientController.createRestClient("127.0.0.1", DISCOVERY_PORT);
             clientController.sendMatchRequest();
 			primaryStage.show();
 

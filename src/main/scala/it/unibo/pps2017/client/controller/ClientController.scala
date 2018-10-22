@@ -23,9 +23,10 @@ sealed trait ClientController {
   /**
     * Start an actorsystem which will join the seed disposed by the discovery.
     *
-    * @param seedHost
+    * @param seedHost IP address of the seeds.
+    * @param myIP     IP address of the machine on which actor system is running.
     */
-  def startActorSystem(seedHost: IPAddress)
+  def startActorSystem(seedHost: IPAddress, myIP: IPAddress)
 
   def setPlayerName(playerName: String)
 
@@ -63,9 +64,9 @@ object ClientController {
 
     override def setGameID(gameID: String): Unit = gameController.joinPlayerToMatch(gameID)
 
-    override def startActorSystem(seedHost: IPAddress): Unit = {
+    override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit = {
       val localIpAddress: String = InetAddress.getLocalHost.getHostAddress
-      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", "192.168.1.14"))
+      actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", myIP))
       gameController.createActor(this.playerName, actorSystem.get)
     }
 
