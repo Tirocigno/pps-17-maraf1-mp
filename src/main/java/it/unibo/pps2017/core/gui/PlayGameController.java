@@ -76,7 +76,6 @@ public class PlayGameController implements PlayGame {
 
     private Map<String, String> indexOfMyCards;
     private List<String> playersList;
-    private List<ImageView> cardsPlayer1;
     private List<ImageView> cardsPlayer2;
     private List<ImageView> cardsPlayer3;
     private List<ImageView> cardsPlayer4;
@@ -89,17 +88,16 @@ public class PlayGameController implements PlayGame {
     private ImageView playedCard;
 
     private List<String> idUserCards;
+    private boolean briscolaChosen = true;
 
     public PlayGameController() {
         this.indexOfMyCards = new LinkedHashMap<>();
-        this.cardsPlayer1 = new ArrayList<>();
         this.cardsPlayer2 = new ArrayList<>();
         this.cardsPlayer3 = new ArrayList<>();
         this.cardsPlayer4 = new ArrayList<>();
         this.playersList = new ArrayList<>();
         this.idUserCards = new ArrayList<>();
         this.createListWithCardsId();  // creo la lista degli id delle carte del player
-        this.createCardsListUser1();
     }
 
     public void setGameController(final GameController controller) {
@@ -157,7 +155,7 @@ public class PlayGameController implements PlayGame {
      * @param clickedCard clickedCard.
      */
     public void clickedCard(final MouseEvent clickedCard) {
-        if (gameController.isMyTurn()) {
+        if (gameController.isMyTurn() && briscolaChosen) {
             this.playedCard = (ImageView) clickedCard.getSource();
             String clickedCardId = playedCard.getId();
             this.pathOfImageSelected = getPathFromMap(clickedCardId);
@@ -184,19 +182,15 @@ public class PlayGameController implements PlayGame {
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
 
-
-
-
         initializePlayersHand(); // mostro il retro delle carte degli altri giocatori
         this.indexOfMyCards.clear(); // svuoto la mappa per i turni successivi
 
         for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
+
             Image userCard = getImageFromPath(firstUserCards.get(cardIndex));
             /* mi salvo le carte in ordine nella mappa */
             indexOfMyCards.put(idUserCards.get(cardIndex), firstUserCards.get(cardIndex));
 
-            System.out.println(firstUserCards.get(cardIndex));
-            System.out.println("CARTE ARRIVATE");
             switch (cardIndex) {
                 case 0:
                     this.firstCard.setImage(userCard);
@@ -228,10 +222,7 @@ public class PlayGameController implements PlayGame {
                 case 9:
                     this.tenthCard.setImage(userCard);
                     this.tenthCard.setVisible(true);
-
             }
-
-          //  showMyCards(); // mostro le mie carte
         }
     }
 
@@ -264,10 +255,7 @@ public class PlayGameController implements PlayGame {
             hideCommands();
         }
 
-        /*if (partialTurnIsEnded) {
-            cleanField();
-        }*/
-        if(isFirstPlayer) cleanField();
+        if (isFirstPlayer) cleanField();
 
         Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
 
@@ -338,6 +326,7 @@ public class PlayGameController implements PlayGame {
     }
 
     public void showBriscolaCommands() {
+        this.briscolaChosen = false;
         this.coinButton.setVisible(true);
         this.clubButton.setVisible(true);
         this.cupButton.setVisible(true);
@@ -347,6 +336,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private void hideBriscolaCommands() {
+        this.briscolaChosen = true;
         this.coinButton.setVisible(false);
         this.clubButton.setVisible(false);
         this.cupButton.setVisible(false);
@@ -412,18 +402,6 @@ public class PlayGameController implements PlayGame {
     /* Questi metodi servono per avere una lista delle carte di ogni giocatore,
      * cosi' ogni volta che ne viene giocata una la posso rimuovere e nascondere nella view
      */
-    private void createCardsListUser1() {
-        this.cardsPlayer1.add(firstCard);
-        this.cardsPlayer1.add(secondCard);
-        this.cardsPlayer1.add(thirdCard);
-        this.cardsPlayer1.add(fourthCard);
-        this.cardsPlayer1.add(fifthCard);
-        this.cardsPlayer1.add(sixthCard);
-        this.cardsPlayer1.add(seventhCard);
-        this.cardsPlayer1.add(eighthCard);
-        this.cardsPlayer1.add(ninthCard);
-        this.cardsPlayer1.add(tenthCard);
-    }
 
     private void createCardsListUser2() {
         this.cardsPlayer2.add(firstCardUser2);
@@ -514,9 +492,4 @@ public class PlayGameController implements PlayGame {
         this.idUserCards.add("tenthCard");
     }
 
-    private void showMyCards() {
-        for (final ImageView image: cardsPlayer1) {
-            image.setVisible(true);
-        }
-    }
 }
