@@ -113,6 +113,31 @@ object DiscoveryAPI {
     override def path: String = "/getallmatches"
   }
 
+  case object RegisterSocialIDAPI extends DiscoveryAPI {
+
+    val SOCIAL_ID = "playerid"
+    val SOCIAL_ACTOR = "actorref"
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+
+    override def path: String = "/registersocialidapi"
+  }
+
+  case object UnregisterSocialIDAPI extends DiscoveryAPI {
+
+    val SOCIAL_ID = "playerid"
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
+
+    override def path: String = "/unregistersocialidapi"
+  }
+
   /**
     * values method, analog to java's enumeration's values() method.
     *
