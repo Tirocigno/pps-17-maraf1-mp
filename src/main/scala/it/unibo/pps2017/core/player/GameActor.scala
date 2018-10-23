@@ -106,25 +106,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       println("MESSAGGIO -> " + m)
   }
 
-  private def startTimer(): Unit = {
-    var tmp = 0
-    val timer = new java.util.Timer()
-    cardPlayed = false
-    task = new java.util.TimerTask {
-      def run(): Unit = {
-        tmp = tmp + 1
-       // println("Controllo")
-        // da togliere false quando andra'
-          if(tmp == TURN_TIME_SEC && !cardPlayed) {
-              val randCard: Card = forcePlay(nextHandStarter.get)
-              println("Carta forzata: " +randCard)
-              mediator ! Publish(topicName,ForcedCardPlayed(cardToPath(randCard),nextHandStarter.get))
-            }
-      }
-    }
-    timer.schedule(task, TIME_PERIOD, TIME_PERIOD)
-  }
-
   private def endTask(): Unit ={
     task.cancel()
   }

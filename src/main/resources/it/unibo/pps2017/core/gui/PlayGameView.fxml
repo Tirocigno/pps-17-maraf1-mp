@@ -166,11 +166,6 @@
          <top>
             <AnchorPane BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="timer" layoutY="40.0" text="TIMER" textFill="WHITE">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
                   <HBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <ImageView fx:id="tenthCardUser3" fitHeight="72.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true" visible="false">
@@ -225,7 +220,6 @@
                         </ImageView>
                      </children>
                   </HBox>
-                  <Button fx:id="buttonStart" mnemonicParsing="false" text="Inizia" />
                </children>
             </AnchorPane>
          </top>

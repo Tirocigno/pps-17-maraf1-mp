@@ -231,11 +231,6 @@ public class PlayGameController implements PlayGame {
         }
     }
 
-    public void setForcedPlayedCard(final String card) {
-        //Image cardPlayed = getImageFromPath(card);
-        //this.user1Field.setImage(cardPlayed);
-    }
-
     @Override
     public void showOtherPlayersPlayedCard(final String player, final String cardPath) {
         Image cardPlayed = getImageFromPath(cardPath);
@@ -279,12 +274,6 @@ public class PlayGameController implements PlayGame {
         cleanField();
         this.briscolaLabel.setVisible(false);
         showScore(actualScoreMyTeam, actualScoreOpponentTeam, endedMatch);
-    }
-
-    @Override
-    public void setTimer(final int timer) {
-        String newTimer = Integer.toString(timer);
-        this.timer.setText(newTimer);
     }
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
