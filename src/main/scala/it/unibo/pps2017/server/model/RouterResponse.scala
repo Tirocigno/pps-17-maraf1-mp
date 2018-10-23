@@ -24,7 +24,7 @@ import redis.RedisClient
 case class RouterResponse(routingContext: RoutingContext,
                           var status: HeaderStatus = OK,
                           var message: Option[String] = None) {
-  implicit val _: ActorSystem = akka.actor.ActorSystem()
+  implicit val akkaSystem: ActorSystem = akka.actor.ActorSystem()
 
 
   val redisHost: String = System.getenv("REDIS_HOST")
