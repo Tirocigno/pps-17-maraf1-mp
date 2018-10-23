@@ -79,6 +79,18 @@ object DiscoveryAPI {
     override def path: String = "/decreaseservermatches"
   }
 
+  /**
+    * values method, analog to java's enumeration's values() method.
+    *
+    * @return a Set containing all the objects in the DiscoveryAPI object.
+    */
+  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
+    IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
+    RemoveMatchAPI, GetAllMatchesAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI)
+
+  /**
+    * RestAPI to register a new match on the discovery,
+    */
   case object RegisterMatchAPI extends DiscoveryAPI {
 
     val MATCH_ID_KEY = "matchID"
@@ -91,6 +103,9 @@ object DiscoveryAPI {
     override def path: String = "/registermatch"
   }
 
+  /**
+    * RestAPI to Remove a match from the discovery server.
+    */
   case object RemoveMatchAPI extends DiscoveryAPI {
 
     val MATCH_ID_KEY = "matchID"
@@ -103,6 +118,9 @@ object DiscoveryAPI {
     override def path: String = "/removermatch"
   }
 
+  /**
+    * RestAPI to get all the current played matches on the system.
+    */
   case object GetAllMatchesAPI extends DiscoveryAPI {
 
     override def httpMethod: HttpMethod = HttpMethod.GET
@@ -113,6 +131,9 @@ object DiscoveryAPI {
     override def path: String = "/getallmatches"
   }
 
+  /**
+    * RestAPI for registering a new social actor on the server.
+    */
   case object RegisterSocialIDAPI extends DiscoveryAPI {
 
     val SOCIAL_ID = "playerid"
@@ -126,6 +147,9 @@ object DiscoveryAPI {
     override def path: String = "/registersocialidapi"
   }
 
+  /**
+    * RestAPI for unregistering a new social actor on the server.
+    */
   case object UnregisterSocialIDAPI extends DiscoveryAPI {
 
     val SOCIAL_ID = "playerid"
@@ -139,14 +163,21 @@ object DiscoveryAPI {
   }
 
   /**
-    * values method, analog to java's enumeration's values() method.
-    *
-    * @return a Set containing all the objects in the DiscoveryAPI object.
+    * RestAPI to get all online players list.
     */
-  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
-    IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
-    RemoveMatchAPI, GetAllMatchesAPI)
+  case object GetAllOnlinePlayersAPI extends DiscoveryAPI {
 
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+
+    override def path: String = "/getallonlineplayerapi"
+  }
+
+  /**
+    * Standard connection parameters used by every API.
+    */
   object StandardParameters {
     val IP_KEY = "ip"
     val PORT_KEY = "port"
