@@ -1,6 +1,7 @@
 package it.unibo.pps2017.discovery.structures
 
 import akka.actor.ActorRef
+import it.unibo.pps2017.discovery.structures.SocialActorsMap.SocialMap
 
 /**
   * This structure will handle a list of actor refs which correspond to the online players logged in the system.
@@ -25,11 +26,13 @@ trait SocialActorsMap {
   /**
     * Return the map of current online players.
     */
-  def getCurrentOnlinePlayerMap: Map[String, ActorRef]
+  def getCurrentOnlinePlayerMap: SocialMap
 
 }
 
 object SocialActorsMap {
+
+  type SocialMap = Map[String, ActorRef]
 
   def apply(): SocialActorsMap = new SocialActorsMapImpl()
 
@@ -43,7 +46,7 @@ object SocialActorsMap {
 
     override def unregisterUser(userID: String): Unit = actorsMap -= userID
 
-    override def getCurrentOnlinePlayerMap: Map[String, ActorRef] = actorsMap.toMap
+    override def getCurrentOnlinePlayerMap: SocialMap = actorsMap.toMap
   }
 
 }
