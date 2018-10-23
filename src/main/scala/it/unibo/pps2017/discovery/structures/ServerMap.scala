@@ -50,7 +50,8 @@ object ServerMap {
   def apply(): ServerMap = new ServerMapImpl()
 
   private class ServerMapImpl extends ServerMap {
-    var matchesMap: scala.collection.mutable.Map[ServerContext, Int] = scala.collection.mutable.Map[ServerContext, Int]()
+    var matchesMap: scala.collection.mutable.Map[ServerContext, Int] =
+      scala.collection.mutable.Map[ServerContext, Int]()
 
     override def addServer(serverContext: ServerContext): Unit = matchesMap += (serverContext -> 0)
 

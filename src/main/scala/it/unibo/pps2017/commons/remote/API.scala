@@ -34,4 +34,13 @@ object API {
     def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request
   }
 
+  /**
+    * Trait to define a standard ok and error messages inside the APIs.
+    */
+  trait APIWithMessages {
+    def okMessage: String
+
+    def errorMessage: String
+  }
+
 }
