@@ -150,6 +150,13 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   }
 
   /**
+    * Handler for GetAllOnlinePlayersAPI.
+    */
+  private val getAllOnlinePlayersAPI: APIHandler = (_, response) => {
+    response.sendResponse(socialActorsMap.getCurrentOnlinePlayerMap)
+  }
+
+  /**
     * Private method to send an OK response with a message.
     *
     * @param response the response to complete.
@@ -199,6 +206,8 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
         registerSocialIDAPI)
       case api@UnregisterSocialIDAPI => api.asRequest(router,
         unregisterSocialIDAPI)
+      case api@GetAllOnlinePlayersAPI => api.asRequest(router,
+        getAllOnlinePlayersAPI)
       case api@_ => api.asRequest(router, mockHandler)
     })
 
