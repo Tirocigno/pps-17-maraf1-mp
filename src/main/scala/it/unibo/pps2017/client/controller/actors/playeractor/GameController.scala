@@ -125,9 +125,6 @@ class GameController extends MatchController {
     case NotifyBriscolaChosen(seed) => sendBriscolaChosen(briscola = seed.asString)
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
-    case ForcedCardPlayed(card, player) => showOtherPlayersPlayedCard(card, player = player)
-    case ForcedCardActualPlayer(card) => showForcedPlayedCard(card)
-    case SetTimer(timer) => setTimer(timer)
     case PlayedCard(card, player) => showOtherPlayersPlayedCard(card, player)
     case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
     case ComputePartialGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2)
@@ -258,15 +255,6 @@ class GameController extends MatchController {
   }
 
   /**
-    * Method to send to GUI the current value of timer.
-    *
-    * @param timer Value of timer.
-    */
-  def setTimer(timer: Int): Unit = {
-    playGameController.setTimer(timer)
-  }
-
-  /**
     * Method to send to GUI to understand if clicked card is ok or not.
     *
     * @param cardOK Boolean to know if clicked card is ok or not.
@@ -281,14 +269,6 @@ class GameController extends MatchController {
     */
   def sendPlayersList(playersList: List[String]): Unit = {
     playGameController.setPlayersList(playersList.asJava)
-  }
-
-  /**
-    * Method to send to GUI card's path of forced card.
-    * @param card path of card.
-    */
-  def showForcedPlayedCard(card: String): Unit = {
-    playGameController.setForcedPlayedCard(card)
   }
 
 }

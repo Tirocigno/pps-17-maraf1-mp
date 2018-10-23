@@ -83,17 +83,6 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     case NotifyCommandChosen(command, player) =>
       controller.updateGUI(NotifyCommandChosen(command, player))
 
-    case ForcedCardPlayed(card, player) =>
-      if (user.equals(player)) {
-        controller.updateGUI(ForcedCardActualPlayer(card))
-      } else {
-        controller.updateGUI(ForcedCardPlayed(card, player))
-      }
-      gameActor ! CardPlayedAck
-
-    case SetTimer(timer) =>
-      controller.updateGUI(SetTimer(timer))
-
     case PartialGameScore(winner1, winner2, score1, score2) =>
       controller.updateGUI(ComputePartialGameScore(user, winner1, winner2, score1, score2))
 

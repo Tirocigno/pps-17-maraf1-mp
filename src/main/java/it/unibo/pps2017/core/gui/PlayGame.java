@@ -59,13 +59,6 @@ public interface PlayGame {
     void getBriscolaChosen(final String briscola);
 
     /**
-     * This method is called to set timer (time remaining to play a card)
-     *
-     * @param timer timer
-     */
-    void setTimer(final int timer);
-
-    /**
      * This method is called to show played card if is ok.
      */
     void showPlayedCardOk();
