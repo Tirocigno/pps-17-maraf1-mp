@@ -28,3 +28,22 @@ trait SocialActorsMap {
   def getCurrentOnlinePlayerMap: Map[String, ActorRef]
 
 }
+
+object SocialActorsMap {
+
+  def apply(): SocialActorsMap = new SocialActorsMapImpl()
+
+  private class SocialActorsMapImpl extends SocialActorsMap {
+
+    var actorsMap: scala.collection.mutable.Map[String, ActorRef] =
+      scala.collection.mutable.Map[String, ActorRef]()
+
+    override def registerUser(userID: String, socialActorRef: ActorRef): Unit =
+      actorsMap += (userID -> socialActorRef)
+
+    override def unregisterUser(userID: String): Unit = actorsMap -= userID
+
+    override def getCurrentOnlinePlayerMap: Map[String, ActorRef] = actorsMap.toMap
+  }
+
+}
