@@ -1,10 +1,12 @@
 
 package it.unibo.pps2017
 
+import akka.actor.ActorRef
 import io.vertx.scala.ext.web.RoutingContext
-import it.unibo.pps2017.commons.remote.RestUtils.{MatchRef, ServerContext}
+import it.unibo.pps2017.commons.remote.RestUtils.{MatchRef, ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.StandardParameters
 import it.unibo.pps2017.server.model.MatchesSetEncoder
+import org.json4s.jackson.Serialization.read
 
 import scala.language.implicitConversions
 
@@ -24,7 +26,22 @@ package object discovery {
     ServerContext(socketIP, socketPort)
   }
 
+  /**
+    * Implicit conversion for set of matches to a serializable object.
+    *
+    * @param matchesSet the set to return in response.
+    * @return a serializable version of the set.
+    */
   implicit def matchesSetToJson(matchesSet:Set[MatchRef]):MatchesSetEncoder =
     MatchesSetEncoder(matchesSet)
+
+  /**
+    * Decode a serialized actorRef
+    *
+    * @param encodedActorRef an encoded ActorRef as String.
+    * @return the decoded ActorRef
+    */
+  implicit def deserializeActorRef(encodedActorRef: String): ActorRef =
+    read[ActorRef](encodedActorRef)
 
 }

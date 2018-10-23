@@ -8,7 +8,7 @@ import it.unibo.pps2017.commons.remote.RestUtils.Port
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
-import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap}
+import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap, SocialActorsMap}
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse}
 
 /**
@@ -41,6 +41,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
 
   val serverMap: ServerMap = ServerMap()
   val matchesSet: MatchesSet = MatchesSet()
+  val socialActorsMap: SocialActorsMap = SocialActorsMap()
 
   /**
     * Handler for the GetServerAPI
@@ -51,6 +52,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       case _ => setErrorAndRespond(response, "NO SERVER FOUND")
     }
   }
+
   /**
     * Handler for the RegisterServerAPI.
     */
@@ -118,6 +120,48 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   }
 
   /**
+    * Handler for RegisterSocialIDAPI
+    */
+  private val registerSocialIDAPI: APIHandler = (router, response) => {
+    try {
+      val playerID = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ID)
+        .getOrElse(throw new NoSuchFieldException())
+      val actorRef = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ACTOR)
+        .getOrElse(throw new NoSuchFieldException())
+      socialActorsMap.registerUser(playerID, actorRef)
+      setMessageAndRespond(response, "ACTOR REGISTERED SUCCESSFULLY")
+    } catch {
+      case _: NoSuchFieldException => setErrorAndRespond(response, "NO PLAYER ID OR ACTORREF FOUND")
+    }
+  }
+
+  /**
+    * Handler for UnregisterSocialIDAPI
+    */
+  private val unregisterSocialIDAPI: APIHandler = (router, response) => {
+    try {
+      val playerID = router.request().getFormAttribute(UnregisterSocialIDAPI.SOCIAL_ID)
+        .getOrElse(throw new NoSuchFieldException())
+      socialActorsMap.unregisterUser(playerID)
+      setMessageAndRespond(response, "SOCIALACTOR DEREGISTERED SUCCESSFULLY")
+    } catch {
+      case _: NoSuchFieldException => setErrorAndRespond(response, "NO PLAYER ID OR ACTORREF FOUND")
+    }
+  }
+
+  /**
+    * Private method to send an OK response with a message.
+    *
+    * @param response the response to complete.
+    * @param message  the message to insert in the body.
+    */
+  private def setMessageAndRespond(response: RouterResponse, message: String): Unit = {
+    response.sendResponse(Message(message))
+  }
+
+
+
+  /**
     * Private method to set an error inside the body of a response call and send it.
     *
     * @param response the response to complete with an error.
@@ -151,6 +195,10 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
         registerMatchAPIHandler)
       case api@RemoveMatchAPI => api.asRequest(router,
         removeMatchAPIHandler)
+      case api@RegisterSocialIDAPI => api.asRequest(router,
+        registerSocialIDAPI)
+      case api@UnregisterSocialIDAPI => api.asRequest(router,
+        unregisterSocialIDAPI)
       case api@_ => api.asRequest(router, mockHandler)
     })
 
