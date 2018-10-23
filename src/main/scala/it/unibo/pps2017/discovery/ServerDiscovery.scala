@@ -37,6 +37,7 @@ object ServerDiscovery {
   def apply(port: Port, timeout: Int): ServerDiscovery = new ServerDiscoveryImpl(port, timeout)
 
 
+
 private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscovery {
 
   val serverMap: ServerMap = ServerMap()
@@ -49,7 +50,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private val getServerAPIHandler: APIHandler = (_, response) => {
     serverMap.getLessBusyServer match {
       case Some(server) => response.sendResponse(server)
-      case _ => setErrorAndRespond(response, "NO SERVER FOUND")
+      case _ => setErrorAndRespond(response, GetServerAPI.errorMessage)
     }
   }
 
@@ -58,7 +59,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     */
   private val registerServerAPIHandler: APIHandler = (router, response) => {
     serverMap.addServer(router)
-    response.sendResponse(Message("SERVER REGISTERED SUCCESSFULLY"))
+    setMessageAndRespond(response, RegisterServerAPI.okMessage)
   }
   /**
     * Handler for the IncreaseServerMatchesAPI.
@@ -66,9 +67,9 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private val increaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
       serverMap.increaseMatchesPlayedOnServer(router)
-      response.sendResponse(Message("INCREASE MATCHES ON SERVER"))
+      setMessageAndRespond(response, IncreaseServerMatchesAPI.okMessage)
     } catch {
-      case e: IllegalArgumentException => setErrorAndRespond(response, "BAD REQUEST")
+      case e: IllegalArgumentException => setErrorAndRespond(response, IncreaseServerMatchesAPI.errorMessage)
     }
   }
   /**
@@ -77,10 +78,12 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private val decreaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
       serverMap.decreaseMatchesPlayedOnServer(router)
-      response.sendResponse(Message("DECREASED MATCHES ON SERVER"))
+      setMessageAndRespond(response, DecreaseServerMatchesAPI.okMessage)
     } catch {
-      case e: IllegalArgumentException => setErrorAndRespond(response, "INVALID SERVER ID")
-      case e: IllegalStateException => setErrorAndRespond(response, "NO MATCH SERVER TO REMOVE")
+      case _: IllegalArgumentException => setErrorAndRespond(response,
+        DecreaseServerMatchesAPI.noServerErrorMessage)
+      case _: IllegalStateException => setErrorAndRespond(response,
+        DecreaseServerMatchesAPI.noMatchErrorMessage)
     }
   }
   /**
@@ -101,7 +104,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       increaseServerMatchesAPIHandler(router, response)
     } catch {
       case _: IllegalStateException => setErrorAndRespond(response,
-        "NO MATCHID FOUND IN REQUEST")
+        RegisterMatchAPI.errorMessage)
     }
   }
   /**
@@ -115,7 +118,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       decreaseServerMatchesAPIHandler(router, response)
     } catch {
       case _: NoSuchFieldException => setErrorAndRespond(response,
-        "NO MATCHID FOUND IN REQUEST")
+        RemoveMatchAPI.errorMessage)
     }
   }
 
@@ -129,9 +132,9 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       val actorRef = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ACTOR)
         .getOrElse(throw new NoSuchFieldException())
       socialActorsMap.registerUser(playerID, actorRef)
-      setMessageAndRespond(response, "ACTOR REGISTERED SUCCESSFULLY")
+      setMessageAndRespond(response, RegisterSocialIDAPI.okMessage)
     } catch {
-      case _: NoSuchFieldException => setErrorAndRespond(response, "NO PLAYER ID OR ACTORREF FOUND")
+      case _: NoSuchFieldException => setErrorAndRespond(response, RegisterSocialIDAPI.errorMessage)
     }
   }
 
@@ -143,9 +146,9 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       val playerID = router.request().getFormAttribute(UnregisterSocialIDAPI.SOCIAL_ID)
         .getOrElse(throw new NoSuchFieldException())
       socialActorsMap.unregisterUser(playerID)
-      setMessageAndRespond(response, "SOCIALACTOR DEREGISTERED SUCCESSFULLY")
+      setMessageAndRespond(response, UnregisterSocialIDAPI.okMessage)
     } catch {
-      case _: NoSuchFieldException => setErrorAndRespond(response, "NO PLAYER ID OR ACTORREF FOUND")
+      case _: NoSuchFieldException => setErrorAndRespond(response, UnregisterSocialIDAPI.errorMessage)
     }
   }
 
@@ -214,7 +217,6 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     val options = HttpServerOptions()
     options.setCompressionSupported(true)
       .setIdleTimeout(timeout)
-
 
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
