@@ -53,7 +53,7 @@ public class PlayGameController implements PlayGame {
     ImageView firstCardUser4 = new ImageView(), secondCardUser4 = new ImageView(), thirdCardUser4 = new ImageView(), fourthCardUser4 = new ImageView(), fifthCardUser4 = new ImageView(), sixthCardUser4 = new ImageView(), seventhCardUser4 = new ImageView(), eighthCardUser4 = new ImageView(), ninthCardUser4 = new ImageView(), tenthCardUser4 = new ImageView();
 
     @FXML
-    Button buttonStart, bussoButton, voloButton, striscioButton;
+    Button bussoButton, voloButton, striscioButton;
 
     @FXML
     Button coinButton, cupButton, clubButton, swordButton;
@@ -68,7 +68,7 @@ public class PlayGameController implements PlayGame {
     ImageView gameOverImage = new ImageView();
 
     @FXML
-    Label timer, scoreTeams;
+    Label scoreTeams;
 
     @FXML
     Text briscolaLabel, cardNotOk;
@@ -96,6 +96,11 @@ public class PlayGameController implements PlayGame {
         this.playersList = new ArrayList<>();
         this.idUserCards = new ArrayList<>();
         this.createListWithCardsId();
+
+        // dovrebbe visualizzare l'asso di bastoni in basso a sinistra quando lancio l'app
+        Image userCard = new Image(this.getClass().getResourceAsStream("cards/1Club.png"));
+        this.firstCard.setImage(userCard);
+
     }
 
     @Override
