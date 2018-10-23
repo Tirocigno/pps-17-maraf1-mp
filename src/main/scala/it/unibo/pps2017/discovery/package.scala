@@ -10,10 +10,18 @@ import scala.language.implicitConversions
 
 package object discovery {
 
+  /**
+    * Transform a vertx router to a ServerContext, retrieving the ip address from the socket and the port from
+    * parameter inside the request.
+    *
+    * @param router the RoutingContext of the request to handle
+    * @return a ServerContext to serialize.
+    */
   implicit def retrieveContextFromRequest(router: RoutingContext): ServerContext = {
     val request = router.request()
-    ServerContext(request.getFormAttribute(StandardParameters.IP_KEY).get,
-      Integer.valueOf(request.getFormAttribute(StandardParameters.PORT_KEY).get))
+    val socketIP = request.remoteAddress().host()
+    val socketPort = Integer.valueOf(request.getFormAttribute(StandardParameters.PORT_KEY).get)
+    ServerContext(socketIP, socketPort)
   }
 
   implicit def matchesSetToJson(matchesSet:Set[MatchRef]):MatchesSetEncoder =
