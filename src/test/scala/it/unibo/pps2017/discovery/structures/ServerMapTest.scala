@@ -16,6 +16,7 @@ class ServerMapTest extends FunSuite with BeforeAndAfterEach {
   val otherServerContext = RestUtils.ServerContext(mockIP2, mockPort)
   var serverMap: ServerMap = ServerMap()
 
+
   override def beforeEach() {
     serverMap = ServerMap()
   }
