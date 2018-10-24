@@ -33,7 +33,6 @@ public class PlayGameController implements PlayGame {
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
     private static final String FORMAT = ".png";
-    private static final int TOTAL_HAND_CARDS = 10;
     private GameController gameController;
 
     @FXML
@@ -74,6 +73,7 @@ public class PlayGameController implements PlayGame {
 
     private Map<String, String> indexOfMyCards;
     private List<String> playersList;
+    private List<ImageView> cardsPlayer1;
     private List<ImageView> cardsPlayer2;
     private List<ImageView> cardsPlayer3;
     private List<ImageView> cardsPlayer4;
@@ -92,6 +92,7 @@ public class PlayGameController implements PlayGame {
 
     public PlayGameController() {
         this.indexOfMyCards = new LinkedHashMap<>();
+        this.cardsPlayer1 = new ArrayList<>();
         this.cardsPlayer2 = new ArrayList<>();
         this.cardsPlayer3 = new ArrayList<>();
         this.cardsPlayer4 = new ArrayList<>();
@@ -194,49 +195,18 @@ public class PlayGameController implements PlayGame {
         this.cardNotOk.setVisible(true);
     }
 
-
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
         initializePlayersHand();
         this.indexOfMyCards.clear();
+        int cardCounter = 0;
 
-        for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
-
-            Image userCard = getImageFromPath(firstUserCards.get(cardIndex));
-            indexOfMyCards.put(idUserCards.get(cardIndex), firstUserCards.get(cardIndex));
-
-            switch (cardIndex) {
-                case 0:
-                    this.firstCard.setImage(userCard);
-                    this.firstCard.setVisible(true);
-                case 1:
-                    this.secondCard.setImage(userCard);
-                    this.secondCard.setVisible(true);
-                case 2:
-                    this.thirdCard.setImage(userCard);
-                    this.thirdCard.setVisible(true);
-                case 3:
-                    this.fourthCard.setImage(userCard);
-                    this.fourthCard.setVisible(true);
-                case 4:
-                    this.fifthCard.setImage(userCard);
-                    this.fifthCard.setVisible(true);
-                case 5:
-                    this.sixthCard.setImage(userCard);
-                    this.sixthCard.setVisible(true);
-                case 6:
-                    this.seventhCard.setImage(userCard);
-                    this.seventhCard.setVisible(true);
-                case 7:
-                    this.eighthCard.setImage(userCard);
-                    this.eighthCard.setVisible(true);
-                case 8:
-                    this.ninthCard.setImage(userCard);
-                    this.ninthCard.setVisible(true);
-                case 9:
-                    this.tenthCard.setImage(userCard);
-                    this.tenthCard.setVisible(true);
-            }
+        for (final ImageView firstPlayerCard: cardsPlayer1) {
+            Image userCard = getImageFromPath(firstUserCards.get(cardCounter));
+            indexOfMyCards.put(idUserCards.get(cardCounter), firstUserCards.get(cardCounter));
+            firstPlayerCard.setImage(userCard);
+            firstPlayerCard.setVisible(true);
+            cardCounter++;
         }
     }
 
@@ -396,13 +366,25 @@ public class PlayGameController implements PlayGame {
     }
 
     private void initializePlayersHand() {
-
         this.editableCardsPlayer2 = new ArrayList<>(cardsPlayer2);
         this.editableCardsPlayer3 = new ArrayList<>(cardsPlayer3);
         this.editableCardsPlayer4 = new ArrayList<>(cardsPlayer4);
         showOtherPlayersHand(editableCardsPlayer2);
         showOtherPlayersHand(editableCardsPlayer3);
         showOtherPlayersHand(editableCardsPlayer4);
+    }
+
+    private void createCardsListUser1() {
+        this.cardsPlayer1.add(firstCard);
+        this.cardsPlayer1.add(secondCard);
+        this.cardsPlayer1.add(thirdCard);
+        this.cardsPlayer1.add(fourthCard);
+        this.cardsPlayer1.add(fifthCard);
+        this.cardsPlayer1.add(sixthCard);
+        this.cardsPlayer1.add(seventhCard);
+        this.cardsPlayer1.add(eighthCard);
+        this.cardsPlayer1.add(ninthCard);
+        this.cardsPlayer1.add(tenthCard);
     }
 
     private void createCardsListUser2() {
@@ -454,6 +436,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private void createCardsListPlayers() {
+        createCardsListUser1();
         createCardsListUser2();
         createCardsListUser3();
         createCardsListUser4();
@@ -490,5 +473,4 @@ public class PlayGameController implements PlayGame {
         this.idUserCards.add("ninthCard");
         this.idUserCards.add("tenthCard");
     }
-
 }

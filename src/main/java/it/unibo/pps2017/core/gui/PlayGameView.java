@@ -23,10 +23,9 @@ public class PlayGameView extends Application {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
-			//primaryStage.setFullScreen(true);
+			primaryStage.setFullScreen(true);
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
-
 			ClientController clientController = ClientController$.MODULE$.getSingletonController();
             clientController.setPlayGameController(gameController);
             gameController.setGameController(clientController.getGameController());
