@@ -4,6 +4,7 @@ package it.unibo.pps2017.commons.remote.rest
 import akka.actor.ActorRef
 import it.unibo.pps2017.server.model.ServerContextEncoder
 import org.json4s.DefaultFormats
+import org.json4s.jackson.Serialization.write
 
 object RestUtils {
 
@@ -38,6 +39,6 @@ object RestUtils {
   implicit def serverContextDecoderConversion(serverContext: ServerContextEncoder): ServerContext =
     ServerContext(serverContext.ipAddress, serverContext.port)
 
-  def serializeActorRef(actorRef: ActorRef) = {}
+  def serializeActorRef(actorRef: ActorRef): String = write(actorRef)
 
 }
