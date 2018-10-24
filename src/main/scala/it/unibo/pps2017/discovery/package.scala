@@ -3,7 +3,7 @@ package it.unibo.pps2017
 
 import akka.actor.ActorRef
 import io.vertx.scala.ext.web.RoutingContext
-import it.unibo.pps2017.commons.remote.RestUtils.{MatchRef, ServerContext, formats}
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{MatchRef, ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.StandardParameters
 import it.unibo.pps2017.discovery.structures.SocialActorsMap.SocialMap
 import it.unibo.pps2017.server.model.{MatchesSetEncoder, OnlinePlayersMapEncoder}

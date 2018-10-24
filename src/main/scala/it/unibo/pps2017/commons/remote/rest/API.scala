@@ -1,4 +1,5 @@
-package it.unibo.pps2017.commons.remote
+
+package it.unibo.pps2017.commons.remote.rest
 
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}

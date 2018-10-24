@@ -3,7 +3,7 @@ package it.unibo.pps2017.discovery.restAPI
 
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-import it.unibo.pps2017.commons.remote.API.{APIWithMessages, RestAPI}
+import it.unibo.pps2017.commons.remote.rest.API.{APIWithMessages, RestAPI}
 import it.unibo.pps2017.server.model.{GET, POST, Request, RouterResponse}
 
 
@@ -98,15 +98,6 @@ object DiscoveryAPI {
 
     def noMatchErrorMessage: String = "NO MATCHES PLAYED ON THE SPECIFIED SERVER"
   }
-
-  /**
-    * values method, analog to java's enumeration's values() method.
-    *
-    * @return a Set containing all the objects in the DiscoveryAPI object.
-    */
-  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
-    IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
-    RemoveMatchAPI, GetAllMatchesAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI)
 
   /**
     * RestAPI to register a new match on the discovery,
@@ -207,6 +198,15 @@ object DiscoveryAPI {
 
     override def path: String = "/getallonlineplayerapi"
   }
+
+  /**
+    * values method, analog to java's enumeration's values() method.
+    *
+    * @return a Set containing all the objects in the DiscoveryAPI object.
+    */
+  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
+    IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
+    RemoveMatchAPI, GetAllMatchesAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI, GetAllOnlinePlayersAPI)
 
   /**
     * Standard connection parameters used by every API.

@@ -5,9 +5,9 @@ import java.net.InetAddress
 
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
-import it.unibo.pps2017.client.model.remote.RestWebClient
-import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, Port, ServerContext}
+import it.unibo.pps2017.client.model.remote.{GameRestWebClient, RestWebClient}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, Port, ServerContext}
 import it.unibo.pps2017.core.gui.PlayGameController
 import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
 
@@ -73,7 +73,7 @@ object ClientController {
     override def setPlayerName(playerName: String): Unit = this.playerName = playerName
 
     override def createRestClient(discoveryIP: String, discoveryPort: Port): Unit = {
-      webClient = Some(RestWebClient(ServerContext(discoveryIP, discoveryPort)))
+      webClient = Some(GameRestWebClient(ServerContext(discoveryIP, discoveryPort)))
     }
 
     override def sendMatchRequest(): Unit = {
