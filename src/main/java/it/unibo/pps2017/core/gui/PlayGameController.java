@@ -26,6 +26,8 @@ import java.util.Map.Entry;
 public class PlayGameController implements PlayGame {
 
     private static final String COMMANDS_PATH = "commands/";
+    private static final String BACK = "cards/back.png";
+    private static final String BACK_REVERSE = "cards/backReverse.png";
     private static final String EMPTY_FIELD = "cards/emptyField.png";
     private static final String EMPTY_FIELD_MY_TURN = "cards/emptyFieldMyTurn.png";
     private static final String WIN_MATCH = "images/win.png";
@@ -163,6 +165,7 @@ public class PlayGameController implements PlayGame {
      * @param clickedCard clickedCard.
      */
     public void clickedCard(final MouseEvent clickedCard) {
+
         if (gameController.isMyTurn() && briscolaChosen) {
             this.playedCard = (ImageView) clickedCard.getSource();
             String clickedCardId = playedCard.getId();
@@ -189,6 +192,7 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
+        createCardsListPlayers();
         initializePlayersHand();
         this.indexOfMyCards.clear();
 
@@ -388,9 +392,9 @@ public class PlayGameController implements PlayGame {
     }
 
     private void initializePlayersHand() {
-        createCardsListUser2();
-        createCardsListUser3();
-        createCardsListUser4();
+        showOtherPlayersHand(cardsPlayer2);
+        showOtherPlayersHand(cardsPlayer3);
+        showOtherPlayersHand(cardsPlayer4);
     }
 
     private void createCardsListUser2() {
@@ -404,7 +408,9 @@ public class PlayGameController implements PlayGame {
         this.cardsPlayer2.add(eighthCardUser2);
         this.cardsPlayer2.add(ninthCardUser2);
         this.cardsPlayer2.add(tenthCardUser2);
-        this.showOtherPlayersHand(cardsPlayer2);
+        for (final ImageView image : cardsPlayer2) {
+            image.setImage(getImageFromPath(BACK_REVERSE));
+        }
     }
 
     private void createCardsListUser3() {
@@ -418,7 +424,9 @@ public class PlayGameController implements PlayGame {
         this.cardsPlayer3.add(eighthCardUser3);
         this.cardsPlayer3.add(ninthCardUser3);
         this.cardsPlayer3.add(tenthCardUser3);
-        this.showOtherPlayersHand(cardsPlayer3);
+        for (final ImageView image : cardsPlayer3) {
+            image.setImage(getImageFromPath(BACK));
+        }
     }
 
     private void createCardsListUser4() {
@@ -432,7 +440,15 @@ public class PlayGameController implements PlayGame {
         this.cardsPlayer4.add(eighthCardUser4);
         this.cardsPlayer4.add(ninthCardUser4);
         this.cardsPlayer4.add(tenthCardUser4);
-        this.showOtherPlayersHand(cardsPlayer4);
+        for (final ImageView image : cardsPlayer4) {
+            image.setImage(getImageFromPath(BACK_REVERSE));
+        }
+    }
+
+    private void createCardsListPlayers() {
+        createCardsListUser2();
+        createCardsListUser3();
+        createCardsListUser4();
     }
 
     private Image getImageFromPath(final String path) {
@@ -466,4 +482,5 @@ public class PlayGameController implements PlayGame {
         this.idUserCards.add("ninthCard");
         this.idUserCards.add("tenthCard");
     }
+
 }
