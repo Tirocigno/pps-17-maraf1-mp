@@ -108,56 +108,16 @@
                <children>
                   <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="41.0" AnchorPane.rightAnchor="0.0">
                      <children>
-                        <ImageView fx:id="tenthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="ninthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="eighthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="seventhCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="sixthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="fifthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="fourthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="thirdCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="secondCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="firstCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                           <image>
-                              <Image url="@cards/backReverse.png" />
-                           </image>
-                        </ImageView>
+                        <ImageView fx:id="tenthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="ninthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="eighthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+                        <ImageView fx:id="seventhCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+                        <ImageView fx:id="sixthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+                        <ImageView fx:id="fifthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+                        <ImageView fx:id="fourthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+                        <ImageView fx:id="thirdCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+                        <ImageView fx:id="secondCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+                        <ImageView fx:id="firstCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
                      </children>
                   </VBox>
                </children>
@@ -246,26 +206,10 @@
                   <ImageView fx:id="userThreeCommand" fitHeight="106.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
                   <ImageView fx:id="userTwoCommand" fitHeight="89.0" fitWidth="132.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
                   <ImageView fx:id="userFourCommand" fitHeight="89.0" fitWidth="132.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="4" />
-                  <ImageView fx:id="user1Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6">
-                     <image>
-                        <Image url="@cards/emptyField.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="user3Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
-                     <image>
-                        <Image url="@cards/emptyField.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="user2Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="4">
-                     <image>
-                        <Image url="@cards/emptyField.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fx:id="user4Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
-                     <image>
-                        <Image url="@cards/emptyField.png" />
-                     </image>
-                  </ImageView>
+                  <ImageView fx:id="user1Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+                  <ImageView fx:id="user3Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                  <ImageView fx:id="user2Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="4" />
+                  <ImageView fx:id="user4Field" fitHeight="106.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
                   <Button fx:id="swordButton" mnemonicParsing="false" onAction="#selectBriscola" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200;" text="Sword" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="8">
                      <font>
                         <Font size="15.0" />
