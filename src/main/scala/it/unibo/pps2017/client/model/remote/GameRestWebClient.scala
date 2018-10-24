@@ -15,7 +15,7 @@ import org.json4s.jackson.Serialization.read
 class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractRestWebClient(discoveryServerContext) {
 
   override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
-    case FoundGameRestAPI$ => invokeAPI(api, paramMap, foundGameCallBack)
+    case FoundGameRestAPI$ => invokeAPI(api, paramMap, foundGameCallBack, assignedServerContext.get)
 
   }
 

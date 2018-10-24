@@ -110,10 +110,10 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       * @param api             the api to call
       * @param paramMap        the parameters inside the request.
       * @param successCallBack the callback to resume when the response is ready.
+      * @param context         the server to contact.
       */
     def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
-                  successCallBack: Option[String] => Unit): Unit = {
-      val context = assignedServerContext.get
+                  successCallBack: Option[String] => Unit, context: ServerContext): Unit = {
       api.httpMethod match {
         case HttpMethod.POST => PostRequest(context.ipAddress, api.path, successCallBack, reportErrorToController,
           paramMap, Some(context.port))
@@ -123,5 +123,6 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       }
 
     }
+
 
 }
