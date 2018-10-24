@@ -28,6 +28,7 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
   private def registerAndUnregisterSocialIDCallBack(responseBody: Option[String]): Unit =
     socialController.notifyCallResultToGUI(responseBody)
 
+
   /**
     * Callback for the GetAllOnlinePlayers API.
     *
