@@ -246,7 +246,7 @@ case class RedisUserUtils() extends UserDatabaseUtils {
                           username: String,
                           onSuccess: Long => Unit,
                           onFail: Throwable => Unit): Unit = {
-    db.del(getUserKey(username))
+    db.del(getUserKey(username), getUserFriendsKey(username))
       .onComplete {
         case Success(queryRes) => onSuccess(queryRes) //TODO removing of all user references in friends list??
         case Failure(cause) => onFail(cause)
