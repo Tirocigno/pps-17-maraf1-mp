@@ -9,8 +9,7 @@ import it.unibo.pps2017.commons.remote.API.RestAPI
 import it.unibo.pps2017.commons.remote.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
-import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
-import it.unibo.pps2017.server.model.{GameFound, GetRequest, PostRequest, ServerContextEncoder}
+import it.unibo.pps2017.server.model.{GetRequest, PostRequest, ServerContextEncoder}
 import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.Future
@@ -39,10 +38,9 @@ sealed trait RestWebClient {
 object RestWebClient {
 
   type AsyncResponse = Future[HttpResponse[Buffer]]
+}
 
-  def apply(discoveryServerContext: ServerContext): RestWebClient = new RestWebClientImpl(discoveryServerContext)
-
-  private class RestWebClientImpl(override val discoveryServerContext: ServerContext) extends RestWebClient {
+abstract class AbstractRestWebClient(override val discoveryServerContext: ServerContext) extends RestWebClient {
 
 
     override def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]]): Unit =
@@ -99,15 +97,12 @@ object RestWebClient {
 
     /**
       * Execute an api call switching between all the possible API.
+      * Abstract method to define inside classes.
       *
       * @param api             the api to execute.
       * @param paramMap        the parameters to pass to the request.
       */
-    private def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
-      case FoundGameRestAPI$ => invokeAPI(api, paramMap, handleFoundGameRestAPI)
-      case _ => println("Api call executed")
-
-    }
+    def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]]): Unit
 
 
     /**
@@ -117,8 +112,8 @@ object RestWebClient {
       * @param paramMap        the parameters inside the request.
       * @param successCallBack the callback to resume when the response is ready.
       */
-    private def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
-                          successCallBack: Option[String] => Unit): Unit = {
+    def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
+                  successCallBack: Option[String] => Unit): Unit = {
       val context = assignedServerContext.get
       api.httpMethod match {
         case HttpMethod.POST => PostRequest(context.ipAddress, api.path, successCallBack, reportErrorToController,
@@ -129,17 +124,5 @@ object RestWebClient {
       }
 
     }
-
-    /**
-      * Handler for the FoundGame API response.
-      *
-      * @param jSonSource the body of the response.
-      */
-    private def handleFoundGameRestAPI(jSonSource: Option[String]): Unit = {
-      System.out.println("ho mandato il maledetto id della partita")
-      val gameID = read[GameFound](jSonSource.get).gameId
-      clientController.setGameID(gameID)
-    }
-  }
 
 }

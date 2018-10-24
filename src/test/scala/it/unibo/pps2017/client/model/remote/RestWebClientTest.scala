@@ -1,3 +1,4 @@
+
 package it.unibo.pps2017.client.model.remote
 import io.vertx.scala.core.Vertx
 import it.unibo.pps2017.commons.remote.RestUtils.ServerContext
@@ -38,7 +39,7 @@ class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
         genericHost))
     vertx.deployVerticle(serverVerticle)
     waitAsyncOpeartion
-    webClient = RestWebClient(ServerContext(genericHost, discoveryPort))
+    webClient = GameRestWebClient(ServerContext(genericHost, discoveryPort))
     waitAsyncOpeartion
   }
 
