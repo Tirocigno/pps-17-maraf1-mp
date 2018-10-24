@@ -17,10 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class PlayGameController implements PlayGame {
@@ -80,6 +77,9 @@ public class PlayGameController implements PlayGame {
     private List<ImageView> cardsPlayer2;
     private List<ImageView> cardsPlayer3;
     private List<ImageView> cardsPlayer4;
+    private List<ImageView> editableCardsPlayer2;
+    private List<ImageView> editableCardsPlayer3;
+    private List<ImageView> editableCardsPlayer4;
     private String player1;
     private String player2;
     private String player3;
@@ -98,6 +98,11 @@ public class PlayGameController implements PlayGame {
         this.playersList = new ArrayList<>();
         this.idUserCards = new ArrayList<>();
         this.createListWithCardsId();
+    }
+
+    @FXML
+    public void initialize() {
+        createCardsListPlayers();
     }
 
     @Override
@@ -192,7 +197,6 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
-        createCardsListPlayers();
         initializePlayersHand();
         this.indexOfMyCards.clear();
 
@@ -376,11 +380,11 @@ public class PlayGameController implements PlayGame {
 
     private void deleteCardFromHand(final String player) {
         if (player.equals(player2)) {
-            deleteCard(cardsPlayer2);
+            deleteCard(editableCardsPlayer2);
         } else if (player.equals(player3)) {
-            deleteCard(cardsPlayer3);
+            deleteCard(editableCardsPlayer3);
         } else if (player.equals(player4)) {
-            deleteCard(cardsPlayer4);
+            deleteCard(editableCardsPlayer4);
         }
     }
 
@@ -392,9 +396,13 @@ public class PlayGameController implements PlayGame {
     }
 
     private void initializePlayersHand() {
-        showOtherPlayersHand(cardsPlayer2);
-        showOtherPlayersHand(cardsPlayer3);
-        showOtherPlayersHand(cardsPlayer4);
+
+        this.editableCardsPlayer2 = new ArrayList<>(cardsPlayer2);
+        this.editableCardsPlayer3 = new ArrayList<>(cardsPlayer3);
+        this.editableCardsPlayer4 = new ArrayList<>(cardsPlayer4);
+        showOtherPlayersHand(editableCardsPlayer2);
+        showOtherPlayersHand(editableCardsPlayer3);
+        showOtherPlayersHand(editableCardsPlayer4);
     }
 
     private void createCardsListUser2() {
