@@ -8,13 +8,14 @@ import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterServerAPI, StandardParameters}
-import it.unibo.pps2017.server.actor.{LobbyActor, MultiPlayerMsg, SinglePlayerMsg}
+import it.unibo.pps2017.server.actor.{LobbyActor, TriggerSearch}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
 import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model._
 import org.json4s._
 import org.json4s.jackson.Serialization.read
 
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 
 object Dispatcher {
@@ -25,9 +26,9 @@ object Dispatcher {
   var PASSWORD: Option[String] = Some("")
   val RESULT = "result"
   val TIMEOUT = 1000
-  val DISCOVERY_URL: String = "192.168.1.9"
+  val DISCOVERY_URL: String = "localhost"
   val DISCOVERY_PORT: Int = 2000
-  val MY_IP: String = "192.168.0.8"
+  val MY_IP: String = "localhost"
   val VERTX = Vertx.vertx()
 }
 
@@ -131,22 +132,29 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     val params = routingContext.request().formAttributes()
 
     val player = params.get("me")
-    println(player)
     val friend = params.get("partner")
-    println(friend)
+
+    val vs = params.get("vs")
+    val vsPartner = params.get("vspartner")
 
     val gameFoundEvent: String => Unit = gameId => {
       res.sendResponse(GameFound(gameId))
     }
 
+
+    val team1: ListBuffer[String] = ListBuffer()
+    val team2: ListBuffer[String] = ListBuffer()
+
+
     player match {
       case Some(id) =>
-        friend match {
-          case Some(idPartner) =>
-            lobbyManager ! MultiPlayerMsg(id.toString, idPartner.toString, gameFoundEvent)
-          case None =>
-            lobbyManager ! SinglePlayerMsg(id.toString, gameFoundEvent)
-        }
+        team1 += id
+        friend.map(team1 += _)
+
+        vs.map(team2 += _)
+        vsPartner.map(team2 += _)
+
+        lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent)
       case None =>
         res.setGenericError(Some("Id player not specified in the request")).sendResponse(Error())
     }

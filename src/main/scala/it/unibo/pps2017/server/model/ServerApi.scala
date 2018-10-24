@@ -31,6 +31,10 @@ object ServerApi {
 
     val partnerParam = "partner"
 
+    val vsParam = "vs"
+
+    val vsPartnerParam = "vsPartner"
+
     override def path: String = "/foundGame"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
