@@ -4,8 +4,8 @@ package it.unibo.pps2017.discovery
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-import it.unibo.pps2017.commons.remote.RestUtils.Port
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
+import it.unibo.pps2017.commons.remote.rest.RestUtils.Port
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap, SocialActorsMap}

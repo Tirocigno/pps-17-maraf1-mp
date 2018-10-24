@@ -1,8 +1,8 @@
 
 package it.unibo.pps2017.client.model.remote
 import io.vertx.scala.core.Vertx
-import it.unibo.pps2017.commons.remote.RestUtils.ServerContext
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
+import it.unibo.pps2017.commons.remote.rest.RestUtils.ServerContext
 import it.unibo.pps2017.discovery.ServerDiscovery
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.controller.Dispatcher

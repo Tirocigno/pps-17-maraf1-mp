@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.discovery.structures
 
-import it.unibo.pps2017.commons.remote.RestUtils
+import it.unibo.pps2017.commons.remote.rest.RestUtils
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}

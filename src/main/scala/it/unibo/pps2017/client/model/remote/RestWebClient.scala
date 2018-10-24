@@ -5,9 +5,9 @@ import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.client.HttpResponse
 import it.unibo.pps2017.client.controller.ClientController
-import it.unibo.pps2017.commons.remote.API.RestAPI
-import it.unibo.pps2017.commons.remote.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
+import it.unibo.pps2017.commons.remote.rest.API.RestAPI
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.model.{GetRequest, PostRequest, ServerContextEncoder}
 import org.json4s.jackson.Serialization.read

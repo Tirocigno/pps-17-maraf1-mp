@@ -6,8 +6,8 @@ import java.net.InetAddress
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.client.model.remote.{GameRestWebClient, RestWebClient}
-import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, Port, ServerContext}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, Port, ServerContext}
 import it.unibo.pps2017.core.gui.PlayGameController
 import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
 

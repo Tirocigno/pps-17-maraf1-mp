@@ -2,8 +2,8 @@
 package it.unibo.pps2017.client.model.remote
 
 import it.unibo.pps2017.client.controller.SocialController
-import it.unibo.pps2017.commons.remote.API
-import it.unibo.pps2017.commons.remote.RestUtils.{ServerContext, formats}
+import it.unibo.pps2017.commons.remote.rest.API
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.model.OnlinePlayersMapEncoder
 import org.json4s.jackson.Serialization.read

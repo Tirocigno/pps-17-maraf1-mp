@@ -3,7 +3,7 @@ package it.unibo.pps2017.discovery.restAPI
 
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-import it.unibo.pps2017.commons.remote.API.{APIWithMessages, RestAPI}
+import it.unibo.pps2017.commons.remote.rest.API.{APIWithMessages, RestAPI}
 import it.unibo.pps2017.server.model.{GET, POST, Request, RouterResponse}
 
 
