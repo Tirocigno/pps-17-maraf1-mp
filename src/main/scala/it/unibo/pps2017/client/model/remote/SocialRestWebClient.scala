@@ -20,9 +20,19 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
     case GetAllOnlinePlayersAPI => invokeAPI(api, paramMap, getAllOnlinePlayersCallback)
   }
 
+  /**
+    * Callback for the RegisterSocialID and UnregisterSocialID API.
+    *
+    * @param responseBody the body of the response.
+    */
   private def registerAndUnregisterSocialIDCallBack(responseBody: Option[String]): Unit =
     socialController.notifyCallResultToGUI(responseBody)
 
+  /**
+    * Callback for the GetAllOnlinePlayers API.
+    *
+    * @param responseBody the body of the response.
+    */
   private def getAllOnlinePlayersCallback(responseBody: Option[String]): Unit = {
     val playerMap = read[OnlinePlayersMapEncoder](responseBody.get).map
     socialController.setAndDisplayOnlinePlayerList(playerMap)
