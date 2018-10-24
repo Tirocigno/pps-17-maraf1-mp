@@ -8,7 +8,7 @@ import it.unibo.pps2017.core.player.PlayerManager._
 import scala.collection.mutable.{ListBuffer, Seq, Map}
 
 object PlayerManager{
-  val IMG_PATH = "src/main/java/it/unibo/pps2017/core/gui/cards/"
+  val IMG_PATH = "cards/"
   val PNG_FILE = ".png"
   def apply(model:Match) = new PlayerManager(model)
 }
