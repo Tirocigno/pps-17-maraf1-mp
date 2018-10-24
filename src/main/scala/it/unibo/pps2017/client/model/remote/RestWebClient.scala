@@ -104,7 +104,6 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       */
     def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]]): Unit
 
-
     /**
       * Create a request and send it to the specified server.
       *

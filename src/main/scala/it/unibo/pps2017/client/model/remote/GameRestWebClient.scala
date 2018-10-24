@@ -15,7 +15,7 @@ import org.json4s.jackson.Serialization.read
 class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractRestWebClient(discoveryServerContext) {
 
   override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
-    case FoundGameRestAPI$ => invokeAPI(api, paramMap, handleFoundGameRestAPI)
+    case FoundGameRestAPI$ => invokeAPI(api, paramMap, foundGameCallBack)
 
   }
 
@@ -24,7 +24,7 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     *
     * @param jSonSource the body of the response.
     */
-  private def handleFoundGameRestAPI(jSonSource: Option[String]): Unit = {
+  private def foundGameCallBack(jSonSource: Option[String]): Unit = {
     val gameID = read[GameFound](jSonSource.get).gameId
     clientController.setGameID(gameID)
   }
