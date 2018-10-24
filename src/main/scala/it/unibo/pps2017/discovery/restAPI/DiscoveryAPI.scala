@@ -100,15 +100,6 @@ object DiscoveryAPI {
   }
 
   /**
-    * values method, analog to java's enumeration's values() method.
-    *
-    * @return a Set containing all the objects in the DiscoveryAPI object.
-    */
-  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
-    IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
-    RemoveMatchAPI, GetAllMatchesAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI)
-
-  /**
     * RestAPI to register a new match on the discovery,
     */
   case object RegisterMatchAPI extends DiscoveryAPI {
@@ -207,6 +198,15 @@ object DiscoveryAPI {
 
     override def path: String = "/getallonlineplayerapi"
   }
+
+  /**
+    * values method, analog to java's enumeration's values() method.
+    *
+    * @return a Set containing all the objects in the DiscoveryAPI object.
+    */
+  def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
+    IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
+    RemoveMatchAPI, GetAllMatchesAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI, GetAllOnlinePlayersAPI)
 
   /**
     * Standard connection parameters used by every API.
