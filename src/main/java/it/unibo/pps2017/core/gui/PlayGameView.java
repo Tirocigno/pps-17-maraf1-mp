@@ -26,7 +26,8 @@ public class PlayGameView extends Application {
 			//primaryStage.setFullScreen(true);
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
-            ClientController clientController = ClientController$.MODULE$.getSingletonController();
+
+			ClientController clientController = ClientController$.MODULE$.getSingletonController();
             clientController.setPlayGameController(gameController);
             gameController.setGameController(clientController.getGameController());
 			clientController.startActorSystem("127.0.0.1", "127.0.0.1");

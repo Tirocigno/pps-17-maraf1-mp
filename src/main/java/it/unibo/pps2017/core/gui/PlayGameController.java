@@ -1,3 +1,4 @@
+
 package it.unibo.pps2017.core.gui;
 
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController;
@@ -16,7 +17,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,11 +25,11 @@ import java.util.Map.Entry;
 
 public class PlayGameController implements PlayGame {
 
-    private static final String COMMANDS_PATH = "src/main/resources/it/unibo/pps2017/core/gui/commands/";
-    private static final String EMPTY_FIELD = "src/main/resources/it/unibo/pps2017/core/gui/cards/emptyField.png";
-    private static final String EMPTY_FIELD_MY_TURN = "src/main/resources/it/unibo/pps2017/core/gui/cards/emptyFieldMyTurn.png";
-    private static final String WIN_MATCH = "src/main/resources/it/unibo/pps2017/core/gui/images/win.png";
-    private static final String LOSE_MATCH = "src/main/resources/it/unibo/pps2017/core/gui/images/lose.png";
+    private static final String COMMANDS_PATH = "commands/";
+    private static final String EMPTY_FIELD = "cards/emptyField.png";
+    private static final String EMPTY_FIELD_MY_TURN = "cards/emptyFieldMyTurn.png";
+    private static final String WIN_MATCH = "images/win.png";
+    private static final String LOSE_MATCH = "images/lose.png";
     private static final int DURATION_ANIMATION = 3;
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
@@ -96,11 +96,6 @@ public class PlayGameController implements PlayGame {
         this.playersList = new ArrayList<>();
         this.idUserCards = new ArrayList<>();
         this.createListWithCardsId();
-
-        // dovrebbe visualizzare l'asso di bastoni in basso a sinistra quando lancio l'app
-        Image userCard = new Image(this.getClass().getResourceAsStream("cards/1Club.png"));
-        this.firstCard.setImage(userCard);
-
     }
 
     @Override
@@ -198,6 +193,7 @@ public class PlayGameController implements PlayGame {
         this.indexOfMyCards.clear();
 
         for (int cardIndex = 0; cardIndex < TOTAL_HAND_CARDS; cardIndex++) {
+
             Image userCard = getImageFromPath(firstUserCards.get(cardIndex));
             indexOfMyCards.put(idUserCards.get(cardIndex), firstUserCards.get(cardIndex));
 
@@ -440,8 +436,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private Image getImageFromPath(final String path) {
-        File file = new File(path);
-        return new Image(file.toURI().toString());
+        return new Image(this.getClass().getResourceAsStream(path));
     }
 
     private int getIndexOfCardSelected(final String clickedCardId) {
