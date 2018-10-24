@@ -6,13 +6,16 @@ import io.vertx.scala.core.Vertx
 import it.unibo.pps2017.client.controller.SocialController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
-import it.unibo.pps2017.commons.remote.rest.RestUtils.ServerContext
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
 import it.unibo.pps2017.discovery.ServerDiscovery
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.discovery.structures.SocialActorsMap.SocialMap
 import it.unibo.pps2017.server.controller.Dispatcher
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
+@RunWith(classOf[JUnitRunner])
 class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
 
   val GENERIC_HOST = "127.0.0.1"
@@ -20,7 +23,7 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
   val SERVER_PORT = 4700
   val ASYNC_PAUSE = 2000
   val defautlTimeOut = 5
-  val controller: SocialController = MockSocialController()
+  val controller: MockSocialController = new MockSocialController
   val DEFAULT_SOCIAL_ID: String = "Lorenzo_Valgimigli"
   val DEFAULT_ACTOR_REF: ActorRef = ActorRef.noSender
   var vertx: Vertx = _
@@ -57,26 +60,52 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
   }
 
   test("Register new ID to social Actor") {
-    val encodedActorRef: String = ""
+    waitAsyncOperation()
+    val encodedActorRef: String = serializeActorRef(DEFAULT_ACTOR_REF)
     val map = Map(RegisterSocialIDAPI.SOCIAL_ID -> DEFAULT_SOCIAL_ID,
-      RegisterSocialIDAPI.SOCIAL_ACTOR -> DEFAULT_ACTOR_REF)
+      RegisterSocialIDAPI.SOCIAL_ACTOR -> encodedActorRef)
+    webClient.callRemoteAPI(RegisterSocialIDAPI, Some(map))
+    waitAsyncOperation()
+    waitAsyncOperation()
+    webClient.callRemoteAPI(GetAllOnlinePlayersAPI, None)
+    waitAsyncOperation()
+    waitAsyncOperation()
+    assert(controller.playerList.nonEmpty)
+  }
+
+  test("Remove new ID to social Actor") {
+    waitAsyncOperation()
+    val encodedActorRef: String = serializeActorRef(DEFAULT_ACTOR_REF)
+    val addingmap = Map(RegisterSocialIDAPI.SOCIAL_ID -> DEFAULT_SOCIAL_ID,
+      RegisterSocialIDAPI.SOCIAL_ACTOR -> encodedActorRef)
+    webClient.callRemoteAPI(RegisterSocialIDAPI, Some(addingmap))
+    waitAsyncOperation()
+    val removemap = Map(UnregisterSocialIDAPI.SOCIAL_ID -> DEFAULT_SOCIAL_ID)
+    webClient.callRemoteAPI(UnregisterSocialIDAPI, Some(removemap))
+    waitAsyncOperation()
+    webClient.callRemoteAPI(GetAllOnlinePlayersAPI, None)
+    waitAsyncOperation()
+    assert(controller.playerList.isEmpty)
+  }
+
+
+  class MockSocialController extends SocialController {
+
+    override var currentActorRef: ActorRef = _
+    var bodyResponse: String = _
+    var playerList: SocialMap = _
+
+    override def notifyCallResultToGUI(message: Option[String]): Unit = bodyResponse = message.get
+
+    override def setAndDisplayOnlinePlayerList(playerList: SocialMap): Unit = this.playerList = playerList
+
+    override def createActor(actorID: String, actorSystem: ActorSystem): Unit = ???
+
+    override def updateGUI(message: ActorMessage): Unit = ???
+
   }
 
 
 }
 
-private case class MockSocialController() extends SocialController {
 
-  override var currentActorRef: ActorRef = _
-  var bodyResponse: String = _
-  var playerList: SocialMap = _
-
-  override def notifyCallResultToGUI(message: Option[String]): Unit = bodyResponse = message.get
-
-  override def setAndDisplayOnlinePlayerList(playerList: SocialMap): Unit = this.playerList = playerList
-
-  override def createActor(actorID: String, actorSystem: ActorSystem): Unit = ???
-
-  override def updateGUI(message: ActorMessage): Unit = ???
-
-}
