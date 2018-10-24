@@ -65,6 +65,20 @@ class LobbyActor extends Actor {
                   }
               }
             case None =>
+              lobby.canContains(team1, None) match {
+                case OK =>
+                  lobby.addTeam(team1)
+                  notifyGameFound(lobby, gameFoundEvent)
+                case REVERSE =>
+                  lobby.addTeam(team1)
+                  notifyGameFound(lobby, gameFoundEvent)
+                case FULL =>
+                  try {
+                    self ! SearchLobby(Some(allLobby(allLobby.indexOf(lobby) + 1)), team1, team2, gameFoundEvent)
+                  } catch {
+                    case _: Throwable => self ! SearchLobby(None, team1, team2, gameFoundEvent)
+                  }
+              }
           }
         case None =>
           createLobbyAndNotify(team1, team2, gameFoundEvent)
