@@ -29,6 +29,10 @@ public class PlayGameController implements PlayGame {
     private static final String EMPTY_FIELD_MY_TURN = "cards/emptyFieldMyTurn.png";
     private static final String WIN_MATCH = "images/win.png";
     private static final String LOSE_MATCH = "images/lose.png";
+    private static final String BRISCOLA_CHOSEN = "Briscola chosen: ";
+    private static final String MY_TEAM_SCORE = "My team's score: ";
+    private static final String OPPONENT_TEAM_SCORE = "Opponent team's score: ";
+    private static final String CHOOSE_YOUR_BRISCOLA ="Choose your briscola";
     private static final int DURATION_ANIMATION = 3;
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
@@ -161,7 +165,7 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void getBriscolaChosen(final String briscola) {
-        this.briscolaLabel.setText("Briscola chosen: " + briscola);
+        this.briscolaLabel.setText(BRISCOLA_CHOSEN + briscola);
         this.briscolaLabel.setVisible(true);
     }
 
@@ -257,7 +261,7 @@ public class PlayGameController implements PlayGame {
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
         Platform.runLater( () -> {
-            scoreTeams.setText("My team's score: " + scoreFirstTeam + "\nOpponent team's score: " + scoreSecondTeam);
+            scoreTeams.setText(MY_TEAM_SCORE + scoreFirstTeam + "\n" + OPPONENT_TEAM_SCORE + scoreSecondTeam);
             scoreTeams.setVisible(true);
             createLabelScaleTransition(scoreTeams, endedMatch);
         });
@@ -304,7 +308,7 @@ public class PlayGameController implements PlayGame {
         this.clubButton.setVisible(true);
         this.cupButton.setVisible(true);
         this.swordButton.setVisible(true);
-        this.briscolaLabel.setText("Choose your briscola");
+        this.briscolaLabel.setText(CHOOSE_YOUR_BRISCOLA);
         this.briscolaLabel.setVisible(true);
     }
 
