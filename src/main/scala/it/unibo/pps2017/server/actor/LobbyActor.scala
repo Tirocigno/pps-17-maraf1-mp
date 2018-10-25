@@ -1,90 +1,87 @@
 
 package it.unibo.pps2017.server.actor
 
-import akka.actor.{Actor, ActorRef, Props}
-import akka.cluster.pubsub.DistributedPubSub
+import akka.actor.{Actor, Props}
 import it.unibo.pps2017.core.game.SimpleTeam
 import it.unibo.pps2017.core.player.GameActor
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{IncreaseServerMatchesAPI, RegisterMatchAPI, StandardParameters}
 import it.unibo.pps2017.server.controller.Dispatcher
+import it.unibo.pps2017.server.model.LobbyStatusResponse.{FULL, OK, REVERSE}
 import it.unibo.pps2017.server.model._
-import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization.read
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 
-//noinspection ScalaStyle
 class LobbyActor extends Actor {
-  implicit val formats: DefaultFormats.type = DefaultFormats
-  //implicit val akkaSystem: ActorSystem = context.system
-
-  val mediator: ActorRef = DistributedPubSub(context.system).mediator
 
 
   val allLobby: ListBuffer[Lobby] = ListBuffer()
 
   override def receive: Receive = {
-    /**
-      * Search a game for a single player.
-      */
-    case SinglePlayerMsg(player, gameFoundEvent) =>
-      self ! SearchPlayerMsg(allLobby.headOption, player, gameFoundEvent)
 
     /**
-      * Search a game for a team.
+      * This message trigger the request of a lobby.
       */
-    case MultiPlayerMsg(player, mate, gameFoundEvent) =>
-      val team: SimpleTeam = SimpleTeam("", ListBuffer(player, mate))
+    case TriggerSearch(team1, team2, gameFoundEvent) =>
+      val firstTeam: SimpleTeam = SimpleTeam("", team1)
 
-      self ! SearchTeamMsg(allLobby.headOption, team, gameFoundEvent)
-
-    /**
-      * Internal message for searching a game for one player.
-      */
-    case SearchPlayerMsg(currentLobby, player, gameFoundEvent) =>
-      currentLobby match {
-        case Some(lobby) =>
-          try {
-            lobby.addPlayer(player)
-            notifyGameFound(lobby, gameFoundEvent)
-          } catch {
-            case _: FullLobbyException =>
-              try {
-                self ! SearchPlayerMsg(Some(allLobby(allLobby.indexOf(lobby) + 1)), player, gameFoundEvent)
-              } catch {
-                case _: Throwable => self ! SearchPlayerMsg(None, player, gameFoundEvent)
-              }
-            case ex: Exception => ex.printStackTrace()
-          }
-
-        case None =>
-          createLobbyAndNotify(player, gameFoundEvent)
+      val secondTeam: Option[SimpleTeam] = if (team2.nonEmpty) {
+        Some(SimpleTeam("", team2))
+      } else {
+        None
       }
 
+      self ! SearchLobby(allLobby.headOption, firstTeam, secondTeam, gameFoundEvent)
+
+
     /**
-      * Internal message for searching a game for team.
+      * Searching a lobby for the given teams.
+      *
+      * Notify the caller when the game is found!
       */
-    case SearchTeamMsg(currentLobby, team, gameFoundEvent) =>
+    case SearchLobby(currentLobby, team1, team2, gameFoundEvent) =>
       currentLobby match {
         case Some(lobby) =>
-          try {
-            lobby.addTeam(team)
-            notifyGameFound(lobby, gameFoundEvent)
-          } catch {
-            case _: FullLobbyException =>
-              try {
-                self ! SearchTeamMsg(Some(allLobby(allLobby.indexOf(lobby) + 1)), team, gameFoundEvent)
-              } catch {
-                case _: Throwable => self ! SearchTeamMsg(None, team, gameFoundEvent)
+          team2 match {
+            case Some(opponents) =>
+              lobby.canContains(team1, Some(opponents)) match {
+                case OK =>
+                  lobby.addTeam(team1)
+                  lobby.addTeam(opponents)
+                  notifyGameFound(lobby, gameFoundEvent)
+                case REVERSE =>
+                  lobby.addTeam(opponents)
+                  lobby.addTeam(team1)
+                  notifyGameFound(lobby, gameFoundEvent)
+                case FULL =>
+                  try {
+                    self ! SearchLobby(Some(allLobby(allLobby.indexOf(lobby) + 1)), team1, team2, gameFoundEvent)
+                  } catch {
+                    case _: Throwable => self ! SearchLobby(None, team1, team2, gameFoundEvent)
+                  }
               }
-            case ex: Exception => ex.printStackTrace()
+            case None =>
+              lobby.canContains(team1, None) match {
+                case OK =>
+                  lobby.addTeam(team1)
+                  notifyGameFound(lobby, gameFoundEvent)
+                case REVERSE =>
+                  lobby.addTeam(team1)
+                  notifyGameFound(lobby, gameFoundEvent)
+                case FULL =>
+                  try {
+                    self ! SearchLobby(Some(allLobby(allLobby.indexOf(lobby) + 1)), team1, team2, gameFoundEvent)
+                  } catch {
+                    case _: Throwable => self ! SearchLobby(None, team1, team2, gameFoundEvent)
+                  }
+              }
           }
-
         case None =>
-          createLobbyAndNotify(team, gameFoundEvent)
+          createLobbyAndNotify(team1, team2, gameFoundEvent)
       }
 
 
@@ -109,34 +106,23 @@ class LobbyActor extends Actor {
   }
 
   /**
-    * Create the lobby for the player and fire the event param.
-    *
-    * @param player
-    * Player id.
-    * @param onGameFound
-    * Event.
-    */
-  private def createLobbyAndNotify(player: String, onGameFound: String => Unit): Unit = {
-    val lobby = createLobbyAndNotify(onGameFound)
-
-    lobby.addPlayer(player)
-    allLobby += lobby
-  }
-
-
-  /**
-    * Create the lobby for the team and fire the event param.
+    * Create the lobby for  and fire the event param.
     *
     * @param team
     * Team.
     * @param onGameFound
     * Event.
     */
-  private def createLobbyAndNotify(team: SimpleTeam, onGameFound: String => Unit): Unit = {
+  private def createLobbyAndNotify(team: SimpleTeam, opponents: Option[SimpleTeam], onGameFound: String => Unit): Unit = {
     val lobby = createLobbyAndNotify(onGameFound)
+    allLobby += lobby
 
     lobby.addTeam(team)
-    allLobby += lobby
+
+    opponents match {
+      case Some(opponentsTeam) => lobby.addTeam(opponentsTeam)
+      case None =>
+    }
   }
 
   private def createLobbyAndNotify(onGameFound: String => Unit): Lobby = {
@@ -147,8 +133,10 @@ class LobbyActor extends Actor {
   }
 
   private def createActorAndNotifyTheDiscovery(game: Lobby): Unit = {
-    context.system.scheduler.scheduleOnce(5 second) {
-      //TODO GameActor creating
+    context.system.scheduler.scheduleOnce(5 seconds) {
+
+
+      println(s"Context -> $context / game -> $game")
       context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, () => {
         PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
           case Some(res) => try {

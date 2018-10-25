@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.model.remote
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.server.model.GameFound
-import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
+import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
 import org.json4s.jackson.Serialization.read
 
 /**
@@ -15,7 +15,7 @@ import org.json4s.jackson.Serialization.read
 class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractRestWebClient(discoveryServerContext) {
 
   override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
-    case FoundGameRestAPI$ => invokeAPI(api, paramMap, foundGameCallBack, assignedServerContext.get)
+    case FoundGameRestAPI => invokeAPI(api, paramMap, foundGameCallBack, assignedServerContext.get)
 
   }
 

@@ -29,9 +29,6 @@ case class Side(members: Seq[String]) extends JsonResponse
 case class User(username: String, score: Int) extends JsonResponse
 case class UserFriends(username: String, friends: Seq[String]) extends JsonResponse
 
-case class User(username: String, score: Int) extends JsonResponse
-
-case class UserFriends(username: String, friends: Seq[String]) extends JsonResponse
 
 case class OnlinePlayersMapEncoder(map: SocialMap) extends JsonResponse
 

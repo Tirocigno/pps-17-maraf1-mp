@@ -2,19 +2,17 @@
 package it.unibo.pps2017.server.actor
 
 
-import it.unibo.pps2017.core.game.{SimpleTeam, Team}
+import it.unibo.pps2017.core.game.SimpleTeam
 import it.unibo.pps2017.server.model.Lobby
 
+import scala.collection.mutable.ListBuffer
 
-sealed trait GameSearchMsg {
+
+sealed trait GameSearch {
   val onGameFound: String => Unit
 }
 
-case class SinglePlayerMsg(id: String, onGameFound: String => Unit) extends GameSearchMsg
+case class TriggerSearch(team1: ListBuffer[String], team2: ListBuffer[String], onGameFound: String => Unit) extends GameSearch
 
-case class MultiPlayerMsg(id: String, partner: String, onGameFound: String => Unit) extends GameSearchMsg
-
-case class SearchPlayerMsg(lobby: Option[Lobby], player: String, onGameFound: String => Unit) extends GameSearchMsg
-
-case class SearchTeamMsg(lobby: Option[Lobby], team: SimpleTeam, onGameFound: String => Unit) extends GameSearchMsg
+case class SearchLobby(lobby: Option[Lobby], team1: SimpleTeam, team2: Option[SimpleTeam], onGameFound: String => Unit) extends GameSearch
 
