@@ -26,9 +26,9 @@ object Dispatcher {
   var PASSWORD: Option[String] = Some("")
   val RESULT = "result"
   val TIMEOUT = 1000
-  val DISCOVERY_URL: String = "localhost"
+  val DISCOVERY_URL: String = "192.168.1.11"
   val DISCOVERY_PORT: Int = 2000
-  val MY_IP: String = "localhost"
+  val MY_IP: String = "192.168.1.11"
   val VERTX = Vertx.vertx()
 }
 

@@ -2,11 +2,9 @@
 package it.unibo.pps2017.server.model
 
 
-import akka.actor.ActorSystem
 import io.vertx.scala.ext.web.RoutingContext
 import it.unibo.pps2017.server.model.ResponseStatus._
 import org.json4s.jackson.Serialization.write
-import redis.RedisClient
 
 
 /**
@@ -24,27 +22,12 @@ import redis.RedisClient
 case class RouterResponse(routingContext: RoutingContext,
                           var status: HeaderStatus = OK,
                           var message: Option[String] = None) {
-  implicit val akkaSystem: ActorSystem = akka.actor.ActorSystem()
 
 
-  val redisHost: String = System.getenv("REDIS_HOST")
-  val redisPort: String = System.getenv("REDIS_PORT")
-  val redisPw: String = System.getenv("REDIS_PW")
 
-  private val db: RedisClient = if ( redisHost == null || redisPort == null || redisPw == null) {
-    RedisClient(DEFAULT_REDIS_HOST, DEFAULT_REDIS_PORT, DEFAULT_REDIS_PW)
-  } else {
-    RedisClient(redisHost, redisPort.toInt, Some(redisPw))
-  }
+  private var onClose: Option[() => Unit]= None
 
 
-  /**
-    * Return an open database connection
-    *
-    * @return
-    * an open connection to the database
-    */
-  def getDatabaseConnection: RedisClient = db
 
   /**
     * Set the response status to error.
@@ -79,6 +62,9 @@ case class RouterResponse(routingContext: RoutingContext,
   }
 
 
+  def setOnClose(operation: Option[() => Unit]) = onClose = operation
+
+
   /**
     * Send the response to the client.
     *
@@ -102,7 +88,11 @@ case class RouterResponse(routingContext: RoutingContext,
           .write(write(Error(message)))
           .end()
     }
-    db.quit()
+
+    onClose match {
+      case Some(operation) => operation()
+      case None =>
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 package it.unibo.pps2017.server.controller
 
 import io.vertx.scala.ext.web.RoutingContext
-import it.unibo.pps2017.server.model.database.RedisUserUtils
+import it.unibo.pps2017.server.model.database.{RedisConnection, RedisUserUtils}
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse, User, UserFriends}
 
 case class UserDispatcher() {
@@ -9,7 +9,8 @@ case class UserDispatcher() {
   val userDatabaseUtils = RedisUserUtils()
 
   def addUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = res.getDatabaseConnection
+    val db = RedisConnection().getDatabaseConnection
+    res.setOnClose(Some(closeDatabaseConnection(db)))
 
     val username = getUsernameOrResponseError(ctx, res)
 
@@ -24,7 +25,8 @@ case class UserDispatcher() {
   }
 
   def getUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = res.getDatabaseConnection
+    val db = RedisConnection().getDatabaseConnection
+    res.setOnClose(Some(closeDatabaseConnection(db)))
 
     val username = getUsernameOrResponseError(ctx, res)
 
@@ -45,7 +47,8 @@ case class UserDispatcher() {
   }
 
   def deleteUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = res.getDatabaseConnection
+    val db = RedisConnection().getDatabaseConnection
+    res.setOnClose(Some(closeDatabaseConnection(db)))
 
     val username = getUsernameOrResponseError(ctx, res)
 
@@ -63,7 +66,8 @@ case class UserDispatcher() {
   }
 
   def addFriend: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = res.getDatabaseConnection
+    val db = RedisConnection().getDatabaseConnection
+    res.setOnClose(Some(closeDatabaseConnection(db)))
 
     val username = getUsernameOrResponseError(ctx, res)
 
@@ -100,7 +104,8 @@ case class UserDispatcher() {
   }
 
   def getFriends: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = res.getDatabaseConnection
+    val db = RedisConnection().getDatabaseConnection
+    res.setOnClose(Some(closeDatabaseConnection(db)))
 
     val username = getUsernameOrResponseError(ctx, res)
 
@@ -123,7 +128,8 @@ case class UserDispatcher() {
 
 
   def removeFriend: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = res.getDatabaseConnection
+    val db = RedisConnection().getDatabaseConnection
+    res.setOnClose(Some(closeDatabaseConnection(db)))
 
     val username = getUsernameOrResponseError(ctx, res)
 
