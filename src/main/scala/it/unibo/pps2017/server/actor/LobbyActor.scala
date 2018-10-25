@@ -1,7 +1,8 @@
 
 package it.unibo.pps2017.server.actor
 
-import akka.actor.{Actor, Props}
+import akka.actor.{Actor, ActorRef, Props}
+import akka.cluster.pubsub.DistributedPubSub
 import it.unibo.pps2017.core.game.SimpleTeam
 import it.unibo.pps2017.core.player.GameActor
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{IncreaseServerMatchesAPI, RegisterMatchAPI, StandardParameters}
@@ -20,6 +21,7 @@ class LobbyActor extends Actor {
 
 
   val allLobby: ListBuffer[Lobby] = ListBuffer()
+  val mediator: ActorRef = DistributedPubSub(context.system).mediator
 
   override def receive: Receive = {
 

@@ -174,7 +174,6 @@ dependencies {
     scoverage "org.scoverage:scalac-scoverage-plugin_2.12:$sCoveragePluginVersion"
     scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
 
-
     compile "com.github.etaty:rediscala_$scalaMajor:$redisScalaVersion"
 }
 
