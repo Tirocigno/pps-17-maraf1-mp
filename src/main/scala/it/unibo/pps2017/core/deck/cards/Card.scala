@@ -10,11 +10,23 @@ import it.unibo.pps2017.core.deck.cards.Seed.Seed
 
 sealed trait Card {
 
-  private[this] val minValue = 4
+  private[this] val SWITCH_VALUE = 4
 
   def cardSeed: Seed
 
   def cardValue: Int
+
+  /**
+    * This method is used to check if the value on a card is lower than the on on another.
+    *
+    * @param otherCard the other card to compare
+    * @return true if the value on the card is lower than the other one, false otherwise.
+    */
+  //noinspection ScalaStyle
+  def <(otherCard: Card): Boolean = otherCard match {
+    case CardImpl(_, otherValue) if cardValue == otherValue => false
+    case _ => ! >(otherCard)
+  }
 
   /**
     * This method is used to check if the value on a card is greater than the on on another.
@@ -24,20 +36,11 @@ sealed trait Card {
     */
   //noinspection ScalaStyle
   def >(otherCard: Card): Boolean = otherCard match {
-    case CardImpl(_, otherValue) if otherValue < minValue && cardValue < minValue => cardValue > otherValue
-    case CardImpl(_, otherValue) if otherValue < minValue && cardValue > minValue => false
-    case CardImpl(_, otherValue) if otherValue > minValue && cardValue < minValue => true
-    case CardImpl(_, otherValue) if otherValue > minValue && cardValue > minValue => cardValue > otherValue
+    case CardImpl(_, otherValue) if otherValue < SWITCH_VALUE && cardValue < SWITCH_VALUE => cardValue > otherValue
+    case CardImpl(_, otherValue) if otherValue < SWITCH_VALUE && cardValue >= SWITCH_VALUE => false
+    case CardImpl(_, otherValue) if otherValue >= SWITCH_VALUE && cardValue < SWITCH_VALUE => true
+    case CardImpl(_, otherValue) if otherValue >= SWITCH_VALUE && cardValue >= SWITCH_VALUE => cardValue > otherValue
   }
-
-  /**
-    * This method is used to check if the value on a card is lower than the on on another.
-    *
-    * @param otherCard the other card to compare
-    * @return true if the value on the card is lower than the other one, false otherwise.
-    */
-  //noinspection ScalaStyle
-  def <(otherCard: Card): Boolean = ! >(otherCard)
 
   override def equals(obj: Any): Boolean = obj match {
     case CardImpl(seed, value) if cardSeed.equals(seed) && cardValue == value => true

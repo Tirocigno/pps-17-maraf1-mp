@@ -17,7 +17,6 @@ object PlayerActorClient {
   final val END_SEARCH: Int = 4
 }
 
-
 class PlayerActorClient(override val controller: GameController, username: String) extends ClientGameActor with Stash {
 
   var actorPlayer: ClientGameActor = this
@@ -41,7 +40,6 @@ class PlayerActorClient(override val controller: GameController, username: Strin
         cardArrived = true
         unstashAll()
       }
-
 
     case SelectBriscola(player) =>
       if (user.equals(player))
@@ -78,19 +76,12 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
 
     case PlayedCard(card, player) =>
-      if (user.equals(player))
+      if (!user.equals(player))
         controller.updateGUI(PlayedCard(card, player))
       gameActor ! CardPlayedAck
 
     case NotifyCommandChosen(command, player) =>
       controller.updateGUI(NotifyCommandChosen(command, player))
-
-    case ForcedCardPlayed(card, player) =>
-      controller.updateGUI(ForcedCardPlayed(card, player))
-      gameActor ! CardPlayedAck
-
-    case SetTimer(timer) =>
-      controller.updateGUI(SetTimer(timer))
 
     case PartialGameScore(winner1, winner2, score1, score2) =>
       controller.updateGUI(ComputePartialGameScore(user, winner1, winner2, score1, score2))

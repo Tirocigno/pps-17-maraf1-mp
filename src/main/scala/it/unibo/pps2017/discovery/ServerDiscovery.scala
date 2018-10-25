@@ -4,11 +4,11 @@ package it.unibo.pps2017.discovery
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
-import it.unibo.pps2017.commons.remote.RestUtils.Port
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
+import it.unibo.pps2017.commons.remote.rest.RestUtils.Port
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
-import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap}
+import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap, SocialActorsMap}
 import it.unibo.pps2017.server.model.{Error, Message, RouterResponse}
 
 /**
@@ -37,10 +37,12 @@ object ServerDiscovery {
   def apply(port: Port, timeout: Int): ServerDiscovery = new ServerDiscoveryImpl(port, timeout)
 
 
+
 private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscovery {
 
   val serverMap: ServerMap = ServerMap()
   val matchesSet: MatchesSet = MatchesSet()
+  val socialActorsMap: SocialActorsMap = SocialActorsMap()
 
   /**
     * Handler for the GetServerAPI
@@ -48,15 +50,16 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private val getServerAPIHandler: APIHandler = (_, response) => {
     serverMap.getLessBusyServer match {
       case Some(server) => response.sendResponse(server)
-      case _ => setErrorAndRespond(response, "NO SERVER FOUND")
+      case _ => setErrorAndRespond(response, GetServerAPI.errorMessage)
     }
   }
+
   /**
     * Handler for the RegisterServerAPI.
     */
   private val registerServerAPIHandler: APIHandler = (router, response) => {
     serverMap.addServer(router)
-    response.sendResponse(Message("SERVER REGISTERED SUCCESSFULLY"))
+    setMessageAndRespond(response, RegisterServerAPI.okMessage)
   }
   /**
     * Handler for the IncreaseServerMatchesAPI.
@@ -64,9 +67,9 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private val increaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
       serverMap.increaseMatchesPlayedOnServer(router)
-      response.sendResponse(Message("INCREASE MATCHES ON SERVER"))
+      setMessageAndRespond(response, IncreaseServerMatchesAPI.okMessage)
     } catch {
-      case e: IllegalArgumentException => setErrorAndRespond(response, "BAD REQUEST")
+      case e: IllegalArgumentException => setErrorAndRespond(response, IncreaseServerMatchesAPI.errorMessage)
     }
   }
   /**
@@ -75,10 +78,12 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private val decreaseServerMatchesAPIHandler: APIHandler = (router, response) => {
     try {
       serverMap.decreaseMatchesPlayedOnServer(router)
-      response.sendResponse(Message("DECREASED MATCHES ON SERVER"))
+      setMessageAndRespond(response, DecreaseServerMatchesAPI.okMessage)
     } catch {
-      case e: IllegalArgumentException => setErrorAndRespond(response, "INVALID SERVER ID")
-      case e: IllegalStateException => setErrorAndRespond(response, "NO MATCH SERVER TO REMOVE")
+      case _: IllegalArgumentException => setErrorAndRespond(response,
+        DecreaseServerMatchesAPI.noServerErrorMessage)
+      case _: IllegalStateException => setErrorAndRespond(response,
+        DecreaseServerMatchesAPI.noMatchErrorMessage)
     }
   }
   /**
@@ -99,7 +104,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       increaseServerMatchesAPIHandler(router, response)
     } catch {
       case _: IllegalStateException => setErrorAndRespond(response,
-        "NO MATCHID FOUND IN REQUEST")
+        RegisterMatchAPI.errorMessage)
     }
   }
   /**
@@ -113,9 +118,58 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       decreaseServerMatchesAPIHandler(router, response)
     } catch {
       case _: NoSuchFieldException => setErrorAndRespond(response,
-        "NO MATCHID FOUND IN REQUEST")
+        RemoveMatchAPI.errorMessage)
     }
   }
+
+  /**
+    * Handler for RegisterSocialIDAPI
+    */
+  private val registerSocialIDAPI: APIHandler = (router, response) => {
+    try {
+      val playerID = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ID)
+        .getOrElse(throw new NoSuchFieldException())
+      val actorRef = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ACTOR)
+        .getOrElse(throw new NoSuchFieldException())
+      socialActorsMap.registerUser(playerID, actorRef)
+      setMessageAndRespond(response, RegisterSocialIDAPI.okMessage)
+    } catch {
+      case _: NoSuchFieldException => setErrorAndRespond(response, RegisterSocialIDAPI.errorMessage)
+    }
+  }
+
+  /**
+    * Handler for UnregisterSocialIDAPI
+    */
+  private val unregisterSocialIDAPI: APIHandler = (router, response) => {
+    try {
+      val playerID = router.request().getFormAttribute(UnregisterSocialIDAPI.SOCIAL_ID)
+        .getOrElse(throw new NoSuchFieldException())
+      socialActorsMap.unregisterUser(playerID)
+      setMessageAndRespond(response, UnregisterSocialIDAPI.okMessage)
+    } catch {
+      case _: NoSuchFieldException => setErrorAndRespond(response, UnregisterSocialIDAPI.errorMessage)
+    }
+  }
+
+  /**
+    * Handler for GetAllOnlinePlayersAPI.
+    */
+  private val getAllOnlinePlayersAPI: APIHandler = (_, response) => {
+    response.sendResponse(socialActorsMap.getCurrentOnlinePlayerMap)
+  }
+
+  /**
+    * Private method to send an OK response with a message.
+    *
+    * @param response the response to complete.
+    * @param message  the message to insert in the body.
+    */
+  private def setMessageAndRespond(response: RouterResponse, message: String): Unit = {
+    response.sendResponse(Message(message))
+  }
+
+
 
   /**
     * Private method to set an error inside the body of a response call and send it.
@@ -151,13 +205,18 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
         registerMatchAPIHandler)
       case api@RemoveMatchAPI => api.asRequest(router,
         removeMatchAPIHandler)
+      case api@RegisterSocialIDAPI => api.asRequest(router,
+        registerSocialIDAPI)
+      case api@UnregisterSocialIDAPI => api.asRequest(router,
+        unregisterSocialIDAPI)
+      case api@GetAllOnlinePlayersAPI => api.asRequest(router,
+        getAllOnlinePlayersAPI)
       case api@_ => api.asRequest(router, mockHandler)
     })
 
     val options = HttpServerOptions()
     options.setCompressionSupported(true)
       .setIdleTimeout(timeout)
-
 
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)

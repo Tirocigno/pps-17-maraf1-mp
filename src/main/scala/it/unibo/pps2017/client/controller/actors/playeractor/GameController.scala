@@ -125,8 +125,6 @@ class GameController extends MatchController {
     case NotifyBriscolaChosen(seed) => sendBriscolaChosen(briscola = seed.asString)
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
-    case ForcedCardPlayed(card, player) => showOtherPlayersPlayedCard(card, player = player)
-    case SetTimer(timer) => setTimer(timer)
     case PlayedCard(card, player) => showOtherPlayersPlayedCard(card, player)
     case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
     case ComputePartialGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2)
@@ -183,14 +181,19 @@ class GameController extends MatchController {
     */
   def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
 
-    if (user.eq(winner1) | user.eq(winner2)) {
-      if (score1 > score2)
-        playGameController.cleanFieldEndTotalTurn(score1, score2, false)
-      else playGameController.cleanFieldEndTotalTurn(score2, score1, false)
+    if (score1 == score2) {
+      playGameController.cleanFieldEndTotalTurn(score1, score2, false)
     } else {
-      if (score1 > score2) playGameController.cleanFieldEndTotalTurn(score2, score1, false)
-      else playGameController.cleanFieldEndTotalTurn(score1, score2, false)
+      if (user.equals(winner1) | user.equals(winner2)) {
+        if (score1 > score2)
+          playGameController.cleanFieldEndTotalTurn(score1, score2, false)
+        else playGameController.cleanFieldEndTotalTurn(score2, score1, false)
+      } else {
+        if (score1 > score2) playGameController.cleanFieldEndTotalTurn(score2, score1, false)
+        else playGameController.cleanFieldEndTotalTurn(score1, score2, false)
+      }
     }
+
   }
 
   /**
@@ -204,7 +207,7 @@ class GameController extends MatchController {
     */
   def cleanFieldEndMatch(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
 
-    if (user.eq(winner1) | user.eq(winner2)) {
+    if (user.equals(winner1) | user.equals(winner2)) {
       if (score1 > score2) {
         playGameController.cleanFieldEndTotalTurn(score1, score2, true)
         this.setWinner(true)
@@ -249,15 +252,6 @@ class GameController extends MatchController {
     */
   def selectBriscola(): Unit = {
     playGameController.showBriscolaCommands()
-  }
-
-  /**
-    * Method to send to GUI the current value of timer.
-    *
-    * @param timer Value of timer.
-    */
-  def setTimer(timer: Int): Unit = {
-    playGameController.setTimer(timer)
   }
 
   /**

@@ -123,7 +123,7 @@ case class GameCycle(team1: BaseTeam[String],
     * @return
     * The previous player.
     */
-  private def getPrevOf(player: String): String = {
+   def getPrevOf(player: String): String = {
     val prevIndex: Int = (MAX_PLAYER_NUMBER + (getPlayers.indexOf(player) - 1)) % MAX_PLAYER_NUMBER
 
     getPlayers(prevIndex)

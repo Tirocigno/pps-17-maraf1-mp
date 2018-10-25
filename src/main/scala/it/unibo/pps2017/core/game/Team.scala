@@ -2,7 +2,6 @@
 package it.unibo.pps2017.core.game
 
 
-import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.core.player.FullTeamException
 import it.unibo.pps2017.core.player.GameActor._
 import it.unibo.pps2017.server.model.Side
@@ -60,12 +59,12 @@ sealed trait BaseTeam[A] {
   def getMembers: Seq[A]
 
   /**
-    * Add set's point to the team score.
+    * Set set's point to the team score.
     *
     * @param score
     * Set's points.
     */
-  def addPoints(score: Int): Unit
+  def setPoints(score: Int): Unit
 
   /**
     * Return the current team's score.
@@ -104,15 +103,15 @@ sealed trait BaseTeam[A] {
 /**
   * This class manage a Team. Identified by a name and a list of members.
   *
-  * @param name
+  *
   * Name of the team
   * @param members
   * Members of the team. Limited at max 2.
   */
 
 case class Team(override var teamIndex: String = Random.nextInt().toString,
-                private var members: ListBuffer[ClientGameActor] = ListBuffer(),
-                private var score: Int = 0) extends BaseTeam[ClientGameActor] {
+                private var members: ListBuffer[String] = ListBuffer(),
+                private var score: Int = 0) extends BaseTeam[String] {
 
 
   /**
@@ -124,7 +123,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * If the team has already 2 members.
     */
   @throws(classOf[FullTeamException])
-  def addPlayer(newPlayer: ClientGameActor): Unit = {
+  def addPlayer(newPlayer: String): Unit = {
     if (members.length >= TEAM_MEMBERS_LIMIT) {
       throw FullTeamException()
     }
@@ -138,7 +137,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * @return
     * the members of the team
     */
-  def getMembers: Seq[ClientGameActor] = members
+  def getMembers: Seq[String] = members
 
   /**
     * Return the team composition with both player's username.
@@ -150,13 +149,13 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     val app: ListBuffer[String] = ListBuffer()
     firstMember match {
       case Some(member) =>
-        app += member.getUsername
+        app += member
       case None =>
     }
 
     secondMember match {
       case Some(member) =>
-        app += member.getUsername
+        app += member
       case None =>
     }
 
@@ -177,15 +176,15 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * @return
     * the first player of the team.
     */
-  def firstMember: Option[ClientGameActor] = members.headOption
+  def firstMember: Option[String] = members.headOption
 
   /**
-    * Add set's point to the team score.
+    * Set set's point to the team score.
     *
     * @param score
     * Set's points.
     */
-  def addPoints(score: Int): Unit = this.score += score
+  def setPoints(score: Int): Unit = this.score = score
 
   /**
     * Return the current team's score.
@@ -193,7 +192,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * @return
     * the current team's score.
     */
-  def getScore: Int = score
+  def getScore: Int = this.score
 
 
   /**
@@ -218,7 +217,7 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     * @return
     * the second player of the team.
     */
-  def secondMember: Option[ClientGameActor] = members.lastOption
+  def secondMember: Option[String] = members.lastOption
 }
 
 
@@ -279,7 +278,9 @@ case class SimpleTeam(override var teamIndex: String, private var members: ListB
     * @param score
     * Set's points.
     */
-  override def addPoints(score: Int): Unit = this.score += score
+  override def setPoints(score: Int): Unit = {
+    this.score = score
+  }
 
   /**
     * Return the current team's score.

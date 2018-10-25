@@ -1,4 +1,5 @@
-package it.unibo.pps2017.commons.remote
+
+package it.unibo.pps2017.commons.remote.rest
 
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.{Router, RoutingContext}
@@ -32,6 +33,15 @@ object API {
       * @return a Request object build from the RestAPI.
       */
     def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request
+  }
+
+  /**
+    * Trait to define a standard ok and error messages inside the APIs.
+    */
+  trait APIWithMessages {
+    def okMessage: String
+
+    def errorMessage: String
   }
 
 }

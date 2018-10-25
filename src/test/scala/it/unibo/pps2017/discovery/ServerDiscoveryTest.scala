@@ -6,7 +6,7 @@ import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.core.{MultiMap, Vertx}
 import io.vertx.scala.ext.web.client.{HttpRequest, WebClient, WebClientOptions}
-import it.unibo.pps2017.commons.remote.RestUtils.{IPAddress, MatchRef, Port}
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, MatchRef, Port}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.server.model.ResponseStatus
 import org.junit.runner.RunWith

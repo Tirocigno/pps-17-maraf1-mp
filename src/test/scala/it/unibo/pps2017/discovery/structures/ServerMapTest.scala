@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.discovery.structures
 
-import it.unibo.pps2017.commons.remote.RestUtils
+import it.unibo.pps2017.commons.remote.rest.RestUtils
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
@@ -15,6 +15,7 @@ class ServerMapTest extends FunSuite with BeforeAndAfterEach {
   val mockServerContext = RestUtils.ServerContext(mockIP, mockPort)
   val otherServerContext = RestUtils.ServerContext(mockIP2, mockPort)
   var serverMap: ServerMap = ServerMap()
+
 
   override def beforeEach() {
     serverMap = ServerMap()
