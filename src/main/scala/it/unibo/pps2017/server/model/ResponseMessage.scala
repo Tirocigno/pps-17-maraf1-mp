@@ -26,6 +26,8 @@ case class GameSet(player1Hand: Seq[String],
                    player4Hand: Seq[String],
                    commands: Seq[String]) extends JsonResponse
 case class Side(members: Seq[String]) extends JsonResponse
+case class User(username: String, score: Int) extends JsonResponse
+case class UserFriends(username: String, friends: Seq[String]) extends JsonResponse
 
 case class User(username: String, score: Int) extends JsonResponse
 

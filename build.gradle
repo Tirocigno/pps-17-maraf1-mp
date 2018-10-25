@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
 
 //Script for sCoverage task.
 buildscript {
@@ -9,6 +10,7 @@ buildscript {
     dependencies {
         classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.3.0"
         classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.22"
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.2"
     }
 }
 //List of plugins to apply.
@@ -41,7 +43,7 @@ ext {
     vertxVersion = '3.5.4'
 
     //Version for Akka.
-    akkaVersion = '2.5.14'
+    akkaVersion = '2.5.17'
 
     //Version for ScalaTest library.
     scalaTestVersion = '3.0.1'
@@ -67,14 +69,25 @@ ext {
     slf4jApiVersion = '1.7.12'
     logbackVersion = '1.2.3'
 
+    redisScalaVersion = '1.8.0'
 }
 
 //create a single Jar with all dependencies
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'it.unibo.pps2017.discovery.DiscoveryMain'
+//jar {
+//    manifest {
+//        attributes 'Main-Class': 'it.unibo.pps2017.commons.remote.akka.MockDiscovery'
+//    }
+//}
+
+shadowJar {
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
+        resource = 'reference.conf'
     }
+}
+
+runShadow {
+    mainClassName = 'it.unibo.pps2017.commons.remote.akka.MockDiscovery'
 }
 
 repositories {
@@ -162,6 +175,7 @@ dependencies {
     scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
 
 
+    compile "com.github.etaty:rediscala_$scalaMajor:$redisScalaVersion"
 }
 
 /**
@@ -180,7 +194,7 @@ testScoverage {
 
 defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
 
-
+//TO CHANGE FOR SHADOWJAR
 mainClassName = 'it.unibo.pps2017.server.Runner'
 
 

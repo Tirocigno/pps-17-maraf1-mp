@@ -6,7 +6,7 @@ import it.unibo.pps2017.commons.remote.rest.RestUtils.ServerContext
 import it.unibo.pps2017.discovery.ServerDiscovery
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.controller.Dispatcher
-import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI$
+import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
 class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
@@ -61,8 +61,8 @@ class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
 
   test("testGetGameID") {
     waitAsyncOpeartion // this waiting is necessary because the async operation is very heavy.
-    val map = Map(FoundGameRestAPI$.meParamKey -> DEFAULT_PLAYERID)
-    webClient.callRemoteAPI(FoundGameRestAPI$, Some(map))
+    val map = Map(FoundGameRestAPI.meParamKey -> DEFAULT_PLAYERID)
+    webClient.callRemoteAPI(FoundGameRestAPI, Some(map))
     waitAsyncOpeartion
     Thread.sleep(5000)
     assert(webClient.assignedServerContext.get == ServerContext(genericHost, serverPort))
