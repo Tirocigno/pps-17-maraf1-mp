@@ -5,7 +5,6 @@ import akka.actor.{ActorRef, Stash}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
-import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient._
 
