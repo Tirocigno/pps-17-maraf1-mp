@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.model.remote
 import io.vertx.scala.core.Vertx
-import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
+import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.ServerContext
 import it.unibo.pps2017.discovery.ServerDiscovery
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
@@ -20,23 +20,13 @@ class RestWebClientTest extends FunSuite with BeforeAndAfterEach {
   var discoveryVerticle: ServerDiscovery = _
   var serverVerticle: Dispatcher = _
   var webClient: RestWebClient = _
-  var isClusterRunning = false
-
 
   override def beforeEach() {
     vertx = Vertx.vertx()
     discoveryVerticle = ServerDiscovery(discoveryPort, defautlTimeOut)
-    if (!isClusterRunning) {
-      discoveryVerticle.startAkkaCluster(genericHost)
-      isClusterRunning = true
-    }
     vertx.deployVerticle(discoveryVerticle)
     waitAsyncOpeartion
-    serverVerticle = Dispatcher(
-      AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(
-        genericHost,
-        "0",
-        genericHost))
+    serverVerticle = Dispatcher(AkkaTestUtils.generateTestActorSystem())
     vertx.deployVerticle(serverVerticle)
     waitAsyncOpeartion
     webClient = GameRestWebClient(ServerContext(genericHost, discoveryPort))

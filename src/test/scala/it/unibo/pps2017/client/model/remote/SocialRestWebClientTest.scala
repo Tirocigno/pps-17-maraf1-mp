@@ -5,7 +5,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import io.vertx.scala.core.Vertx
 import it.unibo.pps2017.client.controller.SocialController
 import it.unibo.pps2017.client.model.actors.ActorMessage
-import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
+import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
 import it.unibo.pps2017.discovery.ServerDiscovery
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
@@ -35,17 +35,9 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
   override def beforeEach() {
     vertx = Vertx.vertx()
     discoveryVerticle = ServerDiscovery(DISCOVERY_PORT, defautlTimeOut)
-    if (!isClusterRunning) {
-      discoveryVerticle.startAkkaCluster(GENERIC_HOST)
-      isClusterRunning = true
-    }
     vertx.deployVerticle(discoveryVerticle)
     waitAsyncOperation()
-    serverVerticle = Dispatcher(
-      AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(
-        GENERIC_HOST,
-        "0",
-        GENERIC_HOST))
+    serverVerticle = Dispatcher(AkkaTestUtils.generateTestActorSystem())
     vertx.deployVerticle(serverVerticle)
     waitAsyncOperation()
     webClient = SocialRestWebClient(controller, ServerContext(GENERIC_HOST, DISCOVERY_PORT))

@@ -1,19 +1,8 @@
 package it.unibo.pps2017.server.controller
 
-import akka.actor.ActorSystem
-import com.github.agourlay.cornichon.CornichonFeature
-import com.github.agourlay.cornichon.core.FeatureDef
-import io.vertx.scala.core.Vertx
-import it.unibo.pps2017.server.controller.DispatcherTest.PRIMARY_URL
-import it.unibo.pps2017.server.controller.UserDispatcherTest.{usernameForTest, friendForTest}
-import it.unibo.pps2017.server.model.ResponseStatus.{EXCEPTION_CODE, OK_CODE}
-import org.json4s.DefaultFormats
 
-import scala.util.{Failure, Success}
-
-
-class AddUserTest extends CornichonFeature {
-  implicit val formats: DefaultFormats.type = DefaultFormats
+class AddUserTest /*extends CornichonFeature*/ {
+  /*implicit val formats: DefaultFormats.type = DefaultFormats
 
   val verticle = Dispatcher(
     ActorSystem("Test"))
@@ -69,7 +58,7 @@ class AddUserTest extends CornichonFeature {
     }
 
 
-  }
+  }*/
 }
 
 
