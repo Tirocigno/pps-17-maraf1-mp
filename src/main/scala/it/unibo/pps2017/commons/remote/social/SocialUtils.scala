@@ -4,5 +4,9 @@ import akka.actor.ActorRef
 
 object SocialUtils {
 
+  type PlayerID = String
+
   type SocialMap = Map[String, ActorRef]
+
+  type FriendList = List[String]
 }
