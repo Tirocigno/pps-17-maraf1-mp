@@ -11,6 +11,7 @@
 | | Create a list of all online friends | Naldini | 1 | ?|
 | | Send a request of friendship to an online player| Naldini | 1 | ?|
 |**As a user, i want to register an account**|||||
+| | Login and Generic GUI | Jakova | 5 | ?|
 | | Database selection and configuration | Riciputi | 8 | ?|
 | | Register user API definition | Riciputi | 4 | ?|
 | | Login user API definition | Riciputi | 2 | ?|
@@ -29,7 +30,6 @@
 | | Split lobbies in competitive and non competitive | Brasini | 1 | ?|
 | | Define a DB call to update player's score once a match is terminated | Riciputi | 1 | ?|
 |**Final integration**|||||
-| | Generic GUI | Jakova | 5 | ?|
 | | Client modules integration | - | 10 | ?|
 | | Test the whole system | All of us | 10 | ?|
 | | Bug fixing | All of us | 10 | ?|
