@@ -10,6 +10,8 @@ sealed trait PartyRole
 
 object PartyRole {
 
+  case object Leader extends PartyRole
+
   case object Partner extends PartyRole
 
   case object Foe extends PartyRole
