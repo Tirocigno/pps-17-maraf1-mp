@@ -2,7 +2,7 @@
 package it.unibo.pps2017.client.model.actors.socialactor.socialmessages
 
 import it.unibo.pps2017.client.model.actors.ActorMessage
-import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PartnerReference, PlayerID, SocialMap}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, PlayerReference, SocialMap}
 import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialResponse}
 
 
@@ -87,7 +87,7 @@ object SocialMessages {
     * @param partnerRole    the information about the partner of the player.
     */
   case class InvitePlayerResponseMessage(socialResponse: SocialResponse, role: PartyRole,
-                                         myRole: Option[PartyPlayer], partnerRole: Option[PartnerReference]) extends
+                                         myRole: Option[PartyPlayer], partnerRole: Option[PlayerReference]) extends
     SocialMessage
 
   /**

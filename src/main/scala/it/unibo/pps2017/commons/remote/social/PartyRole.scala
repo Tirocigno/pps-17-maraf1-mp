@@ -16,6 +16,8 @@ object PartyRole {
 
   case object Foe extends PartyRole
 
+  case object FoePartner extends PartyRole
+
 }
 
 /**

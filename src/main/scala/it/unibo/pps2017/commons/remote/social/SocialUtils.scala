@@ -10,6 +10,6 @@ object SocialUtils {
 
   type FriendList = List[String]
 
-  case class PartnerReference(partnerID: PlayerID, partnerRef: ActorRef)
+  case class PlayerReference(playerID: PlayerID, playerRef: ActorRef)
 
 }
