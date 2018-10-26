@@ -1,7 +1,8 @@
 package it.unibo.pps2017.client.model.actors.socialactor.socialmessages
 
 import it.unibo.pps2017.client.model.actors.ActorMessage
-import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, SocialMap}
+import it.unibo.pps2017.commons.remote.social.SocialResponse
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 
 
 /**
@@ -24,5 +25,33 @@ object SocialMessages {
     * @param friendsList the list of player's friend pulled from database.
     */
   case class SetFriendsList(friendsList: FriendList)
+
+  /**
+    * Tell the actor to send a friend request message to a specific player.
+    *
+    * @param friendID the id of the player to add as a friend.
+    */
+  case class TellAddFriendRequestMessage(friendID: PlayerID)
+
+  /**
+    * Message to send to a player to ask if we can add him to our friends.
+    *
+    * @param senderID the request sender id.
+    */
+  case class AddFriendRequestMessage(senderID: PlayerID)
+
+  /**
+    * Tell the actor to send a response message for a friend request.
+    *
+    * @param socialResponse the response of the player.
+    */
+  case class TellAddFriendResponseMessage(socialResponse: SocialResponse, sender: PlayerID)
+
+  /**
+    * Message to send a response for a friendship request.
+    *
+    * @param socialResponse the response of the player.
+    */
+  case class AddFriendResponseMessage(socialResponse: SocialResponse)
 
 }

@@ -9,4 +9,5 @@ object SocialUtils {
   type SocialMap = Map[String, ActorRef]
 
   type FriendList = List[String]
+
 }
