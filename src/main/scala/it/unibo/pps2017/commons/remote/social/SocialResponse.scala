@@ -3,7 +3,7 @@ package it.unibo.pps2017.commons.remote.social
 /**
   * Trait to model the possible response for a message.
   */
-trait SocialResponse
+sealed trait SocialResponse
 
 object SocialResponse {
 
