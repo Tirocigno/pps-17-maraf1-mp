@@ -1,20 +1,93 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+
+//Script for sCoverage task.
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.3.0"
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.22"
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.2"
+    }
+}
+//List of plugins to apply.
+
 plugins {
     id 'java'
     id 'scala'
+    id 'org.scoverage' version '2.3.0'
+    id 'com.github.maiflai.scalatest' version '0.22'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '4.0.1'
 }
 
+//group and version.
 group 'it.unibo.pps2017'
-version '0.2.1'
+version '1.0.0'
 
 sourceCompatibility = 1.8
 
+
+//List of variables used in the file.
 ext {
+    //Scala version variables.
     scalaBinaryVersion = '2.12'
+    scalaMajor = '2.12'
     scalaMinorVersion = '6'
     scalaVersion = "$scalaBinaryVersion.$scalaMinorVersion"
 
-    //Version for ScalaTest library
-    scalaTestVersion = "3.0.5"
+    //Version for Vertx.
+    vertxVersion = '3.5.4'
+
+    //Version for Akka.
+    akkaVersion = '2.5.17'
+
+    //Version for ScalaTest library.
+    scalaTestVersion = '3.0.1'
+
+    scalaCheckVersion = '1.14.0'
+
+    //Junit Version
+    jUnitVersion = '4.12'
+
+    sCoveragePluginVersion = '1.3.1'
+    pegDownVersion = '1.5.0'
+
+    gradleScalaTestVersion = '0.22'
+    gradleSCoverageVersion = '3.2.0'
+
+    //Cornichon version for REST API Test
+    cornichonVerison = '0.15.3'
+
+    //Circe version
+    circeVersion = '0.10.0'
+
+    // SLF4J
+    slf4jApiVersion = '1.7.12'
+    logbackVersion = '1.2.3'
+
+    redisScalaVersion = '1.8.0'
+}
+
+//create a single Jar with all dependencies
+
+//jar {
+//    manifest {
+//        attributes 'Main-Class': 'it.unibo.pps2017.commons.remote.akka.MockDiscovery'
+//    }
+//}
+
+shadowJar {
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
+        resource = 'reference.conf'
+    }
+}
+
+runShadow {
+    mainClassName = 'it.unibo.pps2017.commons.remote.akka.MockDiscovery'
 }
 
 repositories {
@@ -23,11 +96,107 @@ repositories {
     jcenter()
 }
 
+// this makes the scala classes builds alongside the java ones.
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['src/main/scala', 'src/main/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+}
+
 dependencies {
 
+    //Support to scala language.
     implementation "org.scala-lang:scala-library:$scalaVersion"
 
-    testImplementation "junit:junit:4.12"
+    //Support to Vertx libraries.
+    implementation "io.vertx:vertx-lang-scala_2.12:$vertxVersion"
+    implementation "io.vertx:vertx-web-scala_2.12:$vertxVersion"
+    implementation "io.vertx:vertx-web-client-scala_2.12:$vertxVersion"
 
+
+    // Simple Logging Facade for Java
+    implementation "org.slf4j:slf4j-api:$slf4jApiVersion"
+    // Logback Classic
+    implementation "ch.qos.logback:logback-classic:$logbackVersion"
+
+    // JSON4S Json Library
+    compile group: 'org.json4s', name: 'json4s-native_2.12', version: '3.6.0'
+    compile group: 'org.json4s', name: 'json4s-jackson_2.12', version: '3.6.0'
+
+
+
+    //Basic support for Akka.
+    implementation "com.typesafe.akka:akka-actor_$scalaMajor:$akkaVersion"
+    implementation "com.typesafe.akka:akka-cluster_$scalaMajor:$akkaVersion"
+    implementation "com.typesafe.akka:akka-cluster-tools_$scalaMajor:$akkaVersion"
+
+
+    compile group: 'com.typesafe.akka', name: 'akka-cluster-metrics_2.12', version: '2.5.17'
+
+
+    //Dependency for Junit.
+    testImplementation "junit:junit:$jUnitVersion"
+
+    //Dependency for pegdown, a library used in scoverage.
+    testImplementation "org.pegdown:pegdown:$pegDownVersion"
+
+    // Dependency for ScalaTest.
     testImplementation "org.scalatest:scalatest_2.12:$scalaTestVersion"
+
+    //Dependencies for ScalaCheck.
+    testImplementation "org.scalacheck:scalacheck_$scalaBinaryVersion:$scalaCheckVersion"
+
+
+    //TestKit for testing akka actors.
+    testImplementation "com.typesafe.akka:akka-testkit_$scalaMajor:$akkaVersion"
+
+    //TestKit for vertx stuff.
+    testImplementation "io.vertx:vertx-unit:3.5.4"
+
+    //Logback for test implementation.
+    testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
+
+
+    //Cornichon API REST test library
+    compile group: 'com.github.agourlay', name: 'cornichon_2.12', version: cornichonVerison
+
+    //Circe JSON Scala library
+    compile group: 'io.circe', name: 'circe-core_2.12', version: circeVersion
+
+
+
+    //Dependency for sCoverage.
+    scoverage "org.scoverage:scalac-scoverage-plugin_2.12:$sCoveragePluginVersion"
+    scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
+
+    compile "com.github.etaty:rediscala_$scalaMajor:$redisScalaVersion"
+}
+
+/**
+ * This should run tests one at time.
+ */
+test {
+    maxParallelForks = 1
+}
+
+/**
+ * This should run tests one at time for SCoverage.
+ */
+testScoverage {
+    maxParallelForks = 1
+}
+
+defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
+
+//TO CHANGE FOR SHADOWJAR
+mainClassName = 'it.unibo.pps2017.server.Runner'
+
+
+task stage {
+    dependsOn installDist
 }
