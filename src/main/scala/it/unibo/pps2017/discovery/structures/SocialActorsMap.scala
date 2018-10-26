@@ -1,7 +1,7 @@
 package it.unibo.pps2017.discovery.structures
 
 import akka.actor.ActorRef
-import it.unibo.pps2017.discovery.structures.SocialActorsMap.SocialMap
+import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
 
 /**
   * This structure will handle a list of actor refs which correspond to the online players logged in the system.
@@ -32,7 +32,6 @@ trait SocialActorsMap {
 
 object SocialActorsMap {
 
-  type SocialMap = Map[String, ActorRef]
 
   def apply(): SocialActorsMap = new SocialActorsMapImpl()
 

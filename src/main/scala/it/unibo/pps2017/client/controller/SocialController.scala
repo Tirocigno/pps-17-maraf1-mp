@@ -1,7 +1,8 @@
 
 package it.unibo.pps2017.client.controller
 
-import it.unibo.pps2017.discovery.structures.SocialActorsMap.SocialMap
+import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
+
 
 /**
   * This trait is a mediator between the actor that handle the social

@@ -3,8 +3,7 @@
 package it.unibo.pps2017.server.model
 
 import it.unibo.pps2017.commons.remote.rest.RestUtils.MatchRef
-import it.unibo.pps2017.discovery.structures.SocialActorsMap.SocialMap
-
+import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
 
 /**
   * This class is used for define the message accepted to the RouterResponse.

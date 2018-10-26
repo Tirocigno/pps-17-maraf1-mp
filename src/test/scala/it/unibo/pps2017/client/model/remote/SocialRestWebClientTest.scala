@@ -7,9 +7,9 @@ import it.unibo.pps2017.client.controller.SocialController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
 import it.unibo.pps2017.discovery.ServerDiscovery
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
-import it.unibo.pps2017.discovery.structures.SocialActorsMap.SocialMap
 import it.unibo.pps2017.server.controller.Dispatcher
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

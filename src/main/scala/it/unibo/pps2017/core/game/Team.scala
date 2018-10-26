@@ -1,8 +1,7 @@
 
 package it.unibo.pps2017.core.game
 
-
-import it.unibo.pps2017.client.model.actors.ClientGameActor
+import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.core.player.GameActor._
 import it.unibo.pps2017.core.player.{FullTeamException, GameActor}
 import it.unibo.pps2017.server.model.Side
@@ -158,13 +157,13 @@ case class Team(override var teamIndex: String = Random.nextInt().toString,
     val app: ListBuffer[String] = ListBuffer()
     firstMember match {
       case Some(member) =>
-        app += member.getUsername
+        app += member.username
       case None =>
     }
 
     secondMember match {
       case Some(member) =>
-        app += member.getUsername
+        app += member.username
       case None =>
     }
 

@@ -1,7 +1,6 @@
 
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.core.player.GameActor._
 
 
