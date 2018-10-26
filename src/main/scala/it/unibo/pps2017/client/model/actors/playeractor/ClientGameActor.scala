@@ -11,6 +11,4 @@ import it.unibo.pps2017.client.model.actors.ModelActor
 
 trait ClientGameActor extends ModelActor {
   override val controller: GameController
-
-  def getUsername: String
 }

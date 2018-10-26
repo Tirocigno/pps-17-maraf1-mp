@@ -116,8 +116,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     orderedList
   }
 
-  override
-  def getUsername: String = {
+  override def username: String = {
     user
   }
 }
