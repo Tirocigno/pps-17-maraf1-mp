@@ -16,10 +16,10 @@ object PlayerActorClient {
   final val END_SEARCH: Int = 4
 }
 
-class PlayerActorClient(override val controller: GameController, username: String) extends ClientGameActor with Stash {
+class PlayerActorClient(override val controller: GameController, playerid: String) extends ClientGameActor with Stash {
 
   var actorPlayer: ClientGameActor = this
-  var user: String = username
+  var user: String = playerid
   var orderedPlayersList = new ListBuffer[String]()
   var gameActor: ActorRef = _
   var cardArrived: Boolean = false
