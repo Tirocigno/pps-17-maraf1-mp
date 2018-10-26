@@ -16,10 +16,11 @@ trait SocialActor extends ModelActor {
 }
 
 object SocialActor {
-  def apply(system: ActorSystem, socialController: SocialController): ActorRef =
-    system.actorOf(Props(new SocialActorImpl(socialController)))
+  def apply(system: ActorSystem, socialController: SocialController, username: String): ActorRef =
+    system.actorOf(Props(new SocialActorImpl(socialController, username)))
 
-  private class SocialActorImpl(override val controller: SocialController) extends SocialActor {
+  private class SocialActorImpl(override val controller: SocialController, override val username: String)
+    extends SocialActor {
     override def receive: Receive = ???
   }
 
