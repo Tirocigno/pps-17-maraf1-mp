@@ -12,7 +12,7 @@ public class RegistrationView extends Application{
     private static final int MIN_HEIGHT = 400;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         try {
             final FXMLLoader loader = new FXMLLoader(RegistrationView.class.getResource("registration.fxml"));
             Parent root = loader.load();
