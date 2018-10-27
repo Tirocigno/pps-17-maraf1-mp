@@ -9,10 +9,6 @@ import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
   */
 trait SocialParty {
 
-  def canAcceptSocialInvitation()
-
-  def isProcessingARequest()
-
   def setPlayerInParty(role: PartyRole, playerContext: PlayerReference)
 
   def notifyGameIDToAllPlayers(gameID: String)
