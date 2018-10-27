@@ -1,7 +1,5 @@
 package it.unibo.pps2017.core.player
 
-import java.util.TimerTask
-
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
@@ -16,10 +14,9 @@ import it.unibo.pps2017.core.player.GameActor._
 
 import scala.collection.mutable
 import scala.collection.mutable.{ListBuffer, Map}
-import scala.util.Random
 
 
-class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: BaseTeam[String], onGameEnd:()=>Unit) extends Actor with Match with ActorLogging {
+class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: BaseTeam[String], val onGameEnd:()=>Unit) extends Actor with Match with ActorLogging {
 
   type PlayerName = String
   var currentBriscola: Option[Seed] = None
@@ -33,11 +30,10 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   var setEnd: Boolean = false
   var gameEnd: Boolean = false
   val actors: ListBuffer[PlayerName] = ListBuffer[PlayerName]()
-  var cardsInHand: scala.collection.mutable.Map[PlayerName, Set[Card]] = Map[PlayerName, Set[Card]]()
-  var cardsIndex: scala.collection.mutable.Map[PlayerName, Set[Card]] = Map[PlayerName, Set[Card]]()
+  var cardsInHand: Map[PlayerName, Set[Card]] = Map[PlayerName, Set[Card]]()
+  var cardsIndex: Map[PlayerName, Set[Card]] = Map[PlayerName, Set[Card]]()
   var mediator : ActorRef  = _
   val cluster = Cluster(context.system)
-  var task : TimerTask = _
   var cardPlayed : Boolean = false
   var numAck: Int = 0
 
@@ -67,8 +63,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
         numAck = 0
       }
 
-
-
     case BriscolaChosen(seed) =>
       setBriscola(seed)
       mediator ! Publish(topicName, NotifyBriscolaChosen(seed))
@@ -78,13 +72,12 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       numAck = numAck + 1
       if(numAck == TOT_PLAYERS){
         mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, true))
-        //startTimer()
         numAck = 0
       }
 
 
     case ClickedCard(index,player) =>
-      var playerHand: Seq[Card] = cardsIndex(player).toSeq
+      val playerHand: Seq[Card] = cardsIndex(player).toSeq
       isCardOk(playerHand(index),player)
 
     case CardPlayedAck =>
@@ -102,12 +95,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     case ClickedCommand(command, player) =>
       mediator ! Publish(topicName, NotifyCommandChosen(command,player))
 
-    case m@ _ =>
-      println("MESSAGGIO -> " + m)
-  }
-
-  private def endTask(): Unit ={
-    task.cancel()
   }
 
   private def onFullTable(): Unit = {
@@ -135,11 +122,10 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     deck.shuffle()
     var i: Int = 0
     deck.distribute().foreach(hand => {
-     // actors.foreach(player => {
-        mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand),actors(i)))
+      mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand),actors(i)))
       cardsInHand += (actors(i) -> hand)
       cardsIndex += (actors(i) -> hand)
-     // })
+
       if (firstHand && isFirstPlayer(hand)) {
         nextHandStarter = Some(getPlayers(i))
         briscolaChooser = Some(getPlayers(i))
@@ -152,7 +138,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
   }
 
-  private def cardToPath(card: Card): String =  IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
+  private def cardToPath(card: Card): String =  IMG_PATH + card.cardValue + card.cardSeed + FILE_EXTENSION
 
   private def allCardsToPath(cards: Set[Card]): List[String] = {
     var allCardsPath : ListBuffer[String] = ListBuffer[String]()
@@ -176,28 +162,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     startHand()
   }
 
-//da cancellare?
-  override def isSetEnd: Option[(Int, Int, Boolean)] = {
-    if (setEnd) {
-      Some((team1.getScore, team2.getScore, gameEnd))
-    }
-    None
-  }
-
-  override def forcePlay(player: PlayerName): Card = {
-    currentSuit match {
-      case Some(seed) =>
-        val rightCards: Seq[Card] = cardsInHand(player).filter(_.cardSeed == seed).toList
-        cardPlayed = true
-        endTask()
-        rightCards(Random.nextInt(rightCards.size))
-      case None =>
-        val playerHand: Seq[Card] = cardsInHand(player).toList
-        cardPlayed = true
-        endTask()
-        playerHand(Random.nextInt(playerHand.size))
-    }
-  }
 
   override def isCardOk(card: Card, player: PlayerName): Unit = currentSuit match {
     case Some(seed) =>
@@ -267,7 +231,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
     setEnd = true
     currentBriscola = None
-    //nextHandStarter = None
     gameCycle.setFirst(briscolaChooser.get)
     briscolaChooser = Some(gameCycle.getNext)
     nextHandStarter = briscolaChooser
@@ -324,7 +287,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
   private def defineTaker(hand: mutable.ListBuffer[(Card, PlayerName)]): PlayerName = {
     var max: Card = hand.head._1
-    println("Entro per definire il vincitore!")
     hand foreach (tuple => {
       println("----> "+tuple)
       val card = tuple._1
@@ -338,7 +300,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
         max = card
       }
     })
-    //nextHandStarter
     println("vincitore: " + hand.filter(_._1 == max).head._2)
     gameCycle.setFirst(hand.filter(_._1 == max).head._2)
     hand.filter(_._1 == max).head._2
@@ -370,7 +331,7 @@ object GameActor {
   val REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA: Int = 3
   val EXTRA_POINTS_FOR_MARAFFA: Int = 3
   val IMG_PATH = "cards/"
-  val PNG_FILE = ".png"
+  val FILE_EXTENSION = ".png"
 
   def apply(topicName: String, team1: BaseTeam[String], team2: BaseTeam[String], onGameEnd:()=>Unit): GameActor = new GameActor(topicName, team1, team2, onGameEnd)
 
