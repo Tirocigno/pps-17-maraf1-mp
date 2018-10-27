@@ -6,15 +6,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class LoginView extends Application {
+public class GenericView extends Application {
 
-    private static final int MIN_WIDTH = 300;
-    private static final int MIN_HEIGHT = 400;
+    private static final int MIN_WIDTH = 900;
+    private static final int MIN_HEIGHT = 685;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
-            final FXMLLoader loader = new FXMLLoader(LoginView.class.getResource("login.fxml"));
+            final FXMLLoader loader = new FXMLLoader(GenericView.class.getResource("genericView.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -28,9 +28,4 @@ public class LoginView extends Application {
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
 }
