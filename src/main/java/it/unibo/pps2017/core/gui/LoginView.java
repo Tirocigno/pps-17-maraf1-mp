@@ -16,7 +16,6 @@ public class LoginView extends Application {
         try {
             final FXMLLoader loader = new FXMLLoader(LoginView.class.getResource("login.fxml"));
             Parent root = loader.load();
-            final LoginController loginController = loader.getController();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);

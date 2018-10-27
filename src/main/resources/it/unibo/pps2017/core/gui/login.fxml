@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="293.0" style="-fx-background-color: gray;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.LoginController">
-   <children>
+<AnchorPane prefHeight="400.0" prefWidth="293.0" style="-fx-background-color: #4286f4;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.LoginController">
       <Label layoutX="26.0" layoutY="100.0" text="Username: ">
          <font>
             <Font size="17.0" />
@@ -30,5 +29,4 @@
       <Button fx:id="viewButton" alignment="CENTER" disable="true" layoutX="191.0" layoutY="296.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="75.0" style="-fx-border-color: black; -fx-border-radius: 5;" text="View" />
       <Label fx:id="errorLabel" layoutX="153.0" layoutY="236.0" text="Login error! Try again!" textFill="#e40808" visible="false" />
       <Label fx:id="loginOkLabel" layoutX="146.0" layoutY="236.0" prefHeight="17.0" prefWidth="127.0" text="Logged in successfully" textFill="#0beb8a" visible="false" />
-   </children>
 </AnchorPane>
