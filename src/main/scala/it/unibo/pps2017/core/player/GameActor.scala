@@ -211,7 +211,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
         if (cardsInHand(player).isEmpty) onSetEnd()
 
         mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, gameCycle.isFirst))
-
+        setEnd = false
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
 
     }
