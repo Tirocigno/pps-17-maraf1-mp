@@ -36,21 +36,4 @@ trait Match {
     */
   def isCardOk(card: Card, player: String): Unit
 
-  /**
-    * Play a random card in the hand of the player.
-    *
-    * @param player
-    * Reference player.
-    * @return
-    * A random card among those that the player can drop.
-    */
-  def forcePlay(player: String): Card
-
-  /**
-    * If set is end return the score of teams, and a true if the game is end, false otherwise.
-    *
-    * @return
-    * If set is end return the score of teams, and a true if the game is end, false otherwise.
-    */
-  def isSetEnd: Option[(Int, Int, Boolean)]
 }
