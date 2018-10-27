@@ -237,7 +237,8 @@ public class PlayGameController implements PlayGame {
             hideCommands();
         }
 
-        if (isFirstPlayer) cleanField();
+        //if (isFirstPlayer) cleanField();
+        if (partialTurnIsEnded) cleanField();
 
         Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
 
