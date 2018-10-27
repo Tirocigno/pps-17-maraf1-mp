@@ -32,7 +32,7 @@ public class PlayGameController implements PlayGame {
     private static final String BRISCOLA_CHOSEN = "Briscola chosen: ";
     private static final String MY_TEAM_SCORE = "My team's score: ";
     private static final String OPPONENT_TEAM_SCORE = "Opponent team's score: ";
-    private static final String CHOOSE_YOUR_BRISCOLA ="Choose your briscola";
+    private static final String CHOOSE_YOUR_BRISCOLA = "Choose your briscola";
     private static final int DURATION_ANIMATION = 3;
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
