@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.commons.remote.social
 
-import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerID
+import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
 
 /**
   * Trait to model all possible roles inside a party.
@@ -27,8 +27,8 @@ sealed trait PartyPlayer extends PartyRole
 
 object PartyPlayer {
 
-  case class PartnerPlayer(playerID: PlayerID) extends PartyPlayer
+  case class PartnerPlayer(playerReference: PlayerReference) extends PartyPlayer
 
-  case class FoePlayer(playerID: PlayerID) extends PartyPlayer
+  case class FoePlayer(playerReference: PlayerReference) extends PartyPlayer
 
 }

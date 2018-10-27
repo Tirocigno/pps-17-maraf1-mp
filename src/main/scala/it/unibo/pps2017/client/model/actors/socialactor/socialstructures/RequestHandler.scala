@@ -4,8 +4,8 @@ package it.unibo.pps2017.client.model.actors.socialactor.socialstructures
 import akka.actor.ActorRef
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.RequestClass
 import it.unibo.pps2017.commons.remote.exceptions.AlreadyProcessingARequestException
-import it.unibo.pps2017.commons.remote.social.SocialResponse
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
+import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
 
 /**
   * A class for register the status of a received request.
@@ -22,9 +22,11 @@ trait RequestHandler {
   def isAlreadyProcessingARequest: Boolean
 
   /**
-    * Register a new request inside the system.
+    * Register a new friendship request inside the system.
     */
-  def registerRequest(requestClass: RequestClass, sender: PlayerReference): Unit
+  def registerFriendshipRequest(requestClass: RequestClass, sender: PlayerReference): Unit
+
+  def registerInviteRequest(requestClass: RequestClass, sender: PlayerReference, role: PartyRole)
 
   /**
     * Generate a response message and send it to the sender.
@@ -39,17 +41,31 @@ object RequestHandler {
   private class RequestHandlerImpl(val currentActorRef: ActorRef, val currentParty: SocialParty) extends RequestHandler {
     var currentRequest: Option[RequestClass] = None
     var senderPlayer: Option[PlayerReference] = None
+    var inviteClass: Option[PartyRole] = None
 
     override def isAlreadyProcessingARequest: Boolean = currentRequest.isDefined
 
-    override def registerRequest(requestClass: RequestClass, sender: PlayerReference): Unit = currentRequest match {
-      case Some(_) => throw new AlreadyProcessingARequestException()
-      case None => currentRequest = Some(requestClass); senderPlayer = Some(sender)
+    override def registerFriendshipRequest(requestClass: RequestClass, sender: PlayerReference): Unit =
+      checkRequestAndExecute(requestClass, sender)(friendshipHandler)
+
+    private def checkRequestAndExecute(requestClass: RequestClass, playerReference: PlayerReference)
+                                      (requestHandler: (RequestClass, PlayerReference) => Unit): Unit =
+      currentRequest match {
+        case Some(_) => throw new AlreadyProcessingARequestException()
+        case None => requestHandler(requestClass, playerReference)
     }
+
 
     override def respondToRequest(socialResponse: SocialResponse): Unit = ???
 
-    def resetRequestHandler: Unit = currentRequest = None;
+    private def friendshipHandler: (RequestClass, PlayerReference) => Unit = (requestClass, sender) => {
+      currentRequest = Some(requestClass)
+      senderPlayer = Some(sender)
+    }
+
+    override def registerInviteRequest(requestClass: RequestClass, sender: PlayerReference, role: PartyRole): Unit = ???
+
+    def resetRequestHandler(): Unit = currentRequest = None
     senderPlayer = None
   }
 
