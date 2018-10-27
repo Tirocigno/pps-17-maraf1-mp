@@ -9,6 +9,8 @@ import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
   */
 trait SocialParty {
 
+  def isLeader: Boolean
+
   def setPlayerInParty(role: PartyRole, playerContext: PlayerReference)
 
   def notifyGameIDToAllPlayers(gameID: String)
