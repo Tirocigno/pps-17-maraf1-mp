@@ -45,7 +45,7 @@ object SocialMessages {
     *
     * @param senderID the request sender id.
     */
-  case class AddFriendRequestMessage(senderID: PlayerID) extends RequestMessage {
+  case class AddFriendRequestMessage(sender: PlayerReference) extends RequestMessage {
     override def request: RequestClass = "ADD_FRIEND"
   }
 
@@ -77,7 +77,7 @@ object SocialMessages {
     * @param senderID the sender player's id.
     * @param role     the role on which the receiver will play.
     */
-  case class InvitePlayerRequestMessage(senderID: PlayerID, role: PartyRole) extends RequestMessage {
+  case class InvitePlayerRequestMessage(sender: PlayerReference, role: PartyRole) extends RequestMessage {
     override def request: RequestClass = "INVITE_PLAYER"
   }
 
