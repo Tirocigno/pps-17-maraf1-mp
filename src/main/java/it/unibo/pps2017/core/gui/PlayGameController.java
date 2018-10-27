@@ -476,8 +476,8 @@ public class PlayGameController implements PlayGame {
         this.idUserCards.add("tenthCard");
     }
 
-    private void normalizeHandOtherPlayers(List<ImageView> listOfOtherHand, int playerCardYet) {
-        for (int i = 0; i < MAX_CARDS_IN_HAND - playerCardYet; i++) {
+    private void normalizeHandOtherPlayers(List<ImageView> listOfOtherHand, int cardNotPlayedYet) {
+        for (int i = 0; i < MAX_CARDS_IN_HAND - cardNotPlayedYet; i++) {
             deleteCard(listOfOtherHand);
         }
     }
