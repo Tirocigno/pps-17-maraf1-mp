@@ -11,7 +11,13 @@ import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialRes
   */
 object SocialMessages {
 
+  type RequestClass = String
+
   sealed trait SocialMessage extends ActorMessage
+
+  sealed trait RequestMessage extends SocialMessage {
+    def request: RequestClass
+  }
 
   /**
     * Message to set a new PlayerOnlineMap inside the Actor.
@@ -39,7 +45,9 @@ object SocialMessages {
     *
     * @param senderID the request sender id.
     */
-  case class AddFriendRequestMessage(senderID: PlayerID) extends SocialMessage
+  case class AddFriendRequestMessage(senderID: PlayerID) extends RequestMessage {
+    override def request: RequestClass = "ADD_FRIEND"
+  }
 
   /**
     * Tell the actor to send a response message for a friend request.
@@ -69,7 +77,9 @@ object SocialMessages {
     * @param senderID the sender player's id.
     * @param role     the role on which the receiver will play.
     */
-  case class InvitePlayerRequestMessage(senderID: PlayerID, role: PartyRole) extends SocialMessage
+  case class InvitePlayerRequestMessage(senderID: PlayerID, role: PartyRole) extends RequestMessage {
+    override def request: RequestClass = "INVITE_PLAYER"
+  }
 
   /**
     * Tell the actor to send a response for a Invite request.
@@ -86,9 +96,8 @@ object SocialMessages {
     * @param myRole         the roles on which the player will play
     * @param partnerRole    the information about the partner of the player.
     */
-  case class InvitePlayerResponseMessage(socialResponse: SocialResponse, role: PartyRole,
-                                         myRole: Option[PartyPlayer], partnerRole: Option[PlayerReference]) extends
-    SocialMessage
+  case class InvitePlayerResponseMessage(socialResponse: SocialResponse, myRole: Option[PartyPlayer],
+                                         partnerRole: Option[PlayerReference]) extends SocialMessage
 
   /**
     * Notify to all the party the game id of the match to play.
