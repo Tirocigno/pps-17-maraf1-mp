@@ -18,7 +18,6 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 public class PlayGameController implements PlayGame {
 
@@ -88,7 +87,6 @@ public class PlayGameController implements PlayGame {
     private String player2;
     private String player3;
     private String player4;
-    private String pathOfImageSelected;
     private ImageView playedCard;
 
     private List<String> idUserCards;
@@ -179,7 +177,6 @@ public class PlayGameController implements PlayGame {
         if (gameController.isMyTurn() && briscolaChosen) {
             this.playedCard = (ImageView) clickedCard.getSource();
             String clickedCardId = playedCard.getId();
-            this.pathOfImageSelected = getPathFromMap(clickedCardId);
             int indexCardSelected = getIndexOfCardSelected(clickedCardId);
             gameController.setPlayedCard(indexCardSelected);
         }
@@ -188,8 +185,6 @@ public class PlayGameController implements PlayGame {
     @Override
     public void showPlayedCardOk() {
         this.cardNotOk.setVisible(false);
-        Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
-        this.user1Field.setImage(imagePlayedCard);
         playedCard.setVisible(false);
         hideCommands();
     }
@@ -202,6 +197,7 @@ public class PlayGameController implements PlayGame {
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
         initializePlayersHand();
+        cleanField();
         this.indexOfMyCards.clear();
         int cardCounter = 0;
 
@@ -215,10 +211,12 @@ public class PlayGameController implements PlayGame {
     }
 
     @Override
-    public void showOtherPlayersPlayedCard(final String player, final String cardPath) {
+    public void showPlayersPlayedCard(final String player, final String cardPath) {
         Image cardPlayed = getImageFromPath(cardPath);
 
-        if (player.equals(player2)) {
+        if (player.equals(player1)) {
+            this.user1Field.setImage(cardPlayed);
+        } else if (player.equals(player2)) {
             this.user2Field.setImage(cardPlayed);
         } else if (player.equals(player3)) {
             this.user3Field.setImage(cardPlayed);
@@ -237,7 +235,6 @@ public class PlayGameController implements PlayGame {
             hideCommands();
         }
 
-        //if (isFirstPlayer) cleanField();
         if (partialTurnIsEnded) cleanField();
 
         Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
@@ -454,16 +451,6 @@ public class PlayGameController implements PlayGame {
     private int getIndexOfCardSelected(final String clickedCardId) {
         List<String> indexes = new ArrayList<>(indexOfMyCards.keySet());
         return indexes.indexOf(clickedCardId);
-    }
-
-    private String getPathFromMap(final String clickedCardId) {
-        String correctPath = "";
-        for (final Entry<String, String> entry : indexOfMyCards.entrySet()) {
-            if (clickedCardId.equals(entry.getKey())) {
-                correctPath = entry.getValue();
-            }
-        }
-        return correctPath;
     }
 
     private void createListWithCardsId() {

@@ -94,7 +94,7 @@ object PlayerManager{
     var playedCard: Card = playerTurn.getCardAtIndex(cardIndex)
    /* if(model.isCardOk(playedCard,playerTurn)){
       val cardPath = IMG_PATH + playedCard.cardValue + playedCard.cardSeed + PNG_FILE
-      //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
+      //gui.showPlayersPlayedCard(playerTurn,cardPath)
       true
     }*/
     false
@@ -147,7 +147,7 @@ object PlayerManager{
   override def getRandCard: Unit = {
     //val card : Card = model.forcePlay(playerTurn)
     //val cardPath = IMG_PATH + card.cardValue + card.cardSeed +PNG_FILE
-    //gui.showOtherPlayersPlayedCard(playerTurn,cardPath)
+    //gui.showPlayersPlayedCard(playerTurn,cardPath)
   }
 
   /**

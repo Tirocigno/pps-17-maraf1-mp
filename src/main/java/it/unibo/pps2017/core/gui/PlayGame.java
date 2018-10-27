@@ -46,10 +46,10 @@ public interface PlayGame {
     /**
      * This method is called to show the played card from player.
      *
-     * @param player   player that has played the card.s
+     * @param player   player that has played the card.
      * @param cardPath played card's path.
      */
-    void showOtherPlayersPlayedCard(final String player, final String cardPath);
+    void showPlayersPlayedCard(final String player, final String cardPath);
 
     /**
      * This method is called to inform view of the chosen briscola.
