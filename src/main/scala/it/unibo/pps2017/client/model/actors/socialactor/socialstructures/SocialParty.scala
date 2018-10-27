@@ -21,4 +21,6 @@ trait SocialParty {
 
   def markCurrentPlayerAs(partyRole: PartyRole)
 
+  def getPartner: Option[PlayerReference]
+
 }

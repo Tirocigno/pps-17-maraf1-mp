@@ -23,7 +23,7 @@ object PartyRole {
 /**
   * A role containing the id of the player who plays as that role.
   */
-sealed trait PartyPlayer extends PartyRole
+sealed trait PartyPlayer
 
 object PartyPlayer {
 

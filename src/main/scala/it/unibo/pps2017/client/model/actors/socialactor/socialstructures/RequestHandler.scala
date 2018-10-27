@@ -1,10 +1,13 @@
 
 package it.unibo.pps2017.client.model.actors.socialactor.socialstructures
 
-import akka.actor.ActorRef
-import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{AddFriendRequestMessage, InvitePlayerRequestMessage, RequestMessage}
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
 import it.unibo.pps2017.commons.remote.exceptions.AlreadyProcessingARequestException
+import it.unibo.pps2017.commons.remote.social.PartyPlayer.{FoePlayer, PartnerPlayer}
+import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialResponse
+import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
 
 /**
   * A class for register the status of a received request.
@@ -37,7 +40,7 @@ trait RequestHandler {
 
 object RequestHandler {
 
-  private class RequestHandlerImpl(val currentActorRef: ActorRef, val currentParty: SocialParty) extends RequestHandler {
+  private class RequestHandlerImpl(val currentPlayerRef: PlayerReference, val currentParty: SocialParty) extends RequestHandler {
     var currentMessage: Option[RequestMessage] = None
 
     override def isAlreadyProcessingARequest: Boolean = currentMessage.isDefined
@@ -84,7 +87,19 @@ object RequestHandler {
       }
     }
 
-    override def respondToRequest(socialResponse: SocialResponse): Unit = ???
+    override def respondToRequest(socialResponse: SocialResponse): Unit = currentMessage.get match {
+      case AddFriendRequestMessage(sender) => sender.playerRef ! AddFriendResponseMessage(socialResponse); resetRequestHandler()
+      case InvitePlayerRequestMessage(sender, role) =>
+        socialResponse match {
+          case NegativeResponse => sender.playerRef ! InvitePlayerResponseMessage(socialResponse, None, None)
+          case PositiveResponse => role match {
+            case Partner => sender.playerRef ! InvitePlayerResponseMessage(socialResponse,
+              Some(PartnerPlayer(currentPlayerRef)), None)
+            case Foe => sender.playerRef ! InvitePlayerResponseMessage(socialResponse,
+              Some(FoePlayer(currentPlayerRef)), currentParty.getPartner)
+          }
+        }
+    }
 
     /**
       * Reset internal request fields after each response.
