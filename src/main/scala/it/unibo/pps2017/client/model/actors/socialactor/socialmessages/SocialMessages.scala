@@ -11,13 +11,10 @@ import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialRes
   */
 object SocialMessages {
 
-  type RequestClass = String
 
   sealed trait SocialMessage extends ActorMessage
 
-  sealed trait RequestMessage extends SocialMessage {
-    def request: RequestClass
-  }
+  sealed trait RequestMessage extends SocialMessage
 
   /**
     * Message to set a new PlayerOnlineMap inside the Actor.
@@ -43,12 +40,9 @@ object SocialMessages {
   /**
     * Message to send to a player to ask if we can add him to our friends.
     *
-    * @param senderID the request sender id.
+    * @param sender the request sender id and actorRef.
     */
-  case class AddFriendRequestMessage(sender: PlayerReference) extends RequestMessage {
-    override def request: RequestClass = "ADD_FRIEND"
-  }
-
+  case class AddFriendRequestMessage(sender: PlayerReference) extends RequestMessage
   /**
     * Tell the actor to send a response message for a friend request.
     *
@@ -74,12 +68,10 @@ object SocialMessages {
   /**
     * Message to send a request on joining a match with a specified role
     *
-    * @param senderID the sender player's id.
-    * @param role     the role on which the receiver will play.
+    * @param sender the request sender id and actorRef.
+    * @param role   the role on which the receiver will play.
     */
-  case class InvitePlayerRequestMessage(sender: PlayerReference, role: PartyRole) extends RequestMessage {
-    override def request: RequestClass = "INVITE_PLAYER"
-  }
+  case class InvitePlayerRequestMessage(sender: PlayerReference, role: PartyRole) extends RequestMessage
 
   /**
     * Tell the actor to send a response for a Invite request.
@@ -92,7 +84,6 @@ object SocialMessages {
     * Response message for a Invite request.
     *
     * @param socialResponse the response to send
-    * @param role           the role of the request
     * @param myRole         the roles on which the player will play
     * @param partnerRole    the information about the partner of the player.
     */
