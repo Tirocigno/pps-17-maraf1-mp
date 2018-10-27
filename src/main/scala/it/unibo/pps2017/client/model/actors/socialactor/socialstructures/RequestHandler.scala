@@ -48,10 +48,12 @@ object RequestHandler {
     override def registerFriendshipRequest(requestClass: RequestClass, sender: PlayerReference): Unit =
       checkRequestAndExecute(requestClass, sender)(friendshipHandler)
 
-    override def respondToRequest(socialResponse: SocialResponse): Unit = ???
-
     override def registerInviteRequest(requestClass: RequestClass, sender: PlayerReference, role: PartyRole): Unit =
       checkRequestAndExecute(requestClass, sender)(inviteHandler(role))
+
+    override def respondToRequest(socialResponse: SocialResponse): Unit = currentRequest.get match {
+
+    }
 
     /**
       * Reset internal request fields after each response.

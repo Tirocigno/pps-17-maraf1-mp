@@ -19,4 +19,6 @@ trait SocialParty {
 
   def getAllPlayers: Map[PartyRole, PlayerReference]
 
+  def markCurrentPlayerAs(partyRole: PartyRole)
+
 }
