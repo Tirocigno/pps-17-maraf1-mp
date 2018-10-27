@@ -35,6 +35,7 @@ public class PlayGameController implements PlayGame {
     private static final int DURATION_ANIMATION = 3;
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
+    private static final int MAX_CARDS_IN_HAND = 10;
     private static final String FORMAT = ".png";
     private GameController gameController;
 
@@ -196,7 +197,9 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
-        initializePlayersHand();
+
+        /* Passo il numero delle carte del player per capire se eliminarne alcune dagli altri player */
+        initializePlayersHand(firstUserCards.size());
         cleanField();
         this.indexOfMyCards.clear();
         int cardCounter = 0;
@@ -367,13 +370,20 @@ public class PlayGameController implements PlayGame {
         }
     }
 
-    private void initializePlayersHand() {
+    private void initializePlayersHand(int firstUserCards) {
+        /* nel caso del Viewer potrei entrare nella partita come spettatore
+        in un momento in cui sono ad esempio gia' state giocate due mani. Allora
+        gli avversari dovranno avere nelle mani 10 - mani giocate carte.
+         */
         this.editableCardsPlayer2 = new ArrayList<>(cardsPlayer2);
         this.editableCardsPlayer3 = new ArrayList<>(cardsPlayer3);
         this.editableCardsPlayer4 = new ArrayList<>(cardsPlayer4);
-        showOtherPlayersHand(editableCardsPlayer2);
-        showOtherPlayersHand(editableCardsPlayer3);
-        showOtherPlayersHand(editableCardsPlayer4);
+        this.normalizeHandOtherPlayers(editableCardsPlayer2, firstUserCards);
+        this.normalizeHandOtherPlayers(editableCardsPlayer3, firstUserCards);
+        this.normalizeHandOtherPlayers(editableCardsPlayer4, firstUserCards);
+        this.showOtherPlayersHand(editableCardsPlayer2);
+        this.showOtherPlayersHand(editableCardsPlayer3);
+        this.showOtherPlayersHand(editableCardsPlayer4);
     }
 
     private void createCardsListUser1() {
@@ -464,5 +474,11 @@ public class PlayGameController implements PlayGame {
         this.idUserCards.add("eighthCard");
         this.idUserCards.add("ninthCard");
         this.idUserCards.add("tenthCard");
+    }
+
+    private void normalizeHandOtherPlayers(List<ImageView> listOfOtherHand, int playerCardYet) {
+        for (int i = 0; i < MAX_CARDS_IN_HAND - playerCardYet; i++) {
+            deleteCard(listOfOtherHand);
+        }
     }
 }
