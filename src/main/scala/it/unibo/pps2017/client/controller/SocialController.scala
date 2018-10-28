@@ -2,7 +2,7 @@
 package it.unibo.pps2017.client.controller
 
 import it.unibo.pps2017.commons.remote.social.PartyRole
-import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, SocialMap}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 
 
 /**
@@ -18,21 +18,19 @@ trait SocialController extends ActorController {
     *
     * @param message the body of the response.
     */
-  def notifyCallResultToGUI(message: Option[String]): Unit
+  def notifyCallResultToGUI(message: String): Unit
 
   def setAndDisplayOnlinePlayerList(playerList: SocialMap): Unit
 
   def notifyErrorToGUI(throwable: Throwable): Unit
-
-  def displayFriendRequest(requestSender: PlayerID): Unit
-
-  def displayPartyInvite(requestSender: PlayerID, role: PartyRole)
-
-  def displayResponse(message: String): Unit
 
   def registerNewFriend(friendId: PlayerID): Unit
 
   def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit
 
   def executeFoundGameCall(paramMap: Map[String, String]): Unit
+
+  def updateOnlinePlayerList(friendList: FriendList): Unit
+
+  def updateOnlineFriendsList(friendList: FriendList): Unit
 }

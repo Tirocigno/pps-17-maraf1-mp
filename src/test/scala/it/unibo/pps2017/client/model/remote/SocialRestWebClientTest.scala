@@ -88,7 +88,7 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
     var bodyResponse: String = _
     var playerList: SocialMap = _
 
-    override def notifyCallResultToGUI(message: Option[String]): Unit = bodyResponse = message.get
+    override def notifyCallResultToGUI(message: String): Unit = bodyResponse = message
 
     override def setAndDisplayOnlinePlayerList(playerList: SocialMap): Unit = this.playerList = playerList
 
@@ -96,13 +96,8 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
 
     override def updateGUI(message: ActorMessage): Unit = ???
 
-    override def displayFriendRequest(requestSender: PlayerID): Unit = ???
-
     override def notifyErrorToGUI(throwable: Throwable): Unit = ???
 
-    override def displayPartyInvite(requestSender: PlayerID, role: PartyRole): Unit = ???
-
-    override def displayResponse(message: String): Unit = ???
 
     override def registerNewFriend(friendId: PlayerID): Unit = ???
 

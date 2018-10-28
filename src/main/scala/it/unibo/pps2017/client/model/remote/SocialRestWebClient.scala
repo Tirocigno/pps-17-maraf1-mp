@@ -26,7 +26,7 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
     * @param responseBody the body of the response.
     */
   private def registerAndUnregisterSocialIDCallBack(responseBody: Option[String]): Unit =
-    socialController.notifyCallResultToGUI(responseBody)
+    socialController.notifyCallResultToGUI(responseBody.get)
 
 
   /**

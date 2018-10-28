@@ -25,6 +25,10 @@ trait SocialActor extends ModelActor {
 }
 
 object SocialActor {
+  val FRIEND_MESSAGE_TO_DISPLAY = "RECEIVED FRIEND REQUEST FROM "
+  val INVITE_MESSAGE_TO_DISPLAY = " WANTS YOU TO PLAY AS HIS "
+  val ACCEPTED_REQUEST_TO_DISPLAY = "REQUEST ACCEPTED"
+  val REFUSED_REQUEST_TO_DISPLAY = "REQUEST REFUSED"
   def apply(system: ActorSystem, socialController: SocialController, username: String): ActorRef =
     system.actorOf(Props(new SocialActorImpl(socialController, username)))
 
@@ -74,7 +78,7 @@ object SocialActor {
 
     private def addFriendRequestHandler(sender: PlayerReference): Unit = {
       socialPlayersMap.registerUser(sender.playerID, sender.playerRef)
-      controller.displayFriendRequest(sender.playerID)
+      controller.notifyCallResultToGUI(FRIEND_MESSAGE_TO_DISPLAY + sender.playerID)
     }
 
     private def tellAddFriendResponseHandler(response: SocialResponse): Unit = {
@@ -83,10 +87,10 @@ object SocialActor {
     }
 
     private def addFriendResponseHandler(response: SocialResponse, playerID: PlayerID): Unit = response match {
-      case PositiveResponse => controller.displayResponse(playerID + PositiveResponse.message)
+      case PositiveResponse => controller.notifyCallResultToGUI(playerID + PositiveResponse.message)
         controller.registerNewFriend(playerID)
         socialPlayersMap.updateFriendList(playerID)
-      case NegativeResponse => controller.displayResponse(playerID + NegativeResponse.message)
+      case NegativeResponse => controller.notifyCallResultToGUI(playerID + NegativeResponse.message)
     }
 
     private def tellInvitePlayerRequestMessage(playerID: PlayerID, role: PartyRole): Unit = {
@@ -98,7 +102,7 @@ object SocialActor {
     }
 
     private def invitePlayerRequestHandler(context: (PlayerID, PartyRole)): Unit =
-      controller.displayPartyInvite(context._1, context._2)
+      controller.notifyCallResultToGUI(context._1 + INVITE_MESSAGE_TO_DISPLAY + context._2.asRestParameter)
 
     private def tellInvitePlayerResponseHandler(socialResponse: SocialResponse): Unit = {
       requestHandler.respondToRequest(socialResponse)
@@ -107,10 +111,10 @@ object SocialActor {
 
     private def InvitePlayerResponseHandler(socialResponse: SocialResponse, myRole: Option[PartyPlayer],
                                             partnerRole: Option[PlayerReference]): Unit = socialResponse match {
-      case NegativeResponse => controller.displayResponse("Invite request refused")
+      case NegativeResponse => controller.notifyCallResultToGUI(REFUSED_REQUEST_TO_DISPLAY)
       case PositiveResponse => updateParty(myRole.get, partnerRole)
         controller.updateParty(socialParty.getAllPlayers.map(r => (r._1, r._2.playerID)))
-        controller.displayResponse("Invite request accepted")
+        controller.notifyCallResultToGUI(ACCEPTED_REQUEST_TO_DISPLAY)
     }
 
     private def updateParty(player: PartyPlayer, partner: Option[PlayerReference]): Unit = player match {
