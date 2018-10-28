@@ -76,8 +76,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
 
     case PlayedCard(card, player) =>
-      if (!user.equals(player))
-        controller.updateGUI(PlayedCard(card, player))
+      controller.updateGUI(PlayedCard(card, player))
       gameActor ! CardPlayedAck
 
     case NotifyCommandChosen(command, player) =>

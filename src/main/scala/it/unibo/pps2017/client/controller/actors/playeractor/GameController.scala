@@ -125,8 +125,9 @@ class GameController extends MatchController {
     case NotifyBriscolaChosen(seed) => sendBriscolaChosen(briscola = seed.asString)
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
-    case PlayedCard(card, player) => showOtherPlayersPlayedCard(card, player)
-    case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
+    case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
+      // ho messo due volte isFirstPlayer in attesa che ulio sistemi endPartialTurn
+    case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, isFirstPlayer, isFirstPlayer)
     case ComputePartialGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2)
     case ComputeFinalGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndMatch(user, winner1, winner2, score1, score2)
     case _ =>
@@ -166,8 +167,8 @@ class GameController extends MatchController {
     * @param path   Played card's path.
     * @param player Player who played card.
     */
-  def showOtherPlayersPlayedCard(path: String, player: String): Unit = {
-    playGameController.showOtherPlayersPlayedCard(player, path)
+  def showPlayersPlayedCard(path: String, player: String): Unit = {
+    playGameController.showPlayersPlayedCard(player, path)
   }
 
   /**

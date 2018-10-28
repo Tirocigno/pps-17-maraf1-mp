@@ -18,7 +18,6 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 public class PlayGameController implements PlayGame {
 
@@ -32,10 +31,11 @@ public class PlayGameController implements PlayGame {
     private static final String BRISCOLA_CHOSEN = "Briscola chosen: ";
     private static final String MY_TEAM_SCORE = "My team's score: ";
     private static final String OPPONENT_TEAM_SCORE = "Opponent team's score: ";
-    private static final String CHOOSE_YOUR_BRISCOLA ="Choose your briscola";
+    private static final String CHOOSE_YOUR_BRISCOLA = "Choose your briscola";
     private static final int DURATION_ANIMATION = 3;
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
+    private static final int MAX_CARDS_IN_HAND = 10;
     private static final String FORMAT = ".png";
     private GameController gameController;
 
@@ -88,7 +88,6 @@ public class PlayGameController implements PlayGame {
     private String player2;
     private String player3;
     private String player4;
-    private String pathOfImageSelected;
     private ImageView playedCard;
 
     private List<String> idUserCards;
@@ -179,7 +178,6 @@ public class PlayGameController implements PlayGame {
         if (gameController.isMyTurn() && briscolaChosen) {
             this.playedCard = (ImageView) clickedCard.getSource();
             String clickedCardId = playedCard.getId();
-            this.pathOfImageSelected = getPathFromMap(clickedCardId);
             int indexCardSelected = getIndexOfCardSelected(clickedCardId);
             gameController.setPlayedCard(indexCardSelected);
         }
@@ -188,8 +186,6 @@ public class PlayGameController implements PlayGame {
     @Override
     public void showPlayedCardOk() {
         this.cardNotOk.setVisible(false);
-        Image imagePlayedCard = getImageFromPath(pathOfImageSelected);
-        this.user1Field.setImage(imagePlayedCard);
         playedCard.setVisible(false);
         hideCommands();
     }
@@ -201,7 +197,10 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
-        initializePlayersHand();
+
+        /* Passo il numero delle carte del player per capire se eliminarne alcune dagli altri player */
+        initializePlayersHand(firstUserCards.size());
+        cleanField();
         this.indexOfMyCards.clear();
         int cardCounter = 0;
 
@@ -215,10 +214,12 @@ public class PlayGameController implements PlayGame {
     }
 
     @Override
-    public void showOtherPlayersPlayedCard(final String player, final String cardPath) {
+    public void showPlayersPlayedCard(final String player, final String cardPath) {
         Image cardPlayed = getImageFromPath(cardPath);
 
-        if (player.equals(player2)) {
+        if (player.equals(player1)) {
+            this.user1Field.setImage(cardPlayed);
+        } else if (player.equals(player2)) {
             this.user2Field.setImage(cardPlayed);
         } else if (player.equals(player3)) {
             this.user3Field.setImage(cardPlayed);
@@ -237,7 +238,7 @@ public class PlayGameController implements PlayGame {
             hideCommands();
         }
 
-        if (isFirstPlayer) cleanField();
+        if (partialTurnIsEnded) cleanField();
 
         Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
 
@@ -369,13 +370,20 @@ public class PlayGameController implements PlayGame {
         }
     }
 
-    private void initializePlayersHand() {
+    private void initializePlayersHand(int firstUserCards) {
+        /* nel caso del Viewer potrei entrare nella partita come spettatore
+        in un momento in cui sono ad esempio gia' state giocate due mani. Allora
+        gli avversari dovranno avere nelle mani 10 - mani giocate carte.
+         */
         this.editableCardsPlayer2 = new ArrayList<>(cardsPlayer2);
         this.editableCardsPlayer3 = new ArrayList<>(cardsPlayer3);
         this.editableCardsPlayer4 = new ArrayList<>(cardsPlayer4);
-        showOtherPlayersHand(editableCardsPlayer2);
-        showOtherPlayersHand(editableCardsPlayer3);
-        showOtherPlayersHand(editableCardsPlayer4);
+        this.normalizeHandOtherPlayers(editableCardsPlayer2, firstUserCards);
+        this.normalizeHandOtherPlayers(editableCardsPlayer3, firstUserCards);
+        this.normalizeHandOtherPlayers(editableCardsPlayer4, firstUserCards);
+        this.showOtherPlayersHand(editableCardsPlayer2);
+        this.showOtherPlayersHand(editableCardsPlayer3);
+        this.showOtherPlayersHand(editableCardsPlayer4);
     }
 
     private void createCardsListUser1() {
@@ -455,16 +463,6 @@ public class PlayGameController implements PlayGame {
         return indexes.indexOf(clickedCardId);
     }
 
-    private String getPathFromMap(final String clickedCardId) {
-        String correctPath = "";
-        for (final Entry<String, String> entry : indexOfMyCards.entrySet()) {
-            if (clickedCardId.equals(entry.getKey())) {
-                correctPath = entry.getValue();
-            }
-        }
-        return correctPath;
-    }
-
     private void createListWithCardsId() {
         this.idUserCards.add("firstCard");
         this.idUserCards.add("secondCard");
@@ -476,5 +474,11 @@ public class PlayGameController implements PlayGame {
         this.idUserCards.add("eighthCard");
         this.idUserCards.add("ninthCard");
         this.idUserCards.add("tenthCard");
+    }
+
+    private void normalizeHandOtherPlayers(List<ImageView> listOfOtherHand, int cardNotPlayedYet) {
+        for (int i = 0; i < MAX_CARDS_IN_HAND - cardNotPlayedYet; i++) {
+            deleteCard(listOfOtherHand);
+        }
     }
 }
