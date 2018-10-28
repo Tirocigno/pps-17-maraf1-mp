@@ -63,6 +63,8 @@ trait SocialParty {
 
 object SocialParty {
 
+  def apply(playerReference: PlayerReference): SocialParty = new SocialPartyImpl(playerReference)
+
   private class SocialPartyImpl(val currentReference: PlayerReference) extends SocialParty {
     var partyMap: Map[PartyRole, PlayerReference] = Map(Leader -> currentReference)
 
