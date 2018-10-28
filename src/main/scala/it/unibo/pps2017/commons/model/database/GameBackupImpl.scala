@@ -1,7 +1,8 @@
 package it.unibo.pps2017.commons.model.database
 
 import it.unibo.pps2017.core.deck.cards.{Card, Seed}
-import it.unibo.pps2017.server.model.{GameSet, Hand, Move}
+import it.unibo.pps2017.server.model.database.RedisGameUtils
+import it.unibo.pps2017.server.model.{Game, GameSet, Hand, Move}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -35,7 +36,7 @@ class GameBackupImpl(override val gameId: String) extends GameBackup {
     * Valid briscola for this set.
     */
   override def startSet(cards: Map[String, Set[Card]], briscola: Seed.Seed): Unit = {
-    currentSet = GameSet(cards.map({case (k,v) => (k, v.map(_.toString))}), Seq(), briscola.asString, 0, 0)
+    currentSet = GameSet(cards.map({ case (k, v) => (k, v.map(card => card.cardSeed.asString + card.cardValue)) }), Seq(), briscola.asString, 0, 0)
     currentSetHands = ListBuffer()
   }
 
@@ -55,7 +56,7 @@ class GameBackupImpl(override val gameId: String) extends GameBackup {
     * card played.
     */
   override def addMove(player: String, card: Card): Unit = {
-    currentHand += Move(player, card.toString)
+    currentHand += Move(player, card.cardSeed.asString + card.cardValue)
   }
 
   /**
@@ -89,6 +90,8 @@ class GameBackupImpl(override val gameId: String) extends GameBackup {
     * game's winners.
     */
   override def endGame(winners: Seq[String]): Unit = {
+    val game: Game = Game(players, sets, winners)
 
+    RedisGameUtils().saveGame(gameId, game)
   }
 }

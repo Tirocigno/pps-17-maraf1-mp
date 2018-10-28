@@ -50,13 +50,6 @@ class DispatcherTest extends CornichonFeature {
     }
 
 
-    Scenario("GetGame") {
-      When I get(PRIMARY_URL + "/game/jacopo")
-      Then assert status.is(OK_CODE)
-      And assert body.path(GAME_ID).is("jacopo")
-    }
-
-
     Scenario("SearchingLobby") {
       When I post(PRIMARY_URL + "/foundGame").withParams("wrongParam" -> "jacopo")
       And assert status.is(EXCEPTION_CODE)

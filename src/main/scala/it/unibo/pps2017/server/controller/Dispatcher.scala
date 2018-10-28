@@ -40,6 +40,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
 
   val userMethods = UserDispatcher()
+  val gameMethods = GameDispatcher()
 
   val lobbyManager: ActorRef = akkaSystem.actorOf(Props[LobbyActor])
   val currentIPAndPortParams = Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> PORT)
@@ -52,7 +53,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     ServerApi.values.map({
       case api@HelloRestAPI => api.asRequest(router, hello)
       case api@ErrorRestAPI => api.asRequest(router, responseError)
-      case api@GameRestAPI => api.asRequest(router, getGame)
+      case api@GameRestAPI => api.asRequest(router, gameMethods.getGame)
       case api@FoundGameRestAPI => api.asRequest(router, foundGame)
       case api@AddUserAPI => api.asRequest(router, userMethods.addUser)
       case api@GetUserAPI => api.asRequest(router, userMethods.getUser)

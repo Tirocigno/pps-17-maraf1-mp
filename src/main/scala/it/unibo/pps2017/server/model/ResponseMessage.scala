@@ -39,7 +39,7 @@ case class OnlinePlayersMapEncoder(map: SocialMap) extends JsonResponse
   * @param winners
   * username of the game winners.
   */
-case class Game(players: Seq[String], turns: Seq[GameSet], winners: Seq[String])
+case class Game(players: Seq[String], turns: Seq[GameSet], winners: Seq[String]) extends JsonResponse
 
 /**
   * A game set.
