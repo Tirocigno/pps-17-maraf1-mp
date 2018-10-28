@@ -7,6 +7,8 @@ import it.unibo.pps2017.discovery.structures.SocialActorsMap
 
 trait SocialPlayersMap extends SocialActorsMap {
 
+  def getPlayerID(friendID: PlayerID): ActorRef
+
   def setOnlinePlayerList(playersList: List[PlayerReference]): Unit
 
   def setFriendsList(friendList: FriendList): Unit
@@ -24,6 +26,9 @@ object SocialPlayersMap {
   private class SocialPlayersMapImpl(val playerID: PlayerID) extends SocialPlayersMap {
     val socialActorsMap: SocialActorsMap = SocialActorsMap()
     var friendList: FriendList = List()
+
+    override def getPlayerID(friendID: PlayerID): ActorRef =
+      socialActorsMap.getCurrentOnlinePlayerMap.getOrElse(friendID, throw new NoSuchElementException())
 
     override def getCurrentOnlinePlayerMap: SocialMap = socialActorsMap.getCurrentOnlinePlayerMap
 

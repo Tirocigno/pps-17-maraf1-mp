@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.controller
 
-import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, SocialMap}
 
 
 /**
@@ -20,4 +20,12 @@ trait SocialController extends ActorController {
   def notifyCallResultToGUI(message: Option[String]): Unit
 
   def setAndDisplayOnlinePlayerList(playerList: SocialMap): Unit
+
+  def notifyErrorToGUI(throwable: Throwable): Unit
+
+  def displayFriendRequest(requestSender: PlayerID): Unit
+
+  def displayResponse(message: String): Unit
+
+  def registerNewFriend(friendId: PlayerID): Unit
 }

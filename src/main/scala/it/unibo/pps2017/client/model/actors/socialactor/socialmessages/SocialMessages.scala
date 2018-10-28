@@ -2,7 +2,7 @@
 package it.unibo.pps2017.client.model.actors.socialactor.socialmessages
 
 import it.unibo.pps2017.client.model.actors.ActorMessage
-import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, PlayerReference, SocialMap}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, PlayerReference}
 import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialResponse}
 
 
@@ -19,9 +19,9 @@ object SocialMessages {
   /**
     * Message to set a new PlayerOnlineMap inside the Actor.
     *
-    * @param socialMap the map of current online players.
+    * @param playersList a list containing all the playersRef.
     */
-  case class SetOnlinePlayersMapMessage(socialMap: SocialMap) extends SocialMessage
+  case class SetOnlinePlayersMapMessage(playersList: List[PlayerReference]) extends SocialMessage
 
   /**
     * Message to set the current friend list.
@@ -54,8 +54,9 @@ object SocialMessages {
     * Message to send a response for a friendship request.
     *
     * @param socialResponse the response of the player.
+    * @param senderID       response sender's id.
     */
-  case class AddFriendResponseMessage(socialResponse: SocialResponse) extends SocialMessage
+  case class AddFriendResponseMessage(socialResponse: SocialResponse, senderID: PlayerID) extends SocialMessage
 
   /**
     * Tell the actor to invite a player on a match with a specified roles.

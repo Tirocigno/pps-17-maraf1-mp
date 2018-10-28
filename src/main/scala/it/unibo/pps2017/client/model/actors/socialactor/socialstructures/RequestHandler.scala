@@ -125,7 +125,7 @@ object RequestHandler {
       * @param sender         the sender of request.
       */
     private def generateFriendResponse(socialResponse: SocialResponse, sender: PlayerReference): Unit =
-      sender.playerRef ! AddFriendResponseMessage(socialResponse)
+      sender.playerRef ! AddFriendResponseMessage(socialResponse, currentPlayerRef.playerID)
 
     /**
       * Generate a response for a InviteRequest message and it sends back to sender.
