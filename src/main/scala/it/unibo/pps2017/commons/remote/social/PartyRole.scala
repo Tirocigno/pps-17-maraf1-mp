@@ -2,21 +2,32 @@
 package it.unibo.pps2017.commons.remote.social
 
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
+import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
 
 /**
   * Trait to model all possible roles inside a party.
   */
-sealed trait PartyRole
+sealed trait PartyRole {
+  def asRestParameter: String
+}
 
 object PartyRole {
 
-  case object Leader extends PartyRole
+  case object Leader extends PartyRole {
+    override def asRestParameter: String = FoundGameRestAPI.meParamKey
+  }
 
-  case object Partner extends PartyRole
+  case object Partner extends PartyRole {
+    override def asRestParameter: String = FoundGameRestAPI.partnerParam
+  }
 
-  case object Foe extends PartyRole
+  case object Foe extends PartyRole {
+    override def asRestParameter: String = FoundGameRestAPI.vsParam
+  }
 
-  case object FoePartner extends PartyRole
+  case object FoePartner extends PartyRole {
+    override def asRestParameter: String = FoundGameRestAPI.vsPartnerParam
+  }
 
 }
 

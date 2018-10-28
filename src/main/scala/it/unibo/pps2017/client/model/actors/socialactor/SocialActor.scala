@@ -49,6 +49,9 @@ object SocialActor {
       case TellInvitePlayerResponseMessage(response) => tellInvitePlayerResponseHandler(response)
       case InvitePlayerResponseMessage(response, myRole, partnerRole) =>
         InvitePlayerResponseHandler(response, myRole, partnerRole)
+      case NotifyGameIDMessage(_) => socialParty.notifyGameIDToAllPlayers(_)
+      case GetPartyAndStartGameMessage => buildStartGameRequest()
+      case UnstashAllMessages => unstashAll()
 
     }
 
@@ -114,6 +117,12 @@ object SocialActor {
       case PartnerPlayer(_) => socialParty.setPlayerInParty(Partner, _)
       case FoePlayer(_) => socialParty.setPlayerInParty(Foe, _)
         socialParty.setPlayerInParty(FoePartner, partner.get)
+    }
+
+    private def buildStartGameRequest(): Unit = {
+      val parameterMap: Map[String, String] =
+        socialParty.getAllPlayers.map(tuple => (tuple._1.asRestParameter, tuple._2.playerID))
+      controller.executeFoundGameCall(parameterMap)
     }
 
   }

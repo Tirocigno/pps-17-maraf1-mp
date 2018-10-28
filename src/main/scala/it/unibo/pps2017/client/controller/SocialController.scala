@@ -33,4 +33,6 @@ trait SocialController extends ActorController {
   def registerNewFriend(friendId: PlayerID): Unit
 
   def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit
+
+  def executeFoundGameCall(paramMap: Map[String, String]): Unit
 }

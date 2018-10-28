@@ -93,6 +93,7 @@ object RequestHandler {
       setRequestAndPlayerReferences(requestMessage)
       if (!currentParty.isLeader) {
         respondToRequest(SocialResponse.NegativeResponse)
+        currentPlayerRef.playerRef ! UnstashAllMessages
       }
     }
 

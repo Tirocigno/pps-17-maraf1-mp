@@ -103,6 +103,11 @@ object SocialMessages {
     */
   case object GetPartyAndStartGameMessage extends SocialMessage
 
+  /**
+    * This message unstash all the pending messages inside an actor.
+    */
+  case object UnstashAllMessages extends SocialMessage
+
 
 
 }
