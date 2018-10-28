@@ -1,12 +1,15 @@
 package it.unibo.pps2017.core.gui;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class RegistrationLoginController implements Registration, Login {
@@ -17,18 +20,20 @@ public class RegistrationLoginController implements Registration, Login {
     @FXML
     PasswordField pwdLogin, pwdRegistration;
 
-    private static final int MIN_WIDTH = 900;
-    private static final int MIN_HEIGHT = 685;
+    private static final int MIN_WIDTH = 600;
+    private static final int MIN_HEIGHT = 520;
     private Stage primaryStage;
 
     @Override
     public void checkLogin() {
         System.out.println("Login pressed");
+
         if(usernameLogin.getText().equals("admin") && pwdLogin.getText().equals("admin")) {
             updateView();
         }
         else {
-            //popup error
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Login error! Try again!", ButtonType.OK);
+            alert.showAndWait();
         }
     }
 

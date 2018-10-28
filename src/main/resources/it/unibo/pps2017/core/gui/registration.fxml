@@ -10,28 +10,29 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="540.0" prefWidth="488.0" style="-fx-background-color: #4286f4;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.RegistrationLoginController">
-      <ImageView fitHeight="92.0" fitWidth="288.0" layoutX="100.0" layoutY="250.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="92.0" fitWidth="288.0" layoutX="101.0" layoutY="282.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@images/registration.jpg" />
       </ImageView>
-      <Label layoutX="98.0" layoutY="354.0" text="Create a new account" />
-      <Label layoutX="100.0" layoutY="393.0" style="-fx-font-weight: bold;" text="Username" />
-      <Label layoutX="102.0" layoutY="435.0" style="-fx-font-weight: bold;" text="Password" />
-      <PasswordField fx:id="pwdRegistration" layoutX="170.0" layoutY="431.0" prefHeight="25.0" prefWidth="218.0" promptText="Insert password" />
-      <TextField fx:id="usernameRegistration" layoutX="170.0" layoutY="389.0" prefHeight="25.0" prefWidth="218.0" promptText="Insert username" />
-      <Button fx:id="registerButton" layoutX="326.0" layoutY="477.0" mnemonicParsing="false" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Register" />
+      <Label layoutX="99.0" layoutY="382.0" text="Create a new account" />
+      <Label layoutX="101.0" layoutY="414.0" style="-fx-font-weight: bold;" text="Username" />
+      <Label layoutX="102.0" layoutY="456.0" style="-fx-font-weight: bold;" text="Password" />
+      <PasswordField fx:id="pwdRegistration" layoutX="170.0" layoutY="452.0" prefHeight="25.0" prefWidth="218.0" promptText="Insert password" />
+      <TextField fx:id="usernameRegistration" layoutX="170.0" layoutY="410.0" prefHeight="25.0" prefWidth="218.0" promptText="Insert username" />
+      <Button fx:id="registerButton" layoutX="326.0" layoutY="499.0" mnemonicParsing="false" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Register" />
    <Label layoutX="103.0" layoutY="114.0" style="-fx-font-weight: bold;" text="Username" />
    <Label layoutX="104.0" layoutY="151.0" style="-fx-font-weight: bold;" text="Password" />
    <TextField fx:id="usernameLogin" layoutX="170.0" layoutY="110.0" prefHeight="25.0" prefWidth="219.0" promptText="Insert username" />
    <PasswordField fx:id="pwdLogin" layoutX="170.0" layoutY="147.0" prefHeight="25.0" prefWidth="219.0" promptText="Insert password" />
    <Button fx:id="loginButton" layoutX="340.0" layoutY="181.0" mnemonicParsing="false" onMouseClicked="#checkLogin" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Login" />
-   <Label layoutX="230.0" layoutY="208.0" style="-fx-font-weight: bold;" text="OR">
+   <Label layoutX="231.0" layoutY="221.0" style="-fx-font-weight: bold;" text="OR">
       <font>
          <Font size="20.0" />
       </font>
    </Label>
-   <ImageView fitHeight="99.0" fitWidth="159.0" layoutX="190.0" pickOnBounds="true" preserveRatio="true">
+   <ImageView fitHeight="90.0" fitWidth="288.0" layoutX="100.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
       <image>
-         <Image url="@images/login.png" />
+         <Image url="@images/login.jpg" />
       </image>
    </ImageView>
+   <Button fx:id="guestButton" layoutX="279.0" layoutY="223.0" mnemonicParsing="false" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Continue as guest" />
 </AnchorPane>

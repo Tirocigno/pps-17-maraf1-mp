@@ -8,8 +8,8 @@ import javafx.stage.Stage;
 
 public class GenericView extends Application {
 
-    private static final int MIN_WIDTH = 900;
-    private static final int MIN_HEIGHT = 685;
+    private static final int MIN_WIDTH = 600;
+    private static final int MIN_HEIGHT = 520;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -28,4 +28,9 @@ public class GenericView extends Application {
             e.printStackTrace();
         }
     }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
 }
