@@ -111,14 +111,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
     gameId match {
       case Some(game) =>
-        val team1: Side = Side(Seq("player1", "player2"))
-        val team2: Side = Side(Seq("player3", "player4"))
-        val gameSet: GameSet = GameSet(Seq("Card1", "Card2"),
-          Seq("Card3", "Card5"),
-          Seq("Card6", "Card7"),
-          Seq("Card8", "Card9"), Seq("PLAY CARD", "SET BRISCOLA"))
-        val gameHistory: GameHistory = GameHistory(game, Seq(team1, team2), gameSet)
-        res.sendResponse(gameHistory)
+        res.sendResponse(Message(s"You write $gameId"))
       case None => res.sendResponse(Error(Some("you write nothing")))
     }
   }
