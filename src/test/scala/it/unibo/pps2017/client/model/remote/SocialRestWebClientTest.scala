@@ -7,7 +7,8 @@ import it.unibo.pps2017.client.controller.SocialController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
-import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
+import it.unibo.pps2017.commons.remote.social.PartyRole
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, SocialMap}
 import it.unibo.pps2017.discovery.ServerDiscovery
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.controller.Dispatcher
@@ -95,6 +96,19 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
 
     override def updateGUI(message: ActorMessage): Unit = ???
 
+    override def displayFriendRequest(requestSender: PlayerID): Unit = ???
+
+    override def notifyErrorToGUI(throwable: Throwable): Unit = ???
+
+    override def displayPartyInvite(requestSender: PlayerID, role: PartyRole): Unit = ???
+
+    override def displayResponse(message: String): Unit = ???
+
+    override def registerNewFriend(friendId: PlayerID): Unit = ???
+
+    override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit = ???
+
+    override def executeFoundGameCall(paramMap: Map[String, String]): Unit = ???
   }
 
 

@@ -113,9 +113,9 @@ object SocialActor {
         controller.displayResponse("Invite request accepted")
     }
 
-    private def updateParty(player: PartyPlayer, partner: Option[PlayerReference]) = player match {
-      case PartnerPlayer(_) => socialParty.setPlayerInParty(Partner, _)
-      case FoePlayer(_) => socialParty.setPlayerInParty(Foe, _)
+    private def updateParty(player: PartyPlayer, partner: Option[PlayerReference]): Unit = player match {
+      case PartnerPlayer(reference) => socialParty.setPlayerInParty(Partner, reference)
+      case FoePlayer(reference) => socialParty.setPlayerInParty(Foe, reference)
         socialParty.setPlayerInParty(FoePartner, partner.get)
     }
 

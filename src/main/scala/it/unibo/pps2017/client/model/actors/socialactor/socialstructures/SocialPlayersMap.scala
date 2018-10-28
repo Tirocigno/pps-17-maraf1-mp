@@ -44,10 +44,9 @@ object SocialPlayersMap {
       playersList.foreach(player => socialActorsMap.registerUser(player.playerID, player.playerRef))
 
     override def setFriendsList(friendList: FriendList): Unit =
-      friendList.foreach(this.friendList += _)
+      friendList.foreach(friend => friend :: this.friendList)
 
-    override def updateFriendList(friendID: String): Unit =
-      friendList += friendID
+    override def updateFriendList(friendID: PlayerID): Unit = friendID :: friendList
 
     override def getAllOnlineFriends: FriendList =
       friendList.filter(friendID =>
