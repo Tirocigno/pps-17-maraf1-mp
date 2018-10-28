@@ -48,6 +48,27 @@ sealed trait UserDatabaseUtils {
                         onSuccess: Boolean => Unit,
                         onFail: Throwable => Unit): Unit
 
+  /**
+    *
+    * Check the correctness of the user's password.
+    *
+    * @param db
+    * database connection.
+    * @param username
+    * searched user.
+    * @param password
+    * user's password.
+    * @param onSuccess
+    * on query success.
+    * @param onFail
+    * error handler.
+    */
+  def checkUserLogin(db: RedisClient,
+                     username: String,
+                     password: String,
+                     onSuccess: Boolean => Unit,
+                     onFail: Throwable => Unit): Unit
+
 
   /**
     * Retrieve user data from the database.
@@ -206,6 +227,40 @@ case class RedisUserUtils() extends UserDatabaseUtils {
       }
   }
 
+
+  /**
+    *
+    * Check the correctness of the user's password.
+    *
+    * @param db
+    * database connection.
+    * @param username
+    * searched user.
+    * @param password
+    * user's password.
+    * @param onSuccess
+    * on query success.
+    * @param onFail
+    * error handler.
+    */
+  override def checkUserLogin(db: RedisClient,
+                              username: String,
+                              password: String,
+                              onSuccess: Boolean => Unit,
+                              onFail: Throwable => Unit): Unit = {
+
+    db.hget(getUserKey(username), "password")
+      .onComplete {
+        case Success(value) =>
+          value match {
+            case Some(pw) => onSuccess(pw.utf8String.equalsIgnoreCase(password))
+            case None =>  onSuccess(false)
+          }
+        case Failure(cause) =>
+          onFail(cause)
+      }
+  }
+
   /**
     * Retrieve user data from the database.
     *
@@ -358,8 +413,6 @@ case class RedisUserUtils() extends UserDatabaseUtils {
   }
 
 
-
-
   /**
     * Search all friends of an user.
     *
@@ -386,4 +439,6 @@ case class RedisUserUtils() extends UserDatabaseUtils {
         case Failure(cause) => onFail(cause)
       }
   }
+
+
 }

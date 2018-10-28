@@ -57,6 +57,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
       case api@FoundGameRestAPI => api.asRequest(router, foundGame)
       case api@AddUserAPI => api.asRequest(router, userMethods.addUser)
       case api@GetUserAPI => api.asRequest(router, userMethods.getUser)
+      case api@LoginAPI => api.asRequest(router, userMethods.login)
       case api@RemoveUserAPI => api.asRequest(router, userMethods.deleteUser)
       case api@AddFriendAPI => api.asRequest(router, userMethods.addFriend)
       case api@GetFriendsAPI => api.asRequest(router, userMethods.getFriends)
@@ -93,6 +94,8 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
         println("Error on the discovery registration! \nDetails: " + cause.getMessage)
       }, Some(currentIPAndPortParams), Some(Dispatcher.DISCOVERY_PORT))
     }
+
+
   }
 
   /**

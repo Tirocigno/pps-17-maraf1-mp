@@ -17,6 +17,7 @@ object ServerApi {
     FoundGameRestAPI,
     AddUserAPI,
     GetUserAPI,
+    LoginAPI,
     RemoveUserAPI,
     AddFriendAPI,
     GetFriendsAPI,
@@ -93,6 +94,17 @@ object ServerApi {
 
   case object GetUserAPI extends RestAPI {
     override def path: String = "/user/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
+  case object LoginAPI extends RestAPI {
+    val password: String = "password"
+
+    override def path: String = "/user/login/:username"
 
     override def httpMethod: HttpMethod = HttpMethod.GET
 
