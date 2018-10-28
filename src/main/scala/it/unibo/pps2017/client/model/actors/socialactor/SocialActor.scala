@@ -42,7 +42,9 @@ object SocialActor {
 
     override def receive: Receive = {
       case SetOnlinePlayersMapMessage(players) => socialPlayersMap.setOnlinePlayerList(players)
+        controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
       case SetFriendsList(friendsList) => socialPlayersMap.setFriendsList(friendsList)
+        controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
       case TellAddFriendRequestMessage(playerID) => tellAddFriendRequestHandler(playerID)
       case message: AddFriendRequestMessage => stashOrElse(message, message.sender, addFriendRequestHandler)
       case TellAddFriendResponseMessage(response, _) => tellAddFriendResponseHandler(response)
