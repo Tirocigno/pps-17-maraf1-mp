@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.client.controller
 
+import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, SocialMap}
 
 
@@ -25,7 +26,11 @@ trait SocialController extends ActorController {
 
   def displayFriendRequest(requestSender: PlayerID): Unit
 
+  def displayPartyInvite(requestSender: PlayerID, role: PartyRole)
+
   def displayResponse(message: String): Unit
 
   def registerNewFriend(friendId: PlayerID): Unit
+
+  def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit
 }

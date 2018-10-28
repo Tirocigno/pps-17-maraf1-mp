@@ -139,6 +139,7 @@ object RequestHandler {
       case NegativeResponse => playerReference.playerRef ! InvitePlayerResponseMessage(socialResponse, None, None)
         resetRequestHandler()
       case PositiveResponse => playerReference.playerRef ! generateInviteResponseMessage(socialResponse, role)
+        currentParty.markCurrentPlayerAs(role)
         resetRequestHandler()
     }
 
