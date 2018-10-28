@@ -2,7 +2,7 @@
 package it.unibo.pps2017.client.model.actors.socialactor.socialstructures
 
 import akka.actor.ActorRef
-import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerReference, SocialMap}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, PlayerReference, SocialMap}
 import it.unibo.pps2017.discovery.structures.SocialActorsMap
 
 trait SocialPlayersMap extends SocialActorsMap {
@@ -11,7 +11,7 @@ trait SocialPlayersMap extends SocialActorsMap {
 
   def setFriendsList(friendList: FriendList): Unit
 
-  def updateFriendList(friendID: String): Unit
+  def updateFriendList(friendID: PlayerID): Unit
 
   def getAllOnlineStrangers: FriendList
 
@@ -19,16 +19,19 @@ trait SocialPlayersMap extends SocialActorsMap {
 }
 
 object SocialPlayersMap {
-  def apply: SocialPlayersMap = new SocialPlayersMapImpl()
+  def apply(playerID: PlayerID): SocialPlayersMap = new SocialPlayersMapImpl(playerID)
 
-  private class SocialPlayersMapImpl() extends SocialPlayersMap {
+  private class SocialPlayersMapImpl(val playerID: PlayerID) extends SocialPlayersMap {
     val socialActorsMap: SocialActorsMap = SocialActorsMap()
     var friendList: FriendList = List()
 
     override def getCurrentOnlinePlayerMap: SocialMap = socialActorsMap.getCurrentOnlinePlayerMap
 
-    override def registerUser(userID: String, socialActorRef: ActorRef): Unit =
-      socialActorsMap.registerUser(userID, socialActorRef)
+    override def registerUser(userID: String, socialActorRef: ActorRef): Unit = {
+      if (!userID.equals(playerID)) {
+        socialActorsMap.registerUser(userID, socialActorRef)
+      }
+    }
 
     override def unregisterUser(userID: String): Unit = socialActorsMap.unregisterUser(userID)
 
