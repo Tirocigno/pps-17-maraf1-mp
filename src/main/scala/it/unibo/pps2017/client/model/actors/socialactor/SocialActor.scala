@@ -19,7 +19,7 @@ import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialRes
   * connection is necessary, such as sending and receiving friendship and
   * challenge requests.
   */
-//TODO IMPLEMENT THIS ACTOR.
+
 trait SocialActor extends ModelActor {
   override val controller: SocialController
 }
