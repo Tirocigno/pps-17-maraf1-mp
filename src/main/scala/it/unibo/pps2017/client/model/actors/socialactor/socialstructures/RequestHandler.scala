@@ -43,17 +43,6 @@ object RequestHandler {
   private class RequestHandlerImpl(val currentPlayerRef: PlayerReference, val currentParty: SocialParty) extends RequestHandler {
     var currentMessage: Option[RequestMessage] = None
 
-
-    override def isAlreadyProcessingARequest: Boolean = currentMessage.isDefined
-
-    override def registerRequest(requestMessage: RequestMessage): Unit = requestMessage match {
-      case AddFriendRequestMessage(_) => checkRequestAndExecute(requestMessage)(friendshipHandler)
-      case InvitePlayerRequestMessage(_, _) => checkRequestAndExecute(requestMessage)(inviteHandler)
-    }
-
-    override def respondToRequest(socialResponse: SocialResponse): Unit =
-      checkMessageAndElaborateResponse(socialResponse)
-
     /**
       * Check if a request is already served, if not register a new one
       *
@@ -66,6 +55,17 @@ object RequestHandler {
         case Some(_) => throw new AlreadyProcessingARequestException()
         case None => requestHandler(message)
       }
+
+
+    override def isAlreadyProcessingARequest: Boolean = currentMessage.isDefined
+
+    override def registerRequest(requestMessage: RequestMessage): Unit = requestMessage match {
+      case AddFriendRequestMessage(_) => checkRequestAndExecute(requestMessage)(friendshipHandler)
+      case InvitePlayerRequestMessage(_, _) => checkRequestAndExecute(requestMessage)(inviteHandler)
+    }
+
+    override def respondToRequest(socialResponse: SocialResponse): Unit =
+      checkMessageAndElaborateResponse(socialResponse)
 
 
     /**
