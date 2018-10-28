@@ -4,6 +4,7 @@ package it.unibo.pps2017.client.model.actors.socialactor
 import akka.actor.{ActorRef, ActorSystem, Props}
 import it.unibo.pps2017.client.controller.SocialController
 import it.unibo.pps2017.client.model.actors.ModelActor
+import it.unibo.pps2017.client.model.actors.socialactor.socialstructures.{RequestHandler, SocialParty, SocialPlayersMap}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
 
 /**
@@ -22,7 +23,12 @@ object SocialActor {
 
   private class SocialActorImpl(override val controller: SocialController, override val username: String)
     extends SocialActor {
+
     val currentContext = PlayerReference(username, self)
+    val socialParty: SocialParty = SocialParty(currentContext)
+    val socialPlayersMap: SocialPlayersMap = SocialPlayersMap(currentContext.playerID)
+    val requestHandler: RequestHandler = RequestHandler(currentContext, socialParty)
+
     override def receive: Receive = ???
   }
 
