@@ -4,6 +4,7 @@ package it.unibo.pps2017.client.model.actors.socialactor.controllers
 import akka.actor.{ActorRef, ActorSystem}
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.ActorMessage
+import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature
 import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
@@ -67,4 +68,11 @@ class MockSocialController extends SocialController {
     * Reset the party and notify the GUI a match conclusion.
     */
   override def finishGame(): Unit = {}
+
+  /**
+    * Set the current GUI controller inside SocialActor
+    *
+    * @param gui the GUI to set.
+    */
+  override def setCurrentGui(gui: SocialGUIController): Unit = {}
 }

@@ -4,9 +4,16 @@ package it.unibo.pps2017.client.controller.socialcontroller
 import akka.actor.{ActorRef, ActorSystem}
 import it.unibo.pps2017.client.controller.{ActorController, ClientController}
 import it.unibo.pps2017.client.model.actors.ActorMessage
+import it.unibo.pps2017.client.model.actors.socialactor.SocialActor
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{SetOnlinePlayersMapMessage, TellAddFriendRequestMessage, TellInvitePlayerRequestMessage}
+import it.unibo.pps2017.client.model.remote.{RestWebClient, SocialRestWebClient}
+import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
 import it.unibo.pps2017.commons.remote.social.PartyRole
+import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
 
 /**
   * This trait is a mediator between the actor that handle the social
@@ -105,22 +112,32 @@ trait SocialController extends ActorController {
     */
   def finishGame(): Unit
 
+  /**
+    * Set the current GUI controller inside SocialActor
+    *
+    * @param gui the GUI to set.
+    */
+  def setCurrentGui(gui: SocialGUIController): Unit
+
 }
 
 object SocialController {
 
-  private class SocialControllerImpl(val parentController: ClientController) extends SocialController {
+  private class SocialControllerImpl(val parentController: ClientController, val playerID: PlayerID, val
+  discoveryContext: ServerContext) extends SocialController {
 
+    val socialRestWebClient: RestWebClient = SocialRestWebClient(this, discoveryContext)
     override var currentActorRef: ActorRef = _
+    var currentGUI: Option[SocialGUIController] = None
+
+
+    override def setCurrentGui(gui: SocialGUIController): Unit = currentGUI = Some(gui)
 
     override def notifyCallResultToGUI(message: Option[String]): Unit = ???
 
-    /**
-      * Set the current online players map.
-      *
-      * @param onlinePlayers the list of current online players.
-      */
-    override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit = ???
+    override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit = {
+      sendMessage(SetOnlinePlayersMapMessage(onlinePlayers))
+    }
 
     /**
       * Notify an error to GUI
@@ -134,7 +151,10 @@ object SocialController {
       *
       * @param friendId the ID of the player to register.
       */
-    override def registerNewFriend(friendId: PlayerID): Unit = ???
+    override def registerNewFriend(friendId: PlayerID): Unit = {
+      //TODO integrate with riciputin work.
+      socialRestWebClient //.callRemoteAPI()
+    }
 
     /**
       * Notify the GUI updates inside the party.
@@ -169,21 +189,27 @@ object SocialController {
       *
       * @param playerID the ID of the player to add as a friend.
       */
-    override def tellFriendShipMessage(playerID: PlayerID): Unit = ???
+    override def tellFriendShipMessage(playerID: PlayerID): Unit = {
+      sendMessage(TellAddFriendRequestMessage(playerID))
+    }
 
     /**
       * Tell the actor to invite a player to play as his partner.
       *
       * @param playerID the ID of the player to invite.
       */
-    override def tellInvitePlayerAsPartner(playerID: PlayerID): Unit = ???
+    override def tellInvitePlayerAsPartner(playerID: PlayerID): Unit = {
+      sendMessage(TellInvitePlayerRequestMessage(playerID, Partner))
+    }
 
     /**
       * Tell the actor to invite a player to play as his foe.
       *
       * @param playerID the ID of the player to invite.
       */
-    override def tellInvitePlayerAsFoe(playerID: PlayerID): Unit = ???
+    override def tellInvitePlayerAsFoe(playerID: PlayerID): Unit = {
+      sendMessage(TellInvitePlayerRequestMessage(playerID, Foe))
+    }
 
     /**
       * Start a new game
@@ -197,7 +223,14 @@ object SocialController {
       */
     override def finishGame(): Unit = ???
 
-    override def createActor(actorID: String, actorSystem: ActorSystem): Unit = ???
+    override def createActor(actorID: String, actorSystem: ActorSystem): Unit = {
+      currentActorRef = SocialActor(actorSystem, this, actorID)
+      val encodedActorRef = serializeActorRef(currentActorRef)
+      val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> actorID,
+        RegisterSocialIDAPI.SOCIAL_ACTOR -> encodedActorRef)
+      socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, Some(paramMap))
+
+    }
 
     override def updateGUI(message: ActorMessage): Unit = ???
   }
