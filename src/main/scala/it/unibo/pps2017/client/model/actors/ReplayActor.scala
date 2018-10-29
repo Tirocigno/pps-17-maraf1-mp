@@ -1,10 +1,12 @@
 
 package it.unibo.pps2017.client.model.actors
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorSystem, Props}
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.client.model.actors.ReplayActor.SendHeartbeat
-import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages.{DistributedCard, PlayersRef}
+import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
+import it.unibo.pps2017.core.deck.cards.Seed._
+import it.unibo.pps2017.demo.Swap
 import it.unibo.pps2017.server.model.Game
 
 import scala.collection.mutable.ListBuffer
@@ -16,14 +18,17 @@ object ReplayActor {
 
 //class ReplayActor() extends Actor{
 
-class ViewerActor(override val controller: GameController, username: String, game: Game) extends ClientGameActor {
+class ReplayActor(override val controller: GameController, username: String, game: Game) extends ClientGameActor {
 
-  var user: String = "Nicholas"
+  var user: String = username
   import system.dispatcher
-  implicit val system = ActorSystem("ScheduledActors")
-  private var i: Int = 0
+  val system = ActorSystem("ScheduledActors")
+
+  var i: Int = 0
+
   var cardsListPlayer = new ListBuffer[String]()
   var playersList = new ListBuffer[String]()
+  var briscolaChosen: Seed = _
   final val FIRST_CARD: Int = 0
   final val LAST_CARD: Int = 10
   final val CARD_PATH: String = "cards/"
@@ -31,13 +36,11 @@ class ViewerActor(override val controller: GameController, username: String, gam
 
 
   override def preStart() {
-
-    val cancellable =
       system.scheduler.schedule(
-        0 milliseconds,
-        3000 milliseconds,
-        self,
-        SendHeartbeat)
+        initialDelay = 0 milliseconds,
+        interval = 3000 milliseconds,
+        receiver = self,
+        message = SendHeartbeat)
   }
 
 
@@ -69,16 +72,18 @@ class ViewerActor(override val controller: GameController, username: String, gam
       val expectedGame: Game = Game(playersInGame, Seq(gameSet), winners)
 */
 
-      // IF PER I QUATTRO GIOCATORI
+      // IF PER I NOMI DEI QUATTRO GIOCATORI
+
       if (i == 0) {
         game.players.foreach(player => {
           playersList += player
         })
         controller.updateGUI(PlayersRef(playersList))
 
-        // IF PER COSTRUIRE LA LISTA DELLE CARTE DI OGNI GIOCATORE
+        // IF PER COSTRUIRE LA LISTA DELLE CARTE DEL PRIMO GIOCATORE
       } else if (i == 1) {
         game.turns.foreach(hand => {
+          convertBriscolaSeed(hand.briscola)
           hand.playersHand.foreach(play => {
             if (user.equals(play._1))
               play._2.foreach(card => {
@@ -89,28 +94,35 @@ class ViewerActor(override val controller: GameController, username: String, gam
         })
 
         controller.updateGUI(DistributedCard(cardsListPlayer.toList, playersList.head))
-
+        controller.updateGUI(NotifyBriscolaChosen(briscolaChosen))
       }
 
 
 
       i += 1
 
-
   }
-
-
 
   override
   def getUsername: String = {
     user
   }
+
+  private def convertBriscolaSeed(briscola: String): Unit = {
+    case Sword.asString => briscolaChosen = Sword
+    case Cup.asString => briscolaChosen = Cup
+    case Coin.asString => briscolaChosen = Coin
+    case Club.asString => briscolaChosen = Club
+  }
 }
 
 
-/*
+
+
+
+
 object ReplayActorApp extends App {
   val system = ActorSystem("SwapperSystem")
   val swap = system.actorOf(Props[ReplayActor], name = "replayActor")
   swap ! Swap
-}*/
+}
