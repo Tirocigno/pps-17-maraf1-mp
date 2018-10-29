@@ -4,6 +4,7 @@ package it.unibo.pps2017.client.controller.socialcontroller
 import akka.actor.{ActorRef, ActorSystem}
 import it.unibo.pps2017.client.controller.{ActorController, ClientController}
 import it.unibo.pps2017.client.model.actors.ActorMessage
+import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
 import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
@@ -14,6 +15,10 @@ import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID,
   *
   */
 trait SocialController extends ActorController {
+
+  override var currentGUI: SocialGUIController = _
+
+  override def setGUI[A <: SocialGUIController](gui: A): Unit = this.currentGUI = gui
 
   /**
     * Notify a API callback response to the GUI
