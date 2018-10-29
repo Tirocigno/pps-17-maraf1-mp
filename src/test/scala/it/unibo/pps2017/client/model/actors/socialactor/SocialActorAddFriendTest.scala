@@ -3,8 +3,8 @@ package it.unibo.pps2017.client.model.actors.socialactor
 
 import akka.actor.ActorRef
 import akka.testkit.{ImplicitSender, TestKit}
-import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeSocialActorAddFriendController, PositiveSocialActorAddFriendController, SocialActorAddFriendController}
-import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{AddFriendRequestMessage, AddFriendResponseMessage}
+import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeSocialActorAddFriendController, PositiveSocialActorAddFriendController, SenderSocialActorAddFriendController, SocialActorAddFriendController}
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{AddFriendRequestMessage, AddFriendResponseMessage, SetOnlinePlayersMapMessage, TellAddFriendRequestMessage}
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, PlayerReference}
@@ -40,6 +40,20 @@ class SocialActorAddFriendTest()
     val msg = expectMsgType[AddFriendResponseMessage]
     assert(msg.socialResponse.message.equals(NegativeResponse.message) &&
       msg.senderID.equals(PLAYER_ID))
+  }
+
+  test("Adding a new friend from an actor") {
+    controller = new PositiveSocialActorAddFriendController()
+    socialRef = SocialActor(system, controller, PLAYER_ID)
+    controller.setCurrentActorRef(socialRef)
+    val senderController = new SenderSocialActorAddFriendController()
+    val senderActor = SocialActor(system, senderController, SENDER_ID)
+    senderController.setCurrentActorRef(senderActor)
+    senderActor ! SetOnlinePlayersMapMessage(List(PlayerReference(PLAYER_ID, socialRef)))
+    senderActor ! TellAddFriendRequestMessage(PLAYER_ID)
+    Thread.sleep(2000)
+    assert(senderController.playerID.equals(PLAYER_ID) && senderController.response.equals(PositiveResponse))
+
   }
 
 
