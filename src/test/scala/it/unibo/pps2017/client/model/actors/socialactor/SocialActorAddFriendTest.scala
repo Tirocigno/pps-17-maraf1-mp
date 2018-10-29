@@ -6,6 +6,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeSocialActorAddFriendController, PositiveSocialActorAddFriendController, SenderSocialActorAddFriendController, SocialActorAddFriendController}
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{AddFriendRequestMessage, AddFriendResponseMessage, SetOnlinePlayersMapMessage, TellAddFriendRequestMessage}
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
+import it.unibo.pps2017.commons.remote.social.SocialResponse
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, PlayerReference}
 import org.junit.runner.RunWith
@@ -18,6 +19,7 @@ class SocialActorAddFriendTest()
 
   val PLAYER_ID: PlayerID = SocialActorAddFriendController.MOCK_PLAYER_ID
   val SENDER_ID: PlayerID = "SENDER"
+  val DEFAULT_WAIT: Int = 1000
   var sender: PlayerReference = PlayerReference(SENDER_ID, testActor)
   var controller: SocialActorAddFriendController = _
   var socialRef: ActorRef = _
@@ -42,8 +44,19 @@ class SocialActorAddFriendTest()
       msg.senderID.equals(PLAYER_ID))
   }
 
-  test("Adding a new friend from an actor") {
-    controller = new PositiveSocialActorAddFriendController()
+  test("Adding a new friend from an actor with positive response") {
+    addingNewFriendFromActorTest(PositiveResponse)
+  }
+
+  test("Adding a new friend from an actor with negative response") {
+    addingNewFriendFromActorTest(NegativeResponse)
+  }
+
+  private def addingNewFriendFromActorTest(expectedResponse: SocialResponse) = {
+    expectedResponse match {
+      case PositiveResponse => controller = new PositiveSocialActorAddFriendController()
+      case NegativeResponse => controller = new NegativeSocialActorAddFriendController()
+    }
     socialRef = SocialActor(system, controller, PLAYER_ID)
     controller.setCurrentActorRef(socialRef)
     val senderController = new SenderSocialActorAddFriendController()
@@ -51,9 +64,12 @@ class SocialActorAddFriendTest()
     senderController.setCurrentActorRef(senderActor)
     senderActor ! SetOnlinePlayersMapMessage(List(PlayerReference(PLAYER_ID, socialRef)))
     senderActor ! TellAddFriendRequestMessage(PLAYER_ID)
-    Thread.sleep(2000)
-    assert(senderController.playerID.equals(PLAYER_ID) && senderController.response.equals(PositiveResponse))
+    waitMessageExchange()
+    assert(senderController.playerID.equals(PLAYER_ID) && senderController.response.equals(expectedResponse))
+  }
 
+  private def waitMessageExchange(): Unit = {
+    Thread.sleep(DEFAULT_WAIT)
   }
 
 
