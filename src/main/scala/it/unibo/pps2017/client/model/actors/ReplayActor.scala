@@ -6,7 +6,7 @@ import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.client.model.actors.ReplayActor.SendHeartbeat
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.core.deck.cards.Seed._
-import it.unibo.pps2017.server.model.Game
+import it.unibo.pps2017.server.model.{Game, GameSet, Hand, Move}
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
@@ -47,7 +47,16 @@ class ReplayActor(override val controller: GameController, username: String, gam
   final val CARD_FORMAT: String = ".png"
 
 
+  //jacopo
+  var currentSet: GameSet = _
+  var currentHand: Hand = _
+  var currentMove: Move = _
+
+
   override def preStart() {
+    //Jacopo
+    //currentSet = game.turns.head
+
     system.scheduler.schedule(
       initialDelay = 0 milliseconds,
       interval = 3000 milliseconds,
@@ -69,6 +78,7 @@ class ReplayActor(override val controller: GameController, username: String, gam
         })
         controller.updateGUI(PlayersRef(playersList))
 
+
         /**
           * Situazione uno. Recupero le carte in mano al primo giocatore.
            Il primo giro avro' counterForPlayerHand = 1 e counterTurn = 1, quindi prendo il primo turn.
@@ -77,6 +87,8 @@ class ReplayActor(override val controller: GameController, username: String, gam
            e cosi' via.
          */
       } else if (gameCounter == 1) {
+
+        //JACOPO -> FORSE MEGLIO PULIRE USANDO CURRENT SET
         game.turns.foreach(hand => {
           counterForPlayerHand += 1
           if (counterForPlayerHand == counterTurn) {
@@ -97,9 +109,32 @@ class ReplayActor(override val controller: GameController, username: String, gam
         controller.updateGUI(DistributedCard(cardsListPlayer.toList, playersList.head))
         controller.updateGUI(NotifyBriscolaChosen(briscolaChosen))
 
+
+
+
+        /*
+        JACOPO
+        currentHand = currentSet.hands.head
+        currentMove = currentHand.moves.head
+        */
+
       } else if (gameCounter == 2) {
 
-
+        /*
+        JACOPO
+        controller.updateGUI(SendMove(currentMove.player, currentMove.card))
+        try {
+          currentMove = currentHand.moves(currentHand.moves.indexOf(currentMove) + 1)
+        } catch {
+          case _: Exception =>
+            try {
+              currentHand = currentSet.hands(currentSet.hands.indexOf(currentHand) + 1)
+            } catch {
+              case _: Exception =>
+                //E' finito il Set posso procedere con la visualizzazione del punteggio
+                //gameCounter += 1
+            }
+        }*/
 
         /**
           * Terza situazione. Invio del punteggio. Visto che non posso sapere i winner se il punteggio del team1
@@ -112,6 +147,16 @@ class ReplayActor(override val controller: GameController, username: String, gam
         /* Aggiungere controllo se la partita e' finita, altrimenti si torna alla fase di distribuzione carte */
         if (team1Score > team2Score) controller.updateGUI(ComputePartialGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score))
         else controller.updateGUI(ComputePartialGameScore(user, playersList.head, playersList.head, team1Score, team2Score))
+
+        /*
+        JACOPO
+        try {
+          currentSet = game.turns(game.turns.indexOf(currentSet) + 1)
+        } catch {
+          case _: Exception =>
+            //QUI SO CHE LA PARTITA è FINITA! AGIRE DI CONSEGUENZA
+        }
+        */
 
         //if !partitaFinita  gameCounter = 1
       }
