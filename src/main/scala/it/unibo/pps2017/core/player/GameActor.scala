@@ -29,7 +29,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   var briscolaChooser: Option[PlayerName] = None
   var setEnd: Boolean = false
   var gameEnd: Boolean = false
-  val actors: ListBuffer[PlayerName] = ListBuffer[PlayerName]()
+  val allPlayers: ListBuffer[PlayerName] = ListBuffer[PlayerName]()
   var cardsInHand: Map[PlayerName, Set[Card]] = Map[PlayerName, Set[Card]]()
   var cardsIndex: Map[PlayerName, Set[Card]] = Map[PlayerName, Set[Card]]()
   var mediator : ActorRef  = _
@@ -42,14 +42,14 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     cluster.subscribe(self, classOf[MemberUp])
     mediator = DistributedPubSub(context.system).mediator
 
-    actors += team1.firstMember.get
-    actors += team2.firstMember.get
-    actors += team1.secondMember.get
-    actors += team2.secondMember.get
+    allPlayers += team1.firstMember.get
+    allPlayers += team2.firstMember.get
+    allPlayers += team1.secondMember.get
+    allPlayers += team2.secondMember.get
 
     println("GAME ACTOR Actor system -> " + context.system)
     println("GAME ACTOR -> Topic : " + topicName)
-    mediator ! Publish(topicName,PlayersRef(actors))
+    mediator ! Publish(topicName,PlayersRef(allPlayers))
   }
 
   override def postStop(): Unit = cluster.unsubscribe(self)
@@ -122,9 +122,9 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     deck.shuffle()
     var i: Int = 0
     deck.distribute().foreach(hand => {
-      mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand),actors(i)))
-      cardsInHand += (actors(i) -> hand)
-      cardsIndex += (actors(i) -> hand)
+      mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand),allPlayers(i)))
+      cardsInHand += (allPlayers(i) -> hand)
+      cardsIndex += (allPlayers(i) -> hand)
 
       if (firstHand && isFirstPlayer(hand)) {
         nextHandStarter = Some(getPlayers(i))
@@ -205,6 +205,13 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     nextHandStarter = Some(lastTaker)
     currentSuit = None
     cardsOnTable.clear()
+
+    var firstPlayerCards: ListBuffer[String] = ListBuffer[String]()
+    cardsInHand(allPlayers.head).foreach(card =>{
+      firstPlayerCards += cardToPath(card)
+    })
+
+    mediator ! Publish(topicName, RecapActualSituation(allPlayers, firstPlayerCards, currentBriscola.get, nextHandStarter.get))
 
     nextHandStarter match {
       case Some(player) =>
