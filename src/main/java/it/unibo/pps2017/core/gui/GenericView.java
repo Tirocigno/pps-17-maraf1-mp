@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+
 public class GenericView extends Application {
 
     private static final int MIN_WIDTH = 600;
