@@ -51,17 +51,26 @@ object SocialActor {
       case message: AddFriendResponseMessage => addFriendResponseHandler(message.socialResponse, message.senderID)
         controller.updateGUI(message)
       case TellInvitePlayerRequestMessage(player, role) => tellInvitePlayerRequestMessage(player, role)
-      case message: InvitePlayerRequestMessage => stashOrElse(message,
-        (message.sender.playerID, message.role), invitePlayerRequestHandler)
+      case message: InvitePlayerRequestMessage => stashOrElse(message)
       case TellInvitePlayerResponseMessage(response) => tellInvitePlayerResponseHandler(response)
       case message: InvitePlayerResponseMessage =>
-        InvitePlayerResponseHandler(message.socialResponse, message.myRole, message.partnerRole)
+        invitePlayerResponseHandler(message.socialResponse, message.myRole, message.partnerRole)
         controller.updateGUI(message)
       case NotifyGameIDMessage(_) => socialParty.notifyGameIDToAllPlayers(_)
       case GetPartyAndStartGameMessage => buildStartGameRequest()
       case UnstashAllMessages => unstashAll()
 
     }
+
+    private def stashOrElse(message: RequestMessage): Unit = {
+      if (requestHandler.isAlreadyProcessingARequest) {
+        stash()
+      } else {
+        requestHandler.registerRequest(message)
+        controller.updateGUI(message)
+      }
+    }
+
 
     private def stashOrElse[A](message: RequestMessage, arg: A, elseStrategy: A => Unit): Unit = {
       if (requestHandler.isAlreadyProcessingARequest) {
@@ -104,20 +113,16 @@ object SocialActor {
       }
     }
 
-    private def invitePlayerRequestHandler(context: (PlayerID, PartyRole)): Unit =
-      controller.notifyCallResultToGUI(context._1 + INVITE_MESSAGE_TO_DISPLAY + context._2.asRestParameter)
-
     private def tellInvitePlayerResponseHandler(socialResponse: SocialResponse): Unit = {
       requestHandler.respondToRequest(socialResponse)
       unstashAll()
     }
 
-    private def InvitePlayerResponseHandler(socialResponse: SocialResponse, myRole: Option[PartyPlayer],
+    private def invitePlayerResponseHandler(socialResponse: SocialResponse, myRole: Option[PartyPlayer],
                                             partnerRole: Option[PlayerReference]): Unit = socialResponse match {
-      case NegativeResponse => controller.notifyCallResultToGUI(REFUSED_REQUEST_TO_DISPLAY)
+      case NegativeResponse =>
       case PositiveResponse => updateParty(myRole.get, partnerRole)
         controller.updateParty(socialParty.getAllPlayers.map(r => (r._1, r._2.playerID)))
-        controller.notifyCallResultToGUI(ACCEPTED_REQUEST_TO_DISPLAY)
     }
 
     private def updateParty(player: PartyPlayer, partner: Option[PlayerReference]): Unit = player match {
