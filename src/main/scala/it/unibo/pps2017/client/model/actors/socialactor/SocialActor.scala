@@ -93,6 +93,7 @@ object SocialActor {
     private def addFriendResponseHandler(response: SocialResponse, playerID: PlayerID): Unit = response match {
       case PositiveResponse => controller.registerNewFriend(playerID)
         socialPlayersMap.updateFriendList(playerID)
+      case _ =>
     }
 
     private def tellInvitePlayerRequestMessage(playerID: PlayerID, role: PartyRole): Unit = {
