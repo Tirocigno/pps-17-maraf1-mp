@@ -30,7 +30,7 @@ trait SocialController extends ActorController {
 
   def executeFoundGameCall(paramMap: Map[String, String]): Unit
 
-  def updateOnlinePlayerList(friendList: FriendList): Unit
+  def updateOnlinePlayerList(playerRefList: FriendList): Unit
 
   def updateOnlineFriendsList(friendList: FriendList): Unit
 }
