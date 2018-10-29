@@ -12,6 +12,7 @@ class ReplayActor(override val controller: GameController, username: String, gam
   def receive: PartialFunction[Any, Unit] = {
 
     case _ =>
+
   }
 
 

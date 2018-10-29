@@ -1,11 +1,10 @@
 
 package it.unibo.pps2017.client.model.remote
 
-import akka.actor.{ActorSystem, Props}
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
-import it.unibo.pps2017.server.model.{Game, GameFound}
 import it.unibo.pps2017.server.model.ServerApi.{FoundGameRestAPI, GameRestAPI}
+import it.unibo.pps2017.server.model.{Game, GameFound}
 import org.json4s.jackson.Serialization.read
 
 /**
