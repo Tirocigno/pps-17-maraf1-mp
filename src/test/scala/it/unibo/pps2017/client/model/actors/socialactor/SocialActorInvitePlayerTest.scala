@@ -1,9 +1,10 @@
 
 package it.unibo.pps2017.client.model.actors.socialactor
 
+import akka.actor.ActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeInviteController, PositiveInviteController, SenderSocialActorInviteController, SocialActorRequestController}
-import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.TellInvitePlayerRequestMessage
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{SetOnlinePlayersMapMessage, TellInvitePlayerRequestMessage}
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.social.PartyRole.Partner
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
@@ -27,7 +28,7 @@ class SocialActorInvitePlayerTest extends TestKit(AkkaTestUtils.generateTestActo
   var foePartnerRef: PlayerReference = _
   var onlinePlayerList: List[PlayerReference] = _
 
-  beforeEach() {
+  override def beforeEach() {
     leaderController = new SenderSocialActorInviteController()
     leaderRef = PlayerReference(LEADER_ID, SocialActor(system, leaderController, LEADER_ID))
     leaderController.setCurrentActorRef(leaderRef.playerRef)
@@ -45,6 +46,16 @@ class SocialActorInvitePlayerTest extends TestKit(AkkaTestUtils.generateTestActo
 
   test("Successful partner request") {
     startPositivePartner()
+    setupOnlinePlayersList(leaderRef.playerRef)
+    leaderRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
+    awaitForMessageExchange()
+    assert(leaderController.partner.isDefined &
+      leaderController.partner.get.equals(partnerRef.playerID))
+  }
+
+  test("Failing partner request: Refused for user will") {
+    startPositivePartner()
+    setupOnlinePlayersList(leaderRef.playerRef)
     leaderRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
     awaitForMessageExchange()
     assert(leaderController.partner.isDefined &
@@ -64,6 +75,9 @@ class SocialActorInvitePlayerTest extends TestKit(AkkaTestUtils.generateTestActo
     partnerController.setCurrentActorRef(partnerRef.playerRef)
     onlinePlayerList = partnerRef :: onlinePlayerList
   }
+
+  private def setupOnlinePlayersList(actorRef: ActorRef): Unit =
+    actorRef ! SetOnlinePlayersMapMessage(onlinePlayerList)
 
   private def awaitForMessageExchange(): Unit = Thread.sleep(DEFAULT_WAIT)
 

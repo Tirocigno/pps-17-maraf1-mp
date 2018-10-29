@@ -4,9 +4,9 @@ package it.unibo.pps2017.client.model.actors.socialactor.controllers
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{InvitePlayerRequestMessage, InvitePlayerResponseMessage, TellInvitePlayerResponseMessage}
 import it.unibo.pps2017.commons.remote.social.PartyPlayer.{FoePlayer, PartnerPlayer}
-import it.unibo.pps2017.commons.remote.social.SocialResponse
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
-import it.unibo.pps2017.commons.remote.social.SocialUtils.FriendList
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID}
+import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
 
 /**
   * Abstract class to provide a superclass for all possible controller instantiation.
@@ -47,5 +47,7 @@ class SenderSocialActorInviteController() extends SocialActorInviteController {
 
     case InvitePlayerRequestMessage(_, _) => currentActorRef ! TellInvitePlayerResponseMessage(PositiveResponse)
   }
+
+  override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit = {}
 
 }
