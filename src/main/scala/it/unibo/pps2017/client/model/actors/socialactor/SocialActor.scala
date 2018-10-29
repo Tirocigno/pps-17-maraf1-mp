@@ -48,13 +48,15 @@ object SocialActor {
       case TellAddFriendRequestMessage(playerID) => tellAddFriendRequestHandler(playerID)
       case message: AddFriendRequestMessage => stashOrElse(message, message.sender, addFriendRequestHandler)
       case TellAddFriendResponseMessage(response, _) => tellAddFriendResponseHandler(response)
-      case AddFriendResponseMessage(response, sender) => addFriendResponseHandler(response, sender)
+      case message: AddFriendResponseMessage => addFriendResponseHandler(message.socialResponse, message.senderID)
+        controller.updateGUI(message)
       case TellInvitePlayerRequestMessage(player, role) => tellInvitePlayerRequestMessage(player, role)
       case message: InvitePlayerRequestMessage => stashOrElse(message,
         (message.sender.playerID, message.role), invitePlayerRequestHandler)
       case TellInvitePlayerResponseMessage(response) => tellInvitePlayerResponseHandler(response)
-      case InvitePlayerResponseMessage(response, myRole, partnerRole) =>
-        InvitePlayerResponseHandler(response, myRole, partnerRole)
+      case message: InvitePlayerResponseMessage =>
+        InvitePlayerResponseHandler(message.socialResponse, message.myRole, message.partnerRole)
+        controller.updateGUI(message)
       case NotifyGameIDMessage(_) => socialParty.notifyGameIDToAllPlayers(_)
       case GetPartyAndStartGameMessage => buildStartGameRequest()
       case UnstashAllMessages => unstashAll()
@@ -66,6 +68,7 @@ object SocialActor {
         stash()
       } else {
         requestHandler.registerRequest(message)
+        controller.updateGUI(message)
         elseStrategy(arg)
       }
     }
@@ -80,7 +83,6 @@ object SocialActor {
 
     private def addFriendRequestHandler(sender: PlayerReference): Unit = {
       socialPlayersMap.registerUser(sender.playerID, sender.playerRef)
-      controller.notifyCallResultToGUI(FRIEND_MESSAGE_TO_DISPLAY + sender.playerID)
     }
 
     private def tellAddFriendResponseHandler(response: SocialResponse): Unit = {
@@ -89,10 +91,8 @@ object SocialActor {
     }
 
     private def addFriendResponseHandler(response: SocialResponse, playerID: PlayerID): Unit = response match {
-      case PositiveResponse => controller.notifyCallResultToGUI(playerID + PositiveResponse.message)
-        controller.registerNewFriend(playerID)
+      case PositiveResponse => controller.registerNewFriend(playerID)
         socialPlayersMap.updateFriendList(playerID)
-      case NegativeResponse => controller.notifyCallResultToGUI(playerID + NegativeResponse.message)
     }
 
     private def tellInvitePlayerRequestMessage(playerID: PlayerID, role: PartyRole): Unit = {
