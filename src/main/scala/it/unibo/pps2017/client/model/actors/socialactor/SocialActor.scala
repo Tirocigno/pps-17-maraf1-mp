@@ -129,8 +129,11 @@ object SocialActor {
 
     private def updateParty(player: PartyPlayer, partner: Option[PlayerReference]): Unit = player match {
       case PartnerPlayer(reference) => socialParty.setPlayerInParty(Partner, reference)
-      case FoePlayer(reference) => socialParty.setPlayerInParty(Foe, reference)
-        socialParty.setPlayerInParty(FoePartner, partner.get)
+      case FoePlayer(reference) =>
+        socialParty.setPlayerInParty(Foe, reference)
+        if (partner.isDefined) {
+          socialParty.setPlayerInParty(FoePartner, partner.get)
+        }
     }
 
     private def buildStartGameRequest(): Unit = {

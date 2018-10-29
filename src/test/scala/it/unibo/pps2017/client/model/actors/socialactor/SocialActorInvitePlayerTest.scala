@@ -63,17 +63,32 @@ class SocialActorInvitePlayerTest extends TestKit(AkkaTestUtils.generateTestActo
       leaderController.socialResponse.equals(NegativeResponse))
   }
 
-  test("Failing partner request: Partner already in formation") {
+  test("Failing partner request: selected Partner already in formation as Partner") {
     startPositivePartner()
     setupOnlinePlayersList(leaderRef.playerRef)
     setupOnlinePlayersList(foeRef.playerRef)
     leaderRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
     awaitForMessageExchange()
-    foeRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
+    foeRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Foe)
     awaitForMessageExchange()
     assert(leaderController.partner.isDefined &&
       leaderController.socialResponse.equals(PositiveResponse) &&
       leaderController.partner.get.equals(PARTNER_ID) &&
+      foeController.socialResponse.equals(NegativeResponse) &&
+      foeController.foe.isEmpty)
+  }
+
+  test("Failing partner request: Partner already in formation as Foe") {
+    startPositivePartner()
+    setupOnlinePlayersList(leaderRef.playerRef)
+    setupOnlinePlayersList(foeRef.playerRef)
+    leaderRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Foe)
+    awaitForMessageExchange()
+    foeRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
+    awaitForMessageExchange()
+    assert(leaderController.foe.isDefined &&
+      leaderController.socialResponse.equals(PositiveResponse) &&
+      leaderController.foe.get.equals(PARTNER_ID) &&
       foeController.socialResponse.equals(NegativeResponse) &&
       foeController.partner.isEmpty)
   }
@@ -88,15 +103,13 @@ class SocialActorInvitePlayerTest extends TestKit(AkkaTestUtils.generateTestActo
     awaitForMessageExchange()
     leaderRef.playerRef ! TellInvitePlayerRequestMessage(foeRef.playerID, Foe)
     awaitForMessageExchange()
-    println("Partner: " + leaderController.partner)
-    println("Foe: " + leaderController.foe)
-    println("FoePartner: " + leaderController.foePartner)
     assert(
       leaderController.socialResponse.equals(PositiveResponse) &&
         leaderController.partner.get.equals(PARTNER_ID) &&
         leaderController.foe.get.equals(FOE_ID) &&
         leaderController.foePartner.get.equals(FOE_PARTNER_ID))
   }
+
 
   private def startPositivePartner(): Unit = {
     partnerController = new PositiveInviteController()
