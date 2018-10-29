@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.model.actors.socialactor
 import java.util.NoSuchElementException
 
 import akka.actor.{ActorRef, ActorSystem, Props, Stash}
-import it.unibo.pps2017.client.controller.SocialController
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.ModelActor
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
 import it.unibo.pps2017.client.model.actors.socialactor.socialstructures.{RequestHandler, SocialParty, SocialPlayersMap}

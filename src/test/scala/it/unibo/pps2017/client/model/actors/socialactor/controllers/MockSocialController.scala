@@ -2,7 +2,7 @@
 package it.unibo.pps2017.client.model.actors.socialactor.controllers
 
 import akka.actor.{ActorRef, ActorSystem}
-import it.unibo.pps2017.client.controller.SocialController
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
@@ -14,9 +14,9 @@ class MockSocialController extends SocialController {
 
   override var currentActorRef: ActorRef = _
 
-  override def notifyCallResultToGUI(message: String): Unit = ???
+  override def notifyCallResultToGUI(message: Option[String]): Unit = ???
 
-  override def setAndDisplayOnlinePlayerList(playerList: SocialMap): Unit = ???
+  override def setOnlinePlayerList(playerList: SocialMap): Unit = ???
 
   override def notifyErrorToGUI(throwable: Throwable): Unit = ???
 

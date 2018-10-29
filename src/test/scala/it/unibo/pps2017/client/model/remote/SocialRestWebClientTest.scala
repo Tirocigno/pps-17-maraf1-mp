@@ -3,7 +3,7 @@ package it.unibo.pps2017.client.model.remote
 
 import akka.actor.{ActorRef, ActorSystem}
 import io.vertx.scala.core.Vertx
-import it.unibo.pps2017.client.controller.SocialController
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
@@ -52,7 +52,7 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
     waitAsyncOperation()
   }
 
-  test("Register new ID to social Actor") {
+  test("Register new ID to socialcontroller Actor") {
     waitAsyncOperation()
     val encodedActorRef: String = serializeActorRef(DEFAULT_ACTOR_REF)
     val map = Map(RegisterSocialIDAPI.SOCIAL_ID -> DEFAULT_SOCIAL_ID,
@@ -66,7 +66,7 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
     assert(controller.playerList.nonEmpty)
   }
 
-  test("Remove new ID to social Actor") {
+  test("Remove new ID to socialcontroller Actor") {
     waitAsyncOperation()
     val encodedActorRef: String = serializeActorRef(DEFAULT_ACTOR_REF)
     val addingmap = Map(RegisterSocialIDAPI.SOCIAL_ID -> DEFAULT_SOCIAL_ID,
@@ -88,9 +88,9 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
     var bodyResponse: String = _
     var playerList: SocialMap = _
 
-    override def notifyCallResultToGUI(message: String): Unit = bodyResponse = message
+    override def notifyCallResultToGUI(message: Option[String]): Unit = bodyResponse = message.get
 
-    override def setAndDisplayOnlinePlayerList(playerList: SocialMap): Unit = this.playerList = playerList
+    override def setOnlinePlayerList(playerList: SocialMap): Unit = this.playerList = playerList
 
     override def createActor(actorID: String, actorSystem: ActorSystem): Unit = ???
 
