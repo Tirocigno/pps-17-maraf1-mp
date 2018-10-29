@@ -36,7 +36,7 @@ class SenderSocialActorInviteController() extends SocialActorInviteController {
       myRole match {
         case Some(role) => role match {
           case PartnerPlayer(playerReference) => partner = Some(playerReference.playerID)
-          case FoePlayer(playerReference) => partner = Some(playerReference.playerID)
+          case FoePlayer(playerReference) => foe = Some(playerReference.playerID)
         }
           partnerRole match {
             case Some(foeP) => this.foePartner = Some(foeP.playerID)

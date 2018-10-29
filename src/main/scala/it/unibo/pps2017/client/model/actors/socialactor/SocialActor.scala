@@ -67,7 +67,9 @@ object SocialActor {
         stash()
       } else {
         requestHandler.registerRequest(message)
-        controller.updateGUI(message)
+        if (requestHandler.isAlreadyProcessingARequest) {
+          controller.updateGUI(message)
+        }
       }
     }
 

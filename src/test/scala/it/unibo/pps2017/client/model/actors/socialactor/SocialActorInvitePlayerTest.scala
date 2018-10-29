@@ -6,7 +6,8 @@ import akka.testkit.{ImplicitSender, TestKit}
 import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeInviteController, PositiveInviteController, SenderSocialActorInviteController, SocialActorRequestController}
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{SetOnlinePlayersMapMessage, TellInvitePlayerRequestMessage}
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
-import it.unibo.pps2017.commons.remote.social.PartyRole.Partner
+import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
+import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
 import org.scalatest.{BeforeAndAfterEach, FunSuiteLike}
 
@@ -54,12 +55,47 @@ class SocialActorInvitePlayerTest extends TestKit(AkkaTestUtils.generateTestActo
   }
 
   test("Failing partner request: Refused for user will") {
-    startPositivePartner()
+    startNegativePartner()
     setupOnlinePlayersList(leaderRef.playerRef)
     leaderRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
     awaitForMessageExchange()
-    assert(leaderController.partner.isDefined &
-      leaderController.partner.get.equals(partnerRef.playerID))
+    assert(leaderController.partner.isEmpty &&
+      leaderController.socialResponse.equals(NegativeResponse))
+  }
+
+  test("Failing partner request: Partner already in formation") {
+    startPositivePartner()
+    setupOnlinePlayersList(leaderRef.playerRef)
+    setupOnlinePlayersList(foeRef.playerRef)
+    leaderRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
+    awaitForMessageExchange()
+    foeRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
+    awaitForMessageExchange()
+    assert(leaderController.partner.isDefined &&
+      leaderController.socialResponse.equals(PositiveResponse) &&
+      leaderController.partner.get.equals(PARTNER_ID) &&
+      foeController.socialResponse.equals(NegativeResponse) &&
+      foeController.partner.isEmpty)
+  }
+
+  test("Full party creation") {
+    startPositivePartner()
+    setupOnlinePlayersList(leaderRef.playerRef)
+    setupOnlinePlayersList(foeRef.playerRef)
+    leaderRef.playerRef ! TellInvitePlayerRequestMessage(partnerRef.playerID, Partner)
+    awaitForMessageExchange()
+    foeRef.playerRef ! TellInvitePlayerRequestMessage(foePartnerRef.playerID, Partner)
+    awaitForMessageExchange()
+    leaderRef.playerRef ! TellInvitePlayerRequestMessage(foeRef.playerID, Foe)
+    awaitForMessageExchange()
+    println("Partner: " + leaderController.partner)
+    println("Foe: " + leaderController.foe)
+    println("FoePartner: " + leaderController.foePartner)
+    assert(
+      leaderController.socialResponse.equals(PositiveResponse) &&
+        leaderController.partner.get.equals(PARTNER_ID) &&
+        leaderController.foe.get.equals(FOE_ID) &&
+        leaderController.foePartner.get.equals(FOE_PARTNER_ID))
   }
 
   private def startPositivePartner(): Unit = {
