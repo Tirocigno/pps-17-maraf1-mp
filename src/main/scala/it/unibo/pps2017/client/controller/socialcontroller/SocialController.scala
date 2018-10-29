@@ -2,6 +2,7 @@
 package it.unibo.pps2017.client.controller.socialcontroller
 
 import it.unibo.pps2017.client.controller.ActorController
+import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
 import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 
@@ -67,4 +68,37 @@ trait SocialController extends ActorController {
     * @param friendList the new friendList to display.
     */
   def updateOnlineFriendsList(friendList: FriendList): Unit
+
+  /**
+    * Tell the actor to add a new friend.
+    *
+    * @param playerID the ID of the player to add as a friend.
+    */
+  def tellFriendShipMessage(playerID: PlayerID): Unit
+
+  /**
+    * Tell the actor to invite a player to play as his partner.
+    *
+    * @param playerID the ID of the player to invite.
+    */
+  def tellInvitePlayerAsPartner(playerID: PlayerID): Unit
+
+  /**
+    * Tell the actor to invite a player to play as his foe.
+    *
+    * @param playerID the ID of the player to invite.
+    */
+  def tellInvitePlayerAsFoe(playerID: PlayerID): Unit
+
+  /**
+    * Start a new game
+    *
+    * @param matchNature the nature of the game to play.
+    */
+  def startGame(matchNature: MatchNature): Unit
+
+  /**
+    * Reset the party and notify the GUI a match conclusion.
+    */
+  def finishGame(): Unit
 }
