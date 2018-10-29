@@ -10,12 +10,12 @@ import it.unibo.pps2017.commons.remote.social.SocialResponse
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, PlayerReference}
 import org.junit.runner.RunWith
+import org.scalatest.FunSuiteLike
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfterEach, FunSuiteLike}
 
 @RunWith(classOf[JUnitRunner])
 class SocialActorAddFriendTest()
-  extends TestKit(AkkaTestUtils.generateTestActorSystem()) with ImplicitSender with FunSuiteLike with BeforeAndAfterEach {
+  extends TestKit(AkkaTestUtils.generateTestActorSystem()) with ImplicitSender with FunSuiteLike {
 
   val PLAYER_ID: PlayerID = SocialActorRequestController.MOCK_PLAYER_ID
   val SENDER_ID: PlayerID = "SENDER"

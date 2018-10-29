@@ -2,7 +2,7 @@
 package it.unibo.pps2017.client.model.actors.socialactor.controllers
 
 import it.unibo.pps2017.client.model.actors.ActorMessage
-import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{InvitePlayerResponseMessage, TellInvitePlayerResponseMessage}
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{InvitePlayerRequestMessage, InvitePlayerResponseMessage, TellInvitePlayerResponseMessage}
 import it.unibo.pps2017.commons.remote.social.PartyPlayer.{FoePlayer, PartnerPlayer}
 import it.unibo.pps2017.commons.remote.social.SocialResponse
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
@@ -38,8 +38,14 @@ class SenderSocialActorInviteController() extends SocialActorInviteController {
           case PartnerPlayer(playerReference) => partner = Some(playerReference.playerID)
           case FoePlayer(playerReference) => partner = Some(playerReference.playerID)
         }
+          partnerRole match {
+            case Some(foeP) => this.foePartner = Some(foeP.playerID)
+            case None =>
+          }
         case None =>
       }
+
+    case InvitePlayerRequestMessage(_, _) => currentActorRef ! TellInvitePlayerResponseMessage(PositiveResponse)
   }
 
 }
