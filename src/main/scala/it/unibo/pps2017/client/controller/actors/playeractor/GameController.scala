@@ -126,8 +126,7 @@ class GameController extends MatchController {
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
     case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
-      // ho messo due volte isFirstPlayer in attesa che ulio sistemi endPartialTurn
-    case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, isFirstPlayer, isFirstPlayer)
+    case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
     case ComputePartialGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2)
     case ComputeFinalGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndMatch(user, winner1, winner2, score1, score2)
     case _ =>
