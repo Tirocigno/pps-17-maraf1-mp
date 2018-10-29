@@ -108,8 +108,12 @@ class ReplayActor(override val controller: GameController, username: String, gam
           * replay che non sara' mai uguale a quello del primo player.
           */
       } else if (gameCounter == 3) {
+
+        /* Aggiungere controllo se la partita e' finita, altrimenti si torna alla fase di distribuzione carte */
         if (team1Score > team2Score) controller.updateGUI(ComputePartialGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score))
         else controller.updateGUI(ComputePartialGameScore(user, playersList.head, playersList.head, team1Score, team2Score))
+
+        //if !partitaFinita  gameCounter = 1
       }
 
 
