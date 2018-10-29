@@ -51,4 +51,7 @@ object ClientMessages {
   case class ComputeFinalGameScore(user: String, winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
 
   case class SetUsernamePlayer(playerUsername: String) extends ActorMessage
+
+  case class RecapActualSituation(playersList: ListBuffer[String], cards: ListBuffer[String], seed: Seed, player: String) extends ActorMessage
+
 }
