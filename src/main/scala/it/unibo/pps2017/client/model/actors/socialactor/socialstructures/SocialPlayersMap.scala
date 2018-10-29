@@ -32,21 +32,22 @@ object SocialPlayersMap {
 
     override def getCurrentOnlinePlayerMap: SocialMap = socialActorsMap.getCurrentOnlinePlayerMap
 
+    override def setOnlinePlayerList(playersList: List[PlayerReference]): Unit =
+      playersList.foreach(player => registerUser(player.playerID, player.playerRef))
+
+    override def unregisterUser(userID: String): Unit = socialActorsMap.unregisterUser(userID)
+
     override def registerUser(userID: String, socialActorRef: ActorRef): Unit = {
+
       if (!userID.equals(playerID)) {
         socialActorsMap.registerUser(userID, socialActorRef)
       }
     }
 
-    override def unregisterUser(userID: String): Unit = socialActorsMap.unregisterUser(userID)
-
-    override def setOnlinePlayerList(playersList: List[PlayerReference]): Unit =
-      playersList.foreach(player => socialActorsMap.registerUser(player.playerID, player.playerRef))
-
     override def setFriendsList(friendList: FriendList): Unit =
-      friendList.foreach(friend => friend :: this.friendList)
+      friendList.foreach(friend => this.friendList = friend :: this.friendList)
 
-    override def updateFriendList(friendID: PlayerID): Unit = friendID :: friendList
+    override def updateFriendList(friendID: PlayerID): Unit = this.friendList = friendID :: friendList
 
     override def getAllOnlineFriends: FriendList =
       friendList.filter(friendID =>

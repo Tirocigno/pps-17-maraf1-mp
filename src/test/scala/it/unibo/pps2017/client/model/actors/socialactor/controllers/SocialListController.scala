@@ -1,7 +1,11 @@
+
 package it.unibo.pps2017.client.model.actors.socialactor.controllers
 
 import it.unibo.pps2017.commons.remote.social.SocialUtils.FriendList
 
+/**
+  * Extends mockController keeping track of online player friends and list.
+  */
 class SocialListController extends MockSocialController {
 
   var friendList: FriendList = _
