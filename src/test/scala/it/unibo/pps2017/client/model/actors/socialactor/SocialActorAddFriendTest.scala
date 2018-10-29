@@ -3,7 +3,7 @@ package it.unibo.pps2017.client.model.actors.socialactor
 
 import akka.actor.ActorRef
 import akka.testkit.{ImplicitSender, TestKit}
-import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeSocialActorAddFriendController, PositiveSocialActorAddFriendController, SenderSocialActorAddFriendController, SocialActorAddFriendController}
+import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeSocialActorAddFriendController, PositiveSocialActorAddFriendController, SenderSocialActorAddFriendController, SocialActorRequestController}
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{AddFriendRequestMessage, AddFriendResponseMessage, SetOnlinePlayersMapMessage, TellAddFriendRequestMessage}
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.social.SocialResponse
@@ -17,11 +17,11 @@ import org.scalatest.{BeforeAndAfterEach, FunSuiteLike}
 class SocialActorAddFriendTest()
   extends TestKit(AkkaTestUtils.generateTestActorSystem()) with ImplicitSender with FunSuiteLike with BeforeAndAfterEach {
 
-  val PLAYER_ID: PlayerID = SocialActorAddFriendController.MOCK_PLAYER_ID
+  val PLAYER_ID: PlayerID = SocialActorRequestController.MOCK_PLAYER_ID
   val SENDER_ID: PlayerID = "SENDER"
   val DEFAULT_WAIT: Int = 1000
   var sender: PlayerReference = PlayerReference(SENDER_ID, testActor)
-  var controller: SocialActorAddFriendController = _
+  var controller: SocialActorRequestController = _
   var socialRef: ActorRef = _
 
   test("Adding a friend with a positive response") {
