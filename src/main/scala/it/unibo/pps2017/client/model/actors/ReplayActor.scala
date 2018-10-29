@@ -108,16 +108,14 @@ class ReplayActor(override val controller: GameController, username: String, gam
     user
   }
 
-  private def convertBriscolaSeed(briscola: String): Unit = {
+  /* da verificare se funziona bene, altrimenti inserire l'if */
+  private def convertBriscolaSeed(briscola: String): Unit = briscola match {
     case Sword.asString => briscolaChosen = Sword
     case Cup.asString => briscolaChosen = Cup
     case Coin.asString => briscolaChosen = Coin
     case Club.asString => briscolaChosen = Club
   }
 }
-
-
-
 
 
 
