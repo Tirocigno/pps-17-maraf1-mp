@@ -228,9 +228,12 @@ object SocialController {
     override def startGame(matchNature: MatchNature): Unit = ???
 
     /**
-      * Reset the party and notify the GUI a match conclusion.
+      * Reset the party inside the actor and inside the GUI.
       */
-    override def finishGame(): Unit = ???
+    override def finishGame(): Unit = {
+      sendMessage(ResetParty)
+      currentGUI.get.updateParty(Map())
+    }
 
     override def createActor(actorID: String, actorSystem: ActorSystem): Unit = {
       currentActorRef = SocialActor(actorSystem, this, actorID)

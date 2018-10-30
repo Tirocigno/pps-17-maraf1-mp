@@ -116,6 +116,11 @@ object SocialMessages {
     */
   case object UnstashAllMessages extends SocialMessage
 
+  /**
+    * Message to reset the internal party.
+    */
+  case object ResetParty extends SocialMessage
+
 
 
 }

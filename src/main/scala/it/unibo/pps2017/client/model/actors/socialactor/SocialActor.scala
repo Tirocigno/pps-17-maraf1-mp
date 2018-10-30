@@ -58,6 +58,7 @@ object SocialActor {
         controller.updateGUI(message)
       case NotifyGameIDMessage(_) => socialParty.notifyGameIDToAllPlayers(_)
       case GetPartyAndStartGameMessage => buildStartGameRequest()
+      case ResetParty => socialParty.resetParty()
       case UnstashAllMessages => unstashAll()
 
     }
