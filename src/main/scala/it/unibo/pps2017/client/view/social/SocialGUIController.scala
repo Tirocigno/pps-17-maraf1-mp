@@ -41,4 +41,12 @@ trait SocialGUIController extends GUIController {
     * @param request        the original request made by the user.
     */
   def notifyMessageResponse(sender: Option[String], responseResult: String, request: String)
+
+  /**
+    * Show the user a friend/party request received.
+    *
+    * @param sender the player who sent the request.
+    * @param role   the role on which the sender want the player to play as.
+    */
+  def displayRequest(sender: String, role: Option[String])
 }

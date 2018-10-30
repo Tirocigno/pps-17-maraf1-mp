@@ -249,6 +249,10 @@ object SocialController {
       case response: InvitePlayerResponseMessage =>
         currentGUI.get.notifyMessageResponse(response.myRole.map(_.playerReference.playerID),
           response.socialResponse.message, response.request)
+      case AddFriendRequestMessage(sender) =>
+        currentGUI.get.displayRequest(sender.playerID, None)
+      case InvitePlayerRequestMessage(sender, role) =>
+        currentGUI.get.displayRequest(sender.playerID, Some(role.asString))
       case _ => currentGUI.get.notifyErrorOccurred(UNKNOWN_MESSAGE)
     }
 
