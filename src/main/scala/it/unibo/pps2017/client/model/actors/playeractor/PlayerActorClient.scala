@@ -106,10 +106,10 @@ class PlayerActorClient(override val controller: GameController, username: Strin
 
     for (player <- tempList) {
       player match {
-        case player if player.equals(user) & searchPlayer == START_SEARCH
-        => (orderedList += player, searchPlayer += FOUNDED)
-        case player if !player.equals(user) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
-        => (orderedList += player, searchPlayer += FOUNDED)
+        case actualPlayer if actualPlayer.equals(user) & searchPlayer == START_SEARCH
+        => (orderedList += actualPlayer, searchPlayer += FOUNDED)
+        case actualPlayer if !actualPlayer.equals(user) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
+        => (orderedList += actualPlayer, searchPlayer += FOUNDED)
         case _ => tempList.clear
       }
     }
