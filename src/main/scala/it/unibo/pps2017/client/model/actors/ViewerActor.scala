@@ -9,6 +9,7 @@ import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 class ViewerActor(override val controller: GameController, username: String) extends ClientGameActor {
 
   import context._
+
   var actorPlayer: ClientGameActor = this
   var user: String = username
   var firstPlayer: String = user

@@ -12,12 +12,15 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 
 object ReplayActor {
+
   case class SendHeartbeat()
+
 }
 
 class ReplayActor(override val controller: GameController, username: String, game: Game) extends ClientGameActor {
 
   import system.dispatcher
+
   var user: String = username
   val system = ActorSystem("ScheduledActors")
   var gameCounter: ReplayActorStatus = PRE_SET
@@ -38,11 +41,11 @@ class ReplayActor(override val controller: GameController, username: String, gam
   override def preStart() {
 
     currentSet = game.turns.head
-      system.scheduler.schedule(
-        initialDelay = 0.milliseconds,
-        interval = 3000.milliseconds,
-        receiver = self,
-        message = SendHeartbeat)
+    system.scheduler.schedule(
+      initialDelay = 0.milliseconds,
+      interval = 3000.milliseconds,
+      receiver = self,
+      message = SendHeartbeat)
   }
 
 

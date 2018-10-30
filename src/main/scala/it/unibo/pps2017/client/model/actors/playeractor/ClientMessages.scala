@@ -53,4 +53,5 @@ object ClientMessages {
   case class SetUsernamePlayer(playerUsername: String) extends ActorMessage
 
   case class RecapActualSituation(playersList: ListBuffer[String], cards: List[String], seed: Seed, player: String) extends ActorMessage
+
 }
