@@ -5,10 +5,12 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import it.unibo.pps2017.core.game.SimpleTeam
 import it.unibo.pps2017.core.player.GameActor
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{IncreaseServerMatchesAPI, RegisterMatchAPI, StandardParameters}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.server.controller.Dispatcher
+import it.unibo.pps2017.server.model.GameType.UNRANKED
 import it.unibo.pps2017.server.model.LobbyStatusResponse.{FULL, OK, REVERSE}
 import it.unibo.pps2017.server.model._
+import it.unibo.pps2017.server.model.database.RedisGameUtils
 import org.json4s.jackson.Serialization.read
 
 import scala.collection.mutable.ListBuffer
@@ -137,25 +139,25 @@ class LobbyActor extends Actor {
   private def createActorAndNotifyTheDiscovery(game: Lobby): Unit = {
     context.system.scheduler.scheduleOnce(5 seconds) {
 
-
+      RedisGameUtils().signNewGame(game.id, game.team1.asSide, game.team2.asSide, UNRANKED)
       println(s"Context -> $context / game -> $game")
       context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, () => {
-        PostRequest(Dispatcher.DISCOVERY_URL, RegisterMatchAPI.path, {
+        PostRequest(Dispatcher.DISCOVERY_URL, RemoveMatchAPI.path, {
           case Some(res) => try {
             val msgFromDiscovery = read[Message](res)
 
-            println("Discovery match registration response: " + msgFromDiscovery.message)
+            println("Discovery match cancellation response: " + msgFromDiscovery.message)
           } catch {
             case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
           }
           case None =>
         }, cause => {}, Some(Map("matchID" -> game.id)), Some(Dispatcher.DISCOVERY_PORT))
 
-        PostRequest(Dispatcher.DISCOVERY_URL, IncreaseServerMatchesAPI.path, {
+        PostRequest(Dispatcher.DISCOVERY_URL, DecreaseServerMatchesAPI.path, {
           case Some(res) => try {
             val msgFromDiscovery = read[Message](res)
 
-            println("Discovery match registration response: " + msgFromDiscovery.message)
+            println("Discovery match cancellation response: " + msgFromDiscovery.message)
           } catch {
             case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
           }
@@ -163,6 +165,9 @@ class LobbyActor extends Actor {
         }, cause => {
           println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
         }, None, Some(Dispatcher.DISCOVERY_PORT))
+
+
+        RedisGameUtils().setGameEnd(game.id, UNRANKED)
       })))
 
 

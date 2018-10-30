@@ -36,7 +36,6 @@ object Dispatcher {
 case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
   implicit val akkaSystem: ActorSystem = actorSystem
-  implicit val formats: DefaultFormats.type = DefaultFormats
 
 
   val userMethods = UserDispatcher()
@@ -62,6 +61,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
       case api@AddFriendAPI => api.asRequest(router, userMethods.addFriend)
       case api@GetFriendsAPI => api.asRequest(router, userMethods.getFriends)
       case api@RemoveFriendAPI => api.asRequest(router, userMethods.removeFriend)
+      case api@GetLiveMatchAPI => api.asRequest(router, gameMethods.getLiveGames)
       case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 
@@ -103,21 +103,6 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     */
   private val hello: (RoutingContext, RouterResponse) => Unit = (_, res) => {
     res.sendResponse(Message("Hello to everyone"))
-  }
-
-  /**
-    * Respond to GET /game/:gameId
-    * TODO / Pending
-    */
-  private val getGame: (RoutingContext, RouterResponse) => Unit = (routingContext, res) => {
-    val gameId = routingContext.request().getParam("gameId")
-
-
-    gameId match {
-      case Some(_) =>
-        res.sendResponse(Message("Pending"))
-      case None => res.sendResponse(Error(Some("you write nothing")))
-    }
   }
 
 

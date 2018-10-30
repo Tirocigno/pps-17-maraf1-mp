@@ -21,7 +21,8 @@ object ServerApi {
     RemoveUserAPI,
     AddFriendAPI,
     GetFriendsAPI,
-    RemoveFriendAPI)
+    RemoveFriendAPI,
+    GetLiveMatchAPI)
 
   /**
     * RestAPI for searching
@@ -154,4 +155,16 @@ object ServerApi {
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       GET(router, path, handle)
   }
+
+
+  case object GetLiveMatchAPI extends RestAPI {
+
+    override def path: String = "/match/live"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
 }

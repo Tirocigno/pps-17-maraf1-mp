@@ -23,4 +23,10 @@ case class GameDispatcher() {
       case None => res.setGenericError(Some("GameId not specified")).sendResponse(Error())
     }
   }
+
+
+  def getLiveGames: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
+    res.sendResponse(gameDatabaseUtils.getLiveMatch)
+  }
+
 }
