@@ -23,7 +23,7 @@ class ViewerActor(override val controller: GameController, username: String) ext
     case RecapActualSituation(playersList, cards, seed, player) =>
       controller.updateGUI(PlayersRef(playersList))
       firstPlayer = playersList.head
-      controller.updateGUI(DistributedCard(cards, firstPlayer))
+      controller.updateGUI(DistributedCard(cards.toList, firstPlayer))
       controller.updateGUI(NotifyBriscolaChosen(seed = seed))
       controller.updateGUI(Turn(player, endPartialTurn = true, isFirstPlayer = false))
 
