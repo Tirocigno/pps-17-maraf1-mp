@@ -49,4 +49,11 @@ trait SocialGUIController extends GUIController {
     * @param role   the role on which the sender want the player to play as.
     */
   def displayRequest(sender: String, role: Option[String])
+
+  /**
+    * Notify to the user the result of a Rest Call.
+    *
+    * @param message the body of the request to display.
+    */
+  def notifyAPIResult(message: Option[String])
 }

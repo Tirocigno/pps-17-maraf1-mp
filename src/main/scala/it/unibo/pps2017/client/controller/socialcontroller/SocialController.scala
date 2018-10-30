@@ -136,7 +136,8 @@ object SocialController {
 
     override def setCurrentGui(gui: SocialGUIController): Unit = currentGUI = Some(gui)
 
-    override def notifyCallResultToGUI(message: Option[String]): Unit = ???
+    override def notifyCallResultToGUI(message: Option[String]): Unit =
+      currentGUI.get.notifyAPIResult(message)
 
     override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit = {
       sendMessage(SetOnlinePlayersMapMessage(onlinePlayers))
