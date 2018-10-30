@@ -5,7 +5,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import it.unibo.pps2017.client.controller.{ActorController, ClientController}
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.socialactor.SocialActor
-import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{SetOnlinePlayersMapMessage, TellAddFriendRequestMessage, TellInvitePlayerRequestMessage}
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
 import it.unibo.pps2017.client.model.remote.{RestWebClient, SocialRestWebClient}
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
@@ -13,7 +13,7 @@ import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeA
 import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
 
 /**
@@ -124,6 +124,8 @@ trait SocialController extends ActorController {
 
 object SocialController {
 
+  val UNKNOWN_MESSAGE = "Unknown message received"
+
   private class SocialControllerImpl(val parentController: ClientController, val playerID: PlayerID, val
   discoveryContext: ServerContext) extends SocialController {
 
@@ -231,14 +233,30 @@ object SocialController {
 
     override def createActor(actorID: String, actorSystem: ActorSystem): Unit = {
       currentActorRef = SocialActor(actorSystem, this, actorID)
-      val encodedActorRef = serializeActorRef(currentActorRef)
-      val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> actorID,
-        RegisterSocialIDAPI.SOCIAL_ACTOR -> encodedActorRef)
-      socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, Some(paramMap))
-
+      registerToOnlinePlayerList()
     }
 
-    override def updateGUI(message: ActorMessage): Unit = ???
+    private def registerToOnlinePlayerList(): Unit = {
+      val encodedActorRef = serializeActorRef(currentActorRef)
+      val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> playerID,
+        RegisterSocialIDAPI.SOCIAL_ACTOR -> encodedActorRef)
+      socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, Some(paramMap))
+    }
+
+    override def updateGUI(message: ActorMessage): Unit = message match {
+      case response: AddFriendResponseMessage =>
+        currentGUI.get.notifyMessageResponse(Some(response.senderID), response.socialResponse.message, response.request)
+      case response: InvitePlayerResponseMessage =>
+        currentGUI.get.notifyMessageResponse(response.myRole.map(_.playerReference.playerID),
+          response.socialResponse.message, response.request)
+      case _ => currentGUI.get.notifyErrorOccurred(UNKNOWN_MESSAGE)
+    }
+
+    private def unSubscribeFromOnlinePlayerList(): Unit = {
+      val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> playerID)
+      socialRestWebClient.callRemoteAPI(UnregisterSocialIDAPI, Some(paramMap))
+    }
+
   }
 
 }

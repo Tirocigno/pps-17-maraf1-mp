@@ -32,4 +32,13 @@ trait SocialGUIController extends GUIController {
     * @param partyMap a map containing party member's role and ID.
     */
   def updateParty(partyMap: Map[String, String])
+
+  /**
+    * Notify on GUI the response to a call made by the user.
+    *
+    * @param sender         the user who send the response.
+    * @param responseResult response result, positive if the sender has accepted the request, false otherwise.
+    * @param request        the original request made by the user.
+    */
+  def notifyMessageResponse(sender: Option[String], responseResult: String, request: String)
 }

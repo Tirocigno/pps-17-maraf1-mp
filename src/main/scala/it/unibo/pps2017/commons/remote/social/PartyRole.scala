@@ -44,7 +44,9 @@ object PartyRole {
 /**
   * A role containing the id of the player who plays as that role.
   */
-sealed trait PartyPlayer
+sealed trait PartyPlayer {
+  def playerReference: PlayerReference
+}
 
 object PartyPlayer {
 

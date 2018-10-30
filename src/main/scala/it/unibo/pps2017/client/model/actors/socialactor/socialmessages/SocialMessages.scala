@@ -16,6 +16,10 @@ object SocialMessages {
 
   sealed trait RequestMessage extends SocialMessage
 
+  sealed trait ResponseMessage extends SocialMessage {
+    def request: String
+  }
+
   /**
     * Message to set a new PlayerOnlineMap inside the Actor.
     *
@@ -56,7 +60,9 @@ object SocialMessages {
     * @param socialResponse the response of the player.
     * @param senderID       response sender's id.
     */
-  case class AddFriendResponseMessage(socialResponse: SocialResponse, senderID: PlayerID) extends SocialMessage
+  case class AddFriendResponseMessage(socialResponse: SocialResponse, senderID: PlayerID) extends ResponseMessage {
+    override def request: String = "Friend Request"
+  }
 
   /**
     * Tell the actor to invite a player on a match with a specified roles.
@@ -89,7 +95,9 @@ object SocialMessages {
     * @param partnerRole    the information about the partner of the player.
     */
   case class InvitePlayerResponseMessage(socialResponse: SocialResponse, myRole: Option[PartyPlayer],
-                                         partnerRole: Option[PlayerReference]) extends SocialMessage
+                                         partnerRole: Option[PlayerReference]) extends ResponseMessage {
+    override def request: String = "Invite Request"
+  }
 
   /**
     * Notify to all the party the game id of the match to play.
