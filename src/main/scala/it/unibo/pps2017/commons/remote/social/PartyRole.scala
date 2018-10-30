@@ -9,24 +9,34 @@ import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
   */
 sealed trait PartyRole {
   def asRestParameter: String
+
+  def asString: String
 }
 
 object PartyRole {
 
   case object Leader extends PartyRole {
     override def asRestParameter: String = FoundGameRestAPI.meParamKey
+
+    override def asString: String = "Leader"
   }
 
   case object Partner extends PartyRole {
     override def asRestParameter: String = FoundGameRestAPI.partnerParam
+
+    override def asString: String = "Partner"
   }
 
   case object Foe extends PartyRole {
     override def asRestParameter: String = FoundGameRestAPI.vsParam
+
+    override def asString: String = "Foe"
   }
 
   case object FoePartner extends PartyRole {
     override def asRestParameter: String = FoundGameRestAPI.vsPartnerParam
+
+    override def asString: String = "FoePartner"
   }
 
 }

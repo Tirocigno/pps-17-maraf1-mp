@@ -14,6 +14,7 @@ import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
+import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
 
 /**
   * This trait is a mediator between the actor that handle the social
@@ -140,11 +141,12 @@ object SocialController {
     }
 
     /**
-      * Notify an error to GUI
+      * Notify an error to GUI.
       *
       * @param throwable the error occurred.
       */
-    override def notifyErrorToGUI(throwable: Throwable): Unit = ???
+    override def notifyErrorToGUI(throwable: Throwable): Unit =
+      currentGUI.get.notifyErrorOccurred(throwable.getMessage)
 
     /**
       * Send a remote request to register a new friend.
@@ -152,8 +154,8 @@ object SocialController {
       * @param friendId the ID of the player to register.
       */
     override def registerNewFriend(friendId: PlayerID): Unit = {
-      //TODO integrate with riciputin work.
-      socialRestWebClient //.callRemoteAPI()
+      val paramMap = Map(AddFriendAPI.friendUsername -> friendId)
+      socialRestWebClient.callRemoteAPI(AddFriendAPI, Some(paramMap))
     }
 
     /**
@@ -161,7 +163,8 @@ object SocialController {
       *
       * @param currentPartyMap the party current state.
       */
-    override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit = ???
+    override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit =
+      currentGUI.get.updateParty(currentPartyMap.map(entry => (entry._1.asString, entry._2)))
 
     /**
       * Execute a FoundGame call passing a paramMap.
@@ -175,14 +178,17 @@ object SocialController {
       *
       * @param playerRefList the new onlinePlayer list to display.
       */
-    override def updateOnlinePlayerList(playerRefList: FriendList): Unit = ???
+    override def updateOnlinePlayerList(playerRefList: FriendList): Unit =
+      currentGUI.get.updateOnlinePlayersList(playerRefList)
 
     /**
       * Update the current list of online friends displayed on GUI.
       *
       * @param friendList the new friendList to display.
       */
-    override def updateOnlineFriendsList(friendList: FriendList): Unit = ???
+    override def updateOnlineFriendsList(friendList: FriendList): Unit = {
+      currentGUI.get.updateOnlineFriendsList(friendList)
+    }
 
     /**
       * Tell the actor to add a new friend.
