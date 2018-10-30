@@ -27,6 +27,9 @@ case class UserFriends(username: String, friends: Seq[String]) extends JsonRespo
 
 case class OnlinePlayersMapEncoder(map: SocialMap) extends JsonResponse
 
+case class Matches(games: Seq[LiveGame]) extends JsonResponse
+case class LiveGame(gameId: String, team1: Side, team2: Side, gameType: String) extends JsonResponse
+
 
 
 /**
@@ -39,7 +42,7 @@ case class OnlinePlayersMapEncoder(map: SocialMap) extends JsonResponse
   * @param winners
   * username of the game winners.
   */
-case class Game(players: Seq[String], turns: Seq[GameSet], winners: Seq[String])
+case class Game(players: Seq[String], turns: Seq[GameSet], winners: Seq[String]) extends JsonResponse
 
 /**
   * A game set.

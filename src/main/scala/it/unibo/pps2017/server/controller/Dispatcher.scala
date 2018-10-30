@@ -36,10 +36,10 @@ object Dispatcher {
 case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
   implicit val akkaSystem: ActorSystem = actorSystem
-  implicit val formats: DefaultFormats.type = DefaultFormats
 
 
   val userMethods = UserDispatcher()
+  val gameMethods = GameDispatcher()
 
   val lobbyManager: ActorRef = akkaSystem.actorOf(Props[LobbyActor])
   val currentIPAndPortParams = Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> PORT)
@@ -52,14 +52,16 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     ServerApi.values.map({
       case api@HelloRestAPI => api.asRequest(router, hello)
       case api@ErrorRestAPI => api.asRequest(router, responseError)
-      case api@GameRestAPI => api.asRequest(router, getGame)
+      case api@GameRestAPI => api.asRequest(router, gameMethods.getGame)
       case api@FoundGameRestAPI => api.asRequest(router, foundGame)
       case api@AddUserAPI => api.asRequest(router, userMethods.addUser)
       case api@GetUserAPI => api.asRequest(router, userMethods.getUser)
+      case api@LoginAPI => api.asRequest(router, userMethods.login)
       case api@RemoveUserAPI => api.asRequest(router, userMethods.deleteUser)
       case api@AddFriendAPI => api.asRequest(router, userMethods.addFriend)
       case api@GetFriendsAPI => api.asRequest(router, userMethods.getFriends)
       case api@RemoveFriendAPI => api.asRequest(router, userMethods.removeFriend)
+      case api@GetLiveMatchAPI => api.asRequest(router, gameMethods.getLiveGames)
       case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 
@@ -92,6 +94,8 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
         println("Error on the discovery registration! \nDetails: " + cause.getMessage)
       }, Some(currentIPAndPortParams), Some(Dispatcher.DISCOVERY_PORT))
     }
+
+
   }
 
   /**
@@ -99,28 +103,6 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     */
   private val hello: (RoutingContext, RouterResponse) => Unit = (_, res) => {
     res.sendResponse(Message("Hello to everyone"))
-  }
-
-  /**
-    * Respond to GET /game/:gameId
-    * TODO / Pending
-    */
-  private val getGame: (RoutingContext, RouterResponse) => Unit = (routingContext, res) => {
-    val gameId = routingContext.request().getParam("gameId")
-
-
-    gameId match {
-      case Some(game) =>
-        val team1: Side = Side(Seq("player1", "player2"))
-        val team2: Side = Side(Seq("player3", "player4"))
-        val gameSet: GameSet = GameSet(Seq("Card1", "Card2"),
-          Seq("Card3", "Card5"),
-          Seq("Card6", "Card7"),
-          Seq("Card8", "Card9"), Seq("PLAY CARD", "SET BRISCOLA"))
-        val gameHistory: GameHistory = GameHistory(game, Seq(team1, team2), gameSet)
-        res.sendResponse(gameHistory)
-      case None => res.sendResponse(Error(Some("you write nothing")))
-    }
   }
 
 

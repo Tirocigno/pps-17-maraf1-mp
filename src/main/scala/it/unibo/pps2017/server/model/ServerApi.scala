@@ -17,10 +17,12 @@ object ServerApi {
     FoundGameRestAPI,
     AddUserAPI,
     GetUserAPI,
+    LoginAPI,
     RemoveUserAPI,
     AddFriendAPI,
     GetFriendsAPI,
-    RemoveFriendAPI)
+    RemoveFriendAPI,
+    GetLiveMatchAPI)
 
   /**
     * RestAPI for searching
@@ -100,6 +102,17 @@ object ServerApi {
       GET(router, path, handle)
   }
 
+  case object LoginAPI extends RestAPI {
+    val password: String = "password"
+
+    override def path: String = "/user/login/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
   case object RemoveUserAPI extends RestAPI {
     override def path: String = "/user/removeUser/:username"
 
@@ -142,4 +155,16 @@ object ServerApi {
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       GET(router, path, handle)
   }
+
+
+  case object GetLiveMatchAPI extends RestAPI {
+
+    override def path: String = "/match/live"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
 }

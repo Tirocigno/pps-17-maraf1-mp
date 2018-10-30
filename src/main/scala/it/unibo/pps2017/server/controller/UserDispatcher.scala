@@ -20,7 +20,7 @@ case class UserDispatcher() {
       _ => {
         res.sendResponse(Message("User entered correctly!"))
       }, cause => {
-        res.setGenericError(Some(s"Error on user registration! Details: ${cause.getMessage}")).sendResponse(Error())
+        errorHandler(res, s"Error on user registration! Details: ${cause.getMessage}")
       })
   }
 
@@ -37,13 +37,39 @@ case class UserDispatcher() {
           userData => {
             res.sendResponse(User(username.toString, userData("score").utf8String.toInt))
           }, cause => {
-            res.setGenericError(Some(s"Unexpected error on user retrieve! Details: ${cause.getMessage}")).sendResponse(Error())
+            errorHandler(res, s"Unexpected error on user retrieve! Details: ${cause.getMessage}")
           })
       } else {
-        res.setGenericError(Some(s"User $username not found!")).sendResponse(Error())
+        errorHandler(res, s"User $username not found!")
       }
-    }, cause => res.setGenericError(Some(s"Unexpected error on user retrieve! Details: ${cause.getMessage}")).sendResponse(Error()))
+    }, cause => errorHandler(res, s"Unexpected error on user retrieve! Details: ${cause.getMessage}"))
 
+  }
+
+  def login: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
+    val db = RedisConnection().getDatabaseConnection
+    res.setOnClose(Some(closeDatabaseConnection(db)))
+
+    val username = getUsernameOrResponseError(ctx, res)
+    val password: String = ctx.request().getParam("password").getOrElse("")
+
+    userDatabaseUtils.checkUserExisting(db, username.toString, exist => {
+      if (exist) {
+        userDatabaseUtils.checkUserLogin(db, username.toString, password, result => {
+          if (result) {
+            res.sendResponse(Message(s"$username, you are welcome!"))
+          } else {
+            errorHandler(res, "Invalid username or password!")
+          }
+        }, cause => {
+          errorHandler(res, s"Unexpected error on user login check! Details: ${cause.getMessage}")
+        })
+      } else {
+        errorHandler(res, s"User $username not found!")
+      }
+    }, cause => {
+      errorHandler(res, s"Unexpected error on user retrieve! Details: ${cause.getMessage}")
+    })
   }
 
   def deleteUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
@@ -56,12 +82,10 @@ case class UserDispatcher() {
       if (removedKeys > 0) {
         res.sendResponse(Message(s"User $username deleted correctly!"))
       } else {
-        res.setGenericError(Some(s"User $username not found!")).sendResponse(Error())
+        errorHandler(res, s"User $username not found!")
       }
     }, cause => {
-      res
-        .setGenericError(Some(s"Unexpected error on user deleting! Details: ${cause.getMessage}"))
-        .sendResponse(Error())
+      errorHandler(res, s"Unexpected error on user deleting! Details: ${cause.getMessage}")
     })
   }
 
@@ -74,7 +98,7 @@ case class UserDispatcher() {
     val params: Map[String, String] = ctx.request().formAttributes()
 
     if (!params.contains("friend")) {
-      res.setGenericError(Some("You didn't specify a friend!")).sendResponse(Error())
+      errorHandler(res, "You didn't specify a friend!")
     } else {
 
       val friend: String = params("friend")
@@ -85,20 +109,16 @@ case class UserDispatcher() {
             if (friendExist) {
               userDatabaseUtils.addFriendship(db, username.toString, friend, res)
             } else {
-              res.setGenericError(Some(s"Friend $friend not found!")).sendResponse(Error())
+              errorHandler(res, s"Friend $friend not found!")
             }
           }, causeFriendError => {
-            res
-              .setGenericError(Some(s"Error on friend searching! Details: ${causeFriendError.getMessage}"))
-              .sendResponse(Error())
+            errorHandler(res, s"Error on friend searching! Details: ${causeFriendError.getMessage}")
           })
         } else {
-          res.setGenericError(Some(s"User $username not found!")).sendResponse(Error())
+          errorHandler(res, s"User $username not found!")
         }
       }, causeUserError => {
-        res
-          .setGenericError(Some(s"Unexpected error on user retrieve! Details: ${causeUserError.getMessage}"))
-          .sendResponse(Error())
+        errorHandler(res, s"Unexpected error on user retrieve! Details: ${causeUserError.getMessage}")
       })
     }
   }
@@ -115,14 +135,13 @@ case class UserDispatcher() {
           friends => {
             res.sendResponse(UserFriends(username.toString, friends))
           }, cause => {
-            res.setGenericError(Some(s"Unexpected error on friends retrieve! Details: ${cause.getMessage}"))
-              .sendResponse(Error())
+            errorHandler(res, s"Unexpected error on friends retrieve! Details: ${cause.getMessage}")
           })
       } else {
-        res.setGenericError(Some(s"User $username not found!")).sendResponse(Error())
+        errorHandler(res, s"User $username not found!")
       }
     }, cause => {
-      res.setGenericError(Some(s"Unexpected error on user retrieve! Details: ${cause.getMessage}")).sendResponse(Error())
+      errorHandler(res, s"Unexpected error on user retrieve! Details: ${cause.getMessage}")
     })
   }
 
@@ -136,7 +155,7 @@ case class UserDispatcher() {
     val params: Map[String, String] = ctx.request().formAttributes()
 
     if (!params.contains("friend")) {
-      res.setGenericError(Some("You didn't specify a friend!")).sendResponse(Error())
+      errorHandler(res, "You didn't specify a friend!")
     } else {
 
       val friend: String = params("friend")
@@ -147,20 +166,16 @@ case class UserDispatcher() {
             if (friendExist) {
               userDatabaseUtils.removeFriendship(db, username.toString, friend, res)
             } else {
-              res.setGenericError(Some(s"Friend ${friend.toString} not found!")).sendResponse(Error())
+              errorHandler(res, s"Friend ${friend.toString} not found!")
             }
           }, causeFriendError => {
-            res
-              .setGenericError(Some(s"Error on friend searching! Details: ${causeFriendError.getMessage}"))
-              .sendResponse(Error())
+            errorHandler(res, s"Error on friend searching! Details: ${causeFriendError.getMessage}")
           })
         } else {
-          res.setGenericError(Some(s"User ${username.toString} not found!")).sendResponse(Error())
+          errorHandler(res, s"User ${username.toString} not found!")
         }
       }, causeUserError => {
-        res
-          .setGenericError(Some(s"Unexpected error on user retrieve! Details: ${causeUserError.getMessage}"))
-          .sendResponse(Error())
+        errorHandler(res, s"Unexpected error on user retrieve! Details: ${causeUserError.getMessage}")
       })
     }
   }
@@ -169,7 +184,7 @@ case class UserDispatcher() {
   private def getUsernameOrResponseError(ctx: RoutingContext, res: RouterResponse): Any = {
     ctx.request().getParam("username") match {
       case Some(name) => name
-      case None => res.setGenericError(Some("Username not valid!")).sendResponse(Error())
+      case None => errorHandler(res, "Username not valid!")
     }
   }
 }

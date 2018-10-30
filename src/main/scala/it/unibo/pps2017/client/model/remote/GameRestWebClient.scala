@@ -3,8 +3,8 @@ package it.unibo.pps2017.client.model.remote
 
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
-import it.unibo.pps2017.server.model.GameFound
-import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
+import it.unibo.pps2017.server.model.ServerApi.{FoundGameRestAPI, GameRestAPI}
+import it.unibo.pps2017.server.model.{Game, GameFound}
 import org.json4s.jackson.Serialization.read
 
 /**
@@ -16,6 +16,7 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
 
   override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
     case FoundGameRestAPI => invokeAPI(api, paramMap, foundGameCallBack, assignedServerContext.get)
+    case GameRestAPI => invokeAPI(api, paramMap, GameCallBack, assignedServerContext.get)
 
   }
 
@@ -29,6 +30,17 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     clientController.setGameID(gameID)
   }
 
+
+  /**
+    * Handler for the Game API response.
+    * @param jSonSource the body of the response.
+    */
+  private def GameCallBack(jSonSource: Option[String]): Unit = {
+    val game = read[Game](jSonSource.get)
+
+    //TODO Deploy Replay Actor
+    //ActorSystem("CHANGHE THIS").actorOf(Props(ReplayActor(game)))
+  }
 }
 
 object GameRestWebClient {
