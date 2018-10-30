@@ -1,4 +1,3 @@
-
 package it.unibo.pps2017.core.gui;
 
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController;
@@ -204,7 +203,7 @@ public class PlayGameController implements PlayGame {
         this.indexOfMyCards.clear();
         int cardCounter = 0;
 
-        for (final ImageView firstPlayerCard: cardsPlayer1) {
+        for (final ImageView firstPlayerCard : cardsPlayer1) {
             Image userCard = getImageFromPath(firstUserCards.get(cardCounter));
             indexOfMyCards.put(idUserCards.get(cardCounter), firstUserCards.get(cardCounter));
             firstPlayerCard.setImage(userCard);
@@ -261,7 +260,7 @@ public class PlayGameController implements PlayGame {
     }
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
-        Platform.runLater( () -> {
+        Platform.runLater(() -> {
             scoreTeams.setText(MY_TEAM_SCORE + scoreFirstTeam + "\n" + OPPONENT_TEAM_SCORE + scoreSecondTeam);
             scoreTeams.setVisible(true);
             createLabelScaleTransition(scoreTeams, endedMatch);
@@ -371,10 +370,6 @@ public class PlayGameController implements PlayGame {
     }
 
     private void initializePlayersHand(int firstUserCards) {
-        /* nel caso del Viewer potrei entrare nella partita come spettatore
-        in un momento in cui sono ad esempio gia' state giocate due mani. Allora
-        gli avversari dovranno avere nelle mani 10 - mani giocate carte.
-         */
         this.editableCardsPlayer2 = new ArrayList<>(cardsPlayer2);
         this.editableCardsPlayer3 = new ArrayList<>(cardsPlayer3);
         this.editableCardsPlayer4 = new ArrayList<>(cardsPlayer4);
