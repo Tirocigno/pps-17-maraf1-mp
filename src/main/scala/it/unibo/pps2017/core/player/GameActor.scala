@@ -138,12 +138,14 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
   }
 
-  private def cardToPath(card: Card): String =  IMG_PATH + card.cardValue + card.cardSeed + FILE_EXTENSION
+  //private def cardToPath(card: Card): String =  IMG_PATH + card.cardValue + card.cardSeed + FILE_EXTENSION
+
+  val cardPath: (Card) => String =  (card) => IMG_PATH + card.cardValue + card.cardSeed + FILE_EXTENSION
 
   private def allCardsToPath(cards: Set[Card]): List[String] = {
     var allCardsPath : ListBuffer[String] = ListBuffer[String]()
     cards.foreach(card =>
-      allCardsPath += cardToPath(card)
+      allCardsPath += cardPath(card)
     )
     allCardsPath.toList
   }
@@ -186,7 +188,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
     cardsOnTable += ((card, gameCycle.getCurrent))
     cardPlayed = true
-    mediator ! Publish(topicName,PlayedCard(cardToPath(card), player))
+    mediator ! Publish(topicName,PlayedCard(cardPath(card), player))
     cardsInHand(player) -= card
     println(cardsInHand(player))
   }
@@ -208,7 +210,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
     var firstPlayerCards: ListBuffer[String] = ListBuffer[String]()
     cardsInHand(allPlayers.head).foreach(card =>{
-      firstPlayerCards += cardToPath(card)
+      firstPlayerCards += cardPath(card)
     })
 
     mediator ! Publish(topicName, RecapActualSituation(allPlayers, firstPlayerCards, currentBriscola.get, nextHandStarter.get))
