@@ -325,10 +325,6 @@ final case class TeamNotFoundException(message: String = "Team not found in this
 
 object GameActor {
   val TOT_PLAYERS: Int = 4
-  val TURN_TIME_SEC: Int = 15
-  val TIME_PERIOD: Long = 1000L
-
-  val RANDOM_TEAM: String = "RANDOM_TEAM"
   val TEAM_MEMBERS_LIMIT: Int = 2
   val MAX_PLAYER_NUMBER: Int = 4
   val MAX_HAND_CARDS: Int = 10
