@@ -5,14 +5,14 @@ import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.stage.Stage
 
-trait GUIStack {
+trait GuiStack {
 
   /**
-    * Set the currentStage inside GUI.
+    * Set the current scene inside GUI.
     *
     * @param stage the stage on which the GUI need to enter.
     */
-  def setCurrentStage(stage: GUIStage)
+  def setCurrentScene(stage: GUIStage)
 
   /**
     * Add a scene to the stack.
@@ -36,20 +36,20 @@ trait GUIStack {
 
 }
 
-object GUIStack {
+object GuiStack {
 
-  private val singletonStack: GUIStack = new GUIStackImpl()
+  private val singletonStack: GuiStack = new GuiStackImpl()
 
-  def apply(): GUIStack = singletonStack
+  def apply(): GuiStack = singletonStack
 
-  private class GUIStackImpl() extends GUIStack {
+  private class GuiStackImpl() extends GuiStack {
 
     var sceneMap: Map[GUIStage, Scene] = Map()
     var mainStage: Option[Stage] = None
     var previousScene: Option[Scene] = None
 
 
-    override def setCurrentStage(stage: GUIStage): Unit = {
+    override def setCurrentScene(stage: GUIStage): Unit = {
       val sceneToSet = sceneMap.getOrElse(stage, throw new NoSuchElementException())
       if (mainStage.get.getScene != null) {
         previousScene = Some(mainStage.get.getScene)

@@ -6,6 +6,7 @@ import java.net.InetAddress
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.client.model.remote.{GameRestWebClient, RestWebClient}
+import it.unibo.pps2017.client.view.GenericGUIController
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, Port, ServerContext}
 import it.unibo.pps2017.core.gui.PlayGameController
@@ -35,6 +36,8 @@ sealed trait ClientController extends Controller {
   def sendMatchRequest(): Unit
 
   def getGameController: GameController
+
+  def setCurrentGUI(gui: GenericGUIController): Unit
 
 }
 
@@ -82,6 +85,8 @@ object ClientController {
     }
 
     override def getGameController: GameController = gameController
+
+    override def setCurrentGUI(gui: GenericGUIController): Unit = ???
 
   }
 }
