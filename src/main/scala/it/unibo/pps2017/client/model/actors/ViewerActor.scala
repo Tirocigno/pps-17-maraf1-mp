@@ -4,14 +4,14 @@ package it.unibo.pps2017.client.model.actors
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
+import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 
-class ViewerActor(override val controller: GameController, username: String) extends ClientGameActor {
+class ViewerActor(override val controller: GameController, var username: String) extends ClientGameActor {
 
   import context._
   var actorPlayer: ClientGameActor = this
-  var user: String = username
-  var firstPlayer: String = user
+  var firstPlayer: String = username
 
   def receive: PartialFunction[Any, Unit] = {
 
@@ -51,12 +51,6 @@ class ViewerActor(override val controller: GameController, username: String) ext
           controller.updateGUI(ComputeFinalGameScore(firstPlayer, winner1, winner2, score1, score2))
 
       }, discardOld = true)
-  }
-
-
-  override
-  def getUsername: String = {
-    user
   }
 
 }

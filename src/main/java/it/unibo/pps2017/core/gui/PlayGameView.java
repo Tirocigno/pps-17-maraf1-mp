@@ -34,6 +34,10 @@ public class PlayGameView extends Application {
             clientController.sendMatchRequest();
 			primaryStage.show();
 
+			/*Thread.sleep(2000);
+
+			primaryStage.hide();*/
+
         } catch (Exception e) {
 			e.printStackTrace();
 		}
