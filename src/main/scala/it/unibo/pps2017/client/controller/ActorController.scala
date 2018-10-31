@@ -4,6 +4,7 @@ package it.unibo.pps2017.client.controller
 import akka.actor.{ActorRef, ActorSystem}
 import it.unibo.pps2017.client.model.actors.ActorMessage
 
+
 trait ActorController {
   var currentActorRef:ActorRef
 
@@ -13,5 +14,6 @@ trait ActorController {
     currentActorRef ! message
 
   def updateGUI(message: ActorMessage): Unit
+
 }
 

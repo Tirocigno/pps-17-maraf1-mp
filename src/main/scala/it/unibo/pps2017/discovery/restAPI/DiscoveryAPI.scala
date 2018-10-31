@@ -148,7 +148,7 @@ object DiscoveryAPI {
   }
 
   /**
-    * RestAPI for registering a new social actor on the server.
+    * RestAPI for registering a new socialcontroller actor on the server.
     */
   case object RegisterSocialIDAPI extends DiscoveryAPI with APIWithMessages {
 
@@ -168,7 +168,7 @@ object DiscoveryAPI {
   }
 
   /**
-    * RestAPI for unregistering a new social actor on the server.
+    * RestAPI for unregistering a new socialcontroller actor on the server.
     */
   case object UnregisterSocialIDAPI extends DiscoveryAPI with APIWithMessages {
 

@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.model.remote
 
-import it.unibo.pps2017.client.controller.SocialController
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
@@ -9,7 +9,7 @@ import it.unibo.pps2017.server.model.OnlinePlayersMapEncoder
 import org.json4s.jackson.Serialization.read
 
 /**
-  * This class takes care of all the rest call executed by the social structure of the architecture.
+  * This class takes care of all the rest call executed by the socialcontroller structure of the architecture.
   */
 class SocialRestWebClient(val socialController: SocialController, val discoveryContext: ServerContext)
   extends AbstractRestWebClient(discoveryContext) {
@@ -36,7 +36,7 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
     */
   private def getAllOnlinePlayersCallback(responseBody: Option[String]): Unit = {
     val playerMap = read[OnlinePlayersMapEncoder](responseBody.get).map
-    socialController.setAndDisplayOnlinePlayerList(playerMap)
+    socialController.setOnlinePlayerList(playerMap)
   }
 }
 
