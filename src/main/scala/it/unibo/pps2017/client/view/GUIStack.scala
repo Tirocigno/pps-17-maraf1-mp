@@ -28,11 +28,12 @@ trait GUIStack {
   def restorePreviousScene()
 
   /**
-    * Set application current stage.
+    * Set application current stage if not already present.
     *
-    * @param stage the currentStage of the application
+    * @param stage the currentStage of the application.
     */
-  def setStage(stage: Stage)
+  def checkAndSetStage(stage: Stage)
+
 }
 
 object GUIStack {
@@ -70,7 +71,10 @@ object GUIStack {
       strategyToRunLater()
     })
 
-    override def setStage(stage: Stage): Unit = this.mainStage = Some(stage)
+    override def checkAndSetStage(stage: Stage): Unit = mainStage match {
+      case None => mainStage = Some(stage)
+      case Some(_) =>
+    }
   }
 
 }
