@@ -10,6 +10,7 @@ import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterServerAPI, StandardParameters}
 import it.unibo.pps2017.server.actor.{LobbyActor, TriggerSearch}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
+import it.unibo.pps2017.server.model.GameType.{RANKED, UNRANKED}
 import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model._
 import org.json4s._
@@ -119,6 +120,8 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     val vs = params.get("vs")
     val vsPartner = params.get("vspartner")
 
+    val isRanked: Boolean = params.get("ranked").getOrElse("").equals("true")
+
     val gameFoundEvent: String => Unit = gameId => {
       res.sendResponse(GameFound(gameId))
     }
@@ -136,9 +139,13 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
         vs.map(team2 += _)
         vsPartner.map(team2 += _)
 
-        lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent)
+        if (isRanked) {
+          lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent, RANKED)
+        } else {
+          lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent, UNRANKED)
+        }
       case None =>
-        res.setGenericError(Some("Id player not specified in the request")).sendResponse(Error())
+        errorHandler(res,"Id player not specified in the request")
     }
   }
 
