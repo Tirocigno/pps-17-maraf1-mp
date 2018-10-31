@@ -197,7 +197,7 @@ class LobbyActor extends Actor {
         }, None, Some(Dispatcher.DISCOVERY_PORT))
 
 
-        RedisGameUtils().setGameEnd(game.id, UNRANKED)
+        RedisGameUtils().setGameEnd(game.id, gameType)
       })))
 
 
