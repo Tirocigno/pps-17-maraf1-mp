@@ -193,6 +193,14 @@
                         <DropShadow />
                      </effect>
                   </Text>
+                  <Text fx:id="usernamePlayer1" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" GridPane.valignment="BOTTOM">
+                     <effect>
+                        <DropShadow height="0.0" radius="0.0" width="0.0" />
+                     </effect>
+                     <font>
+                        <Font name="Tamil Sangam MN Bold" size="14.0" />
+                     </font>
+                  </Text>
                   <ImageView fx:id="currentUserCommand" fitHeight="106.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
                   <ImageView fx:id="gameOverImage" fitHeight="237.0" fitWidth="285.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
                   <Label fx:id="scoreTeams" alignment="CENTER" contentDisplay="CENTER" style="-fx-background-color: black;" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
@@ -207,6 +215,30 @@
                      <effect>
                         <DropShadow />
                      </effect>
+                  </Text>
+                  <Text fx:id="usernamePlayer2" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                     <font>
+                        <Font name="Tamil Sangam MN Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="usernamePlayer4" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                     <font>
+                        <Font name="Tamil Sangam MN Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="usernamePlayer3" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                     <effect>
+                        <DropShadow height="0.0" radius="0.0" width="0.0" />
+                     </effect>
+                     <font>
+                        <Font name="Tamil Sangam MN Bold" size="14.0" />
+                     </font>
                   </Text>
                </children>
             </GridPane>
