@@ -41,6 +41,7 @@ trait GuiStack {
 object GuiStack {
 
   private val singletonStack: GuiStack = new GuiStackImpl()
+  private val guiLoader: GuiLoader = new GuiLoader()
 
   def apply(): GuiStack = singletonStack
 
@@ -49,7 +50,6 @@ object GuiStack {
     var sceneMap: Map[GUIStage, Scene] = Map()
     var mainStage: Option[Stage] = None
     var previousScene: Option[Scene] = None
-    val guiLoader = new GuiLoader()
 
 
     override def setCurrentScene(stage: GUIStage, controller: Controller): Unit = {

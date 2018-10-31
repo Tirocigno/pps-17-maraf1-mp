@@ -273,5 +273,7 @@ class GameController extends MatchController {
     playGameController.setPlayersList(playersList.asJava)
   }
 
-  override def setCurrentGui(gui: GameGUIController): Unit = ???
+  override def setCurrentGui(gui: GameGUIController): Unit = {
+    println("GUI registered")
+  }
 }

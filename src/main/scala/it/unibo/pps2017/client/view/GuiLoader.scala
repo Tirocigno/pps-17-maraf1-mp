@@ -14,7 +14,7 @@ import javafx.scene.{Parent, Scene}
   */
 class GuiLoader() {
 
-  private val stack: GuiStack = GuiStack()
+  private var stack: GuiStack = GuiStack()
 
   def deployGuiStage(controllerToBind: Controller): Scene = controllerToBind match {
     case controller: ClientController =>
@@ -33,6 +33,10 @@ class GuiLoader() {
     val root: Parent = loader.load()
     val scene = new Scene(root)
     scene.getStylesheets.add(getClass.getResource(cssPath).toExternalForm)
+    println(scene)
+    println(stage)
+    println(GuiStack())
+    println(stack)
     stack.addStage(stage, scene)
     val guiController: GUIController = loader.getController()
     bindControllers(controller, guiController)

@@ -1,7 +1,9 @@
 
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.Controller;
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController;
+import it.unibo.pps2017.client.view.game.GameGUIController;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ScaleTransition;
@@ -17,9 +19,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class PlayGameController implements PlayGame {
+public class PlayGameController extends GameGUIController implements PlayGame {
 
     private static final String COMMANDS_PATH = "commands/";
     private static final String BACK = "cards/back.png";
@@ -113,6 +118,7 @@ public class PlayGameController implements PlayGame {
     public void setGameController(final GameController controller) {
         this.gameController = controller;
     }
+
 
     @Override
     public void setPlayersList(final List<String> playersList) {
@@ -480,5 +486,10 @@ public class PlayGameController implements PlayGame {
         for (int i = 0; i < MAX_CARDS_IN_HAND - cardNotPlayedYet; i++) {
             deleteCard(listOfOtherHand);
         }
+    }
+
+    @Override
+    public void setController(Controller controller) {
+        System.out.println("Controlled setted");
     }
 }
