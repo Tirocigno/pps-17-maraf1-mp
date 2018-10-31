@@ -13,7 +13,7 @@ case object AskNameMessage
 
 class TestActor extends Actor {
 
-  def receive = {
+  def receive: PartialFunction[Any, Unit] = {
     case AskNameMessage => // respond to the "ask" request
       sender ! "Fred"
     case _ => println("that was unexpected")
@@ -29,7 +29,7 @@ object AskActor extends App {
   val myActor = system.actorOf(Props[TestActor], name = "myActor")
 
   // (1) this is one way to "ask" another actor
-  implicit val timeout = Timeout(5 seconds)
+  implicit val timeout: Timeout = Timeout(5.seconds)
   val future = myActor ? AskNameMessage
   val result = Await.result(future, timeout.duration).asInstanceOf[String]
   println(result)
