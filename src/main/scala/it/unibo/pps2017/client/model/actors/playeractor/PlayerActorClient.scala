@@ -12,9 +12,9 @@ import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient._
 import scala.collection.mutable.ListBuffer
 
 object PlayerActorClient {
-  final val START_SEARCH: Int = 0
-  final val FOUNDED: Int = 1
-  final val END_SEARCH: Int = 4
+  val START_SEARCH: Int = 0
+  val FOUNDED: Int = 1
+  val END_SEARCH: Int = 4
 }
 
 class PlayerActorClient(override val controller: GameController, username: String) extends ClientGameActor with Stash {
@@ -95,7 +95,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       val mediator = DistributedPubSub(context.system).mediator
       mediator ! Subscribe(id, self)
 
-    case  m @ _ =>
+    case m@_ =>
       System.out.println(m)
   }
 
