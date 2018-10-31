@@ -1,15 +1,9 @@
 package it.unibo.pps2017.core.gui;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class RegistrationLoginController implements Registration, Login {
@@ -22,7 +16,6 @@ public class RegistrationLoginController implements Registration, Login {
 
     private static final int MIN_WIDTH = 600;
     private static final int MIN_HEIGHT = 520;
-    private Stage primaryStage;
 
     @Override
     public void checkLogin() {
@@ -38,7 +31,7 @@ public class RegistrationLoginController implements Registration, Login {
     }
 
     private void updateView(){
-        primaryStage = (Stage) loginButton.getScene().getWindow();
+        Stage primaryStage = (Stage) loginButton.getScene().getWindow();
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
 
@@ -47,9 +40,11 @@ public class RegistrationLoginController implements Registration, Login {
             Parent root = loader.load();
             primaryStage.getScene().setRoot(root);
             primaryStage.centerOnScreen();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+
 }

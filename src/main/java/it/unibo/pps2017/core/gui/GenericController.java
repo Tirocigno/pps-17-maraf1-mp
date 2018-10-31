@@ -1,30 +1,40 @@
 package it.unibo.pps2017.core.gui;
 
-import akka.actor.ActorRef;
 import it.unibo.pps2017.client.controller.ClientController;
 import it.unibo.pps2017.client.controller.ClientController$;
+import it.unibo.pps2017.client.view.SocialGUIController;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
-import java.util.Map;
+import scala.collection.immutable.Map;
+import java.util.List;
+import java.util.Optional;
 
-public class GenericController {
+public class GenericController implements SocialGUIController{
 
     @FXML
     Button playButton;
     @FXML
     ListView<String> onlineFriends, onlinePlayers;
+    @FXML
+    Label responseLabel;
 
+    private static final String INVITATION_INFO = " invited you to play together as ";
+    private static final String INVITATION_REQUEST = "Do you want to join him?";
+    private static final String WAITING_MSG = "Waiting for friend response ...";
+    private static final String POSITIVE_ANSWER = "positive";
+    private static final String NEGATIVE_ANSWER = "false";
+    private static final String ACCEPT_MSG = " accepted the invitation!";
+    private static final String REJECT_MSG = " rejected the invitation!";
     private static final int MIN_WIDTH = 900;
     private static final int MIN_HEIGHT = 685;
     private static final int DISCOVERY_PORT = 2000;
-    private Stage primaryStage;
 
     public void playGame(){
-        primaryStage = (Stage) playButton.getScene().getWindow();
+        Stage primaryStage = (Stage) playButton.getScene().getWindow();
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
 
@@ -50,36 +60,94 @@ public class GenericController {
 
     }
 
-    public void setOnlineFriendsList(Map<String, ActorRef> friendsList){
-            for(String player: friendsList.keySet()){
-                onlineFriends.getItems().add(player);
-            }
-    }
-
-    public void setOnlinePlayersList(Map<String, ActorRef> playerList){
-        for(String player: playerList.keySet()){
-            onlinePlayers.getItems().add(player);
-        }
-    }
-
     public void addNewFriend(){
-        String newFriend = onlinePlayers.getSelectionModel().getSelectedItem();
+        String friendAdded = onlineFriends.getSelectionModel().getSelectedItem();
+        System.out.println(friendAdded);
         //addFriend(newFriend);
     }
 
-    public void updateOnlineFriendsList(){
-        onlineFriends.getItems().clear();
-        Map<String, ActorRef> friendsList = null;//getFriendsList()
-        for(String player: friendsList.keySet()){
-            onlineFriends.getItems().add(player);
-        }
+    public void invitePlayer(){
+        String playerInvited = onlinePlayers.getSelectionModel().getSelectedItem();
+        System.out.println(playerInvited);
+        //sendPlayerInvitation(playerInvited);
     }
 
-    public void updateOnlinePlayersList(){
-        onlinePlayers.getItems().clear();
-        Map<String, ActorRef> playerList = null;//getPlayersList()
-        for(String player: playerList.keySet()){
-            onlinePlayers.getItems().add(player);
-        }
+    @Override
+    public void notifyErrorOccurred(String errorToNotify) {
+        showAlertMessage(errorToNotify);
     }
+
+    @Override
+    public void updateOnlineFriendsList(List<String> friendList) {
+        onlineFriends.getItems().clear();
+        onlineFriends.getItems().addAll(friendList);
+    }
+
+    @Override
+    public void updateOnlinePlayersList(List<String> playersList) {
+        onlinePlayers.getItems().clear();
+        onlinePlayers.getItems().addAll(playersList);
+    }
+
+    @Override
+    public void updateParty(Map<String, String> partyMap) {
+
+    }
+
+    @Override
+    public void notifyMessageResponse(String sender, String responseResult, String request) {
+        if(responseResult.equals(POSITIVE_ANSWER)){
+            responseLabel.setText(sender + ACCEPT_MSG);
+        }
+        else if(responseResult.equals(NEGATIVE_ANSWER)){
+            responseLabel.setText(sender + REJECT_MSG);
+        }
+        showAndHideTextResponse();
+    }
+
+    private void showAndHideTextResponse(){
+        Task<Void> sleeper = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+
+        sleeper.setOnSucceeded(event -> responseLabel.setText(""));
+        new Thread(sleeper).start();
+    }
+
+    @Override
+    public void displayRequest(String sender, String role) {
+        responseLabel.setText(WAITING_MSG);
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, sender + INVITATION_INFO + role
+                + ". " + INVITATION_REQUEST, ButtonType.YES, ButtonType.NO);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.isPresent()) {
+            if (result.get() == ButtonType.YES) {
+                // player accepted to play
+            } else {
+                // player refused the invitation
+            }
+        }
+
+    }
+
+    @Override
+    public void notifyAPIResult(String message) {
+        showAlertMessage(message);
+    }
+
+    private void showAlertMessage(String msg){
+        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+        alert.showAndWait();
+    }
+
 }

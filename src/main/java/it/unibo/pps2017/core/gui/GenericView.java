@@ -13,7 +13,7 @@ public class GenericView extends Application {
     private static final int MIN_HEIGHT = 520;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage){
         try {
             final FXMLLoader loader = new FXMLLoader(GenericView.class.getResource("genericView.fxml"));
             Parent root = loader.load();
