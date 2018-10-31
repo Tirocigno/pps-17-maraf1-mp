@@ -14,8 +14,14 @@ import javafx.scene.{Parent, Scene}
   */
 class GuiLoader() {
 
-  private var stack: GuiStack = GuiStack()
+  private val stack: GuiStack = GuiStack()
 
+  /**
+    * Deploy a new scene and bind it to a controller.
+    *
+    * @param controllerToBind the controller to bind to the GUI.
+    * @return the deployed scene to set inside GUI.
+    */
   def deployGuiStage(controllerToBind: Controller): Scene = controllerToBind match {
     case controller: ClientController =>
       createAndRegisterScene(GuiLoader.MAIN_SCENE_FXML, GuiLoader.MAIN_SCENE_CSS, controller, GenericStage)
@@ -27,22 +33,33 @@ class GuiLoader() {
   }
 
 
-  private def createAndRegisterScene(fxmlPath: String, cssPath: String, controller: Controller, stage: GUIStage): Scene
-  = {
+  /**
+    * Create a scene and register it inside the GUIStack
+    *
+    * @param fxmlPath   path of fxml file to load.
+    * @param cssPath    path of css file to load.
+    * @param controller controller to bind to created scene.
+    * @param stage      the stage key for the scene to be registered inside GUIStack.
+    * @return a scene built upon these parameters.
+    */
+  private def createAndRegisterScene(fxmlPath: String, cssPath: String,
+                                     controller: Controller, stage: GUIStage): Scene = {
     val loader = new FXMLLoader(classOf[GuiLoader].getResource(fxmlPath))
     val root: Parent = loader.load()
     val scene = new Scene(root)
     scene.getStylesheets.add(getClass.getResource(cssPath).toExternalForm)
-    println(scene)
-    println(stage)
-    println(GuiStack())
-    println(stack)
     stack.addStage(stage, scene)
     val guiController: GUIController = loader.getController()
     bindControllers(controller, guiController)
     scene
   }
 
+  /**
+    * Bind a gui controller to a model controller.
+    *
+    * @param controller    the model controller to be bound.
+    * @param guiController the javafx controller to be bound.
+    */
   private def bindControllers(controller: Controller, guiController: GUIController): Unit = controller match {
     case controller: SocialController =>
       val castedGui = guiController.asInstanceOf[SocialGUIController]
