@@ -491,5 +491,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     @Override
     public void setController(Controller controller) {
         System.out.println("Controlled setted");
+        this.gameController = (GameController) controller;
     }
 }

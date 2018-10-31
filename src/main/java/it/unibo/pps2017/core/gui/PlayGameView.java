@@ -27,7 +27,7 @@ public class PlayGameView extends Application {
 			primaryStage.setMinHeight(MIN_HEIGHT);
 			primaryStage.setMinWidth(MIN_WIDTH);
 			ClientController clientController = ClientController$.MODULE$.getSingletonController();
-            clientController.setPlayGameController(gameController);
+			//clientController.setPlayGameController(gameController);
             gameController.setGameController(clientController.getGameController());
 			clientController.startActorSystem("127.0.0.1", "127.0.0.1");
 			clientController.createRestClient("127.0.0.1", DISCOVERY_PORT);

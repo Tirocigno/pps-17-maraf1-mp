@@ -87,7 +87,7 @@ shadowJar {
 }
 
 runShadow {
-    mainClassName = 'it.unibo.pps2017.commons.remote.akka.MockDiscovery'
+    mainClassName = 'it.unibo.pps2017.discovery.DiscoveryMain'
 }
 
 repositories {
@@ -194,7 +194,7 @@ testScoverage {
 defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
 
 //TO CHANGE FOR SHADOWJAR
-mainClassName = 'it.unibo.pps2017.server.Runner'
+mainClassName = 'it.unibo.pps2017.client.ClientMain'
 
 
 task stage {

@@ -275,5 +275,6 @@ class GameController extends MatchController {
 
   override def setCurrentGui(gui: GameGUIController): Unit = {
     println("GUI registered")
+    playGameController = gui.asInstanceOf[PlayGameController]
   }
 }
