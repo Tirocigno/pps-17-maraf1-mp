@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.client.view
 
+import it.unibo.pps2017.client.controller.Controller
 import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.stage.Stage
@@ -8,11 +9,12 @@ import javafx.stage.Stage
 trait GuiStack {
 
   /**
-    * Set the current scene inside GUI.
+    * Set the current scene inside GUI, if the scene is not present, it's automatically created and added.
     *
-    * @param stage the stage on which the GUI need to enter.
+    * @param stage      the stage on which the GUI need to enter.
+    * @param controller the controller to bind to the scene if it has to be created.
     */
-  def setCurrentScene(stage: GUIStage)
+  def setCurrentScene(stage: GUIStage, controller: Controller)
 
   /**
     * Add a scene to the stack.
@@ -47,10 +49,11 @@ object GuiStack {
     var sceneMap: Map[GUIStage, Scene] = Map()
     var mainStage: Option[Stage] = None
     var previousScene: Option[Scene] = None
+    val guiLoader = new GuiLoader()
 
 
-    override def setCurrentScene(stage: GUIStage): Unit = {
-      val sceneToSet = sceneMap.getOrElse(stage, throw new NoSuchElementException())
+    override def setCurrentScene(stage: GUIStage, controller: Controller): Unit = {
+      val sceneToSet = sceneMap.getOrElse(stage, loadScene(controller))
       if (mainStage.get.getScene != null) {
         previousScene = Some(mainStage.get.getScene)
       }
@@ -75,6 +78,11 @@ object GuiStack {
       case None => mainStage = Some(stage)
       case Some(_) =>
     }
+
+    private def loadScene(controller: Controller): Scene = {
+      guiLoader.deployGuiStage(controller)
+    }
   }
+
 
 }

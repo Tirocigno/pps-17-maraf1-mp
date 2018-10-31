@@ -14,25 +14,32 @@ import javafx.scene.{Parent, Scene}
   */
 class GuiLoader() {
 
-  val stack: GuiStack = GuiStack()
+  private val stack: GuiStack = GuiStack()
 
-  def deployGuiStage(controllerToBind: Controller): Unit = controllerToBind match {
+  def deployGuiStage(controllerToBind: Controller): Scene = controllerToBind match {
     case controller: ClientController =>
+      createAndRegisterScene(GuiLoader.MAIN_SCENE_FXML, GuiLoader.MAIN_SCENE_CSS, controller, GenericStage)
     case controller: MatchController =>
+      createAndRegisterScene(GuiLoader.GAME_SCENE_FXML, GuiLoader.GAME_SCENE_CSS, controller, GameStage)
     case controller: SocialController =>
+      createAndRegisterScene(GuiLoader.SOCIAL_SCENE_FXML, GuiLoader.SOCIAL_SCENE_CSS, controller, SocialStage)
     case _ => throw new IllegalArgumentException()
   }
 
 
-  private def createAndRegisterScene(fxmlPath: String, cssPath: String, controller: Controller, stage: GUIStage): Unit = {
+  private def createAndRegisterScene(fxmlPath: String, cssPath: String, controller: Controller, stage: GUIStage): Scene
+  = {
     val loader = new FXMLLoader(classOf[GuiLoader].getResource(fxmlPath))
     val root: Parent = loader.load()
     val scene = new Scene(root)
     scene.getStylesheets.add(getClass.getResource(cssPath).toExternalForm)
     stack.addStage(stage, scene)
+    val guiController: GUIController = loader.getController()
+    bindControllers(controller, guiController)
+    scene
   }
 
-  private def bindControllers(controller: Controller, guiController: Nothing): Unit = controller match {
+  private def bindControllers(controller: Controller, guiController: GUIController): Unit = controller match {
     case controller: SocialController =>
       val castedGui = guiController.asInstanceOf[SocialGUIController]
       controller.setCurrentGui(castedGui)
