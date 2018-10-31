@@ -12,7 +12,7 @@ import it.unibo.pps2017.core.gui.PlayGameController
 import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
 
 
-sealed trait ClientController {
+sealed trait ClientController extends Controller {
 
   def notifyError(throwable: Throwable)
 
