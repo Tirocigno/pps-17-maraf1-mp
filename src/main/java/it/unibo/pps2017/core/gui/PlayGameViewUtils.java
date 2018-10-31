@@ -14,10 +14,20 @@ class PlayGameViewUtils {
     private static final String OPPONENT_TEAM_SCORE = "Opponent team's score: ";
     private static final String CHOOSE_YOUR_BRISCOLA = "Choose your briscola";
     private static final String FORMAT = ".png";
+    private static final String PLAY_GAME_VIEW_FXML = "PlayGameView.fxml";
     private static final int DURATION_ANIMATION = 3;
     private static final int START_ANIMATION_POSITION = 1;
     private static final int END_ANIMATION_POSITION = 2;
     private static final int MAX_CARDS_IN_HAND = 10;
+    private static final int MIN_WIDTH = 900;
+    private static final int MIN_HEIGHT = 685;
+    private static final int DISCOVERY_PORT = 2000;
+
+    static int getMinWidth() { return MIN_WIDTH; }
+
+    static int getMinHeight() {  return MIN_HEIGHT; }
+
+    static int getDiscoveryPort() { return DISCOVERY_PORT; }
 
     static int getDurationAnimation() {
         return DURATION_ANIMATION;
@@ -38,7 +48,6 @@ class PlayGameViewUtils {
     static String getFormat() {
         return FORMAT;
     }
-
 
     static String getCommandsPath() {
         return COMMANDS_PATH;
@@ -84,4 +93,5 @@ class PlayGameViewUtils {
         return CHOOSE_YOUR_BRISCOLA;
     }
 
+    static String getPlayGameViewFxml() { return PLAY_GAME_VIEW_FXML; }
 }
