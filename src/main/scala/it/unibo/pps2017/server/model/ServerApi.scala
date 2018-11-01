@@ -39,6 +39,10 @@ object ServerApi {
 
     val vsPartnerParam = "vsPartner"
 
+    val RANKED_PARAMETER = "ranked"
+
+    val RANKED_VALUE = "true"
+
     override def path: String = "/foundGame"
 
     override def httpMethod: HttpMethod = HttpMethod.POST

@@ -7,6 +7,8 @@ import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.remote.{GameRestWebClient, RestWebClient}
 import it.unibo.pps2017.client.view.{GameStage, GenericGUIController, GuiStack}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
+import it.unibo.pps2017.commons.remote.game.MatchNature
+import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
 import it.unibo.pps2017.commons.remote.rest.API.RestAPI
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, MatchRef, Port, ServerContext}
 import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
@@ -51,7 +53,7 @@ sealed trait ClientController extends Controller {
     * @param matchNature the nature of a match, can be competitive or not.
     * @param paramMap a map containing party parameters, if present.
     */
-  def sendMatchRequest(paramMap: Option[Map[String, String]]): Unit
+  def sendMatchRequest(matchNature: MatchNature, paramMap: Option[Map[String, String]]): Unit
 
   /**
     * Start the game GUI and notify GameActor and SocialActor the player has joined a match.
@@ -148,9 +150,7 @@ object ClientController {
     var socialController: Option[SocialController] = None
     var genericGui: GenericGUIController = _
 
-    override def notifyError(throwable: Throwable): Unit = {
-      throwable.printStackTrace()
-    }
+    override def notifyError(throwable: Throwable): Unit = genericGui.notifyError(throwable)
 
 
     override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit = {
@@ -163,11 +163,12 @@ object ClientController {
       webClient = Some(GameRestWebClient(ServerContext(discoveryIP, discoveryPort)))
     }
 
-    //TODO SWITCH API BASED ON MATCHNATURE.
-    override def sendMatchRequest(paramMap: Option[Map[String, String]]): Unit = paramMap match {
-      case Some(_) => webClient.get.callRemoteAPI(FoundGameRestAPI, paramMap)
+    override def sendMatchRequest(matchNature: MatchNature,
+                                  paramMap: Option[Map[String, String]]): Unit = paramMap match {
+      case Some(_) => startMatch(paramMap.get, matchNature)
       case None => val map = Map(FoundGameRestAPI.meParamKey -> playerName)
-        webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
+        startMatch(map, matchNature)
+
     }
 
 
@@ -205,24 +206,20 @@ object ClientController {
       */
     override def fetchCurrentMatchesList(): Unit = ???
 
-    /**
-      * Display current played matches.
-      *
-      * @param playedMatches a list containing all matchIDs as strings.
-      */
-    override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit = ???
+    private def startMatch(paramMap: Map[String, String], matchNature: MatchNature): Unit = matchNature match {
+      case MatchNature.CasualMatch => webClient.get.callRemoteAPI(FoundGameRestAPI, Some(paramMap))
+      case MatchNature.CompetitiveMatch => val map = paramMap +
+        (FoundGameRestAPI.RANKED_PARAMETER -> FoundGameRestAPI.RANKED_VALUE)
+        webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
+    }
 
     /**
       * Fetch the archive of matches played from a server.
       */
     override def fetchRegisteredMatchesList(): Unit = ???
 
-    /**
-      * Display the archive of matches.
-      *
-      * @param playedMatches a list containing all matchIDs as String
-      */
-    override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit = ???
+    override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit =
+      genericGui.displayMatchesList(playedMatches)
 
     /**
       * Start watching a current played match.
@@ -245,5 +242,8 @@ object ClientController {
 
     //TODO DEPLOY THIS METHOD
     private def executeAutenticationApiCall(userName: String, password: String, api: RestAPI): Unit = ???
+
+    override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit =
+      genericGui.displayMatchesList(playedMatches)
   }
 }
