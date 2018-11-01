@@ -14,14 +14,22 @@ case class UserDispatcher() {
 
     val username = getUsernameOrResponseError(ctx, res)
 
-    userDatabaseUtils.userSignIn(db,
-      username.toString,
-      ctx.request().formAttributes().add("score", "0"),
-      _ => {
-        res.sendResponse(Message("User entered correctly!"))
-      }, cause => {
-        errorHandler(res, s"Error on user registration! Details: ${cause.getMessage}")
-      })
+    userDatabaseUtils.checkUserExisting(db, username.toString, queryRes => {
+      if (queryRes) {
+        errorHandler(res, s"User $username already signed in!")
+      } else {
+        userDatabaseUtils.userSignIn(db,
+          username.toString,
+          ctx.request().formAttributes().add("score", "0"),
+          _ => {
+            res.sendResponse(Message("User entered correctly!"))
+          }, cause => {
+            errorHandler(res, s"Error on user registration! Details: ${cause.getMessage}")
+          })
+      }
+    }, cause => errorHandler(res, s"Unexpected error on user presence checking! Details: ${cause.getMessage}"))
+
+
   }
 
   def getUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {

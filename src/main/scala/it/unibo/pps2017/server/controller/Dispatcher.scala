@@ -67,6 +67,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
       case api@RemoveFriendAPI => api.asRequest(router, userMethods.removeFriend)
       case api@GetLiveMatchAPI => api.asRequest(router, gameMethods.getLiveGames)
       case api@GetRankingAPI => api.asRequest(router, getRanking)
+      case api@GetSavedMatchAPI => api.asRequest(router, gameMethods.getSavedMatches)
       case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 

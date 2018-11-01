@@ -1,7 +1,7 @@
 package it.unibo.pps2017.server.model.database
 
 import it.unibo.pps2017.server.model.GameType.GameType
-import it.unibo.pps2017.server.model.{Game, LiveGame, Matches, Side}
+import it.unibo.pps2017.server.model.{Game, LiveGame, Matches, SavedMatches, Side}
 import org.json4s.jackson.Serialization.{read, write}
 
 import scala.collection.mutable
@@ -67,6 +67,15 @@ sealed trait GameDatabaseUtils {
     *
     */
   def getLiveMatch: Matches
+
+
+  /**
+    * Return a list of the played matches.
+    *
+    * @return
+    * a list of the played matches.
+    */
+  def getSavedMatch(onSuccess: Seq[String] => Unit, onFail: Throwable => Unit): Unit
 }
 
 class RedisGameUtils extends GameDatabaseUtils {
@@ -171,6 +180,21 @@ class RedisGameUtils extends GameDatabaseUtils {
     Matches(games)
   }
 
+  /**
+    * Return a list of the played matches.
+    *
+    * @return
+    * a list of the played matches.
+    */
+  override def getSavedMatch(onSuccess: Seq[String] => Unit, onFail: Throwable => Unit): Unit = {
+    val db = RedisConnection().getDatabaseConnection
+
+    db.keys(getGameHistoryPattern)
+      .onComplete {
+        case Success(keys) => db.quit(); onSuccess(keys.map(key => key.replace("game:", "").replace(":history", "")))
+        case Failure(cause) => db.quit(); onFail(cause)
+      }
+  }
 
   private def getGameIdFromLiveGameKey(key: String): String = {
     key.split(KEY_SPLITTER)(1).trim
@@ -184,6 +208,8 @@ class RedisGameUtils extends GameDatabaseUtils {
     val members = value.split(KEY_SPLITTER)
     Side(Seq(members(0).trim, members(1).trim))
   }
+
+
 }
 
 object RedisGameUtils {

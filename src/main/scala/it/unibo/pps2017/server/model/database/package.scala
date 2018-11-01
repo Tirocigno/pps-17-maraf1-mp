@@ -25,6 +25,8 @@ package object database {
 
   def getGameHistoryKey(gameId: String): String = "game:" + gameId + ":history"
 
+  def getGameHistoryPattern: String = "game:*:history"
+
   def getInGameKey(gameId: String, gameType: GameType): String = "game:" + gameId + ":ingame:" + gameType.asString
 
   def getLiveKeyPattern: String = "game:*:ingame:*"
