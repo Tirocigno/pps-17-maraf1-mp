@@ -95,6 +95,13 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     case ClickedCommand(command, player) =>
       mediator ! Publish(topicName, NotifyCommandChosen(command,player))
 
+    case ClosedPlayGameView(player) =>
+      if(team1.firstMember.get.equals(player) || team1.secondMember.get.equals(player)){
+        mediator ! Publish(topicName, FinalGameScore(team2.firstMember.get, team2.secondMember.get, team2.getScore, team1.getScore))
+      }
+      else if(team2.firstMember.get.equals(player) || team2.secondMember.get.equals(player)){
+        mediator ! Publish(topicName, FinalGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
+      }
   }
 
   private def onFullTable(): Unit = {
