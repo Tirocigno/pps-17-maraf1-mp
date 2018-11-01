@@ -240,6 +240,14 @@
                         <Font name="Tamil Sangam MN Bold" size="14.0" />
                      </font>
                   </Text>
+                  <Text fx:id="waitingTime" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for a match" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
+                     <font>
+                        <Font name="Tamil Sangam MN Bold" size="24.0" />
+                     </font>
+                     <effect>
+                        <DropShadow height="87.79" radius="49.465" spread="0.69" width="112.07" />
+                     </effect>
+                  </Text>
                </children>
             </GridPane>
          </center>

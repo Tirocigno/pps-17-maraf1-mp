@@ -56,7 +56,7 @@ public class PlayGameController implements PlayGame {
     Label scoreTeams;
 
     @FXML
-    Text briscolaLabel, cardNotOk, usernamePlayer1, usernamePlayer2, usernamePlayer3, usernamePlayer4;
+    Text briscolaLabel, cardNotOk, usernamePlayer1, usernamePlayer2, usernamePlayer3, usernamePlayer4, waitingTime;
 
     private Map<String, String> indexOfMyCards;
     private List<String> playersList;
@@ -89,6 +89,7 @@ public class PlayGameController implements PlayGame {
     @FXML
     public void initialize() {
         createCardsListPlayers();
+        this.waitingTime.setVisible(true);
     }
 
     @Override
@@ -98,6 +99,7 @@ public class PlayGameController implements PlayGame {
 
     @Override
     public void setPlayersList(final List<String> playersList) {
+        this.waitingTime.setVisible(false);
         this.playersList = playersList;
         this.player1 = playersList.get(0);
         this.player2 = playersList.get(1);
