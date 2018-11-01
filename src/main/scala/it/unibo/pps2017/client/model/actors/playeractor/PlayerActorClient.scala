@@ -143,9 +143,8 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     controller.updateGUI(NotifyCommandChosen(command, player))
   }
 
-  private def communicatePartialGameScore(winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
+  private def communicatePartialGameScore(winner1: String, winner2: String, score1: Int, score2: Int): Unit =
     controller.updateGUI(ComputePartialGameScore(user, winner1, winner2, score1, score2))
-  }
 
   private def communicateFinalGameScore(winner1: String, winner2: String, score1: Int, score2: Int): Unit =
     controller.updateGUI(ComputePartialGameScore(user, winner1, winner2, score1, score2))
