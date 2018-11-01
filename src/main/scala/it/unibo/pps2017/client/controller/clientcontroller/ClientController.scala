@@ -12,7 +12,9 @@ import it.unibo.pps2017.commons.remote.game.MatchNature
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
 import it.unibo.pps2017.commons.remote.rest.API.RestAPI
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, MatchRef, Port, ServerContext}
-import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetAllMatchesAPI
+import it.unibo.pps2017.server.model.Game
+import it.unibo.pps2017.server.model.ServerApi.{FoundGameRestAPI, GameRestAPI}
 
 
 sealed trait ClientController extends Controller {
@@ -125,6 +127,13 @@ sealed trait ClientController extends Controller {
   def startMatchReplay(matchID: String): Unit
 
   /**
+    * Execute a match replay based on the game taken as input.
+    *
+    * @param gameToReplay the game to be replayed.
+    */
+  def handleMatchReplay(gameToReplay: Game): Unit
+
+  /**
     * Notify to whole system that a game is finished.
     */
   def notifyGameFinished():Unit
@@ -205,7 +214,8 @@ object ClientController {
     /**
       * Fetch current played matches from server.
       */
-    override def fetchCurrentMatchesList(): Unit = ???
+    override def fetchCurrentMatchesList(): Unit =
+      webClient.get.callRemoteAPI(GetAllMatchesAPI, None)
 
     private def startMatch(paramMap: Map[String, String], matchNature: MatchNature): Unit = matchNature match {
       case MatchNature.CasualMatch => webClient.get.callRemoteAPI(FoundGameRestAPI, Some(paramMap))
@@ -227,19 +237,31 @@ object ClientController {
       *
       * @param matchID ID of the match to watch.
       */
-    override def startMatchWatching(matchID: String): Unit = ???
+    override def startMatchWatching(matchID: String): Unit = ??? //TODO IMPLEMENT tHIS
 
     /**
       * Start replay a played match.
       *
       * @param matchID ID of the match to replay.
       */
-    override def startMatchReplay(matchID: String): Unit = ???
+    override def startMatchReplay(matchID: String): Unit = {
+      var map = Map("" -> matchID) //TODO IMPLEMENT THIS PARAMETER.
+      webClient.get.callRemoteAPI(GameRestAPI, Some(map))
+    }
+
+
+    override def handleMatchReplay(gameToReplay: Game): Unit = ??? //TODO IMPLEMENT tHIS
 
     /**
       * Notify to whole system that a game is finished.
       */
-    override def notifyGameFinished(): Unit = ???
+    override def notifyGameFinished(): Unit = {
+      guiStack.restorePreviousScene()
+      socialController match {
+        case Some(controller) => controller.finishGame()
+        case None =>
+      }
+    }
 
     //TODO DEPLOY THIS METHOD
     private def executeAutenticationApiCall(userName: String, password: String, api: RestAPI): Unit = ???
