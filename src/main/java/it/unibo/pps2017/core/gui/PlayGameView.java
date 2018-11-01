@@ -1,5 +1,7 @@
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.ClientController;
+import it.unibo.pps2017.client.controller.ClientController$;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -21,12 +23,12 @@ public class PlayGameView extends Application {
             primaryStage.setFullScreen(true);
             primaryStage.setMinHeight(PlayGameViewUtils.getMinHeight());
             primaryStage.setMinWidth(PlayGameViewUtils.getMinWidth());
-			/* ClientController clientController = ClientController$.MODULE$.getSingletonController();
+			ClientController clientController = ClientController$.MODULE$.getSingletonController();
             clientController.setPlayGameController(gameController);
             gameController.setGameController(clientController.getGameController());
 			clientController.startActorSystem("127.0.0.1", "127.0.0.1");
 			clientController.createRestClient("127.0.0.1", PlayGameViewUtils.getDiscoveryPort());
-            clientController.sendMatchRequest(); */
+            clientController.sendMatchRequest();
             primaryStage.show();
 
             primaryStage.setOnHidden(e -> {
