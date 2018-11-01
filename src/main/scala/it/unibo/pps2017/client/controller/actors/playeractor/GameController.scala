@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.controller.actors.playeractor
 
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
 import it.unibo.pps2017.client.controller.MatchController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
@@ -269,6 +269,14 @@ class GameController extends MatchController {
     */
   def sendPlayersList(playersList: List[String]): Unit = {
     playGameController.setPlayersList(playersList.asJava)
+  }
+
+  /**
+    * Method to stop actor and communicated it at controller.
+    */
+  def endedMatch(): Unit = {
+    // clientController
+    currentActorRef ! PoisonPill
   }
 
 }
