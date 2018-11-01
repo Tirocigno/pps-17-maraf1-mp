@@ -114,6 +114,20 @@ trait SocialController extends ActorController {
   def finishGame(): Unit
 
   /**
+    * Notify all the players that a gameID has arrived.
+    *
+    * @param gameID
+    */
+  def notifyAllPlayersGameID(gameID: String): Unit
+
+  /**
+    * Notify game controller that a game has been joined.
+    *
+    * @param gameID the joined game's id.
+    */
+  def notifyGameController(gameID: String): Unit
+
+  /**
     * Set the current GUI controller inside SocialActor
     *
     * @param gui the GUI to set.
@@ -121,7 +135,7 @@ trait SocialController extends ActorController {
   def setCurrentGui(gui: SocialGUIController): Unit
 
   /**
-    * Shutdown the socialActor and remove it's reference from the online list.
+    * Shutdown the socialActor and remove its reference from the online list.
     */
   def shutDown(): Unit
 
@@ -181,7 +195,8 @@ object SocialController {
       sendMessage(TellInvitePlayerRequestMessage(playerID, Foe))
     }
 
-    override def startGame(matchNature: MatchNature): Unit = ???
+    override def startGame(matchNature: MatchNature): Unit =
+      sendMessage(GetPartyAndStartGameMessage)
 
     override def finishGame(): Unit = {
       sendMessage(ResetParty)
@@ -205,6 +220,11 @@ object SocialController {
         currentGUI.get.displayRequest(sender.playerID, Some(role.asString))
       case _ => currentGUI.get.notifyErrorOccurred(UNKNOWN_MESSAGE)
     }
+
+    override def notifyAllPlayersGameID(gameID: String): Unit =
+      sendMessage(NotifyGameIDMessage(gameID))
+
+    override def notifyGameController(gameID: String): Unit = parentController.handleMatchResponse(gameID)
 
     override def shutDown(): Unit = {
       unSubscribeFromOnlinePlayerList()

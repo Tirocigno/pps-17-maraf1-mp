@@ -104,7 +104,14 @@ object SocialMessages {
     *
     * @param gameID a string containing the gameid.
     */
-  case class NotifyGameIDMessage(gameID: String)
+  case class NotifyGameIDMessage(gameID: String) extends SocialMessage
+
+  /**
+    * Message containing the id of a game joined by the leader.
+    *
+    * @param gameID a string containing the gameID.
+    */
+  case class GameIDMessage(gameID: String) extends SocialMessage
 
   /**
     * Fetch the party inside the actor and start a game passing the party as parameters.

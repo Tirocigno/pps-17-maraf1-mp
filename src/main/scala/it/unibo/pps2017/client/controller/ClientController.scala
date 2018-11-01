@@ -48,6 +48,7 @@ sealed trait ClientController extends Controller {
   /**
     * Send a match request to the server.
     *
+    * @param matchNature the nature of a match, can be competitive or not.
     * @param paramMap a map containing party parameters, if present.
     */
   def sendMatchRequest(paramMap: Option[Map[String, String]]): Unit
@@ -141,6 +142,7 @@ object ClientController {
     val gameController = new GameController()
     val guiStack: GuiStack = GuiStack()
     var playerName: String = getRandomID
+    var unconfirmedUserName: String = playerName
     var actorSystem: Option[ActorSystem] = None
     var webClient: Option[RestWebClient] = None
     var socialController: Option[SocialController] = None
@@ -150,10 +152,6 @@ object ClientController {
       throwable.printStackTrace()
     }
 
-    /*override def setGameID(gameID: String): Unit = {
-      guiStack.setCurrentScene(GameStage, gameController)
-      gameController.joinPlayerToMatch(gameID)
-    }*/
 
     override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit = {
       actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", myIP))
@@ -165,6 +163,7 @@ object ClientController {
       webClient = Some(GameRestWebClient(ServerContext(discoveryIP, discoveryPort)))
     }
 
+    //TODO SWITCH API BASED ON MATCHNATURE.
     override def sendMatchRequest(paramMap: Option[Map[String, String]]): Unit = paramMap match {
       case Some(_) => webClient.get.callRemoteAPI(FoundGameRestAPI, paramMap)
       case None => val map = Map(FoundGameRestAPI.meParamKey -> playerName)
@@ -179,7 +178,7 @@ object ClientController {
       guiStack.setCurrentScene(GameStage, gameController)
       gameController.joinPlayerToMatch(gameID)
       socialController match {
-        case Some(controller) => controller //TODO INVOKE METHOD ON SOCIALCONTROLLER
+        case Some(controller) => controller.notifyAllPlayersGameID(gameID)
         case None =>
       }
     }
