@@ -39,7 +39,6 @@ class ReplayActor(override val controller: GameController, username: String, gam
 
 
   override def preStart() {
-
     currentSet = game.turns.head
     system.scheduler.schedule(
       initialDelay = 0.milliseconds,
@@ -52,65 +51,77 @@ class ReplayActor(override val controller: GameController, username: String, gam
   def receive: PartialFunction[Any, Unit] = {
 
     case SendHeartbeat => gameCounter match {
-      case PRE_SET =>
-        game.players.foreach(player => {
-          playersList += player
+      case PRE_SET => computePreSet()
+
+      case START_SET => computeStartSet()
+
+      case MIDDLE_SET => computeMiddleSet()
+
+      case END_SET => computeEndSet()
+
+    }
+  }
+
+  private def computePreSet(): Unit = {
+    game.players.foreach(player => {
+      playersList += player
+    })
+    controller.updateGUI(PlayersRef(playersList))
+    gameCounter = START_SET
+  }
+
+  private def computeStartSet(): Unit = {
+    convertBriscolaSeed(currentSet.briscola)
+    team1Score = currentSet.team1Score
+    team2Score = currentSet.team2Score
+
+    currentSet.playersHand.foreach(player => {
+      if (playersList.head.equals(player._1))
+        player._2.foreach(card => {
+          var actualCard = CARD_PATH + card + CARD_FORMAT
+          cardsListPlayer += actualCard
         })
-        controller.updateGUI(PlayersRef(playersList))
-        gameCounter = START_SET
+    })
 
-      case START_SET =>
-        convertBriscolaSeed(currentSet.briscola)
-        team1Score = currentSet.team1Score
-        team2Score = currentSet.team2Score
+    controller.updateGUI(DistributedCard(cardsListPlayer.toList, playersList.head))
+    controller.updateGUI(NotifyBriscolaChosen(briscolaChosen))
+    currentHand = currentSet.hands.head
+    currentMove = currentHand.moves.head
+    gameCounter = MIDDLE_SET
+  }
 
-        currentSet.playersHand.foreach(player => {
-          if (playersList.head.equals(player._1))
-            player._2.foreach(card => {
-              var actualCard = CARD_PATH + card + CARD_FORMAT
-              cardsListPlayer += actualCard
-            })
-        })
-
-        controller.updateGUI(DistributedCard(cardsListPlayer.toList, playersList.head))
-        controller.updateGUI(NotifyBriscolaChosen(briscolaChosen))
-        currentHand = currentSet.hands.head
-        currentMove = currentHand.moves.head
-        gameCounter = MIDDLE_SET
-
-      case MIDDLE_SET =>
-        val actualCard = CARD_PATH + currentMove.card + CARD_FORMAT
-        controller.updateGUI(PlayedCard(currentMove.player, actualCard))
+  private def computeMiddleSet(): Unit = {
+    val actualCard = CARD_PATH + currentMove.card + CARD_FORMAT
+    controller.updateGUI(PlayedCard(currentMove.player, actualCard))
+    try {
+      currentMove = currentHand.moves(currentHand.moves.indexOf(currentMove) + 1)
+    } catch {
+      case _: Exception =>
         try {
-          currentMove = currentHand.moves(currentHand.moves.indexOf(currentMove) + 1)
+          currentHand = currentSet.hands(currentSet.hands.indexOf(currentHand) + 1)
         } catch {
           case _: Exception =>
-            try {
-              currentHand = currentSet.hands(currentSet.hands.indexOf(currentHand) + 1)
-            } catch {
-              case _: Exception =>
-                gameCounter = END_SET
-            }
-        }
-
-      case END_SET =>
-        try {
-          currentSet = game.turns(game.turns.indexOf(currentSet) + 1)
-          if (team1Score > team2Score)
-            controller.updateGUI(ComputePartialGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score))
-          else
-            controller.updateGUI(ComputePartialGameScore(user, playersList.head, playersList.head, team1Score, team2Score))
-          gameCounter = START_SET
-        } catch {
-          case _: Exception =>
-            if (team1Score > team2Score)
-              controller.updateGUI(ComputeFinalGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score))
-            else
-              controller.updateGUI(ComputeFinalGameScore(user, playersList.head, playersList.head, team1Score, team2Score))
+            gameCounter = END_SET
         }
     }
   }
 
+  private def computeEndSet(): Unit = {
+    try {
+      currentSet = game.turns(game.turns.indexOf(currentSet) + 1)
+      if (team1Score > team2Score)
+        controller.updateGUI(ComputePartialGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score))
+      else
+        controller.updateGUI(ComputePartialGameScore(user, playersList.head, playersList.head, team1Score, team2Score))
+      gameCounter = START_SET
+    } catch {
+      case _: Exception =>
+        if (team1Score > team2Score)
+          controller.updateGUI(ComputeFinalGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score))
+        else
+          controller.updateGUI(ComputeFinalGameScore(user, playersList.head, playersList.head, team1Score, team2Score))
+    }
+  }
 
   override
   def getUsername: String = {
@@ -147,7 +158,6 @@ object ReplayActorStatus {
   case object END_SET extends ReplayActorStatus {
     override val asString: String = "end_set"
   }
-
 
   /**
     * This method is used to get all the available status.
