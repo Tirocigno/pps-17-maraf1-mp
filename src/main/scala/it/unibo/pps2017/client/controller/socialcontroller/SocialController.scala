@@ -2,7 +2,8 @@
 package it.unibo.pps2017.client.controller.socialcontroller
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill}
-import it.unibo.pps2017.client.controller.{ActorController, ClientController}
+import it.unibo.pps2017.client.controller.ActorController
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.socialactor.SocialActor
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._

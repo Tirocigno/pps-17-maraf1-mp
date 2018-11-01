@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.model.remote
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
 import io.vertx.scala.ext.web.client.HttpResponse
-import it.unibo.pps2017.client.controller.ClientController
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.commons.remote.rest.API.RestAPI
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}

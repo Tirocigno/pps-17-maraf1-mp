@@ -1,8 +1,10 @@
 
 package it.unibo.pps2017.client.view
 
+import it.unibo.pps2017.client.controller.Controller
+import it.unibo.pps2017.client.controller.actors.playeractor.MatchController
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
-import it.unibo.pps2017.client.controller.{ClientController, Controller, MatchController}
 import it.unibo.pps2017.client.view.game.GameGUIController
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import javafx.fxml.FXMLLoader

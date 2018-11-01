@@ -75,4 +75,23 @@ class MockSocialController extends SocialController {
     * @param gui the GUI to set.
     */
   override def setCurrentGui(gui: SocialGUIController): Unit = {}
+
+  /**
+    * Notify all the players that a gameID has arrived.
+    *
+    * @param gameID id of the game notified to party.
+    */
+  override def notifyAllPlayersGameID(gameID: String): Unit = {}
+
+  /**
+    * Notify game controller that a game has been joined.
+    *
+    * @param gameID the joined game's id.
+    */
+  override def notifyGameController(gameID: String): Unit = {}
+
+  /**
+    * Shutdown the socialActor and remove its reference from the online list.
+    */
+  override def shutDown(): Unit = {}
 }

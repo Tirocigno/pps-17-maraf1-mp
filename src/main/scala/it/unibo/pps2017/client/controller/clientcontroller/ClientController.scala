@@ -1,9 +1,10 @@
 
-package it.unibo.pps2017.client.controller
+package it.unibo.pps2017.client.controller.clientcontroller
 
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
+import it.unibo.pps2017.client.controller.{Controller, getRandomID}
 import it.unibo.pps2017.client.model.remote.{GameRestWebClient, RestWebClient}
 import it.unibo.pps2017.client.view.{GameStage, GenericGUIController, GuiStack}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
