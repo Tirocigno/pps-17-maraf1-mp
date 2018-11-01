@@ -116,7 +116,7 @@ trait SocialController extends ActorController {
   /**
     * Notify all the players that a gameID has arrived.
     *
-    * @param gameID
+    * @param gameID id of the game notified to party.
     */
   def notifyAllPlayersGameID(gameID: String): Unit
 
@@ -151,6 +151,7 @@ object SocialController {
     val socialRestWebClient: RestWebClient = SocialRestWebClient(this, discoveryContext)
     override var currentActorRef: ActorRef = _
     var currentGUI: Option[SocialGUIController] = None
+    var matchNature: Option[MatchNature] = None
 
 
     override def setCurrentGui(gui: SocialGUIController): Unit = currentGUI = Some(gui)
@@ -174,7 +175,7 @@ object SocialController {
       currentGUI.get.updateParty(currentPartyMap.map(entry => (entry._1.asString, entry._2)))
 
     override def executeFoundGameCall(paramMap: Map[String, String]): Unit =
-      parentController.sendMatchRequest(Some(paramMap))
+      parentController.sendMatchRequest(matchNature.get, Some(paramMap))
 
     override def updateOnlinePlayerList(playerRefList: FriendList): Unit =
       currentGUI.get.updateOnlinePlayersList(playerRefList)
@@ -195,8 +196,11 @@ object SocialController {
       sendMessage(TellInvitePlayerRequestMessage(playerID, Foe))
     }
 
-    override def startGame(matchNature: MatchNature): Unit =
+    override def startGame(matchNature: MatchNature): Unit = {
+      this.matchNature = Some(matchNature)
       sendMessage(GetPartyAndStartGameMessage)
+    }
+
 
     override def finishGame(): Unit = {
       sendMessage(ResetParty)
