@@ -17,10 +17,14 @@ object ServerApi {
     FoundGameRestAPI,
     AddUserAPI,
     GetUserAPI,
+    LoginAPI,
     RemoveUserAPI,
     AddFriendAPI,
     GetFriendsAPI,
-    RemoveFriendAPI)
+    RemoveFriendAPI,
+    GetLiveMatchAPI,
+    GetSavedMatchAPI,
+    GetRankingAPI)
 
   /**
     * RestAPI for searching
@@ -100,6 +104,17 @@ object ServerApi {
       GET(router, path, handle)
   }
 
+  case object LoginAPI extends RestAPI {
+    val password: String = "password"
+
+    override def path: String = "/user/login/:username"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
   case object RemoveUserAPI extends RestAPI {
     override def path: String = "/user/removeUser/:username"
 
@@ -142,4 +157,40 @@ object ServerApi {
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       GET(router, path, handle)
   }
+
+
+  case object GetLiveMatchAPI extends RestAPI {
+
+    override def path: String = "/matches/live"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
+
+  case object GetSavedMatchAPI extends RestAPI {
+
+    override def path: String = "/matches/stored"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
+  case object GetRankingAPI extends RestAPI {
+
+    val fromKey: String = "from"
+    val toKey: String = "to"
+
+    override def path: String = "/ranking"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
 }
