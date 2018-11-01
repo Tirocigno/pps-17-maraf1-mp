@@ -274,6 +274,7 @@ public class PlayGameController implements PlayGame {
                     finalImage = getImageFromPath(PlayGameViewUtils.getLoseMatch());
                     createImageScaleTransition(finalImage);
                 }
+                this.endedMatch();
             }
             this.scoreTeams.setText("");
         });
@@ -475,5 +476,9 @@ public class PlayGameController implements PlayGame {
             if (image.getId().equals(imageClicked)) {
                 image.setVisible(false);
             }
+    }
+
+    private void endedMatch() {
+        gameController.endedMatch();
     }
 }
