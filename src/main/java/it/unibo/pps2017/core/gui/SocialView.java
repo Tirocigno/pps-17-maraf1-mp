@@ -6,7 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class GenericView extends Application {
+
+public class SocialView extends Application {
 
     private static final int MIN_WIDTH = 600;
     private static final int MIN_HEIGHT = 520;
@@ -14,7 +15,7 @@ public class GenericView extends Application {
     @Override
     public void start(Stage primaryStage){
         try {
-            final FXMLLoader loader = new FXMLLoader(SocialView.class.getResource("genericView.fxml"));
+            final FXMLLoader loader = new FXMLLoader(SocialView.class.getResource("socialView.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -34,4 +35,3 @@ public class GenericView extends Application {
     }
 
 }
-

@@ -9,11 +9,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import scala.collection.immutable.Map;
+
 import java.util.List;
 import java.util.Optional;
 
-public class GenericController implements SocialGUIController{
+public class GenericController implements BasicPlayerOptions{
 
     @FXML
     Button playButton;
@@ -22,18 +22,18 @@ public class GenericController implements SocialGUIController{
     @FXML
     Label responseLabel;
 
-    private static final String INVITATION_INFO = " invited you to play together as ";
-    private static final String INVITATION_REQUEST = "Do you want to join him?";
-    private static final String WAITING_MSG = "Waiting for friend response ...";
-    private static final String POSITIVE_ANSWER = "positive";
-    private static final String NEGATIVE_ANSWER = "false";
-    private static final String ACCEPT_MSG = " accepted the invitation!";
-    private static final String REJECT_MSG = " rejected the invitation!";
     private static final int MIN_WIDTH = 900;
     private static final int MIN_HEIGHT = 685;
     private static final int DISCOVERY_PORT = 2000;
 
-    public void playGame(){
+    @FXML
+    private void handlePlayMatch(){
+        playMatch(false);
+        //set non competitive msg
+    }
+
+    @Override
+    public void playMatch(boolean competitive) {
         Stage primaryStage = (Stage) playButton.getScene().getWindow();
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
@@ -45,109 +45,24 @@ public class GenericController implements SocialGUIController{
             primaryStage.centerOnScreen();
 
             final PlayGameController gameController = loader.getController();
-            //Scene scene = new Scene(root);
-            //scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            ClientController clientController = ClientController$.MODULE$.getSingletonController();
-            clientController.setPlayGameController(gameController);
-            gameController.setGameController(clientController.getGameController());
-            clientController.startActorSystem("127.0.0.1", "127.0.0.1");
-            clientController.createRestClient("127.0.0.1", DISCOVERY_PORT);
-            clientController.sendMatchRequest();
-
+            startActorController(gameController);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
-    public void addNewFriend(){
-        String friendAdded = onlineFriends.getSelectionModel().getSelectedItem();
-        System.out.println(friendAdded);
-        //addFriend(newFriend);
-    }
-
-    public void invitePlayer(){
-        String playerInvited = onlinePlayers.getSelectionModel().getSelectedItem();
-        System.out.println(playerInvited);
-        //sendPlayerInvitation(playerInvited);
+    private void startActorController(PlayGameController gameController){
+        ClientController clientController = ClientController$.MODULE$.getSingletonController();
+        clientController.setPlayGameController(gameController);
+        gameController.setGameController(clientController.getGameController());
+        clientController.startActorSystem("127.0.0.1", "127.0.0.1");
+        clientController.createRestClient("127.0.0.1", DISCOVERY_PORT);
+        clientController.sendMatchRequest();
     }
 
     @Override
-    public void notifyErrorOccurred(String errorToNotify) {
-        showAlertMessage(errorToNotify);
-    }
+    public void viewMatch() {
 
-    @Override
-    public void updateOnlineFriendsList(List<String> friendList) {
-        onlineFriends.getItems().clear();
-        onlineFriends.getItems().addAll(friendList);
-    }
-
-    @Override
-    public void updateOnlinePlayersList(List<String> playersList) {
-        onlinePlayers.getItems().clear();
-        onlinePlayers.getItems().addAll(playersList);
-    }
-
-    @Override
-    public void updateParty(Map<String, String> partyMap) {
-
-    }
-
-    @Override
-    public void notifyMessageResponse(String sender, String responseResult, String request) {
-        if(responseResult.equals(POSITIVE_ANSWER)){
-            responseLabel.setText(sender + ACCEPT_MSG);
-        }
-        else if(responseResult.equals(NEGATIVE_ANSWER)){
-            responseLabel.setText(sender + REJECT_MSG);
-        }
-        showAndHideTextResponse();
-    }
-
-    private void showAndHideTextResponse(){
-        Task<Void> sleeper = new Task<Void>() {
-            @Override
-            protected Void call() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
-
-        sleeper.setOnSucceeded(event -> responseLabel.setText(""));
-        new Thread(sleeper).start();
-    }
-
-    @Override
-    public void displayRequest(String sender, String role) {
-        responseLabel.setText(WAITING_MSG);
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, sender + INVITATION_INFO + role
-                + ". " + INVITATION_REQUEST, ButtonType.YES, ButtonType.NO);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if(result.isPresent()) {
-            if (result.get() == ButtonType.YES) {
-                // player accepted to play
-            } else {
-                // player refused the invitation
-            }
-        }
-
-    }
-
-    @Override
-    public void notifyAPIResult(String message) {
-        showAlertMessage(message);
-    }
-
-    private void showAlertMessage(String msg){
-        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
-        alert.showAndWait();
     }
 
 }

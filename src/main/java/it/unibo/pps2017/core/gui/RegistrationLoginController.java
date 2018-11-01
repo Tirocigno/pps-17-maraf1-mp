@@ -22,7 +22,7 @@ public class RegistrationLoginController implements Registration, Login {
         System.out.println("Login pressed");
 
         if(usernameLogin.getText().equals("admin") && pwdLogin.getText().equals("admin")) {
-            updateView();
+            changeViewToSocial();
         }
         else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Login error! Try again!", ButtonType.OK);
@@ -30,13 +30,29 @@ public class RegistrationLoginController implements Registration, Login {
         }
     }
 
-    private void updateView(){
+    private void changeViewToSocial(){
         Stage primaryStage = (Stage) loginButton.getScene().getWindow();
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
 
         try {
-            final FXMLLoader loader = new FXMLLoader(GenericView.class.getResource("genericView.fxml"));
+            final FXMLLoader loader = new FXMLLoader(SocialView.class.getResource("socialView.fxml"));
+            Parent root = loader.load();
+            primaryStage.getScene().setRoot(root);
+            primaryStage.centerOnScreen();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void changeViewToGeneric(){
+        Stage primaryStage = (Stage) loginButton.getScene().getWindow();
+        primaryStage.setMinHeight(MIN_HEIGHT);
+        primaryStage.setMinWidth(MIN_WIDTH);
+
+        try {
+            final FXMLLoader loader = new FXMLLoader(SocialView.class.getResource("genericView.fxml"));
             Parent root = loader.load();
             primaryStage.getScene().setRoot(root);
             primaryStage.centerOnScreen();
