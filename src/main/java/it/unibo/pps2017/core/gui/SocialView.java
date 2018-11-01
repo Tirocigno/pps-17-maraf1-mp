@@ -23,6 +23,7 @@ public class SocialView extends Application {
             primaryStage.setFullScreen(false);
             primaryStage.setMinHeight(MIN_HEIGHT);
             primaryStage.setMinWidth(MIN_WIDTH);
+
             primaryStage.show();
 
         } catch (Exception e) {

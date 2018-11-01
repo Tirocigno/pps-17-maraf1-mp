@@ -28,7 +28,7 @@ trait SocialGUIController {
     *
     * @param partyMap a map containing party member's role and ID.
     */
-  def updateParty(partyMap: Map[String, String])
+  def updateParty(partyMap: java.util.Map[String, String])
 
   /**
     * Notify on GUI the response to a call made by the user.

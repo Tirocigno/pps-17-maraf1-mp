@@ -12,5 +12,5 @@ public interface BasicPlayerOptions {
     /**
      * Method that can be called from both logged in and non-logged in player, to watch a match without playing
      */
-    void viewMatch();
+    void watchMatch();
 }

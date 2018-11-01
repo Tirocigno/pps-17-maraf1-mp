@@ -9,17 +9,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 public class SocialController implements SocialGUIController, BasicPlayerOptions{
 
     @FXML
-    Button playButton;
+    Button playButton, viewButton, okComboView, okComboReplay;
     @FXML
     ListView<String> onlineFriends, onlinePlayers;
     @FXML
     Label responseLabel;
+    @FXML
+    TextArea players;
+    @FXML
+    ComboBox<String> comboView, comboReplay;
 
     private static final String INVITATION_INFO = " invited you to play together as ";
     private static final String INVITATION_REQUEST = "Do you want to join him?";
@@ -35,13 +39,15 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
 
     public void addNewFriend(){
         String friendAdded = onlineFriends.getSelectionModel().getSelectedItem();
-        System.out.println(friendAdded);
+        hideReplayMatch();
+        hideViewMatch();
         //addFriend(newFriend);
     }
 
     public void invitePlayer(){
         String playerInvited = onlinePlayers.getSelectionModel().getSelectedItem();
-        System.out.println(playerInvited);
+        hideReplayMatch();
+        hideViewMatch();
         //sendPlayerInvitation(playerInvited);
     }
 
@@ -64,9 +70,11 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
 
     @Override
     public void updateParty(java.util.Map<String, String> partyMap) {
+        String label="All players: ";
         for(java.util.Map.Entry<String,String> entry : partyMap.entrySet()){
-            String label = "Player: " + entry.getKey() + " Role: " + entry.getValue();
+            label += entry.getKey() + " (" + entry.getValue() +")\t";
         }
+        players.setText(label);
     }
 
     @Override
@@ -164,11 +172,66 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
     }
 
     @Override
-    public void viewMatch() {
-
+    public void watchMatch() {
+       //create view actor
     }
 
     @FXML
-    private void replayMatch(){}
+    private void viewMatch(){
+        List<String> matches = new ArrayList<>();
+        matches.add("m1");
+        matches.add("m2");
+        matches.add("m3");
+        comboView.getItems().clear();
+        comboView.getItems().addAll(matches);
+        hideReplayMatch();
+        showViewMatch();
+    }
+    @FXML
+    public void okViewMatch(){
+        if(comboView.getSelectionModel().getSelectedItem() != null){
+            System.out.println(comboView.getSelectionModel().getSelectedItem());
+        }
+        //start view match
+    }
+    @FXML
+    private void replayMatch(){
+        List<String> matches = new ArrayList<>();
+        matches.add("m12");
+        matches.add("m32");
+        matches.add("m35");
+        comboView.getItems().clear();
+        comboReplay.getItems().addAll(matches);
+        hideViewMatch();
+        showReplayMatch();
+    }
+
+    @FXML
+    public void okReplayMatch(){
+        if(comboReplay.getSelectionModel().getSelectedItem() != null){
+            System.out.println(comboReplay.getSelectionModel().getSelectedItem());
+        }
+        //start view match
+    }
+
+    private void hideViewMatch(){
+        comboView.setVisible(false);
+        okComboView.setVisible(false);
+    }
+
+    private void showViewMatch(){
+        comboView.setVisible(true);
+        okComboView.setVisible(true);
+    }
+
+    private void hideReplayMatch(){
+        comboReplay.setVisible(false);
+        okComboReplay.setVisible(false);
+    }
+
+    private void showReplayMatch(){
+        comboReplay.setVisible(true);
+        okComboReplay.setVisible(true);
+    }
 
 }

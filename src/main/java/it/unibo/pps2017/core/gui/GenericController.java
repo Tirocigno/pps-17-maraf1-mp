@@ -10,17 +10,16 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class GenericController implements BasicPlayerOptions{
 
     @FXML
-    Button playButton;
+    Button playButton, viewButton, goButton;
     @FXML
-    ListView<String> onlineFriends, onlinePlayers;
-    @FXML
-    Label responseLabel;
+    ListView<String> matchesList;
 
     private static final int MIN_WIDTH = 900;
     private static final int MIN_HEIGHT = 685;
@@ -61,8 +60,16 @@ public class GenericController implements BasicPlayerOptions{
     }
 
     @Override
-    public void viewMatch() {
-
+    public void watchMatch() {
+        //api call
+        List<String> matches = new ArrayList<>();
+        matchesList.getItems().clear();
+        matchesList.getItems().addAll(matches);
     }
 
+    @FXML
+    private void goViewMatch(){
+        String matchSelected = matchesList.getSelectionModel().getSelectedItem();
+        // viewMatch(matchSelected);
+    }
 }
