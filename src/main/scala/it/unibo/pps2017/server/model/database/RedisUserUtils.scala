@@ -162,6 +162,35 @@ sealed trait UserDatabaseUtils {
                  username: String,
                  onSuccess: Seq[String] => Unit,
                  onFail: Throwable => Unit): Unit
+
+
+  /**
+    * Increment the score of a player.
+    *
+    * @param username
+    * player's id.
+    * @param onSuccess
+    * on success.
+    * @param onFail
+    * error handler.
+    */
+  def incrementScore(username: String,
+                     onSuccess: Boolean => Unit,
+                     onFail: Throwable => Unit): Unit
+
+  /**
+    * Decrement the score of a player.
+    *
+    * @param username
+    * player's id.
+    * @param onSuccess
+    * on success.
+    * @param onFail
+    * error handler.
+    */
+  def decrementScore(username: String,
+                     onSuccess: Boolean => Unit,
+                     onFail: Throwable => Unit): Unit
 }
 
 /**
@@ -197,7 +226,9 @@ case class RedisUserUtils() extends UserDatabaseUtils {
                  onFail: Throwable => Unit): Unit = {
     db.hmset(getUserKey(username), params)
       .onComplete {
-        case Success(queryRes) => onSuccess(queryRes)
+        case Success(queryRes) =>
+          modifyScore(username, STARTING_SCORE, _ => {}, _ => { /*LOG ERROR*/ })
+          onSuccess(queryRes)
         case Failure(cause) => onFail(cause)
       }
   }
@@ -254,7 +285,7 @@ case class RedisUserUtils() extends UserDatabaseUtils {
         case Success(value) =>
           value match {
             case Some(pw) => onSuccess(pw.utf8String.equalsIgnoreCase(password))
-            case None =>  onSuccess(false)
+            case None => onSuccess(false)
           }
         case Failure(cause) =>
           onFail(cause)
@@ -440,5 +471,53 @@ case class RedisUserUtils() extends UserDatabaseUtils {
       }
   }
 
+  /**
+    * Increment the score of a player.
+    *
+    * @param username
+    * player's id.
+    * @param onSuccess
+    * on success.
+    * @param onFail
+    * error handler.
+    */
+  override def incrementScore(username: String, onSuccess: Boolean => Unit, onFail: Throwable => Unit): Unit = {
+    modifyScore(username, SCORE_INC, onSuccess, onFail)
+  }
 
+  /**
+    * Decrement the score of a player.
+    *
+    * @param username
+    * player's id.
+    * @param onSuccess
+    * on success.
+    * @param onFail
+    * error handler.
+    */
+  override def decrementScore(username: String, onSuccess: Boolean => Unit, onFail: Throwable => Unit): Unit = {
+    modifyScore(username, SCORE_DECR, onSuccess, onFail)
+  }
+
+
+  private def modifyScore(username: String, score: Long, onSuccess: Boolean => Unit, onFail: Throwable => Unit): Unit = {
+    val db = RedisConnection().getDatabaseConnection
+
+    val transaction = db.transaction()
+
+    transaction.hincrby(getUserKey(username), USER_SCORE_KEY, score)
+    transaction.zincrby(RANKING_KEY, score, username)
+
+    transaction.exec()
+        .onComplete {
+          case Success(_) =>
+            db.quit()
+            transaction.quit()
+            onSuccess(true)
+          case Failure(cause) =>
+            db.quit()
+            transaction.quit()
+            onFail(cause)
+        }
+  }
 }

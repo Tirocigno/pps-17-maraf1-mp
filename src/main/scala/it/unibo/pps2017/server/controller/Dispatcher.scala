@@ -13,6 +13,7 @@ import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
 import it.unibo.pps2017.server.model.GameType.{RANKED, UNRANKED}
 import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model._
+import it.unibo.pps2017.server.model.database.{DatabaseUtils, RedisUtils}
 import org.json4s._
 import org.json4s.jackson.Serialization.read
 
@@ -42,6 +43,8 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
   val userMethods = UserDispatcher()
   val gameMethods = GameDispatcher()
 
+  val databaseUtils: DatabaseUtils = RedisUtils()
+
   val lobbyManager: ActorRef = akkaSystem.actorOf(Props[LobbyActor])
   val currentIPAndPortParams = Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> PORT)
 
@@ -63,6 +66,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
       case api@GetFriendsAPI => api.asRequest(router, userMethods.getFriends)
       case api@RemoveFriendAPI => api.asRequest(router, userMethods.removeFriend)
       case api@GetLiveMatchAPI => api.asRequest(router, gameMethods.getLiveGames)
+      case api@GetRankingAPI => api.asRequest(router, getRanking)
       case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 
@@ -149,8 +153,27 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     }
   }
 
+
   /**
-    * Respond with a generic error message
+    * Get Ranking.
+    */
+  private val getRanking: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
+    val from: Option[Long] = ctx.queryParams().get(GetRankingAPI.fromKey).map(_.toLong)
+    val to: Option[Long] = ctx.queryParams().get(GetRankingAPI.toKey).map(_.toLong)
+
+    databaseUtils.getRanking(elements => {
+      val result: ListBuffer[RankElement] = ListBuffer()
+
+      elements.foreach(e => result += RankElement(e._1, e._2.toLong))
+
+      res.sendResponse(Ranking(result))
+    }, cause => {
+      errorHandler(res, s"Error on retrieve the ranking. \nDetails: ${cause.getMessage}")
+    }, from, to)
+  }
+
+  /**
+    * Respond with a generic error message.
     *
     */
   private val responseError: (RoutingContext, RouterResponse) => Unit = (_, res) => {

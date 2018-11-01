@@ -5,6 +5,8 @@ package it.unibo.pps2017.server.model
 import it.unibo.pps2017.commons.remote.rest.RestUtils.MatchRef
 import it.unibo.pps2017.discovery.structures.SocialActorsMap.SocialMap
 
+import scala.collection.SortedMap
+
 
 /**
   * This class is used for define the message accepted to the RouterResponse.
@@ -29,6 +31,9 @@ case class OnlinePlayersMapEncoder(map: SocialMap) extends JsonResponse
 
 case class Matches(games: Seq[LiveGame]) extends JsonResponse
 case class LiveGame(gameId: String, team1: Side, team2: Side, gameType: String) extends JsonResponse
+
+case class Ranking(members: Seq[RankElement]) extends JsonResponse
+case class RankElement(player: String, score: Long)
 
 
 

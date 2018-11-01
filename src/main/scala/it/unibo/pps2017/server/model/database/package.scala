@@ -7,6 +7,12 @@ package object database {
 
   implicit val formats: DefaultFormats.type = DefaultFormats
 
+  val USER_SCORE_KEY: String = "score"
+  val STARTING_SCORE: Int = 200
+  val SCORE_INC: Int = 10
+  val SCORE_DECR: Int = -10
+  val RANKING_KEY: String = "ranking"
+
   val GAME_TIME_TO_LIVE: Long = 7200
   val KEY_SPLITTER: String = ":"
 

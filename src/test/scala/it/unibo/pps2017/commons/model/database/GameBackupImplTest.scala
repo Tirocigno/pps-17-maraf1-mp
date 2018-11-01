@@ -44,6 +44,7 @@ class GameBackupImplTest extends FunSuite with Matchers {
     val expectedGame: Game = Game(playersInGame, Seq(gameSet), winners)
 
 
+
     gameBackup.startGame(playersInGame)
     gameBackup.startSet(playersHand, Sword)
     gameBackup.startHand()

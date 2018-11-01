@@ -76,7 +76,7 @@ class UserDispatcherTest extends FunSuite with BeforeAndAfterAll {
     GetRequest(Dispatcher.HOST, "/user/" + usernameForTest, onSuccess => {
       val user = read[User](onSuccess.get)
       assert(user.username == usernameForTest)
-      assert(user.score == 0)
+      assert(user.score == 200)
     }, cause => {
       cause.printStackTrace()
       assert(false)
