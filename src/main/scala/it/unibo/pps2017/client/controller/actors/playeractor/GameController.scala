@@ -279,4 +279,11 @@ class GameController extends MatchController {
     currentActorRef ! PoisonPill
   }
 
+  /**
+    * Method to notify actor that view was closed.
+    */
+  def closedPlayGameView(): Unit = {
+    currentActorRef ! ClosedPlayGameView(_)
+  }
+
 }

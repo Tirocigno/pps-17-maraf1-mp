@@ -112,6 +112,13 @@ public class PlayGameController implements PlayGame {
     }
 
     /**
+     * This method is called when the player want close match from Gui.
+     */
+    void shutdown() {
+        gameController.closedPlayGameView();
+    }
+
+    /**
      * This method permits to view the command that first user selected.
      * Possibilities: busso, striscio, volo.
      *
