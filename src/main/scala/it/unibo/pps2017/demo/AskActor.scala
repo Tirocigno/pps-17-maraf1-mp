@@ -15,9 +15,8 @@ case object AskNameMessage
 class TestActor extends Actor {
 
   def receive: PartialFunction[Any, Unit] = {
-    case ClickedCard(index, user) => // respond to the "ask" request
-      //Thread.sleep(100)
-      sender ! CardOk(true, "nic")
+    case ClickedCard(_, _) => // respond to the "ask" request
+      sender ! CardOk(correctClickedCard = true, "nic")
     case _ => println("that was unexpected")
   }
 }
