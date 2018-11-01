@@ -26,7 +26,7 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     */
   private def foundGameCallBack(jSonSource: Option[String]): Unit = {
     val gameID = read[GameFound](jSonSource.get).gameId
-    clientController.setGameID(gameID)
+    clientController.handleMatchResponse(gameID)
   }
 
 }
