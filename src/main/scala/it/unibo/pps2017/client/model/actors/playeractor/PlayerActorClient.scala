@@ -30,6 +30,8 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
       gameActor = sender()
       var finalList: ListBuffer[String] = ListBuffer[String]()
       finalList = orderPlayersList(playersList)
+      println(finalList)
+      println(controller)
       controller.updateGUI(PlayersRef(finalList))
       gameActor ! PlayersRefAck
 

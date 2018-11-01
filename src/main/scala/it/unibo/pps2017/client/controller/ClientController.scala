@@ -1,22 +1,19 @@
 
 package it.unibo.pps2017.client.controller
 
-import java.net.InetAddress
-
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.remote.{GameRestWebClient, RestWebClient}
+import it.unibo.pps2017.client.view.{GameStage, GenericGUIController, GuiStack}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, Port, ServerContext}
-import it.unibo.pps2017.core.gui.PlayGameController
 import it.unibo.pps2017.server.model.ServerApi.FoundGameRestAPI
 
 
-sealed trait ClientController {
+sealed trait ClientController extends Controller {
 
   def notifyError(throwable: Throwable)
-
-  def setPlayGameController(guiController: PlayGameController)
 
   def setGameID(gameID: String)
 
@@ -36,6 +33,8 @@ sealed trait ClientController {
 
   def getGameController: GameController
 
+  def setCurrentGUI(gui: GenericGUIController): Unit
+
 }
 
 object ClientController {
@@ -51,21 +50,22 @@ object ClientController {
 
   private class ClientControllerImpl() extends ClientController {
     val gameController = new GameController()
+    val guiStack: GuiStack = GuiStack()
     var playerName: String = getRandomID
-    private var actorSystem: Option[ActorSystem] = None
+    var actorSystem: Option[ActorSystem] = None
     var webClient: Option[RestWebClient] = None
+    var socialController: Option[SocialController] = None
 
     override def notifyError(throwable: Throwable): Unit = {
       throwable.printStackTrace()
     }
 
-    override def setPlayGameController(guiController: PlayGameController): Unit =
-      gameController.playGameController = guiController
-
-    override def setGameID(gameID: String): Unit = gameController.joinPlayerToMatch(gameID)
+    override def setGameID(gameID: String): Unit = {
+      guiStack.setCurrentScene(GameStage, gameController)
+      gameController.joinPlayerToMatch(gameID)
+    }
 
     override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit = {
-      val localIpAddress: String = InetAddress.getLocalHost.getHostAddress
       actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", myIP))
       gameController.createActor(this.playerName, actorSystem.get)
     }
@@ -82,6 +82,8 @@ object ClientController {
     }
 
     override def getGameController: GameController = gameController
+
+    override def setCurrentGUI(gui: GenericGUIController): Unit = ???
 
   }
 }

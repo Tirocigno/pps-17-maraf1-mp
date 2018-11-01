@@ -5,7 +5,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import it.unibo.pps2017.client.model.actors.ActorMessage
 
 
-trait ActorController {
+trait ActorController extends Controller {
   var currentActorRef:ActorRef
 
   def createActor(actorID: String, actorSystem: ActorSystem):Unit
