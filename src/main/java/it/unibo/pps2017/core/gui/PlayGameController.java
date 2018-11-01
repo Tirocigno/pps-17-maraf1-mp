@@ -112,6 +112,13 @@ public class PlayGameController implements PlayGame {
     }
 
     /**
+     * This method is called when the player want close match from Gui.
+     */
+    void shutdown() {
+        gameController.closedPlayGameView();
+    }
+
+    /**
      * This method permits to view the command that first user selected.
      * Possibilities: busso, striscio, volo.
      *
@@ -274,6 +281,7 @@ public class PlayGameController implements PlayGame {
                     finalImage = getImageFromPath(PlayGameViewUtils.getLoseMatch());
                     createImageScaleTransition(finalImage);
                 }
+                this.endedMatch();
             }
             this.scoreTeams.setText("");
         });
@@ -475,5 +483,9 @@ public class PlayGameController implements PlayGame {
             if (image.getId().equals(imageClicked)) {
                 image.setVisible(false);
             }
+    }
+
+    private void endedMatch() {
+        gameController.endedMatch();
     }
 }

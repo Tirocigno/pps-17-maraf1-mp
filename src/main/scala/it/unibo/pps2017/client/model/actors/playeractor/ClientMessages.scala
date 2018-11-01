@@ -54,4 +54,5 @@ object ClientMessages {
 
   case class RecapActualSituation(playersList: ListBuffer[String], cards: ListBuffer[String], seed: Seed, player: String) extends ActorMessage
 
+  case class ClosedPlayGameView(player: String) extends ActorMessage
 }

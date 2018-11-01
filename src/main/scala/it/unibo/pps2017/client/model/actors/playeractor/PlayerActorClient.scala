@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.model.actors.playeractor
 
-import akka.actor.{ActorRef, Stash}
+import akka.actor.{ActorRef, PoisonPill, Stash}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
@@ -95,8 +95,9 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       val mediator = DistributedPubSub(context.system).mediator
       mediator ! Subscribe(id, self)
 
-    case m@_ =>
-      System.out.println(m)
+    case ClosedPlayGameView(_) =>
+      gameActor ! ClosedPlayGameView(user)
+      self ! PoisonPill
   }
 
   private def orderPlayersList(playersList: ListBuffer[String]): ListBuffer[String] = {
