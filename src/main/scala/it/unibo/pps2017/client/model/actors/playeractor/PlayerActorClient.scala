@@ -95,7 +95,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       val mediator = DistributedPubSub(context.system).mediator
       mediator ! Subscribe(id, self)
 
-    case ClosedPlayGameView(_) =>
+    case NotifyClosedPlayGameView() =>
       gameActor ! ClosedPlayGameView(user)
       self ! PoisonPill
   }
