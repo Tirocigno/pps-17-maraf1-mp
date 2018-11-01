@@ -1,6 +1,5 @@
 package it.unibo.pps2017.commons.model.database
 
-import akka.actor.ActorSystem
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
 import it.unibo.pps2017.server.model.database.RedisGameUtils
@@ -32,15 +31,15 @@ class GameBackupImplTest extends FunSuite with Matchers {
     val playersInGame: Seq[String] = Seq(player1, player2, player3, player4)
     val playersHand = Map(player1 -> player1Hand, player2 -> player2Hand, player3 -> player3Hand, player4 -> player4Hand)
     val winners: Seq[String] = Seq(player1, player3)
-    val moves: Seq[Move] = Seq(Move(player2, "Coin4"),
-      Move(player3, "Coin4"),
-      Move(player4, "Cup4"),
-      Move(player1, "Coin3"))
+    val moves: Seq[Move] = Seq(Move(player2, "4Coin"),
+      Move(player3, "4Coin"),
+      Move(player4, "4Cup"),
+      Move(player1, "3Coin"))
 
 
     val hand = Hand(moves, player4)
     val gameSet: GameSet = GameSet(
-      playersHand.map({ case (k, v) => (k, v.map(card => card.cardSeed.asString + card.cardValue)) }),
+      playersHand.map({ case (k, v) => (k, v.map(card => card.cardValue + card.cardSeed.asString)) }),
       Seq(hand), Sword.asString, 11, 0)
     val expectedGame: Game = Game(playersInGame, Seq(gameSet), winners)
 

@@ -192,15 +192,15 @@ object LobbyStatusResponse {
   }
 
   case object OK extends LobbyStatusResponse {
-    override val asString: String = "Sword"
+    override val asString: String = "Ok"
   }
 
   case object REVERSE extends LobbyStatusResponse {
-    override val asString: String = "Cup"
+    override val asString: String = "Reverse"
   }
 
   case object FULL extends LobbyStatusResponse {
-    override val asString: String = "Coin"
+    override val asString: String = "Full"
   }
 
 

@@ -36,7 +36,7 @@ class GameBackupImpl(override val gameId: String) extends GameBackup {
     * Valid briscola for this set.
     */
   override def startSet(cards: Map[String, Set[Card]], briscola: Seed.Seed): Unit = {
-    currentSet = GameSet(cards.map({ case (k, v) => (k, v.map(card => card.cardSeed.asString + card.cardValue)) }), Seq(), briscola.asString, 0, 0)
+    currentSet = GameSet(cards.map({ case (k, v) => (k, v.map(card => card.cardValue + card.cardSeed.asString)) }), Seq(), briscola.asString, 0, 0)
     currentSetHands = ListBuffer()
   }
 
@@ -56,7 +56,7 @@ class GameBackupImpl(override val gameId: String) extends GameBackup {
     * card played.
     */
   override def addMove(player: String, card: Card): Unit = {
-    currentHand += Move(player, card.cardSeed.asString + card.cardValue)
+    currentHand += Move(player, card.cardValue + card.cardSeed.asString )
   }
 
   /**
