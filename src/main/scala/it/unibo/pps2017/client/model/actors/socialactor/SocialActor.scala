@@ -56,7 +56,10 @@ object SocialActor {
       case message: InvitePlayerResponseMessage =>
         invitePlayerResponseHandler(message.socialResponse, message.myRole, message.partnerRole)
         controller.updateGUI(message)
-      case NotifyGameIDMessage(_) => socialParty.notifyGameIDToAllPlayers(_)
+      case NotifyGameIDMessage(gameID) => if (socialParty.isLeader) {
+        socialParty.notifyGameIDToAllPlayers(gameID)
+      }
+      case GameIDMessage(gameID) => controller.notifyGameController(gameID)
       case GetPartyAndStartGameMessage => buildStartGameRequest()
       case ResetParty => socialParty.resetParty()
       case UnstashAllMessages => unstashAll()

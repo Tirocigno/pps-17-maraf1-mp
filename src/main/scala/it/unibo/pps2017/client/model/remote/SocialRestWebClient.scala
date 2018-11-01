@@ -6,6 +6,7 @@ import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.model.OnlinePlayersMapEncoder
+import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
 import org.json4s.jackson.Serialization.read
 
 /**
@@ -18,6 +19,7 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
     case RegisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
     case UnregisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
     case GetAllOnlinePlayersAPI => invokeAPI(api, paramMap, getAllOnlinePlayersCallback, discoveryContext)
+    case AddFriendAPI => invokeAPI(api, paramMap, addAFriendCallback, assignedServerContext.get)
   }
 
   /**
@@ -37,6 +39,10 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
   private def getAllOnlinePlayersCallback(responseBody: Option[String]): Unit = {
     val playerMap = read[OnlinePlayersMapEncoder](responseBody.get).map
     socialController.setOnlinePlayerList(playerMap)
+  }
+
+  private def addAFriendCallback(responseBody: Option[String]): Unit = {
+    socialController.notifyCallResultToGUI(responseBody)
   }
 }
 

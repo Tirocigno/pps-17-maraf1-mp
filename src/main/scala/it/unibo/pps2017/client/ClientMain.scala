@@ -1,9 +1,10 @@
 
 package it.unibo.pps2017.client
 
-import it.unibo.pps2017.client.controller.ClientController
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.view.GuiStack
+import it.unibo.pps2017.commons.remote.game.MatchNature.CasualMatch
 import javafx.application.Application
 import javafx.stage.Stage
 
@@ -21,7 +22,7 @@ class ClientMain extends Application {
   private def startFoundGameRequest(): Unit = {
     clientController.startActorSystem("127.0.0.1", "127.0.0.1")
     clientController.createRestClient("127.0.0.1", 2000)
-    clientController.sendMatchRequest()
+    clientController.sendMatchRequest(CasualMatch, None)
   }
 }
 

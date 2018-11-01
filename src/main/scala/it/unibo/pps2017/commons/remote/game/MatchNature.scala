@@ -12,7 +12,6 @@ object MatchNature {
     * Competitive Match object.
     */
   case object CompetitiveMatch extends MatchNature
-
   /**
     * Non competitive match object.
     */
