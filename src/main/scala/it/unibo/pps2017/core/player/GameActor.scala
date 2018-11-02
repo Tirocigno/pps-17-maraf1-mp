@@ -1,7 +1,5 @@
 package it.unibo.pps2017.core.player
 
-import java.util.TimerTask
-
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.MemberUp
@@ -16,8 +14,7 @@ import it.unibo.pps2017.core.player.GameActor._
 import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable
-import scala.collection.mutable.{ListBuffer, Map}
-import scala.util.Random
+import scala.collection.mutable.ListBuffer
 
 
 class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: BaseTeam[String], onGameEnd: Side =>Unit) extends Actor with Match with ActorLogging {
@@ -33,12 +30,11 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   var briscolaChooser: Option[PlayerName] = None
   var setEnd: Boolean = false
   var gameEnd: Boolean = false
-  val actors: ListBuffer[PlayerName] = ListBuffer[PlayerName]()
-  var cardsInHand: scala.collection.mutable.Map[PlayerName, Set[Card]] = Map[PlayerName, Set[Card]]()
-  var cardsIndex: scala.collection.mutable.Map[PlayerName, Set[Card]] = Map[PlayerName, Set[Card]]()
+  val allPlayers: ListBuffer[PlayerName] = ListBuffer[PlayerName]()
+  var cardsInHand: mutable.Map[PlayerName, Set[Card]] = mutable.Map[PlayerName, Set[Card]]()
+  var cardsIndex: mutable.Map[PlayerName, Set[Card]] = mutable.Map[PlayerName, Set[Card]]()
   var mediator : ActorRef  = _
   val cluster = Cluster(context.system)
-  var task : TimerTask = _
   var cardPlayed : Boolean = false
   var numAck: Int = 0
 
@@ -47,46 +43,42 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     cluster.subscribe(self, classOf[MemberUp])
     mediator = DistributedPubSub(context.system).mediator
 
-    actors += team1.firstMember.get
-    actors += team2.firstMember.get
-    actors += team1.secondMember.get
-    actors += team2.secondMember.get
+    allPlayers += team1.firstMember.get
+    allPlayers += team2.firstMember.get
+
+    allPlayers += team1.secondMember.get
+    allPlayers += team2.secondMember.get
 
     println("GAME ACTOR Actor system -> " + context.system)
     println("GAME ACTOR -> Topic : " + topicName)
-    mediator ! Publish(topicName,PlayersRef(actors))
+    mediator ! Publish(topicName, PlayersRef(allPlayers))
   }
 
   override def postStop(): Unit = cluster.unsubscribe(self)
 
-  def receive = {
+  def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRefAck =>
-      numAck = numAck +1
+      numAck = numAck + 1
       if(numAck == TOT_PLAYERS) {
         onFullTable()
         numAck = 0
       }
 
-
-
     case BriscolaChosen(seed) =>
       setBriscola(seed)
       mediator ! Publish(topicName, NotifyBriscolaChosen(seed))
 
-
     case BriscolaAck =>
       numAck = numAck + 1
       if(numAck == TOT_PLAYERS){
-        mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, true))
-        //startTimer()
+        mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, TRUE))
         numAck = 0
       }
 
-
-    case ClickedCard(index,player) =>
-      var playerHand: Seq[Card] = cardsIndex(player).toSeq
-      isCardOk(playerHand(index),player)
+    case ClickedCard(index, player) =>
+      val playerHand: Seq[Card] = cardsIndex(player).toSeq
+      checkCard(playerHand(index), player)
 
     case CardPlayedAck =>
       numAck = numAck + 1
@@ -103,12 +95,15 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     case ClickedCommand(command, player) =>
       mediator ! Publish(topicName, NotifyCommandChosen(command,player))
 
-    case m@ _ =>
-      println("MESSAGGIO -> " + m)
-  }
+    case ClosedPlayGameView(player) =>
+      if(team1.firstMember.get.equals(player) || team1.secondMember.get.equals(player)){
+        mediator ! Publish(topicName, GameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore, TRUE))
+      }
+      else if(team2.firstMember.get.equals(player) || team2.secondMember.get.equals(player)){
+        mediator ! Publish(topicName, GameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore, TRUE))
+      }
+      context.stop(self)
 
-  private def endTask(): Unit ={
-    task.cancel()
   }
 
   private def onFullTable(): Unit = {
@@ -125,26 +120,23 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     playSet()
   }
 
-
   override def playSet(): Unit = {
     prepareSet()
   }
-
 
   private def prepareSet(): Unit = {
     setEnd = false
     deck.shuffle()
     var i: Int = 0
     deck.distribute().foreach(hand => {
-     // actors.foreach(player => {
-        mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand),actors(i)))
-      cardsInHand += (actors(i) -> hand)
-      cardsIndex += (actors(i) -> hand)
-     // })
+      mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand), allPlayers(i)))
+      cardsInHand += (allPlayers(i) -> hand)
+      cardsIndex += (allPlayers(i) -> hand)
+
       if (firstHand && isFirstPlayer(hand)) {
         nextHandStarter = Some(getPlayers(i))
-        briscolaChooser = Some(getPlayers(i))
-          firstHand = false
+        briscolaChooser = nextHandStarter
+        firstHand = false
       }
       i += 1
     })
@@ -153,12 +145,12 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
   }
 
-  private def cardToPath(card: Card): String =  IMG_PATH + card.cardValue + card.cardSeed + PNG_FILE
+  val cardPath: (Card) => String =  (card) => IMG_PATH + card.cardValue + card.cardSeed + FILE_EXTENSION
 
   private def allCardsToPath(cards: Set[Card]): List[String] = {
     var allCardsPath : ListBuffer[String] = ListBuffer[String]()
     cards.foreach(card =>
-      allCardsPath += cardToPath(card)
+      allCardsPath += cardPath.apply(card)
     )
     allCardsPath.toList
   }
@@ -169,38 +161,14 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     team1.getMembers ++ team2.getMembers
   }
 
-  private def isFirstPlayer(hand: Set[Card]): Boolean = hand.filter(_.equals(FOUR_OF_COIN)).size > 0
-
+  private def isFirstPlayer(hand: Set[Card]): Boolean = hand.count(_.equals(FOUR_OF_COIN)) > 0
 
   override def setBriscola(seed: Seed.Seed): Unit = {
     currentBriscola = Option(seed)
     startHand()
   }
 
-//da cancellare?
-  override def isSetEnd: Option[(Int, Int, Boolean)] = {
-    if (setEnd) {
-      Some((team1.getScore, team2.getScore, gameEnd))
-    }
-    None
-  }
-
-  override def forcePlay(player: PlayerName): Card = {
-    currentSuit match {
-      case Some(seed) =>
-        val rightCards: Seq[Card] = cardsInHand(player).filter(_.cardSeed == seed).toList
-        cardPlayed = true
-        endTask()
-        rightCards(Random.nextInt(rightCards.size))
-      case None =>
-        val playerHand: Seq[Card] = cardsInHand(player).toList
-        cardPlayed = true
-        endTask()
-        playerHand(Random.nextInt(playerHand.size))
-    }
-  }
-
-  override def isCardOk(card: Card, player: PlayerName): Unit = currentSuit match {
+  override def checkCard(card: Card, player: PlayerName): Unit = currentSuit match {
     case Some(seed) =>
       val playerHand: Seq[Card] = cardsInHand(player).toStream
       if (seed == card.cardSeed) {
@@ -210,22 +178,21 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
         onCardPlayed(card, player)
       }
       else {
-        mediator ! Publish(topicName, CardOk(false, player))
+        mediator ! Publish(topicName, CardOk(FALSE, player))
       }
     case None =>
       onCardPlayed(card, player)
   }
 
   private def onCardPlayed(card: Card, player: PlayerName): Unit = {
-    mediator ! Publish(topicName, CardOk(true, player))
+    mediator ! Publish(topicName, CardOk(TRUE, player))
 
     if (gameCycle.isFirst) onFirstCardOfHand(card)
 
     cardsOnTable += ((card, gameCycle.getCurrent))
     cardPlayed = true
-    mediator ! Publish(topicName,PlayedCard(cardToPath(card), player))
+    mediator ! Publish(topicName, PlayedCard(cardPath(card), player))
     cardsInHand(player) -= card
-    println(cardsInHand(player))
   }
 
   private def onFirstCardOfHand(card: Card): Unit = {
@@ -243,12 +210,19 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     currentSuit = None
     cardsOnTable.clear()
 
+    var firstPlayerCards: ListBuffer[String] = ListBuffer[String]()
+    cardsInHand(allPlayers.head).foreach(card =>{
+      firstPlayerCards += cardPath(card)
+    })
+
+    mediator ! Publish(topicName, RecapActualSituation(allPlayers, firstPlayerCards, currentBriscola.get, nextHandStarter.get))
+
     nextHandStarter match {
       case Some(player) =>
         if (cardsInHand(player).isEmpty) onSetEnd()
 
         mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, gameCycle.isFirst))
-
+        setEnd = false
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
 
     }
@@ -268,7 +242,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
     setEnd = true
     currentBriscola = None
-    //nextHandStarter = None
     gameCycle.setFirst(briscolaChooser.get)
     briscolaChooser = Some(gameCycle.getNext)
     nextHandStarter = briscolaChooser
@@ -278,13 +251,11 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     team1.setPoints(setScore._1)
     team2.setPoints(setScore._2)
 
-
-    println("PRIMO PUNTEGGIO: " + setScore._1 + "SECONDO PUNTEGGIO: " + setScore._2)
     if(team1.getScore > team2.getScore){
-      mediator ! Publish(topicName, GameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore, false))
+      mediator ! Publish(topicName, GameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore, FALSE))
     }
     else{
-      mediator ! Publish(topicName, GameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore, false))
+      mediator ! Publish(topicName, GameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore, FALSE))
     }
 
     getGameWinner match {
@@ -301,12 +272,9 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   }
 
   private def notifyWinner(team: BaseTeam[PlayerName]): Unit = {
-    println("Mando gamescore")
     gameEnd = true
-
-    mediator ! Publish(topicName, GameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore, true))
+    mediator ! Publish(topicName, GameScore(team.firstMember.get, team.secondMember.get, team1.getScore, team2.getScore, TRUE))
     onGameEnd(team.asSide)
-
   }
 
   private def checkMarafona(hand: Set[Card], player: PlayerName): Unit = {
@@ -327,9 +295,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
   private def defineTaker(hand: mutable.ListBuffer[(Card, PlayerName)]): PlayerName = {
     var max: Card = hand.head._1
-    println("Entro per definire il vincitore!")
     hand foreach (tuple => {
-      println("----> "+tuple)
       val card = tuple._1
       if (card.cardSeed == currentBriscola.get) {
         if (max.cardSeed != currentBriscola.get) {
@@ -341,8 +307,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
         max = card
       }
     })
-    //nextHandStarter
-    println("vincitore: " + hand.filter(_._1 == max).head._2)
+
     gameCycle.setFirst(hand.filter(_._1 == max).head._2)
     hand.filter(_._1 == max).head._2
   }
@@ -358,10 +323,6 @@ final case class TeamNotFoundException(message: String = "Team not found in this
 
 object GameActor {
   val TOT_PLAYERS: Int = 4
-  val TURN_TIME_SEC: Int = 15
-  val TIME_PERIOD: Long = 1000L
-
-  val RANDOM_TEAM: String = "RANDOM_TEAM"
   val TEAM_MEMBERS_LIMIT: Int = 2
   val MAX_PLAYER_NUMBER: Int = 4
   val MAX_HAND_CARDS: Int = 10
@@ -372,8 +333,10 @@ object GameActor {
   val THREE_VALUE: Int = 3
   val REQUIRED_NUMBERS_OF_CARDS_FOR_MARAFFA: Int = 3
   val EXTRA_POINTS_FOR_MARAFFA: Int = 3
-  val IMG_PATH = "cards/"
-  val PNG_FILE = ".png"
+  val IMG_PATH: String = "cards/"
+  val FILE_EXTENSION: String = ".png"
+  val TRUE: Boolean = true
+  val FALSE: Boolean = false
 
   def apply(topicName: String, team1: BaseTeam[String], team2: BaseTeam[String], onGameEnd: Side =>Unit): GameActor = new GameActor(topicName, team1, team2, onGameEnd)
 
