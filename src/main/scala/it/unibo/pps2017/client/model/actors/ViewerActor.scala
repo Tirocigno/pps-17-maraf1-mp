@@ -10,12 +10,12 @@ import it.unibo.pps2017.core.deck.cards.Seed.Seed
 
 import scala.collection.mutable.ListBuffer
 
-class ViewerActor(override val controller: GameController, var username: String) extends ClientGameActor {
+class ViewerActor(override val controller: GameController, var player: String) extends ClientGameActor {
 
   import context._
 
   var actorPlayer: ClientGameActor = this
-  var firstPlayer: String = username
+  var firstPlayer: String = player
 
   def receive: PartialFunction[Any, Unit] = {
 
@@ -82,5 +82,5 @@ class ViewerActor(override val controller: GameController, var username: String)
     controller.updateGUI(ComputeGameScore(firstPlayer, winner1, winner2, score1, score2, endMatch))
 
   override
-  def getUsername: String = user
+  def username: String = firstPlayer
 }

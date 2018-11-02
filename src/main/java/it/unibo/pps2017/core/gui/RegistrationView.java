@@ -17,7 +17,6 @@ public class RegistrationView extends Application{
             final FXMLLoader loader = new FXMLLoader(RegistrationView.class.getResource("registration.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.setFullScreen(false);
             primaryStage.setMinHeight(MIN_HEIGHT);

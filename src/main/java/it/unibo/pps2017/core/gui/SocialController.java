@@ -1,8 +1,6 @@
 package it.unibo.pps2017.core.gui;
 
-import it.unibo.pps2017.client.controller.ClientController;
-import it.unibo.pps2017.client.controller.ClientController$;
-import it.unibo.pps2017.client.view.SocialGUIController;
+import it.unibo.pps2017.client.view.social.SocialGUIController;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -125,6 +123,11 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
         showAlertMessage(message);
     }
 
+    @Override
+    public void setController(it.unibo.pps2017.client.controller.socialcontroller.SocialController controller) {
+
+    }
+
     private void showAndHideTextResponse(){
         Task<Void> sleeper = new Task<Void>() {
             @Override
@@ -178,20 +181,9 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
             primaryStage.getScene().setRoot(root);
             primaryStage.centerOnScreen();
 
-            final PlayGameController gameController = loader.getController();
-            startActorController(gameController);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void startActorController(PlayGameController gameController){
-        ClientController clientController = ClientController$.MODULE$.getSingletonController();
-        clientController.setPlayGameController(gameController);
-        gameController.setGameController(clientController.getGameController());
-        clientController.startActorSystem("127.0.0.1", "127.0.0.1");
-        clientController.createRestClient("127.0.0.1", DISCOVERY_PORT);
-        clientController.sendMatchRequest();
     }
 
     @Override

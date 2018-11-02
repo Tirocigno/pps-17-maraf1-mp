@@ -17,7 +17,6 @@ public class GenericView extends Application {
             final FXMLLoader loader = new FXMLLoader(SocialView.class.getResource("genericView.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.setFullScreen(false);
             primaryStage.setMinHeight(MIN_HEIGHT);

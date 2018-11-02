@@ -18,7 +18,6 @@ public class SocialView extends Application {
             final FXMLLoader loader = new FXMLLoader(SocialView.class.getResource("socialView.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.setFullScreen(false);
             primaryStage.setMinHeight(MIN_HEIGHT);

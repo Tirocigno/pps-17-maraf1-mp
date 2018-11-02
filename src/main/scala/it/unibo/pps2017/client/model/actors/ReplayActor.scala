@@ -5,9 +5,11 @@ import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.client.model.actors.ReplayActor.SendHeartbeat
 import it.unibo.pps2017.client.model.actors.ReplayActorStatus._
+import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.core.deck.cards.Seed._
 import it.unibo.pps2017.server.model._
+
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 
@@ -17,11 +19,11 @@ object ReplayActor {
 
 }
 
-class ReplayActor(override val controller: GameController, username: String, game: Game) extends ClientGameActor {
+class ReplayActor(override val controller: GameController, player: String, game: Game) extends ClientGameActor {
 
   import system.dispatcher
 
-  var user: String = username
+  var user: String = player
   val system = ActorSystem("ScheduledActors")
   var gameCounter: ReplayActorStatus = PRE_SET
   var cardsListPlayer = new ListBuffer[String]()
@@ -123,7 +125,7 @@ class ReplayActor(override val controller: GameController, username: String, gam
   }
 
   override
-  def getUsername: String = {
+  def username: String = {
     user
   }
 

@@ -16,6 +16,7 @@ import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
+import scala.collection.JavaConverters._
 
 /**
   * This trait is a mediator between the actor that handle the social
@@ -158,7 +159,7 @@ object SocialController {
     override def setCurrentGui(gui: SocialGUIController): Unit = currentGUI = Some(gui)
 
     override def notifyCallResultToGUI(message: Option[String]): Unit =
-      currentGUI.get.notifyAPIResult(message)
+      currentGUI.get.notifyAPIResult(message.get)
 
     override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit = {
       sendMessage(SetOnlinePlayersMapMessage(onlinePlayers))
@@ -173,16 +174,16 @@ object SocialController {
     }
 
     override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit =
-      currentGUI.get.updateParty(currentPartyMap.map(entry => (entry._1.asString, entry._2)))
+      currentGUI.get.updateParty(currentPartyMap.map(entry => (entry._1.asString, entry._2)).asJava)
 
     override def executeFoundGameCall(paramMap: Map[String, String]): Unit =
       parentController.sendMatchRequest(matchNature.get, Some(paramMap))
 
     override def updateOnlinePlayerList(playerRefList: FriendList): Unit =
-      currentGUI.get.updateOnlinePlayersList(playerRefList)
+      currentGUI.get.updateOnlinePlayersList(playerRefList.asJava)
 
     override def updateOnlineFriendsList(friendList: FriendList): Unit = {
-      currentGUI.get.updateOnlineFriendsList(friendList)
+      currentGUI.get.updateOnlineFriendsList(friendList.asJava)
     }
 
     override def tellFriendShipMessage(playerID: PlayerID): Unit = {
@@ -205,7 +206,7 @@ object SocialController {
 
     override def finishGame(): Unit = {
       sendMessage(ResetParty)
-      currentGUI.get.updateParty(Map())
+      currentGUI.get.updateParty(Map[String,String]().asJava)
     }
 
     override def createActor(actorID: String, actorSystem: ActorSystem): Unit = {
@@ -215,14 +216,14 @@ object SocialController {
 
     override def updateGUI(message: ActorMessage): Unit = message match {
       case response: AddFriendResponseMessage =>
-        currentGUI.get.notifyMessageResponse(Some(response.senderID), response.socialResponse.message, response.request)
+        currentGUI.get.notifyMessageResponse(response.senderID, response.socialResponse.message, response.request)
       case response: InvitePlayerResponseMessage =>
-        currentGUI.get.notifyMessageResponse(response.myRole.map(_.playerReference.playerID),
+        currentGUI.get.notifyMessageResponse(response.myRole.map(_.playerReference.playerID).get,
           response.socialResponse.message, response.request)
       case AddFriendRequestMessage(sender) =>
-        currentGUI.get.displayRequest(sender.playerID, None)
+        currentGUI.get.displayRequest(sender.playerID, "")
       case InvitePlayerRequestMessage(sender, role) =>
-        currentGUI.get.displayRequest(sender.playerID, Some(role.asString))
+        currentGUI.get.displayRequest(sender.playerID, role.asString)
       case _ => currentGUI.get.notifyErrorOccurred(UNKNOWN_MESSAGE)
     }
 

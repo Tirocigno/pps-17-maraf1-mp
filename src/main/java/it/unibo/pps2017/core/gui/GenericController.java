@@ -1,9 +1,5 @@
 package it.unibo.pps2017.core.gui;
 
-import it.unibo.pps2017.client.controller.ClientController;
-import it.unibo.pps2017.client.controller.ClientController$;
-import it.unibo.pps2017.client.view.SocialGUIController;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,7 +8,6 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class GenericController implements BasicPlayerOptions{
 
@@ -43,20 +38,9 @@ public class GenericController implements BasicPlayerOptions{
             primaryStage.getScene().setRoot(root);
             primaryStage.centerOnScreen();
 
-            final PlayGameController gameController = loader.getController();
-            startActorController(gameController);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void startActorController(PlayGameController gameController){
-        ClientController clientController = ClientController$.MODULE$.getSingletonController();
-        clientController.setPlayGameController(gameController);
-        gameController.setGameController(clientController.getGameController());
-        clientController.startActorSystem("127.0.0.1", "127.0.0.1");
-        clientController.createRestClient("127.0.0.1", DISCOVERY_PORT);
-        clientController.sendMatchRequest();
     }
 
     public void handleWatchMatch(){
