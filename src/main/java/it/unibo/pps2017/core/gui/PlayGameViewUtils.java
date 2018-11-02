@@ -22,6 +22,7 @@ class PlayGameViewUtils {
     private static final int MIN_WIDTH = 900;
     private static final int MIN_HEIGHT = 685;
     private static final int DISCOVERY_PORT = 2000;
+    private static final int SLEEP_CLEAN_FIELD = 1000;
 
     static int getMinWidth() { return MIN_WIDTH; }
 
@@ -43,6 +44,10 @@ class PlayGameViewUtils {
 
     static int getMaxCardsInHand() {
         return MAX_CARDS_IN_HAND;
+    }
+
+    static int getSleepCleanField() {
+        return SLEEP_CLEAN_FIELD;
     }
 
     static String getFormat() {

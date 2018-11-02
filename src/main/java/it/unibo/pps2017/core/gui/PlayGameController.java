@@ -239,7 +239,14 @@ public class PlayGameController extends GameGUIController implements PlayGame {
             hideCommands();
         }
 
-        if (partialTurnIsEnded) cleanField();
+        if (partialTurnIsEnded) {
+            try {
+                Thread.sleep(PlayGameViewUtils.getSleepCleanField());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            cleanField();
+        }
 
         Image emptyFieldMyTurn = getImageFromPath(PlayGameViewUtils.getEmptyFieldMyTurn());
 
