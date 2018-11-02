@@ -36,8 +36,8 @@ case class RedisUtils() extends DatabaseUtils {
     val fromRange: Long = from.getOrElse(0)
     val toRange: Long = to.getOrElse(-1)
 
-    //TODO Gestirsi bene il to in modo che se sia presente non richieda che il client sappia la lungezza del ranking.
-    db.zrevrangebyscoreWithscores(RANKING_KEY, Limit(Double.NegativeInfinity), Limit(Double.PositiveInfinity), Some((fromRange, toRange)))
+    
+    db.zrevrangeWithscores(RANKING_KEY, fromRange, toRange)
       .onComplete {
         case Success(res) =>
           db.quit()
