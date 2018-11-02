@@ -27,9 +27,13 @@ class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
 
 object ClientMain extends App {
   val conf = new Conf(args)
-    Application.launch(classOf[ClientMain], args: _*)
+  if (conf.discoveryip.supplied) {
+    println("yay")
+  }
   val clientController: ClientController = ClientController.getSingletonController
   clientController.startActorSystem(conf.discoveryip(), conf.myip())
   clientController.createRestClient(conf.discoveryip(), conf.myport())
   clientController.sendMatchRequest(CasualMatch, None)
+    Application.launch(classOf[ClientMain], args: _*)
+
 }
