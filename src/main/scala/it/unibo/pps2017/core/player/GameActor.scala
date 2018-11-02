@@ -280,10 +280,10 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
     println("PRIMO PUNTEGGIO: " + setScore._1 + "SECONDO PUNTEGGIO: " + setScore._2)
     if(team1.getScore > team2.getScore){
-      mediator ! Publish(topicName, PartialGameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore))
+      mediator ! Publish(topicName, GameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore, false))
     }
     else{
-      mediator ! Publish(topicName, PartialGameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore))
+      mediator ! Publish(topicName, GameScore(team2.firstMember.get, team2.secondMember.get, team1.getScore, team2.getScore, false))
     }
 
     getGameWinner match {
@@ -302,7 +302,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   private def notifyWinner(team: BaseTeam[PlayerName]): Unit = {
     println("Mando gamescore")
     gameEnd = true
-    mediator ! Publish(topicName, FinalGameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore))
+    mediator ! Publish(topicName, GameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore, true))
     onGameEnd()
   }
 
