@@ -105,7 +105,6 @@ class ReplayActor(override val controller: GameController, username: String, gam
   }
 
   private def computeEndSet(): Unit = {
-
     try {
       currentSet = game.turns(game.turns.indexOf(currentSet) + 1)
       if (team1Score > team2Score)
