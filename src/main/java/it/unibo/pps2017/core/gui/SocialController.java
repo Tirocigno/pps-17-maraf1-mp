@@ -37,15 +37,30 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
     private static final int DISCOVERY_PORT = 2000;
 
 
+    private String getSelection(ListView<String> listView){
+        return listView.getSelectionModel().getSelectedItem();
+    }
+
+    private String getSelection(ComboBox<String> comboBox){
+        return comboBox.getSelectionModel().getSelectedItem();
+    }
+
+    /**
+     * Handles the click of addFriend button by adding the player as friend
+     */
     public void addNewFriend(){
-        String friendAdded = onlineFriends.getSelectionModel().getSelectedItem();
+        String friendAdded = getSelection(onlinePlayers);
         hideReplayMatch();
         hideViewMatch();
         //addFriend(newFriend);
     }
 
+    /**
+     * Handles the click of inviteFriend button by sending to the friend the
+     * invitation to play together
+     */
     public void invitePlayer(){
-        String playerInvited = onlinePlayers.getSelectionModel().getSelectedItem();
+        String playerInvited = getSelection(onlineFriends);
         hideReplayMatch();
         hideViewMatch();
         //sendPlayerInvitation(playerInvited);
@@ -70,7 +85,7 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
 
     @Override
     public void updateParty(java.util.Map<String, String> partyMap) {
-        String label="All players: ";
+        String label = "All players: ";
         for(java.util.Map.Entry<String,String> entry : partyMap.entrySet()){
             label += entry.getKey() + " (" + entry.getValue() +")\t";
         }
@@ -86,23 +101,6 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
             responseLabel.setText(sender + REJECT_MSG);
         }
         showAndHideTextResponse();
-    }
-
-    private void showAndHideTextResponse(){
-        Task<Void> sleeper = new Task<Void>() {
-            @Override
-            protected Void call() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
-
-        sleeper.setOnSucceeded(event -> responseLabel.setText(""));
-        new Thread(sleeper).start();
     }
 
     @Override
@@ -127,18 +125,43 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
         showAlertMessage(message);
     }
 
+    private void showAndHideTextResponse(){
+        Task<Void> sleeper = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+
+        sleeper.setOnSucceeded(event -> responseLabel.setText(""));
+        new Thread(sleeper).start();
+    }
+
     private void showAlertMessage(String msg){
         Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
         alert.showAndWait();
     }
 
-    @FXML
-    private void handlePlayMatch(){
+
+    /**
+     * Handles the click of play button so that the player
+     * can play a non-competitive game without effect in ranking
+     */
+    public void handlePlayMatch(){
         playMatch(false);
         //set non competitive msg
     }
-    @FXML
-    private void handlePlayCompetitiveMatch(){
+
+    /**
+     * Handles the click of playCompetitive button so that the player
+     * can play a competitive game with effect in ranking
+     */
+    public void handlePlayCompetitiveMatch(){
         playMatch(true);
         //set competitive msg
     }
@@ -176,40 +199,51 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
        //create view actor
     }
 
-    @FXML
-    private void viewMatch(){
+    /**
+     * Handles the click of viewMatch button by showing a combobox
+     * and an ok button in way to choose the game to watch
+     */
+    public void viewMatch(){
         List<String> matches = new ArrayList<>();
-        matches.add("m1");
-        matches.add("m2");
-        matches.add("m3");
+        // get matches
         comboView.getItems().clear();
         comboView.getItems().addAll(matches);
         hideReplayMatch();
         showViewMatch();
     }
-    @FXML
+
+
+    /**
+     * Handles the click of ok button in the view combobox
+     * redirecting the player to the game to watch
+     */
     public void okViewMatch(){
-        if(comboView.getSelectionModel().getSelectedItem() != null){
-            System.out.println(comboView.getSelectionModel().getSelectedItem());
+        if(getSelection(comboView) != null){
+            System.out.println(getSelection(comboView));
         }
         //start view match
     }
-    @FXML
-    private void replayMatch(){
+
+    /**
+     * Handles the click of replayMatch button by showing a combobox
+     * and an ok button in way to choose the game to replay
+     */
+    public void replayMatch(){
         List<String> matches = new ArrayList<>();
-        matches.add("m12");
-        matches.add("m32");
-        matches.add("m35");
+        //get list matches
         comboView.getItems().clear();
         comboReplay.getItems().addAll(matches);
         hideViewMatch();
         showReplayMatch();
     }
 
-    @FXML
+    /**
+     * Handles the click of ok button in the replay combobox
+     * redirecting the player to the game to replay
+     */
     public void okReplayMatch(){
-        if(comboReplay.getSelectionModel().getSelectedItem() != null){
-            System.out.println(comboReplay.getSelectionModel().getSelectedItem());
+        if(getSelection(comboReplay) != null){
+            System.out.println(getSelection(comboReplay));
         }
         //start view match
     }
