@@ -36,9 +36,7 @@ object ClientMessages {
 
   case class CardOk(correctClickedCard: Boolean, player: String) extends ActorMessage
 
-  case class PartialGameScore(winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
-
-  case class FinalGameScore(winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
+  case class GameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean) extends ActorMessage
 
   case class IdChannelPublishSubscribe(id: String) extends ActorMessage
 
@@ -46,11 +44,13 @@ object ClientMessages {
 
   case class CardPlayedAck() extends ActorMessage
 
-  case class ComputePartialGameScore(user: String, winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
-
-  case class ComputeFinalGameScore(user: String, winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
+  case class ComputeGameScore(user: String, winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean) extends ActorMessage
 
   case class SetUsernamePlayer(playerUsername: String) extends ActorMessage
 
-  case class RecapActualSituation(playersList: ListBuffer[String], cards: List[String], seed: Seed, player: String) extends ActorMessage
+  case class RecapActualSituation(playersList: ListBuffer[String], cards: ListBuffer[String], seed: Seed, player: String) extends ActorMessage
+
+  case class ClosedPlayGameView(player: String) extends ActorMessage
+
+  case class NotifyClosedPlayGameView() extends ActorMessage
 }

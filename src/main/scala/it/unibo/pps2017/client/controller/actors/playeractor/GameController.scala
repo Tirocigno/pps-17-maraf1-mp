@@ -1,11 +1,10 @@
 
 package it.unibo.pps2017.client.controller.actors.playeractor
 
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient
-import it.unibo.pps2017.client.view.game.GameGUIController
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
 
@@ -126,10 +125,8 @@ class GameController extends MatchController {
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
     case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
-      // ho messo due volte isFirstPlayer in attesa che ulio sistemi endPartialTurn
-    case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, isFirstPlayer, isFirstPlayer)
-    case ComputePartialGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2)
-    case ComputeFinalGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndMatch(user, winner1, winner2, score1, score2)
+    case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
+    case ComputeGameScore(user, winner1, winner2, score1, score2, endMatch) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2, endMatch)
     case _ =>
   }
 
@@ -174,56 +171,29 @@ class GameController extends MatchController {
   /**
     * Method to verify if player is a winner of this turn or not.
     *
-    * @param user    Current player.
-    * @param winner1 First of two winners of this turn.
-    * @param winner2 Second of two winners of this turn.
-    * @param score1  Aggregated score of first team.
-    * @param score2  Aggregated score of second team.
+    * @param user     Current player.
+    * @param winner1  First of two winners of this turn/match.
+    * @param winner2  Second of two winners of this turn/match.
+    * @param score1   Aggregated score of first team.
+    * @param score2   Aggregated score of second team.
+    * @param endMatch True if match is ended, false otherwise.
     */
-  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
+  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit = {
 
-    if (score1 == score2) {
-      playGameController.cleanFieldEndTotalTurn(score1, score2, false)
-    } else {
+    if (score1 == score2)
+      playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+    else {
       if (user.equals(winner1) | user.equals(winner2)) {
         if (score1 > score2)
-          playGameController.cleanFieldEndTotalTurn(score1, score2, false)
-        else playGameController.cleanFieldEndTotalTurn(score2, score1, false)
+          playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+        else
+          playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
+        this.setWinner(endMatch)
       } else {
-        if (score1 > score2) playGameController.cleanFieldEndTotalTurn(score2, score1, false)
-        else playGameController.cleanFieldEndTotalTurn(score1, score2, false)
-      }
-    }
-
-  }
-
-  /**
-    * Method to verify if player is a winner of match.
-    *
-    * @param user    Current player.
-    * @param winner1 First of two winners of match.
-    * @param winner2 Second of two winners of match.
-    * @param score1  Final score of first team.
-    * @param score2  Final score of second team.
-    */
-  def cleanFieldEndMatch(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
-
-    if (user.equals(winner1) | user.equals(winner2)) {
-      if (score1 > score2) {
-        playGameController.cleanFieldEndTotalTurn(score1, score2, true)
-        this.setWinner(true)
-      } else {
-        playGameController.cleanFieldEndTotalTurn(score2, score1, true)
-        this.setWinner(true)
-      }
-    } else {
-      if (score1 > score2) {
-        playGameController.cleanFieldEndTotalTurn(score2, score1, true)
-        this.setWinner(false)
-      }
-      else {
-        playGameController.cleanFieldEndTotalTurn(score1, score2, true)
-        this.setWinner(false)
+        if (score1 > score2)
+          playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
+        else
+          playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
       }
     }
   }
@@ -276,4 +246,19 @@ class GameController extends MatchController {
     println("GUI registered")
     playGameController = gui.asInstanceOf[PlayGameController]
   }
+  /**
+    * Method to stop actor and communicated it at controller.
+    */
+  def endedMatch(): Unit = {
+    // clientController
+    currentActorRef ! PoisonPill
+  }
+
+  /**
+    * Method to notify actor that view was closed.
+    */
+  def closedPlayGameView(): Unit = {
+    currentActorRef ! NotifyClosedPlayGameView
+  }
+
 }

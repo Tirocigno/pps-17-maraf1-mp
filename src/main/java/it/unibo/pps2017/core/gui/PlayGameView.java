@@ -1,51 +1,47 @@
 package it.unibo.pps2017.core.gui;
 
-import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
-import it.unibo.pps2017.client.controller.clientcontroller.ClientController$;
-import it.unibo.pps2017.commons.remote.game.MatchNature;
+import it.unibo.pps2017.client.controller.ClientController;
+import it.unibo.pps2017.client.controller.ClientController$;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import scala.Option;
 
 public class PlayGameView extends Application {
 
-	private static final int MIN_WIDTH = 900;
-	private static final int MIN_HEIGHT = 685;
-	private static final int DISCOVERY_PORT = 2000;
-
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-            final FXMLLoader loader = new FXMLLoader(PlayGameView.class.getResource("PlayGameView.fxml"));
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            final FXMLLoader loader;
+            loader = new FXMLLoader(PlayGameView.class.getResource(PlayGameViewUtils.getPlayGameViewFxml()));
             Parent root = loader.load();
             final PlayGameController gameController = loader.getController();
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.setFullScreen(true);
-			primaryStage.setMinHeight(MIN_HEIGHT);
-			primaryStage.setMinWidth(MIN_WIDTH);
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.setFullScreen(true);
+            primaryStage.setMinHeight(PlayGameViewUtils.getMinHeight());
+            primaryStage.setMinWidth(PlayGameViewUtils.getMinWidth());
 			ClientController clientController = ClientController$.MODULE$.getSingletonController();
-			//clientController.setPlayGameController(gameController);
-			// gameController.setGameController(clientController.getGameController());
+            clientController.setPlayGameController(gameController);
+            gameController.setGameController(clientController.getGameController());
 			clientController.startActorSystem("127.0.0.1", "127.0.0.1");
-			clientController.createRestClient("127.0.0.1", DISCOVERY_PORT);
-			clientController.sendMatchRequest(MatchNature.CasualMatch$.MODULE$, Option.empty());
-			primaryStage.show();
+			clientController.createRestClient("127.0.0.1", PlayGameViewUtils.getDiscoveryPort());
+            clientController.sendMatchRequest();
+            primaryStage.show();
 
-			/*Thread.sleep(2000);
-
-			primaryStage.hide();*/
+            primaryStage.setOnHidden(e -> {
+                gameController.shutdown();
+                Platform.exit();
+            });
 
         } catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

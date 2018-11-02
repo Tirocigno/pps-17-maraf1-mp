@@ -4,6 +4,7 @@ package it.unibo.pps2017.server.model
 
 import it.unibo.pps2017.commons.remote.rest.RestUtils.MatchRef
 import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
+import scala.collection.SortedMap
 
 /**
   * This class is used for define the message accepted to the RouterResponse.
@@ -13,25 +14,28 @@ import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
 sealed trait JsonResponse
 
 case class Message(message: String) extends JsonResponse
-
 case class Error(cause: Option[String] = None) extends JsonResponse
 
 case class GameFound(gameId: String) extends JsonResponse
-
 case class ServerContextEncoder(ipAddress: String, port: Int) extends JsonResponse
-
 case class MatchesSetEncoder(set: Set[MatchRef]) extends JsonResponse
-
 case class GameHistory(gameId: String, teams: Seq[Side], gameSet: GameSet) extends JsonResponse
-
 case class Side(members: Seq[String]) extends JsonResponse
-
 case class User(username: String, score: Int) extends JsonResponse
-
 case class UserFriends(username: String, friends: Seq[String]) extends JsonResponse
 
 
 case class OnlinePlayersMapEncoder(map: SocialMap) extends JsonResponse
+
+case class SavedMatches(games: Seq[StoredMatch]) extends JsonResponse
+case class StoredMatch(gameId: String, team1: Side, team2: Side)
+
+case class Matches(games: Seq[LiveGame]) extends JsonResponse
+case class LiveGame(gameId: String, team1: Side, team2: Side, gameType: String) extends JsonResponse
+
+case class Ranking(members: Seq[RankElement]) extends JsonResponse
+case class RankElement(player: String, score: Long)
+
 
 
 /**
@@ -44,7 +48,7 @@ case class OnlinePlayersMapEncoder(map: SocialMap) extends JsonResponse
   * @param winners
   * username of the game winners.
   */
-case class Game(players: Seq[String], turns: Seq[GameSet], winners: Seq[String])
+case class Game(players: Seq[String], turns: Seq[GameSet], winners: Seq[String]) extends JsonResponse
 
 /**
   * A game set.

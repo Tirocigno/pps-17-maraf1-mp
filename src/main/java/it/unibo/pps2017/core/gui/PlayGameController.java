@@ -26,22 +26,6 @@ import java.util.Map;
 
 public class PlayGameController extends GameGUIController implements PlayGame {
 
-    private static final String COMMANDS_PATH = "commands/";
-    private static final String BACK = "cards/back.png";
-    private static final String BACK_REVERSE = "cards/backReverse.png";
-    private static final String EMPTY_FIELD = "cards/emptyField.png";
-    private static final String EMPTY_FIELD_MY_TURN = "cards/emptyFieldMyTurn.png";
-    private static final String WIN_MATCH = "images/win.png";
-    private static final String LOSE_MATCH = "images/lose.png";
-    private static final String BRISCOLA_CHOSEN = "Briscola chosen: ";
-    private static final String MY_TEAM_SCORE = "My team's score: ";
-    private static final String OPPONENT_TEAM_SCORE = "Opponent team's score: ";
-    private static final String CHOOSE_YOUR_BRISCOLA = "Choose your briscola";
-    private static final int DURATION_ANIMATION = 3;
-    private static final int START_ANIMATION_POSITION = 1;
-    private static final int END_ANIMATION_POSITION = 2;
-    private static final int MAX_CARDS_IN_HAND = 10;
-    private static final String FORMAT = ".png";
     private GameController gameController;
 
     @FXML
@@ -78,7 +62,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     Label scoreTeams;
 
     @FXML
-    Text briscolaLabel, cardNotOk;
+    Text briscolaLabel, cardNotOk, usernamePlayer1, usernamePlayer2, usernamePlayer3, usernamePlayer4, waitingTime;
 
     private Map<String, String> indexOfMyCards;
     private List<String> playersList;
@@ -93,7 +77,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     private String player2;
     private String player3;
     private String player4;
-    private ImageView playedCard;
 
     private List<String> idUserCards;
     private boolean briscolaChosen = true;
@@ -112,6 +95,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     @FXML
     public void initialize() {
         createCardsListPlayers();
+        this.waitingTime.setVisible(true);
     }
 
     @Override
@@ -119,14 +103,27 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         this.gameController = controller;
     }
 
-
     @Override
     public void setPlayersList(final List<String> playersList) {
+        this.waitingTime.setVisible(false);
         this.playersList = playersList;
         this.player1 = playersList.get(0);
         this.player2 = playersList.get(1);
         this.player3 = playersList.get(2);
         this.player4 = playersList.get(3);
+        Platform.runLater(() -> {
+            usernamePlayer1.setText(this.player1);
+            usernamePlayer2.setText(this.player2);
+            usernamePlayer3.setText(this.player3);
+            usernamePlayer4.setText(this.player4);
+        });
+    }
+
+    /**
+     * This method is called when the player want close match from Gui.
+     */
+    void shutdown() {
+        gameController.closedPlayGameView();
     }
 
     /**
@@ -138,14 +135,14 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     public void signalMyCommands(final ActionEvent buttonPressed) {
         Button button = (Button) buttonPressed.getSource();
         String command = button.getText().toLowerCase();
-        Image image = getImageFromPath(COMMANDS_PATH + command + FORMAT);
+        Image image = getImageFromPath(PlayGameViewUtils.getCommandsPath() + command + PlayGameViewUtils.getFormat());
         createTimeline(currentUserCommand, image);
         gameController.setCommandFromPlayer(command);
     }
 
     @Override
     public void getCommand(final String player, final String command) {
-        Image userCommand = getImageFromPath(COMMANDS_PATH + command + FORMAT);
+        Image userCommand = getImageFromPath(PlayGameViewUtils.getCommandsPath() + command + PlayGameViewUtils.getFormat());
         if (player.equals(player2)) {
             createTimeline(userTwoCommand, userCommand);
         } else if (player.equals(player3)) {
@@ -170,7 +167,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
 
     @Override
     public void getBriscolaChosen(final String briscola) {
-        this.briscolaLabel.setText(BRISCOLA_CHOSEN + briscola);
+        this.briscolaLabel.setText(PlayGameViewUtils.getBriscolaChosen() + briscola);
         this.briscolaLabel.setVisible(true);
     }
 
@@ -180,9 +177,9 @@ public class PlayGameController extends GameGUIController implements PlayGame {
      * @param clickedCard clickedCard.
      */
     public void clickedCard(final MouseEvent clickedCard) {
-
+        ImageView playedCard;
         if (gameController.isMyTurn() && briscolaChosen) {
-            this.playedCard = (ImageView) clickedCard.getSource();
+            playedCard = (ImageView) clickedCard.getSource();
             String clickedCardId = playedCard.getId();
             int indexCardSelected = getIndexOfCardSelected(clickedCardId);
             gameController.setPlayedCard(indexCardSelected);
@@ -192,7 +189,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     @Override
     public void showPlayedCardOk() {
         this.cardNotOk.setVisible(false);
-        playedCard.setVisible(false);
         hideCommands();
     }
 
@@ -203,14 +199,12 @@ public class PlayGameController extends GameGUIController implements PlayGame {
 
     @Override
     public void getCardsFirstPlayer(final List<String> firstUserCards) {
-
-        /* Passo il numero delle carte del player per capire se eliminarne alcune dagli altri player */
         initializePlayersHand(firstUserCards.size());
         cleanField();
         this.indexOfMyCards.clear();
         int cardCounter = 0;
 
-        for (final ImageView firstPlayerCard: cardsPlayer1) {
+        for (final ImageView firstPlayerCard : cardsPlayer1) {
             Image userCard = getImageFromPath(firstUserCards.get(cardCounter));
             indexOfMyCards.put(idUserCards.get(cardCounter), firstUserCards.get(cardCounter));
             firstPlayerCard.setImage(userCard);
@@ -224,6 +218,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         Image cardPlayed = getImageFromPath(cardPath);
 
         if (player.equals(player1)) {
+            this.hidePlayedCard(cardPath);
             this.user1Field.setImage(cardPlayed);
         } else if (player.equals(player2)) {
             this.user2Field.setImage(cardPlayed);
@@ -246,7 +241,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
 
         if (partialTurnIsEnded) cleanField();
 
-        Image emptyFieldMyTurn = getImageFromPath(EMPTY_FIELD_MY_TURN);
+        Image emptyFieldMyTurn = getImageFromPath(PlayGameViewUtils.getEmptyFieldMyTurn());
 
         if (player.equals(player1)) {
             this.user1Field.setImage(emptyFieldMyTurn);
@@ -267,19 +262,19 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     }
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
-        Platform.runLater( () -> {
-            scoreTeams.setText(MY_TEAM_SCORE + scoreFirstTeam + "\n" + OPPONENT_TEAM_SCORE + scoreSecondTeam);
+        Platform.runLater(() -> {
+            scoreTeams.setText(PlayGameViewUtils.getMyTeamScore() + scoreFirstTeam + "\n" + PlayGameViewUtils.getOpponentTeamScore() + scoreSecondTeam);
             scoreTeams.setVisible(true);
             createLabelScaleTransition(scoreTeams, endedMatch);
         });
     }
 
     private void createLabelScaleTransition(final Label score, final boolean endedMatch) {
-        ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), score);
-        scoreTransition.setFromX(START_ANIMATION_POSITION);
-        scoreTransition.setFromY(START_ANIMATION_POSITION);
-        scoreTransition.setToX(END_ANIMATION_POSITION);
-        scoreTransition.setToY(END_ANIMATION_POSITION);
+        ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(PlayGameViewUtils.getDurationAnimation()), score);
+        scoreTransition.setFromX(PlayGameViewUtils.getStartAnimationPosition());
+        scoreTransition.setFromY(PlayGameViewUtils.getStartAnimationPosition());
+        scoreTransition.setToX(PlayGameViewUtils.getEndAnimationPosition());
+        scoreTransition.setToY(PlayGameViewUtils.getEndAnimationPosition());
         scoreTransition.play();
 
         scoreTransition.setOnFinished(endScore -> {
@@ -288,12 +283,13 @@ public class PlayGameController extends GameGUIController implements PlayGame {
                 boolean winMatch;
                 winMatch = gameController.getWinner();
                 if (winMatch) {
-                    finalImage = getImageFromPath(WIN_MATCH);
+                    finalImage = getImageFromPath(PlayGameViewUtils.getWinMatch());
                     createImageScaleTransition(finalImage);
                 } else {
-                    finalImage = getImageFromPath(LOSE_MATCH);
+                    finalImage = getImageFromPath(PlayGameViewUtils.getLoseMatch());
                     createImageScaleTransition(finalImage);
                 }
+                this.endedMatch();
             }
             this.scoreTeams.setText("");
         });
@@ -301,9 +297,9 @@ public class PlayGameController extends GameGUIController implements PlayGame {
 
     private void createImageScaleTransition(final Image image) {
         this.gameOverImage.setImage(image);
-        ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(DURATION_ANIMATION), this.gameOverImage);
-        scoreTransition.setToX(END_ANIMATION_POSITION + 1);
-        scoreTransition.setToY(END_ANIMATION_POSITION + 1);
+        ScaleTransition scoreTransition = new ScaleTransition(Duration.seconds(PlayGameViewUtils.getDurationAnimation()), this.gameOverImage);
+        scoreTransition.setToX(PlayGameViewUtils.getEndAnimationPosition() + 1);
+        scoreTransition.setToY(PlayGameViewUtils.getEndAnimationPosition() + 1);
         scoreTransition.play();
         scoreTransition.setOnFinished(endScore -> this.gameOverImage.setVisible(false));
     }
@@ -315,7 +311,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         this.clubButton.setVisible(true);
         this.cupButton.setVisible(true);
         this.swordButton.setVisible(true);
-        this.briscolaLabel.setText(CHOOSE_YOUR_BRISCOLA);
+        this.briscolaLabel.setText(PlayGameViewUtils.getChooseYourBriscola());
         this.briscolaLabel.setVisible(true);
     }
 
@@ -352,7 +348,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     }
 
     private void cleanField() {
-        Image emptyField = getImageFromPath(EMPTY_FIELD);
+        Image emptyField = getImageFromPath(PlayGameViewUtils.getEmptyField());
         this.user1Field.setImage(emptyField);
         this.user2Field.setImage(emptyField);
         this.user3Field.setImage(emptyField);
@@ -377,10 +373,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     }
 
     private void initializePlayersHand(int firstUserCards) {
-        /* nel caso del Viewer potrei entrare nella partita come spettatore
-        in un momento in cui sono ad esempio gia' state giocate due mani. Allora
-        gli avversari dovranno avere nelle mani 10 - mani giocate carte.
-         */
         this.editableCardsPlayer2 = new ArrayList<>(cardsPlayer2);
         this.editableCardsPlayer3 = new ArrayList<>(cardsPlayer3);
         this.editableCardsPlayer4 = new ArrayList<>(cardsPlayer4);
@@ -417,7 +409,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         this.cardsPlayer2.add(ninthCardUser2);
         this.cardsPlayer2.add(tenthCardUser2);
         for (final ImageView image : cardsPlayer2) {
-            image.setImage(getImageFromPath(BACK_REVERSE));
+            image.setImage(getImageFromPath(PlayGameViewUtils.getBackReverse()));
         }
     }
 
@@ -433,7 +425,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         this.cardsPlayer3.add(ninthCardUser3);
         this.cardsPlayer3.add(tenthCardUser3);
         for (final ImageView image : cardsPlayer3) {
-            image.setImage(getImageFromPath(BACK));
+            image.setImage(getImageFromPath(PlayGameViewUtils.getBack()));
         }
     }
 
@@ -449,7 +441,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         this.cardsPlayer4.add(ninthCardUser4);
         this.cardsPlayer4.add(tenthCardUser4);
         for (final ImageView image : cardsPlayer4) {
-            image.setImage(getImageFromPath(BACK_REVERSE));
+            image.setImage(getImageFromPath(PlayGameViewUtils.getBackReverse()));
         }
     }
 
@@ -483,9 +475,26 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     }
 
     private void normalizeHandOtherPlayers(List<ImageView> listOfOtherHand, int cardNotPlayedYet) {
-        for (int i = 0; i < MAX_CARDS_IN_HAND - cardNotPlayedYet; i++) {
+        for (int i = 0; i < PlayGameViewUtils.getMaxCardsInHand() - cardNotPlayedYet; i++) {
             deleteCard(listOfOtherHand);
         }
+    }
+
+    private void hidePlayedCard(final String cardPath) {
+        String imageClicked = "";
+        for (final Map.Entry<String, String> entry : indexOfMyCards.entrySet()) {
+            if (cardPath.contains(entry.getValue())) {
+                imageClicked = entry.getKey();
+            }
+        }
+        for (final ImageView image : cardsPlayer1)
+            if (image.getId().equals(imageClicked)) {
+                image.setVisible(false);
+            }
+    }
+
+    private void endedMatch() {
+        gameController.endedMatch();
     }
 
     @Override

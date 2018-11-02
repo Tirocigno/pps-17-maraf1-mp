@@ -43,6 +43,8 @@ object ServerApi {
 
     val RANKED_VALUE = "true"
 
+    val rankedKey = "ranked"
+
     override def path: String = "/foundGame"
 
     override def httpMethod: HttpMethod = HttpMethod.POST

@@ -147,9 +147,6 @@ case class LobbyImpl(onFullLobby: Lobby => Unit,
   /**
     * Check if the lobby can contains the given players.
     *
-    * @param team1
-    * First team.
-    * @param opponents
     * Opponents.
     * @return
     * The lobby status.
@@ -195,15 +192,15 @@ object LobbyStatusResponse {
   }
 
   case object OK extends LobbyStatusResponse {
-    override val asString: String = "Sword"
+    override val asString: String = "Ok"
   }
 
   case object REVERSE extends LobbyStatusResponse {
-    override val asString: String = "Cup"
+    override val asString: String = "Reverse"
   }
 
   case object FULL extends LobbyStatusResponse {
-    override val asString: String = "Coin"
+    override val asString: String = "Full"
   }
 
 
@@ -214,6 +211,28 @@ object LobbyStatusResponse {
     */
   def values: Iterable[LobbyStatusResponse] = Iterable(OK, REVERSE, FULL)
 
+}
+
+object GameType {
+  sealed trait  GameType {
+    def asString: String
+  }
+
+  case object RANKED extends GameType {
+    override val asString: String = "ranked"
+  }
+
+  case object UNRANKED extends GameType {
+    override val asString: String = "unranked"
+  }
+
+
+  /**
+    * This method is used to get all the available seeds
+    *
+    * @return a Iterable containing all the available seeds.
+    */
+  def values: Iterable[GameType] = Iterable(RANKED, UNRANKED)
 }
 
 

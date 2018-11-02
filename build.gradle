@@ -179,6 +179,9 @@ dependencies {
     scoverage "org.scoverage:scalac-scoverage-runtime_2.12:$sCoveragePluginVersion"
 
     compile "com.github.etaty:rediscala_$scalaMajor:$redisScalaVersion"
+    compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
+
+
 }
 
 /**
