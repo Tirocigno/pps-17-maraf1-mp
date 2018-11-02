@@ -50,7 +50,7 @@ case class UserDispatcher() {
 
   def login: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
     val username = getUsernameOrResponseError(ctx, res)
-    val password: String = ctx.request().getParam("password").getOrElse("")
+    val password: String = ctx.request().formAttributes().get("password").getOrElse("")
 
     userDatabaseUtils.checkUserExisting(username.toString, exist => {
       if (exist) {
@@ -117,8 +117,6 @@ case class UserDispatcher() {
   }
 
   def getFriends: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = RedisConnection().getDatabaseConnection
-    res.setOnClose(Some(closeDatabaseConnection(db)))
 
     val username = getUsernameOrResponseError(ctx, res)
 
