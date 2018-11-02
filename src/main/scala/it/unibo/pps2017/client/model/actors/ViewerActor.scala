@@ -42,12 +42,8 @@ class ViewerActor(override val controller: GameController, username: String) ext
         case NotifyCommandChosen(command, actualPlayer) =>
           notifyCommandChosen(command, actualPlayer)
 
-        case PartialGameScore(winner1, winner2, score1, score2) =>
-          communicatePartialGameScore(winner1, winner2, score1, score2)
-
-        case FinalGameScore(winner1, winner2, score1, score2) =>
-          communicateFinalGameScore(winner1, winner2, score1, score2)
-
+        case GameScore(winner1, winner2, score1, score2, endMatch) =>
+          communicateGameScore(winner1, winner2, score1, score2, endMatch)
 
       }, discardOld = true)
   }
@@ -82,11 +78,8 @@ class ViewerActor(override val controller: GameController, username: String) ext
   private def notifyCommandChosen(command: String, actualPlayer: String): Unit =
     controller.updateGUI(NotifyCommandChosen(command, actualPlayer))
 
-  private def communicatePartialGameScore(winner1: String, winner2: String, score1: Int, score2: Int): Unit =
-    controller.updateGUI(ComputePartialGameScore(firstPlayer, winner1, winner2, score1, score2))
-
-  private def communicateFinalGameScore(winner1: String, winner2: String, score1: Int, score2: Int): Unit =
-    controller.updateGUI(ComputeFinalGameScore(firstPlayer, winner1, winner2, score1, score2))
+  private def communicateGameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit =
+    controller.updateGUI(ComputeGameScore(firstPlayer, winner1, winner2, score1, score2, endMatch))
 
   override
   def getUsername: String = user
