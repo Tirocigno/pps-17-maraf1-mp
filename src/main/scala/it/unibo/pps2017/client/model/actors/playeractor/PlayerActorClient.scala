@@ -1,4 +1,3 @@
-
 package it.unibo.pps2017.client.model.actors.playeractor
 
 import akka.actor.{ActorRef, PoisonPill, Stash}
@@ -33,47 +32,33 @@ class PlayerActorClient(override val controller: GameController, username: Strin
       gameActor = sender()
       communicatePlayersMatch(playersList)
 
-    case DistributedCard(cards, player) =>
-      communicatePlayersCard(cards, player)
+    case DistributedCard(cards, player) => communicatePlayersCard(cards, player)
 
-    case SelectBriscola(player) =>
-      informPlayerToChooseBriscola(player)
+    case SelectBriscola(player) => informPlayerToChooseBriscola(player)
 
-    case BriscolaChosen(seed) =>
-      sendBriscolaChosen(seed)
+    case BriscolaChosen(seed) => sendBriscolaChosen(seed)
 
-    case NotifyBriscolaChosen(seed) =>
-      notifyBriscolaChosen(seed)
+    case NotifyBriscolaChosen(seed) => notifyBriscolaChosen(seed)
 
-    case ClickedCardActualPlayer(index) =>
-      sendIndexClickedCard(index)
+    case ClickedCardActualPlayer(index) => sendIndexClickedCard(index)
 
-    case CardOk(correctClickedCard, player) =>
-      cardOk(correctClickedCard, player)
+    case CardOk(correctClickedCard, player) => cardOk(correctClickedCard, player)
 
-    case ClickedCommandActualPlayer(command) =>
-      sendClickedCommand(command)
+    case ClickedCommandActualPlayer(command) => sendClickedCommand(command)
 
-    case Turn(player, endPartialTurn, isFirstPlayer) =>
-      communicateTurn(player, endPartialTurn, isFirstPlayer)
+    case Turn(player, endPartialTurn, isFirstPlayer) => communicateTurn(player, endPartialTurn, isFirstPlayer)
 
-    case PlayedCard(card, player) =>
-      communicatePlayedCard(card, player)
+    case PlayedCard(card, player) => communicatePlayedCard(card, player)
 
-    case NotifyCommandChosen(command, player) =>
-      notifyCommandChosen(command, player)
+    case NotifyCommandChosen(command, player) => notifyCommandChosen(command, player)
 
-    case GameScore(winner1, winner2, score1, score2, endMatch) =>
-      communicateGameScore(winner1, winner2, score1, score2, endMatch)
+    case GameScore(winner1, winner2, score1, score2, endMatch) => communicateGameScore(winner1, winner2, score1, score2, endMatch)
 
-    case SetUsernamePlayer(playerUsername) =>
-      setUsername(playerUsername)
+    case SetUsernamePlayer(playerUsername) => setUsername(playerUsername)
 
-    case IdChannelPublishSubscribe(id) =>
-      registerToChannel(id)
+    case IdChannelPublishSubscribe(id) => registerToChannel(id)
 
-    case NotifyClosedPlayGameView() =>
-      notifyClosedGame()
+    case NotifyClosedPlayGameView() => notifyClosedGame()
   }
 
   private def communicatePlayersMatch(playersList: ListBuffer[String]): Unit = {
@@ -91,13 +76,12 @@ class PlayerActorClient(override val controller: GameController, username: Strin
   }
 
   private def informPlayerToChooseBriscola(player: String): Unit = {
-    if (user.equals(player))
-      if (!cardArrived) {
-        stash()
-      } else {
-        controller.updateGUI(SelectBriscola(player))
-        cardArrived = false
-      }
+    if (user.equals(player)) if (!cardArrived) {
+      stash()
+    } else {
+      controller.updateGUI(SelectBriscola(player))
+      cardArrived = false
+    }
   }
 
   private def sendBriscolaChosen(seed: Seed): Unit = {
@@ -114,8 +98,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
   }
 
   private def cardOk(correctClickedCard: Boolean, player: String): Unit = {
-    if (user.equals(player))
-      controller.updateGUI(CardOk(correctClickedCard, player))
+    if (user.equals(player)) controller.updateGUI(CardOk(correctClickedCard, player))
   }
 
   private def sendClickedCommand(command: String): Unit = {
@@ -143,9 +126,7 @@ class PlayerActorClient(override val controller: GameController, username: Strin
   private def communicateGameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit =
     controller.updateGUI(ComputeGameScore(user, winner1, winner2, score1, score2, endMatch))
 
-  private def setUsername(playerUsername: String): Unit =
-    user = playerUsername
-
+  private def setUsername(playerUsername: String): Unit = user = playerUsername
 
   private def registerToChannel(id: String): Unit = {
     val mediator = DistributedPubSub(context.system).mediator
@@ -162,20 +143,17 @@ class PlayerActorClient(override val controller: GameController, username: Strin
     var searchPlayer = START_SEARCH
     var orderedList = new ListBuffer[String]
 
-    for (player <- tempList) {
-      player match {
-        case actualPlayer if actualPlayer.equals(user) & searchPlayer == START_SEARCH
+    for (player <- tempList) player match {
+      case actualPlayer if actualPlayer.equals(user) & searchPlayer == START_SEARCH
         => (orderedList += actualPlayer, searchPlayer += FOUNDED)
-        case actualPlayer if !actualPlayer.equals(user) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
+      case actualPlayer if !actualPlayer.equals(user) & !(searchPlayer == START_SEARCH) & searchPlayer < END_SEARCH
         => (orderedList += actualPlayer, searchPlayer += FOUNDED)
-        case _ => tempList.clear
-      }
+      case _ =>
     }
     orderedList
   }
 
-  override
-  def getUsername: String = {
+  override def getUsername: String = {
     user
   }
 }
