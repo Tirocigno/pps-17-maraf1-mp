@@ -2,7 +2,7 @@ package it.unibo.pps2017.server.model.database
 
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
-import it.unibo.pps2017.server.model.{DEFAULT_REDIS_HOST, DEFAULT_REDIS_PORT, DEFAULT_REDIS_PW}
+import it.unibo.pps2017.server.model.database.RedisConnection.{REDIS_HOST, REDIS_PORT, REDIS_PW}
 import redis.RedisClient
 import redis.clients.jedis.Jedis
 
@@ -23,7 +23,7 @@ case class RedisConnection() {
   def getDatabaseConnection: RedisClient = {
 
     if (redisHost == null || redisPort == null || redisPw == null) {
-      RedisClient(DEFAULT_REDIS_HOST, DEFAULT_REDIS_PORT, DEFAULT_REDIS_PW)
+      RedisClient(REDIS_HOST, REDIS_PORT, REDIS_PW)
     } else {
       RedisClient(redisHost, redisPort.toInt, Some(redisPw))
     }
@@ -32,7 +32,12 @@ case class RedisConnection() {
 
   def getBlockingConnection: Jedis = {
     if (redisHost == null || redisPort == null || redisPw == null) {
-      new Jedis(DEFAULT_REDIS_HOST, DEFAULT_REDIS_PORT)
+      val db: Jedis = new Jedis(REDIS_HOST, REDIS_PORT)
+      if (REDIS_PW.isDefined) {
+        db.auth(REDIS_PW.get)
+      }
+
+      db
     } else {
       val db: Jedis = new Jedis(redisHost, redisPort.toInt)
       db.auth(redisPw)
@@ -40,4 +45,25 @@ case class RedisConnection() {
       db
     }
   }
+}
+
+object RedisConnection {
+  private var redisHost: String = "127.0.0.1"
+
+  def setRedisHost(value: String): Unit = redisHost = value
+
+  def REDIS_HOST: String = redisHost
+
+  private var redisPort: Int = 6379
+
+  def setRedisPort(value: Int): Unit = redisPort = value
+
+  def REDIS_PORT: Int = redisPort
+
+  private var redisPw: Option[String] = None
+
+  def setRedisPw(value: String): Unit = redisPw = Some(value)
+
+  def REDIS_PW: Option[String] = redisPw
+
 }

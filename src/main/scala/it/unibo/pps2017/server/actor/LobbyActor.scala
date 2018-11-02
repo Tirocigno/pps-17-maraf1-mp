@@ -194,7 +194,7 @@ class LobbyActor extends Actor {
           case None =>
         }, cause => {
           println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
-        }, None, Some(Dispatcher.DISCOVERY_PORT))
+        }, Some(Map(StandardParameters.PORT_KEY -> Dispatcher.PORT)), Some(Dispatcher.DISCOVERY_PORT))
 
 
         if (gameType == RANKED) {

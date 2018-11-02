@@ -27,9 +27,17 @@ object Dispatcher {
   var PASSWORD: Option[String] = Some("")
   val RESULT = "result"
   val TIMEOUT = 1000
-  val DISCOVERY_URL: String = "127.0.0.1"
+
+  private var discoveryUrl: String = "127.0.0.1"
+  def setDiscovery(value: String): Unit = discoveryUrl = value
+  def DISCOVERY_URL: String = discoveryUrl
+
   val DISCOVERY_PORT: Int = 2000
-  val MY_IP: String = "127.0.0.1"
+
+  private var myIp: String = "127.0.0.1"
+  def setMyIp(value: String): Unit = myIp = value
+  def MY_IP: String = myIp
+
   val VERTX = Vertx.vertx()
 }
 
