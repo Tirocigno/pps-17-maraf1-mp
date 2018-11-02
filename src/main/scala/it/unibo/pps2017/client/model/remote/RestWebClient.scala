@@ -145,9 +145,9 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
   def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
                 successCallBack: Option[String] => Unit, context: ServerContext, pathParameter: String): Unit = {
     api.httpMethod match {
-      case HttpMethod.POST => PostRequest(context.ipAddress + pathParameter, api.path, successCallBack, reportErrorToController,
+      case HttpMethod.POST => PostRequest(context.ipAddress, pathParameter, successCallBack, reportErrorToController,
         paramMap, Some(context.port))
-      case HttpMethod.GET => GetRequest(context.ipAddress + pathParameter, api.path, successCallBack, reportErrorToController,
+      case HttpMethod.GET => GetRequest(context.ipAddress, pathParameter, successCallBack, reportErrorToController,
         paramMap, Some(context.port))
       case _ => throw new NotValidHttpMethodException()
     }

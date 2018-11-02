@@ -14,7 +14,7 @@ import it.unibo.pps2017.commons.remote.rest.API.RestAPI
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, MatchRef, Port, ServerContext}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetAllMatchesAPI
 import it.unibo.pps2017.server.model.Game
-import it.unibo.pps2017.server.model.ServerApi.{FoundGameRestAPI, GameRestAPI}
+import it.unibo.pps2017.server.model.ServerApi.{FoundGameRestAPI, GameRestAPI, LoginAPI}
 
 
 sealed trait ClientController extends Controller {
@@ -194,7 +194,11 @@ object ClientController {
       }
     }
 
-    override def sendLoginRequest(userName: String, password: String): Unit = ???
+    override def sendLoginRequest(userName: String, password: String): Unit = {
+      val map = Map(LoginAPI.password -> password)
+      webClient.get.callRemoteAPI(LoginAPI, Some(map), userName)
+    }
+
 
     /**
       * Handle a login response.
