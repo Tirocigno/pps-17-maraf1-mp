@@ -18,7 +18,8 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
   override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]], parameterPath: String): Unit =
     api match {
     case FoundGameRestAPI => invokeAPI(api, paramMap, foundGameCallBack, assignedServerContext.get)
-    case GameRestAPI => invokeAPI(api, paramMap, gameCallBack, assignedServerContext.get)
+    case GameRestAPI => invokeAPI(api, paramMap, gameCallBack, assignedServerContext.get, GameRestAPI.path.replace
+    (GameRestAPI.parameterPath, parameterPath))
     case GetAllMatchesAPI => invokeAPI(api, paramMap, getAllMatchesApiCallBack, discoveryServerContext)
     case LoginAPI => invokeAPI(api, paramMap, loginCallBack, assignedServerContext.get, LoginAPI.path.replace
     (LoginAPI.parameterPath, parameterPath))

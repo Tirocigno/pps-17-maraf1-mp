@@ -169,10 +169,9 @@ object SocialController {
     override def notifyErrorToGUI(throwable: Throwable): Unit =
       currentGUI.get.notifyErrorOccurred(throwable.getMessage)
 
-    override def registerNewFriend(friendId: PlayerID): Unit = {
-      val paramMap = Map(AddFriendAPI.friendUsername -> friendId)
-      socialRestWebClient.callRemoteAPI(AddFriendAPI, Some(paramMap))
-    }
+    override def registerNewFriend(friendId: PlayerID): Unit =
+      socialRestWebClient.callRemoteAPI(AddFriendAPI, None, friendId)
+
 
     override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit =
       currentGUI.get.updateParty(currentPartyMap.map(entry => (entry._1.asString, entry._2)).asJava)

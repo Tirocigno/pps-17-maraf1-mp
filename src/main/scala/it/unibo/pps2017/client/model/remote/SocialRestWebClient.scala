@@ -19,7 +19,8 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
     case RegisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
     case UnregisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
     case GetAllOnlinePlayersAPI => invokeAPI(api, paramMap, getAllOnlinePlayersCallback, discoveryContext)
-    case AddFriendAPI => invokeAPI(api, paramMap, addAFriendCallback, assignedServerContext.get)
+    case AddFriendAPI => invokeAPI(api, paramMap, addAFriendCallback, assignedServerContext.get,
+      AddFriendAPI.path.replace(AddFriendAPI.parameterPath, parameterPath))
   }
 
   /**
