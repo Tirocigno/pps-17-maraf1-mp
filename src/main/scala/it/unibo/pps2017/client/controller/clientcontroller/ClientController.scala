@@ -78,7 +78,7 @@ sealed trait ClientController extends Controller {
     *
     * @param userName the userName notify by the server.
     */
-  def handleLoginAndRegistrationResponse(userName: String): Unit
+  def handleLoginAndRegistrationResponse(): Unit
 
   /**
     * Send a registration request to remote server.
@@ -201,7 +201,9 @@ object ClientController {
       *
       * @param userName the userName notify by the server.
       */
-    override def handleLoginAndRegistrationResponse(userName: String): Unit = ???
+    override def handleLoginAndRegistrationResponse(): Unit = {
+      genericGui
+    }
 
     /**
       * Send a registration request to remote server.

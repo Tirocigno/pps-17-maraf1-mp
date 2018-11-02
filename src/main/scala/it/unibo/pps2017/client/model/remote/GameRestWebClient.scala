@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.model.remote
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetAllMatchesAPI
-import it.unibo.pps2017.server.model.ServerApi.{FoundGameRestAPI, GameRestAPI}
+import it.unibo.pps2017.server.model.ServerApi.{FoundGameRestAPI, GameRestAPI, LoginAPI}
 import it.unibo.pps2017.server.model.{Game, GameFound, MatchesSetEncoder}
 import org.json4s.jackson.Serialization.read
 
@@ -15,10 +15,12 @@ import org.json4s.jackson.Serialization.read
   */
 class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractRestWebClient(discoveryServerContext) {
 
-  override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
+  override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]], parameterPath: String): Unit =
+    api match {
     case FoundGameRestAPI => invokeAPI(api, paramMap, foundGameCallBack, assignedServerContext.get)
     case GameRestAPI => invokeAPI(api, paramMap, gameCallBack, assignedServerContext.get)
     case GetAllMatchesAPI => invokeAPI(api, paramMap, getAllMatchesApiCallBack, discoveryServerContext)
+    case LoginAPI => invokeAPI(api, paramMap, loginCallBack, assignedServerContext.get, parameterPath)
   }
 
   /**
@@ -29,6 +31,10 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
   private def foundGameCallBack(jSonSource: Option[String]): Unit = {
     val gameID = read[GameFound](jSonSource.get).gameId
     clientController.handleMatchResponse(gameID)
+  }
+
+  private def loginCallBack(jSonSource: Option[String]): Unit = {
+    clientController.handleLoginAndRegistrationResponse()
   }
 
 

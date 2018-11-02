@@ -16,6 +16,7 @@ import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
+
 import scala.collection.JavaConverters._
 
 /**
