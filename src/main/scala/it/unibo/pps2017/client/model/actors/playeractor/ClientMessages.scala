@@ -36,9 +36,7 @@ object ClientMessages {
 
   case class CardOk(correctClickedCard: Boolean, player: String) extends ActorMessage
 
-  case class PartialGameScore(winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
-
-  case class FinalGameScore(winner1: String, winner2: String, score1: Int, score2: Int) extends ActorMessage
+  case class GameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean) extends ActorMessage
 
   case class IdChannelPublishSubscribe(id: String) extends ActorMessage
 
