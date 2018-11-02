@@ -67,9 +67,8 @@ object GuiStack {
     override def restorePreviousScene(): Unit = switchScene(previousScene.get)
 
     private def switchScene(scene: Scene): Unit = {
-      runLater(() => {
         mainStage.get.setScene(scene)
-      })
+
     }
 
     private def runLater(strategyToRunLater: () => Unit): Unit = Platform.runLater(() => {
