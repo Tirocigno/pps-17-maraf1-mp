@@ -83,6 +83,7 @@ object GuiStack {
     private def loadScene(controller: Controller): Scene = {
       guiLoader.deployGuiStage(controller)
     }
+
   }
 
 

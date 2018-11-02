@@ -34,6 +34,7 @@ public class PlayGameView extends Application {
             primaryStage.setOnHidden(e -> {
                 gameController.shutdown();
                 Platform.exit();
+                System.exit(0);
             });
 
         } catch (Exception e) {
