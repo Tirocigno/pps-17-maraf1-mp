@@ -10,7 +10,7 @@ import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model.GameType.{GameType, RANKED, UNRANKED}
 import it.unibo.pps2017.server.model.LobbyStatusResponse.{FULL, OK, REVERSE}
 import it.unibo.pps2017.server.model._
-import it.unibo.pps2017.server.model.database.RedisGameUtils
+import it.unibo.pps2017.server.model.database.{RedisGameUtils, RedisUserUtils}
 import org.json4s.jackson.Serialization.read
 
 import scala.collection.mutable.ListBuffer
@@ -171,7 +171,7 @@ class LobbyActor extends Actor {
 
       RedisGameUtils().signNewGame(game.id, game.team1.asSide, game.team2.asSide, gameType)
       println(s"Context -> $context / game -> $game")
-      context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, () => {
+      context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, (winners: Side) => {
         PostRequest(Dispatcher.DISCOVERY_URL, RemoveMatchAPI.path, {
           case Some(res) => try {
             val msgFromDiscovery = read[Message](res)
@@ -196,6 +196,30 @@ class LobbyActor extends Actor {
           println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
         }, None, Some(Dispatcher.DISCOVERY_PORT))
 
+
+        if (gameType == RANKED) {
+          winners.members foreach {RedisUserUtils().incrementScore(_, result => {
+            println("Score increment result -> " + result)
+          }, cause => {
+            println(s"Error on score increment. \nDetails: ${cause.getMessage}")
+          })}
+          if (equalsSide(winners, game.team1.asSide)) {
+            game.team2.getMembers foreach {RedisUserUtils().decrementScore(_, result => {
+              println("Score increment result -> " + result)
+            }, cause => {
+              println(s"Error on score increment. \nDetails: ${cause.getMessage}")
+            })}
+          } else {
+            game.team1.getMembers foreach {RedisUserUtils().incrementScore(_, result => {
+              println("Score increment result -> " + result)
+            }, cause => {
+              println(s"Error on score increment. \nDetails: ${cause.getMessage}")
+            })}
+          }
+
+
+
+        }
 
         RedisGameUtils().setGameEnd(game.id, gameType)
       })))
@@ -227,4 +251,14 @@ class LobbyActor extends Actor {
       }, Some(Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
     }
   }
+
+
+
+  private def equalsSide(side1: Side, side2: Side): Boolean = side1.members.sorted == side2.members.sorted
 }
+
+
+
+
+
+

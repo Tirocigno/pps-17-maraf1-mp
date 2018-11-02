@@ -1,7 +1,7 @@
 package it.unibo.pps2017.server.model.database
 
 import it.unibo.pps2017.server.model.GameType.GameType
-import it.unibo.pps2017.server.model.{Game, LiveGame, Matches, SavedMatches, Side}
+import it.unibo.pps2017.server.model.{Game, LiveGame, Matches, Side}
 import org.json4s.jackson.Serialization.{read, write}
 
 import scala.collection.mutable
@@ -27,10 +27,12 @@ sealed trait GameDatabaseUtils {
     *
     * @param gameId
     * Searched game id.
+    * @param onComplete
+    * on query success handler
     * @return
     * the specified game.
     */
-  def getGame(gameId: String): Future[Option[Game]]
+  def getGame(gameId: String, onComplete: Future[Option[Game]] => Unit): Unit
 
 
   /**
@@ -60,13 +62,12 @@ sealed trait GameDatabaseUtils {
 
 
   /**
-    * Return a list of the match in execution on the server.
+    * Search a list of match in execution on the server.
     *
-    * @return
-    * a list of the match in execution on the server.
-    *
+    * @param onComplete
+    * on query success handler
     */
-  def getLiveMatch: Matches
+  def getLiveMatch(onComplete: Matches => Unit): Unit
 
 
   /**
@@ -88,12 +89,11 @@ class RedisGameUtils extends GameDatabaseUtils {
     * Full game.
     */
   override def saveGame(gameId: String, game: Game): Unit = {
-    val db = RedisConnection().getDatabaseConnection
-
-    db.set(getGameHistoryKey(gameId), write(game)).onComplete(_ => {
-      db.quit()
-    })
+    Query(db =>
+      db.set(getGameHistoryKey(gameId), write(game))
+    )
   }
+
 
   /**
     * Return the full specified game.
@@ -103,13 +103,13 @@ class RedisGameUtils extends GameDatabaseUtils {
     * @return
     * the specified game.
     */
-  override def getGame(gameId: String): Future[Option[Game]] = {
-    val db = RedisConnection().getDatabaseConnection
-
-    db.get(getGameHistoryKey(gameId)).map {
-      case Some(game) => db.quit(); Some(read[Game](game.utf8String))
-      case None => db.quit(); None
-    }
+  override def getGame(gameId: String, onComplete: Future[Option[Game]] => Unit): Unit = {
+    Query.withCallback(db =>
+      db.get(getGameHistoryKey(gameId)).map {
+        case Some(game) => Some(read[Game](game.utf8String))
+        case None => None
+      }
+    )(onComplete)
   }
 
   /**
@@ -125,19 +125,20 @@ class RedisGameUtils extends GameDatabaseUtils {
     * type of game.
     */
   override def signNewGame(gameId: String, team1: Side, team2: Side, gameType: GameType): Unit = {
-    val db = RedisConnection().getDatabaseConnection
     val map: mutable.HashMap[String, String] = mutable.HashMap()
 
     map += TEAM1_KEY -> (team1.members.head + " : " + team1.members.last)
     map += TEAM2_KEY -> (team2.members.head + " : " + team2.members.last)
 
-    db.hmset(getInGameKey(gameId, gameType), map.toMap).onComplete {
-      case Success(res) =>
-        if (res) {
-          db.expire(getInGameKey(gameId, gameType), GAME_TIME_TO_LIVE).onComplete(_ => db.quit())
-        }
-      case Failure(_) =>
-    }
+    Query(db =>
+      db.hmset(getInGameKey(gameId, gameType), map.toMap).onComplete {
+        case Success(res) =>
+          if (res) {
+            db.expire(getInGameKey(gameId, gameType), GAME_TIME_TO_LIVE)
+          }
+        case Failure(_) =>
+      }
+    )
   }
 
   /**
@@ -149,35 +150,34 @@ class RedisGameUtils extends GameDatabaseUtils {
     * type of game.
     */
   override def setGameEnd(gameId: String, gameType: GameType): Unit = {
-    val db = RedisConnection().getDatabaseConnection
-
-    db.del(getInGameKey(gameId, gameType)).onComplete(_ => db.quit())
+    Query(db =>
+      db.del(getInGameKey(gameId, gameType))
+    )
   }
 
   /**
-    * Return a list of the match in execution on the server.
+    * Search a list of match in execution on the server.
     *
-    * @return
-    * a list of the match in execution on the server.
-    *
+    * @param onComplete
+    * on query success handler
     */
-  override def getLiveMatch: Matches = {
+  override def getLiveMatch(onComplete: Matches => Unit): Unit = {
     val games: ListBuffer[LiveGame] = ListBuffer()
-    val db = RedisConnection().getBlockingConnection
 
-    db.keys(getLiveKeyPattern).forEach(key => {
-      val teams = db.hgetAll(key)
+    BlockingQuery.withCallback(db => {
+      db.keys(getLiveKeyPattern).forEach(key => {
+        val teams = db.hgetAll(key)
 
-      games += LiveGame(getGameIdFromLiveGameKey(key),
-        convertToSide(teams.get(TEAM1_KEY)),
-        convertToSide(teams.get(TEAM2_KEY)),
-        getGameTypeFromLiveGameKey(key))
-    })
+        games += LiveGame(getGameIdFromLiveGameKey(key),
+          convertToSide(teams.get(TEAM1_KEY)),
+          convertToSide(teams.get(TEAM2_KEY)),
+          getGameTypeFromLiveGameKey(key))
 
+      })
 
-    db.disconnect()
+      Matches(games)
+    })(onComplete)
 
-    Matches(games)
   }
 
   /**
@@ -187,13 +187,13 @@ class RedisGameUtils extends GameDatabaseUtils {
     * a list of the played matches.
     */
   override def getSavedMatch(onSuccess: Seq[String] => Unit, onFail: Throwable => Unit): Unit = {
-    val db = RedisConnection().getDatabaseConnection
-
-    db.keys(getGameHistoryPattern)
-      .onComplete {
-        case Success(keys) => db.quit(); onSuccess(keys.map(key => key.replace("game:", "").replace(":history", "")))
-        case Failure(cause) => db.quit(); onFail(cause)
-      }
+    Query(db =>
+      db.keys(getGameHistoryPattern)
+        .onComplete {
+          case Success(keys) => onSuccess(keys.map(key => key.replace("game:", "").replace(":history", "")))
+          case Failure(cause) => onFail(cause)
+        }
+    )
   }
 
   private def getGameIdFromLiveGameKey(key: String): String = {

@@ -118,11 +118,11 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
   private val foundGame: (RoutingContext, RouterResponse) => Unit = (routingContext, res) => {
     val params = routingContext.request().formAttributes()
 
-    val player = params.get("me")
-    val friend = params.get("partner")
+    val player = params.get(FoundGameRestAPI.meParamKey)
+    val friend = params.get(FoundGameRestAPI.partnerParam)
 
-    val vs = params.get("vs")
-    val vsPartner = params.get("vspartner")
+    val vs = params.get(FoundGameRestAPI.vsParam)
+    val vsPartner = params.get(FoundGameRestAPI.vsPartnerParam)
 
     val isRanked: Boolean = params.get("ranked").getOrElse("").equals("true")
 

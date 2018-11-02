@@ -14,9 +14,6 @@ case class RedisConnection() {
   val redisPort: String = System.getenv("REDIS_PORT")
   val redisPw: String = System.getenv("REDIS_PW")
 
-  private var db: RedisClient = _
-
-
   /**
     * Return an open database connection
     *

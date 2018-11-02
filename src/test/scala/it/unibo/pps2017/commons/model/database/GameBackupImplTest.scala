@@ -1,13 +1,16 @@
 package it.unibo.pps2017.commons.model.database
 
+import java.lang.Thread.sleep
+
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
+import it.unibo.pps2017.server.controller.LobbyFoundTest._
 import it.unibo.pps2017.server.model.database.RedisGameUtils
 import it.unibo.pps2017.server.model.{Game, GameSet, Hand, Move}
 import org.scalatest.{FunSuite, Matchers}
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 class GameBackupImplTest extends FunSuite with Matchers {
 
@@ -44,7 +47,6 @@ class GameBackupImplTest extends FunSuite with Matchers {
     val expectedGame: Game = Game(playersInGame, Seq(gameSet), winners)
 
 
-
     gameBackup.startGame(playersInGame)
     gameBackup.startSet(playersHand, Sword)
     gameBackup.startHand()
@@ -57,8 +59,12 @@ class GameBackupImplTest extends FunSuite with Matchers {
     gameBackup.endGame(winners)
 
 
-    val result = Await.result(RedisGameUtils().getGame("TEST"), 500 millis)
+    RedisGameUtils().getGame("TEST", _.onComplete {
+      case Success(res) => res shouldBe Some(expectedGame)
+      case Failure(_) => assert(false)
+    })
 
-    result shouldBe Some(expectedGame)
+
+    sleep(WAIT_TIMEOUT)
   }
 }

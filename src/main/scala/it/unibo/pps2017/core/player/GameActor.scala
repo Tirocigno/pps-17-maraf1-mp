@@ -13,13 +13,14 @@ import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.game._
 import it.unibo.pps2017.core.player.GameActor._
+import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable
 import scala.collection.mutable.{ListBuffer, Map}
 import scala.util.Random
 
 
-class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: BaseTeam[String], onGameEnd:()=>Unit) extends Actor with Match with ActorLogging {
+class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: BaseTeam[String], onGameEnd: Side =>Unit) extends Actor with Match with ActorLogging {
 
   type PlayerName = String
   var currentBriscola: Option[Seed] = None
@@ -303,7 +304,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     println("Mando gamescore")
     gameEnd = true
     mediator ! Publish(topicName, FinalGameScore(team.firstMember.get,team.secondMember.get,team1.getScore, team2.getScore))
-    onGameEnd()
+    onGameEnd(team.asSide)
   }
 
   private def checkMarafona(hand: Set[Card], player: PlayerName): Unit = {
@@ -372,7 +373,7 @@ object GameActor {
   val IMG_PATH = "cards/"
   val PNG_FILE = ".png"
 
-  def apply(topicName: String, team1: BaseTeam[String], team2: BaseTeam[String], onGameEnd:()=>Unit): GameActor = new GameActor(topicName, team1, team2, onGameEnd)
+  def apply(topicName: String, team1: BaseTeam[String], team2: BaseTeam[String], onGameEnd: Side =>Unit): GameActor = new GameActor(topicName, team1, team2, onGameEnd)
 
 }
 
