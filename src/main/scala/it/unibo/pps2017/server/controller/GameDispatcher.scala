@@ -26,14 +26,12 @@ case class GameDispatcher() {
 
 
   def getLiveGames: (RoutingContext, RouterResponse) => Unit = (_, res) => {
-    gameDatabaseUtils.getLiveMatch(res.sendResponse)
+    gameDatabaseUtils.getLiveMatches(res.sendResponse)
   }
 
 
   def getSavedMatches: (RoutingContext, RouterResponse) => Unit = (_, res) => {
-    gameDatabaseUtils.getSavedMatch(games => {
-      res.sendResponse(SavedMatches(games))
-    }, cause => errorHandler(res, cause.getMessage))
+    gameDatabaseUtils.getSavedMatches(res.sendResponse, cause => errorHandler(res, cause.getMessage))
   }
 
 }

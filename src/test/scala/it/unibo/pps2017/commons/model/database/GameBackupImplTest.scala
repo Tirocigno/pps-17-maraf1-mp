@@ -16,7 +16,7 @@ class GameBackupImplTest extends FunSuite with Matchers {
 
 
   test("GameStoring") {
-    val gameBackup = new GameBackupImpl("TEST")
+    val gameBackup = new GameBackupImpl("FORTEST")
 
 
     val player1: String = "player1"
@@ -59,9 +59,9 @@ class GameBackupImplTest extends FunSuite with Matchers {
     gameBackup.endGame(winners)
 
 
-    RedisGameUtils().getGame("TEST", _.onComplete {
+    RedisGameUtils().getGame("FORTEST", _.onComplete {
       case Success(res) => res shouldBe Some(expectedGame)
-      case Failure(_) => assert(false)
+      case Failure(cause) => println(cause.getMessage);assert(false)
     })
 
 

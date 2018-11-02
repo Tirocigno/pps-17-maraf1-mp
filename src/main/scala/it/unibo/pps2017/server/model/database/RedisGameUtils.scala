@@ -1,7 +1,7 @@
 package it.unibo.pps2017.server.model.database
 
 import it.unibo.pps2017.server.model.GameType.GameType
-import it.unibo.pps2017.server.model.{Game, LiveGame, Matches, Side}
+import it.unibo.pps2017.server.model.{Game, LiveGame, Matches, SavedMatches, Side, StoredMatch}
 import org.json4s.jackson.Serialization.{read, write}
 
 import scala.collection.mutable
@@ -67,16 +67,14 @@ sealed trait GameDatabaseUtils {
     * @param onComplete
     * on query success handler
     */
-  def getLiveMatch(onComplete: Matches => Unit): Unit
+  def getLiveMatches(onComplete: Matches => Unit): Unit
 
 
   /**
-    * Return a list of the played matches.
+    * Search a list of played matches.
     *
-    * @return
-    * a list of the played matches.
     */
-  def getSavedMatch(onSuccess: Seq[String] => Unit, onFail: Throwable => Unit): Unit
+  def getSavedMatches(onSuccess: SavedMatches => Unit, onFail: Throwable => Unit): Unit
 }
 
 class RedisGameUtils extends GameDatabaseUtils {
@@ -89,8 +87,15 @@ class RedisGameUtils extends GameDatabaseUtils {
     * Full game.
     */
   override def saveGame(gameId: String, game: Game): Unit = {
+    val map: mutable.HashMap[String, String] = mutable.HashMap()
+
+    //TODO sarebbe meglio avere un riferimento ai team in game
+    map += TEAM1_KEY -> encodeSide(Side(Seq(game.players.head, game.players(2))))
+    map += TEAM2_KEY -> encodeSide(Side(Seq(game.players(1), game.players(3))))
+    map += SAVED_MATCH_GAME_KEY -> write(game)
+
     Query(db =>
-      db.set(getGameHistoryKey(gameId), write(game))
+      db.hmset(getGameHistoryKey(gameId), map.toMap)
     )
   }
 
@@ -105,7 +110,7 @@ class RedisGameUtils extends GameDatabaseUtils {
     */
   override def getGame(gameId: String, onComplete: Future[Option[Game]] => Unit): Unit = {
     Query.withCallback(db =>
-      db.get(getGameHistoryKey(gameId)).map {
+      db.hget(getGameHistoryKey(gameId), SAVED_MATCH_GAME_KEY).map {
         case Some(game) => Some(read[Game](game.utf8String))
         case None => None
       }
@@ -127,8 +132,8 @@ class RedisGameUtils extends GameDatabaseUtils {
   override def signNewGame(gameId: String, team1: Side, team2: Side, gameType: GameType): Unit = {
     val map: mutable.HashMap[String, String] = mutable.HashMap()
 
-    map += TEAM1_KEY -> (team1.members.head + " : " + team1.members.last)
-    map += TEAM2_KEY -> (team2.members.head + " : " + team2.members.last)
+    map += TEAM1_KEY -> encodeSide(team1)
+    map += TEAM2_KEY -> encodeSide(team2)
 
     Query(db =>
       db.hmset(getInGameKey(gameId, gameType), map.toMap).onComplete {
@@ -161,7 +166,7 @@ class RedisGameUtils extends GameDatabaseUtils {
     * @param onComplete
     * on query success handler
     */
-  override def getLiveMatch(onComplete: Matches => Unit): Unit = {
+  override def getLiveMatches(onComplete: Matches => Unit): Unit = {
     val games: ListBuffer[LiveGame] = ListBuffer()
 
     BlockingQuery.withCallback(db => {
@@ -186,14 +191,29 @@ class RedisGameUtils extends GameDatabaseUtils {
     * @return
     * a list of the played matches.
     */
-  override def getSavedMatch(onSuccess: Seq[String] => Unit, onFail: Throwable => Unit): Unit = {
-    Query(db =>
+  override def getSavedMatches(onSuccess: SavedMatches => Unit, onFail: Throwable => Unit): Unit = {
+    /*Query(db =>
       db.keys(getGameHistoryPattern)
         .onComplete {
           case Success(keys) => onSuccess(keys.map(key => key.replace("game:", "").replace(":history", "")))
           case Failure(cause) => onFail(cause)
         }
-    )
+    )*/
+
+    val games: ListBuffer[StoredMatch] = ListBuffer()
+
+    BlockingQuery.withCallback(db => {
+      db.keys(getGameHistoryPattern).forEach(key => {
+        val hash = db.hgetAll(key)
+
+        games += StoredMatch(key.replace("game:", "").replace(":history", ""),
+          convertToSide(hash.get(TEAM1_KEY)),
+          convertToSide(hash.get(TEAM2_KEY)))
+
+      })
+
+      SavedMatches(games)
+    })(onSuccess)
   }
 
   private def getGameIdFromLiveGameKey(key: String): String = {
@@ -203,6 +223,8 @@ class RedisGameUtils extends GameDatabaseUtils {
   private def getGameTypeFromLiveGameKey(key: String): String = {
     key.split(KEY_SPLITTER)(3).trim
   }
+
+  private def encodeSide(side: Side): String = side.members.head + KEY_SPLITTER + side.members.last
 
   private def convertToSide(value: String): Side = {
     val members = value.split(KEY_SPLITTER)
