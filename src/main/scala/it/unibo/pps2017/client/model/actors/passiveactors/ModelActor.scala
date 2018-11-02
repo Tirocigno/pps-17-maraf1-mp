@@ -1,5 +1,5 @@
 
-package it.unibo.pps2017.client.model.actors
+package it.unibo.pps2017.client.model.actors.passiveactors
 
 import akka.actor.Actor
 import it.unibo.pps2017.client.controller.ActorController
