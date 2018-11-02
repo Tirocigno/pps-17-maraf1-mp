@@ -9,20 +9,20 @@ import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.core.deck.cards.Seed._
 import it.unibo.pps2017.server.model._
+import it.unibo.pps2017.client.model.actors.ReplayActor._
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 
 object ReplayActor {
-
+  val CARD_PATH: String = "cards/"
+  val CARD_FORMAT: String = ".png"
   case class SendHeartbeat()
-
 }
 
 class ReplayActor(override val controller: GameController, player: String, game: Game) extends ClientGameActor {
 
   import system.dispatcher
-
   var user: String = player
   val system = ActorSystem("ScheduledActors")
   var gameCounter: ReplayActorStatus = PRE_SET
@@ -31,12 +31,9 @@ class ReplayActor(override val controller: GameController, player: String, game:
   var briscolaChosen: Seed = _
   var team1Score: Int = 0
   var team2Score: Int = 0
-  val CARD_PATH: String = "cards/"
-  val CARD_FORMAT: String = ".png"
   var currentSet: GameSet = _
   var currentHand: Hand = _
   var currentMove: Move = _
-
 
   override def preStart() {
     currentSet = game.turns.head
@@ -46,7 +43,6 @@ class ReplayActor(override val controller: GameController, player: String, game:
       receiver = self,
       message = SendHeartbeat)
   }
-
 
   def receive: PartialFunction[Any, Unit] = {
 
@@ -91,7 +87,7 @@ class ReplayActor(override val controller: GameController, player: String, game:
   }
 
   private def computeMiddleSet(): Unit = {
-    val actualCard = CARD_PATH + currentMove.card + CARD_FORMAT
+    val actualCard = ReplayActor.CARD_PATH + currentMove.card + CARD_FORMAT
     controller.updateGUI(PlayedCard(currentMove.player, actualCard))
     try {
       currentMove = currentHand.moves(currentHand.moves.indexOf(currentMove) + 1)
@@ -125,9 +121,7 @@ class ReplayActor(override val controller: GameController, player: String, game:
   }
 
   override
-  def username: String = {
-    user
-  }
+  def username: String = user
 
   private def convertBriscolaSeed(briscola: String): Unit = briscola match {
     case Sword.asString => briscolaChosen = Sword
