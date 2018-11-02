@@ -27,10 +27,8 @@ class ReplayActor(override val controller: GameController, username: String, gam
   var cardsListPlayer = new ListBuffer[String]()
   var playersList = new ListBuffer[String]()
   var briscolaChosen: Seed = _
-  var team1Score = 0
-  var team2Score = 0
-  val FIRST_CARD: Int = 0
-  val LAST_CARD: Int = 10
+  var team1Score: Int = 0
+  var team2Score: Int = 0
   val CARD_PATH: String = "cards/"
   val CARD_FORMAT: String = ".png"
   var currentSet: GameSet = _
@@ -107,20 +105,22 @@ class ReplayActor(override val controller: GameController, username: String, gam
   }
 
   private def computeEndSet(): Unit = {
+
     try {
       currentSet = game.turns(game.turns.indexOf(currentSet) + 1)
       if (team1Score > team2Score)
-        controller.updateGUI(ComputePartialGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score))
+        controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score, endMatch = false))
       else
-        controller.updateGUI(ComputePartialGameScore(user, playersList.head, playersList.head, team1Score, team2Score))
+        controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head, team1Score, team2Score, endMatch = false))
       gameCounter = START_SET
     } catch {
       case _: Exception =>
         if (team1Score > team2Score)
-          controller.updateGUI(ComputeFinalGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score))
+          controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score, endMatch = true))
         else
-          controller.updateGUI(ComputeFinalGameScore(user, playersList.head, playersList.head, team1Score, team2Score))
+          controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head, team1Score, team2Score, endMatch = true))
     }
+
   }
 
   override
