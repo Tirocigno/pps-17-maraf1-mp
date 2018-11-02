@@ -14,7 +14,6 @@ import it.unibo.pps2017.server.model.GameType.{RANKED, UNRANKED}
 import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model._
 import it.unibo.pps2017.server.model.database.{DatabaseUtils, RedisUtils}
-import org.json4s._
 import org.json4s.jackson.Serialization.read
 
 import scala.collection.mutable.ListBuffer
@@ -150,7 +149,7 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
           lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent, UNRANKED)
         }
       case None =>
-        errorHandler(res,"Id player not specified in the request")
+        errorHandler(res, "Id player not specified in the request")
     }
   }
 
@@ -159,8 +158,17 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     * Get Ranking.
     */
   private val getRanking: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val from: Option[Long] = ctx.queryParams().get(GetRankingAPI.fromKey).map(_.toLong)
-    val to: Option[Long] = ctx.queryParams().get(GetRankingAPI.toKey).map(_.toLong)
+    val from: Option[Long] = try {
+      ctx.queryParams().get(GetRankingAPI.fromKey).map(_.toLong)
+    } catch {
+      case _: Exception => None
+    }
+
+    val to: Option[Long] = try {
+      ctx.queryParams().get(GetRankingAPI.toKey).map(_.toLong)
+    } catch {
+      case _: Exception => None
+    }
 
     databaseUtils.getRanking(elements => {
       val result: ListBuffer[RankElement] = ListBuffer()
