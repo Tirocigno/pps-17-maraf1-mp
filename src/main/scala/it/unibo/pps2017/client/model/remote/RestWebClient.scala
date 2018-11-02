@@ -42,6 +42,8 @@ object RestWebClient {
 
 abstract class AbstractRestWebClient(override val discoveryServerContext: ServerContext) extends RestWebClient {
 
+  val NO_PARAMETER_PATH = ""
+
 
     override def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]]): Unit =
       checkOrSetServer(apiToCall, paramMap)
@@ -113,16 +115,31 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       * @param context         the server to contact.
       */
     def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
-                  successCallBack: Option[String] => Unit, context: ServerContext): Unit = {
-      api.httpMethod match {
-        case HttpMethod.POST => PostRequest(context.ipAddress, api.path, successCallBack, reportErrorToController,
-          paramMap, Some(context.port))
-        case HttpMethod.GET => GetRequest(context.ipAddress, api.path, successCallBack, reportErrorToController,
-          paramMap, Some(context.port))
-        case _ => throw new NotValidHttpMethodException()
-      }
+                  successCallBack: Option[String] => Unit, context: ServerContext): Unit =
+      invokeAPI(api, paramMap, successCallBack, context, NO_PARAMETER_PATH)
 
+  /**
+    * Create a request and send it to the specified server.
+    *
+    * @param api             the api to call
+    * @param paramMap        the parameters inside the request.
+    * @param successCallBack the callback to resume when the response is ready.
+    * @param context         the server to contact.
+    * @pathParameter parameters passed in the path.
+    */
+  def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
+                successCallBack: Option[String] => Unit, context: ServerContext, pathParameter: String): Unit = {
+    api.httpMethod match {
+      case HttpMethod.POST => PostRequest(context.ipAddress + pathParameter, api.path, successCallBack, reportErrorToController,
+        paramMap, Some(context.port))
+      case HttpMethod.GET => GetRequest(context.ipAddress + pathParameter, api.path, successCallBack, reportErrorToController,
+        paramMap, Some(context.port))
+      case _ => throw new NotValidHttpMethodException()
     }
+
+  }
+
+
 
 
 }
