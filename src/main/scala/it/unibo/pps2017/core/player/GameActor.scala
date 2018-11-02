@@ -6,6 +6,7 @@ import akka.cluster.ClusterEvent.MemberUp
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
+import it.unibo.pps2017.commons.model.database.GameBackupImpl
 import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
@@ -37,6 +38,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   val cluster = Cluster(context.system)
   var cardPlayed : Boolean = false
   var numAck: Int = 0
+  val gameStore: GameBackupImpl = new GameBackupImpl(topicName)
 
   override def preStart(): Unit = {
     println("GAME ACTOR -> Starting..")
@@ -52,6 +54,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     println("GAME ACTOR Actor system -> " + context.system)
     println("GAME ACTOR -> Topic : " + topicName)
     mediator ! Publish(topicName, PlayersRef(allPlayers))
+    gameStore.startGame(allPlayers)
   }
 
   override def postStop(): Unit = cluster.unsubscribe(self)
@@ -68,7 +71,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     case BriscolaChosen(seed) =>
       setBriscola(seed)
       mediator ! Publish(topicName, NotifyBriscolaChosen(seed))
-
+      gameStore.startSet(cardsInHand.toMap, currentBriscola.get)
     case BriscolaAck =>
       numAck = numAck + 1
       if(numAck == TOT_PLAYERS){
@@ -185,8 +188,8 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   }
 
   private def onCardPlayed(card: Card, player: PlayerName): Unit = {
+    gameStore.addMove(player, card)
     mediator ! Publish(topicName, CardOk(TRUE, player))
-
     if (gameCycle.isFirst) onFirstCardOfHand(card)
 
     cardsOnTable += ((card, gameCycle.getCurrent))
@@ -196,6 +199,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   }
 
   private def onFirstCardOfHand(card: Card): Unit = {
+    gameStore.startHand()
     val currentHand: Set[Card] = cardsInHand(gameCycle.getCurrent)
     if (currentHand.size == MAX_HAND_CARDS && currentBriscola.get == card.cardSeed && card.cardValue == ACE_VALUE) {
       checkMarafona(currentHand, gameCycle.getCurrent)
@@ -204,6 +208,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   }
 
   private def onHandEnd(lastTaker: PlayerName): Unit = {
+    gameStore.endHand(lastTaker)
     setEnd = true
     deck.registerTurnPlayedCards(cardsOnTable.map(_._1), getTeamOfPlayer(lastTaker))
     nextHandStarter = Some(lastTaker)
@@ -251,6 +256,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     team1.setPoints(setScore._1)
     team2.setPoints(setScore._2)
 
+    gameStore.endSet(setScore._1, setScore._2)
     if(team1.getScore > team2.getScore){
       mediator ! Publish(topicName, GameScore(team1.firstMember.get, team1.secondMember.get, team1.getScore, team2.getScore, FALSE))
     }
@@ -274,6 +280,8 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   private def notifyWinner(team: BaseTeam[PlayerName]): Unit = {
     gameEnd = true
     mediator ! Publish(topicName, GameScore(team.firstMember.get, team.secondMember.get, team1.getScore, team2.getScore, TRUE))
+
+    gameStore.endGame(team.getMembers)
     onGameEnd(team.asSide)
   }
 
