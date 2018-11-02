@@ -1,11 +1,28 @@
 package it.unibo.pps2017.discovery
 
 import io.vertx.scala.core.Vertx
+import org.rogach.scallop.ScallopConf
+
+class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
+  val myip = opt[String]()
+  val myport = opt[Int]()
+  verify()
+}
 
 
 object DiscoveryMain extends App {
 
-  val port = 2000
+  val conf = new Conf(args) // Note: This line also works for "object Main extends App"
+  var port = 2000
+  var discoveryAddress = "127.0.0.1"
+
+  if (conf.myip.supplied) {
+    discoveryAddress = conf.myip()
+  }
+
+  if (conf.myport.supplied) {
+    port = conf.myport()
+  }
 
   val timeOut = 10
 
@@ -13,5 +30,5 @@ object DiscoveryMain extends App {
 
   Vertx.vertx().deployVerticle(discovery)
 
-  discovery.startAkkaCluster("127.0.0.1")
+  discovery.startAkkaCluster(discoveryAddress)
 }
