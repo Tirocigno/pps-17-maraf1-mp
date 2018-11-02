@@ -53,11 +53,13 @@ object GuiStack {
 
 
     override def setCurrentScene(stage: GUIStage, controller: Controller): Unit = {
-      val sceneToSet = sceneMap.getOrElse(stage, loadScene(controller))
-      if (mainStage.get.getScene != null) {
-        previousScene = Some(mainStage.get.getScene)
-      }
-      switchScene(sceneToSet)
+      Platform.runLater(() => {
+        val sceneToSet = sceneMap.getOrElse(stage, loadScene(controller))
+        if (mainStage.get.getScene != null) {
+          previousScene = Some(mainStage.get.getScene)
+        }
+        switchScene(sceneToSet)
+      })
     }
 
     override def addStage(stage: GUIStage, scene: Scene): Unit = sceneMap += (stage -> scene)
