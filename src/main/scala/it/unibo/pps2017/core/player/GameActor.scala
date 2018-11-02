@@ -77,7 +77,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
 
     case ClickedCard(index, player) =>
       val playerHand: Seq[Card] = cardsIndex(player).toSeq
-      isCardOk(playerHand(index), player)
+      checkCard(playerHand(index), player)
 
     case CardPlayedAck =>
       numAck = numAck + 1
@@ -130,6 +130,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     deck.distribute().foreach(hand => {
       mediator ! Publish(topicName, DistributedCard(allCardsToPath(hand), allPlayers(i)))
       cardsInHand += (allPlayers(i) -> hand)
+      cardsIndex += (allPlayers(i) -> hand)
 
       if (firstHand && isFirstPlayer(hand)) {
         nextHandStarter = Some(getPlayers(i))
@@ -139,7 +140,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       i += 1
     })
 
-    cardsIndex = cardsInHand
     mediator ! Publish(topicName,SelectBriscola(briscolaChooser.get))
 
   }
@@ -167,7 +167,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     startHand()
   }
 
-  override def isCardOk(card: Card, player: PlayerName): Unit = currentSuit match {
+  override def checkCard(card: Card, player: PlayerName): Unit = currentSuit match {
     case Some(seed) =>
       val playerHand: Seq[Card] = cardsInHand(player).toStream
       if (seed == card.cardSeed) {

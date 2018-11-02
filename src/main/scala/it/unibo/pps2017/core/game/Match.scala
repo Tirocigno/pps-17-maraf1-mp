@@ -1,6 +1,5 @@
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.client.model.actors.ClientGameActor
 import it.unibo.pps2017.core.deck.cards.{Card, Seed}
 
 
@@ -34,6 +33,6 @@ trait Match {
     * @param player
     * The played that played the card
     */
-  def isCardOk(card: Card, player: String): Unit
+  def checkCard(card: Card, player: String): Unit
 
 }
