@@ -8,9 +8,8 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane onMouseClicked="#goViewMatch" prefHeight="540.0" prefWidth="600.0" style="-fx-background-color: #4286f4;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.GenericController">
-   <children>
       <Button fx:id="playButton" layoutX="202.0" layoutY="115.0" mnemonicParsing="false" onMouseClicked="#handlePlayMatch" prefHeight="35.0" prefWidth="200.0" text="Play" />
-      <Button fx:id="viewButton" layoutX="202.0" layoutY="191.0" mnemonicParsing="false" onMouseClicked="#watchMatch" prefHeight="35.0" prefWidth="200.0" text="View matches" />
+      <Button fx:id="viewButton" layoutX="202.0" layoutY="191.0" mnemonicParsing="false" onMouseClicked="#handleWatchMatch" prefHeight="35.0" prefWidth="200.0" text="View matches" />
       <Label layoutX="106.0" layoutY="35.0" text="Welcome to Marafone!">
          <font>
             <Font name="Gill Sans Ultra Bold" size="28.0" />
@@ -25,5 +24,4 @@
          </font>
       </Label>
       <Button fx:id="goButton" layoutX="368.0" layoutY="487.0" mnemonicParsing="false" text="Go" />
-   </children>
 </AnchorPane>

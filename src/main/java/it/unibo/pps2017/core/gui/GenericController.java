@@ -59,6 +59,10 @@ public class GenericController implements BasicPlayerOptions{
         clientController.sendMatchRequest();
     }
 
+    public void handleWatchMatch(){
+        watchMatch();
+    }
+
     @Override
     public void watchMatch() {
         //api call
@@ -67,8 +71,7 @@ public class GenericController implements BasicPlayerOptions{
         matchesList.getItems().addAll(matches);
     }
 
-    @FXML
-    private void goViewMatch(){
+    public void goViewMatch(){
         String matchSelected = matchesList.getSelectionModel().getSelectedItem();
         // viewMatch(matchSelected);
     }
