@@ -2,7 +2,7 @@ package it.unibo.pps2017.server.controller
 
 import io.vertx.scala.ext.web.RoutingContext
 import it.unibo.pps2017.server.model.database.RedisGameUtils
-import it.unibo.pps2017.server.model.{Error, RouterResponse, SavedMatches}
+import it.unibo.pps2017.server.model.{RouterResponse, SavedMatches}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,24 +16,22 @@ case class GameDispatcher() {
 
     gameId match {
       case Some(game) =>
-        gameDatabaseUtils.getGame(game) map {
+        gameDatabaseUtils.getGame(game, _ map {
           case Some(fullGame) => res.sendResponse(fullGame)
-          case None => res.setGenericError(Some("Error on game rescue!")).sendResponse(Error())
-        }
-      case None => res.setGenericError(Some("GameId not specified")).sendResponse(Error())
+          case None => errorHandler(res, "Error on game rescue!")
+        })
+      case None => errorHandler(res, "GameId not specified")
     }
   }
 
 
   def getLiveGames: (RoutingContext, RouterResponse) => Unit = (_, res) => {
-    res.sendResponse(gameDatabaseUtils.getLiveMatch)
+    gameDatabaseUtils.getLiveMatches(res.sendResponse)
   }
 
 
   def getSavedMatches: (RoutingContext, RouterResponse) => Unit = (_, res) => {
-    gameDatabaseUtils.getSavedMatch(games => {
-      res.sendResponse(SavedMatches(games))
-    }, cause => errorHandler(res, cause.getMessage))
+    gameDatabaseUtils.getSavedMatches(res.sendResponse, cause => errorHandler(res, cause.getMessage))
   }
 
 }

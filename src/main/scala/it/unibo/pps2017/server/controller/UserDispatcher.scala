@@ -2,24 +2,20 @@ package it.unibo.pps2017.server.controller
 
 import io.vertx.scala.ext.web.RoutingContext
 import it.unibo.pps2017.server.model.database.{RedisConnection, RedisUserUtils}
-import it.unibo.pps2017.server.model.{Error, Message, RouterResponse, User, UserFriends}
+import it.unibo.pps2017.server.model.{Message, RouterResponse, User, UserFriends}
 
 case class UserDispatcher() {
 
   val userDatabaseUtils = RedisUserUtils()
 
   def addUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = RedisConnection().getDatabaseConnection
-    res.setOnClose(Some(closeDatabaseConnection(db)))
-
     val username = getUsernameOrResponseError(ctx, res)
 
-    userDatabaseUtils.checkUserExisting(db, username.toString, queryRes => {
+    userDatabaseUtils.checkUserExisting(username.toString, queryRes => {
       if (queryRes) {
         errorHandler(res, s"User $username already signed in!")
       } else {
-        userDatabaseUtils.userSignIn(db,
-          username.toString,
+        userDatabaseUtils.userSignIn(username.toString,
           ctx.request().formAttributes().add("score", "0"),
           _ => {
             res.sendResponse(Message("User entered correctly!"))
@@ -33,15 +29,13 @@ case class UserDispatcher() {
   }
 
   def getUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = RedisConnection().getDatabaseConnection
-    res.setOnClose(Some(closeDatabaseConnection(db)))
 
     val username = getUsernameOrResponseError(ctx, res)
 
 
-    userDatabaseUtils.checkUserExisting(db, username.toString, queryRes => {
+    userDatabaseUtils.checkUserExisting(username.toString, queryRes => {
       if (queryRes) {
-        userDatabaseUtils.getUser(db, username.toString,
+        userDatabaseUtils.getUser(username.toString,
           userData => {
             res.sendResponse(User(username.toString, userData("score").utf8String.toInt))
           }, cause => {
@@ -55,15 +49,12 @@ case class UserDispatcher() {
   }
 
   def login: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = RedisConnection().getDatabaseConnection
-    res.setOnClose(Some(closeDatabaseConnection(db)))
-
     val username = getUsernameOrResponseError(ctx, res)
     val password: String = ctx.request().getParam("password").getOrElse("")
 
-    userDatabaseUtils.checkUserExisting(db, username.toString, exist => {
+    userDatabaseUtils.checkUserExisting(username.toString, exist => {
       if (exist) {
-        userDatabaseUtils.checkUserLogin(db, username.toString, password, result => {
+        userDatabaseUtils.checkUserLogin(username.toString, password, result => {
           if (result) {
             res.sendResponse(Message(s"$username, you are welcome!"))
           } else {
@@ -81,12 +72,9 @@ case class UserDispatcher() {
   }
 
   def deleteUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = RedisConnection().getDatabaseConnection
-    res.setOnClose(Some(closeDatabaseConnection(db)))
-
     val username = getUsernameOrResponseError(ctx, res)
 
-    userDatabaseUtils.deleteUser(db, username.toString, removedKeys => {
+    userDatabaseUtils.deleteUser(username.toString, removedKeys => {
       if (removedKeys > 0) {
         res.sendResponse(Message(s"User $username deleted correctly!"))
       } else {
@@ -98,9 +86,6 @@ case class UserDispatcher() {
   }
 
   def addFriend: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = RedisConnection().getDatabaseConnection
-    res.setOnClose(Some(closeDatabaseConnection(db)))
-
     val username = getUsernameOrResponseError(ctx, res)
 
     val params: Map[String, String] = ctx.request().formAttributes()
@@ -111,11 +96,11 @@ case class UserDispatcher() {
 
       val friend: String = params("friend")
 
-      userDatabaseUtils.checkUserExisting(db, username.toString, userExist => {
+      userDatabaseUtils.checkUserExisting(username.toString, userExist => {
         if (userExist) {
-          userDatabaseUtils.checkUserExisting(db, friend, friendExist => {
+          userDatabaseUtils.checkUserExisting(friend, friendExist => {
             if (friendExist) {
-              userDatabaseUtils.addFriendship(db, username.toString, friend, res)
+              userDatabaseUtils.addFriendship(username.toString, friend, res)
             } else {
               errorHandler(res, s"Friend $friend not found!")
             }
@@ -137,9 +122,9 @@ case class UserDispatcher() {
 
     val username = getUsernameOrResponseError(ctx, res)
 
-    userDatabaseUtils.checkUserExisting(db, username.toString, exist => {
+    userDatabaseUtils.checkUserExisting(username.toString, exist => {
       if (exist) {
-        userDatabaseUtils.getFriends(db, username.toString,
+        userDatabaseUtils.getFriends(username.toString,
           friends => {
             res.sendResponse(UserFriends(username.toString, friends))
           }, cause => {
@@ -168,11 +153,11 @@ case class UserDispatcher() {
 
       val friend: String = params("friend")
 
-      userDatabaseUtils.checkUserExisting(db, username.toString, userExist => {
+      userDatabaseUtils.checkUserExisting(username.toString, userExist => {
         if (userExist) {
-          userDatabaseUtils.checkUserExisting(db, friend, friendExist => {
+          userDatabaseUtils.checkUserExisting(friend, friendExist => {
             if (friendExist) {
-              userDatabaseUtils.removeFriendship(db, username.toString, friend, res)
+              userDatabaseUtils.removeFriendship(username.toString, friend, res)
             } else {
               errorHandler(res, s"Friend ${friend.toString} not found!")
             }
