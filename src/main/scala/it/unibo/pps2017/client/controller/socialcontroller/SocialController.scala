@@ -16,6 +16,7 @@ import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
+
 import scala.collection.JavaConverters._
 
 /**
@@ -168,10 +169,9 @@ object SocialController {
     override def notifyErrorToGUI(throwable: Throwable): Unit =
       currentGUI.get.notifyErrorOccurred(throwable.getMessage)
 
-    override def registerNewFriend(friendId: PlayerID): Unit = {
-      val paramMap = Map(AddFriendAPI.friendUsername -> friendId)
-      socialRestWebClient.callRemoteAPI(AddFriendAPI, Some(paramMap))
-    }
+    override def registerNewFriend(friendId: PlayerID): Unit =
+      socialRestWebClient.callRemoteAPI(AddFriendAPI, None, friendId)
+
 
     override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit =
       currentGUI.get.updateParty(currentPartyMap.map(entry => (entry._1.asString, entry._2)).asJava)
