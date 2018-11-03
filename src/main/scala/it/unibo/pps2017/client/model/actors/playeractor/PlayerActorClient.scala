@@ -29,7 +29,7 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>
-      gameActor = sender()
+      gameActor = sender
       communicatePlayersMatch(playersList)
 
     case DistributedCard(cards, player) => communicatePlayersCard(cards, player)
@@ -71,57 +71,47 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
     if (user.equals(player)) {
       controller.updateGUI(DistributedCard(cards, player))
       cardArrived = true
-      unstashAll()
+      unstashAll
     }
   }
 
   private def informPlayerToChooseBriscola(player: String): Unit = {
-    if (user.equals(player)) if (!cardArrived) {
-      stash()
-    } else {
+    if (user.equals(player))
+      if (!cardArrived)
+        stash
+      else
       controller.updateGUI(SelectBriscola(player))
       cardArrived = false
-    }
   }
 
-  private def sendBriscolaChosen(seed: Seed): Unit = {
+  private def sendBriscolaChosen(seed: Seed): Unit =
     gameActor ! BriscolaChosen(seed)
-  }
 
-  private def notifyBriscolaChosen(seed: Seed): Unit = {
+  private def notifyBriscolaChosen(seed: Seed): Unit =
     controller.updateGUI(NotifyBriscolaChosen(seed))
     gameActor ! BriscolaAck
-  }
 
-  private def sendIndexClickedCard(index: Int): Unit = {
+  private def sendIndexClickedCard(index: Int): Unit =
     gameActor ! ClickedCard(index, user)
-  }
 
-  private def cardOk(correctClickedCard: Boolean, player: String): Unit = {
+  private def cardOk(correctClickedCard: Boolean, player: String): Unit =
     if (user.equals(player)) controller.updateGUI(CardOk(correctClickedCard, player))
-  }
 
-  private def sendClickedCommand(command: String): Unit = {
+  private def sendClickedCommand(command: String): Unit =
     gameActor ! ClickedCommand(command, user)
-  }
 
   private def communicateTurn(player: String, endPartialTurn: Boolean, isFirstPlayer: Boolean): Unit = {
-    if (user.equals(player)) {
-      controller.setMyTurn(true)
-    } else {
-      controller.setMyTurn(false)
-    }
+    if (user.equals(player)) controller.setMyTurn(true)
+    else  controller.setMyTurn(false)
     controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
   }
 
-  private def communicatePlayedCard(card: String, player: String): Unit = {
+  private def communicatePlayedCard(card: String, player: String): Unit =
     controller.updateGUI(PlayedCard(card, player))
     gameActor ! CardPlayedAck
-  }
 
-  private def notifyCommandChosen(command: String, player: String): Unit = {
+  private def notifyCommandChosen(command: String, player: String): Unit =
     controller.updateGUI(NotifyCommandChosen(command, player))
-  }
 
   private def communicateGameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit =
     controller.updateGUI(ComputeGameScore(user, winner1, winner2, score1, score2, endMatch))
@@ -133,10 +123,9 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
     mediator ! Subscribe(id, self)
   }
 
-  private def notifyClosedGame(): Unit = {
+  private def notifyClosedGame(): Unit =
     gameActor ! ClosedPlayGameView(user)
     self ! PoisonPill
-  }
 
   private def orderPlayersList(playersList: ListBuffer[String]): ListBuffer[String] = {
     val tempList = playersList ++ playersList
@@ -153,7 +142,6 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
     orderedList
   }
 
-  override def username: String = {
+  override def username: String =
     user
-  }
 }

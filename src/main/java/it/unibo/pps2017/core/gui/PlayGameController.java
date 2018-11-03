@@ -1,4 +1,3 @@
-
 package it.unibo.pps2017.core.gui;
 
 import it.unibo.pps2017.client.controller.Controller;
@@ -62,7 +61,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     Label scoreTeams;
 
     @FXML
-    Text briscolaLabel, cardNotOk, usernamePlayer1, usernamePlayer2, usernamePlayer3, usernamePlayer4, waitingTime;
+    Text briscolaLabel, cardNotOk, usernamePlayer1, usernamePlayer2, usernamePlayer3, usernamePlayer4, waitingTime, firstTeamScore, secondTeamScore;
 
     private Map<String, String> indexOfMyCards;
     private List<String> playersList;
@@ -77,7 +76,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     private String player2;
     private String player3;
     private String player4;
-
     private List<String> idUserCards;
     private boolean briscolaChosen = true;
 
@@ -239,7 +237,14 @@ public class PlayGameController extends GameGUIController implements PlayGame {
             hideCommands();
         }
 
-        if (partialTurnIsEnded) cleanField();
+        if (partialTurnIsEnded) {
+            try {
+                Thread.sleep(PlayGameViewUtils.getSleepCleanField());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            cleanField();
+        }
 
         Image emptyFieldMyTurn = getImageFromPath(PlayGameViewUtils.getEmptyFieldMyTurn());
 
@@ -263,6 +268,8 @@ public class PlayGameController extends GameGUIController implements PlayGame {
 
     private void showScore(final int scoreFirstTeam, final int scoreSecondTeam, final boolean endedMatch) {
         Platform.runLater(() -> {
+            firstTeamScore.setText(PlayGameViewUtils.getMyTeam() + scoreFirstTeam);
+            secondTeamScore.setText(PlayGameViewUtils.getOpponentTeam() + scoreSecondTeam);
             scoreTeams.setText(PlayGameViewUtils.getMyTeamScore() + scoreFirstTeam + "\n" + PlayGameViewUtils.getOpponentTeamScore() + scoreSecondTeam);
             scoreTeams.setVisible(true);
             createLabelScaleTransition(scoreTeams, endedMatch);
@@ -499,7 +506,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
 
     @Override
     public void setController(Controller controller) {
-        System.out.println("Controlled setted");
         this.gameController = (GameController) controller;
     }
 }

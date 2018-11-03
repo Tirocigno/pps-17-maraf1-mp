@@ -127,7 +127,7 @@ class GameController extends MatchController {
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
     case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
     case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
-    case ComputeGameScore(user, winner1, winner2, score1, score2, endMatch) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2, endMatch)
+    case ComputeGameScore(player, winner1, winner2, score1, score2, endMatch) => cleanFieldEndTotalTurn(player, winner1, winner2, score1, score2, endMatch)
     case _ =>
   }
 

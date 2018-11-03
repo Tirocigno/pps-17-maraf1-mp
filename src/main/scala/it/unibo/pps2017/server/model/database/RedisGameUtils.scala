@@ -204,11 +204,17 @@ class RedisGameUtils extends GameDatabaseUtils {
 
     BlockingQuery.withCallback(db => {
       db.keys(getGameHistoryPattern).forEach(key => {
-        val hash = db.hgetAll(key)
+        try {
 
-        games += StoredMatch(key.replace("game:", "").replace(":history", ""),
-          convertToSide(hash.get(TEAM1_KEY)),
-          convertToSide(hash.get(TEAM2_KEY)))
+          val hash = db.hgetAll(key)
+
+          games += StoredMatch(key.replace("game:", "").replace(":history", ""),
+            convertToSide(hash.get(TEAM1_KEY)),
+            convertToSide(hash.get(TEAM2_KEY)))
+
+        } catch {
+          case ex: Exception => println("ECCEZIONE -> " + ex.getMessage)
+        }
 
       })
 

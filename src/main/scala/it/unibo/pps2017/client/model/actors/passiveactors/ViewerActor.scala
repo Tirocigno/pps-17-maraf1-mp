@@ -22,8 +22,8 @@ class ViewerActor(override val controller: GameController, var player: String) e
     case IdChannelPublishSubscribe(id) =>
       registerToChannel(id)
 
-    case RecapActualSituation(playersList, cards, seed, player) =>
-      communicateRecapActualSituation(playersList, cards, seed, player)
+    case RecapActualSituation(playersList, cards, seed, playerToView) =>
+      communicateRecapActualSituation(playersList, cards, seed, playerToView)
 
       become({
 

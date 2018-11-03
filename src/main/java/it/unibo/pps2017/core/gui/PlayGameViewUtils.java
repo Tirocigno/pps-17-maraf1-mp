@@ -14,6 +14,8 @@ class PlayGameViewUtils {
     private static final String OPPONENT_TEAM_SCORE = "Opponent team's score: ";
     private static final String CHOOSE_YOUR_BRISCOLA = "Choose your briscola";
     private static final String FORMAT = ".png";
+    private static final String MY_TEAM = "My team:";
+    private static final String OPPONENT_TEAM = "Opponent team:";
     private static final String PLAY_GAME_VIEW_FXML = "PlayGameView.fxml";
     private static final int DURATION_ANIMATION = 3;
     private static final int START_ANIMATION_POSITION = 1;
@@ -22,12 +24,27 @@ class PlayGameViewUtils {
     private static final int MIN_WIDTH = 900;
     private static final int MIN_HEIGHT = 685;
     private static final int DISCOVERY_PORT = 2000;
+    private static final int SLEEP_CLEAN_FIELD = 1000;
 
-    static int getMinWidth() { return MIN_WIDTH; }
+    static String getMyTeam() {
+        return MY_TEAM;
+    }
 
-    static int getMinHeight() {  return MIN_HEIGHT; }
+    static String getOpponentTeam() {
+        return OPPONENT_TEAM;
+    }
 
-    static int getDiscoveryPort() { return DISCOVERY_PORT; }
+    static int getMinWidth() {
+        return MIN_WIDTH;
+    }
+
+    static int getMinHeight() {
+        return MIN_HEIGHT;
+    }
+
+    static int getDiscoveryPort() {
+        return DISCOVERY_PORT;
+    }
 
     static int getDurationAnimation() {
         return DURATION_ANIMATION;
@@ -43,6 +60,10 @@ class PlayGameViewUtils {
 
     static int getMaxCardsInHand() {
         return MAX_CARDS_IN_HAND;
+    }
+
+    static int getSleepCleanField() {
+        return SLEEP_CLEAN_FIELD;
     }
 
     static String getFormat() {
@@ -93,5 +114,7 @@ class PlayGameViewUtils {
         return CHOOSE_YOUR_BRISCOLA;
     }
 
-    static String getPlayGameViewFxml() { return PLAY_GAME_VIEW_FXML; }
+    static String getPlayGameViewFxml() {
+        return PLAY_GAME_VIEW_FXML;
+    }
 }

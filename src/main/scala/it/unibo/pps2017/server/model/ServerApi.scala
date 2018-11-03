@@ -123,10 +123,10 @@ object ServerApi {
 
     def parameterPath: String = ":username"
 
-    override def httpMethod: HttpMethod = HttpMethod.GET
+    override def httpMethod: HttpMethod = HttpMethod.POST
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
-      GET(router, path, handle)
+      POST(router, path, handle)
   }
 
   case object RemoveUserAPI extends RestAPI {
