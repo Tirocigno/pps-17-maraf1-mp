@@ -270,7 +270,7 @@ object ClientController {
 
     override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
       case Some(controller) => controller.getSocialGUIController.displayViewMatches(playedMatches.asJava)
-      case None => genericGui.get.displayMatchesList(playedMatches)
+      case None => genericGui.get.displayMatchesList(playedMatches.asJava)
     }
 
     /**
@@ -284,7 +284,7 @@ object ClientController {
 
     override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
       case Some(controller) => controller.getSocialGUIController.displayReplayMatches(playedMatches.asJava)
-      case None => genericGui.get.displayMatchesList(playedMatches)
+      case None => genericGui.get.displayMatchesList(playedMatches.asJava)
     }
 
   }
