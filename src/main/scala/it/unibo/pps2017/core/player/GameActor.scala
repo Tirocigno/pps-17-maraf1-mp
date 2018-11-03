@@ -188,9 +188,10 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
   }
 
   private def onCardPlayed(card: Card, player: PlayerName): Unit = {
-    gameStore.addMove(player, card)
     mediator ! Publish(topicName, CardOk(TRUE, player))
     if (gameCycle.isFirst) onFirstCardOfHand(card)
+
+    gameStore.addMove(player, card)
 
     cardsOnTable += ((card, gameCycle.getCurrent))
     cardPlayed = true
