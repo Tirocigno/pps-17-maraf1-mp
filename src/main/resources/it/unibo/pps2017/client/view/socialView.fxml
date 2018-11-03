@@ -45,5 +45,5 @@
    <TextArea fx:id="players" editable="false" layoutX="68.0" layoutY="83.0" prefHeight="42.0" prefWidth="428.0" promptText="Players in the table:" />
    <Button layoutX="160.0" layoutY="504.0" mnemonicParsing="false" onMouseClicked="#inviteFriendToPlayAsFoe" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: yellow; -fx-border-radius: 3; -fx-border-color: blue;" text="Foe" />
    <Label layoutX="68.0" layoutY="480.0" text="Invite friend to play as:" />
-   <Label fx:id="responseFriendLabel" layoutX="335.0" layoutY="540.0" prefHeight="17.0" prefWidth="165.0" text="Label" />
+   <Label fx:id="responseFriendLabel" layoutX="335.0" layoutY="540.0" prefHeight="17.0" prefWidth="165.0" />
 </AnchorPane>

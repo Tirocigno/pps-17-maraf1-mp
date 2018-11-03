@@ -1,6 +1,10 @@
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController$;
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController$;
+import it.unibo.pps2017.commons.remote.social.SocialResponse;
+import it.unibo.pps2017.commons.remote.social.SocialResponse$;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,9 +37,12 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     private static final String NEGATIVE_ANSWER = "negative";
     private static final String ACCEPT_MSG = " accepted the invitation!";
     private static final String REJECT_MSG = " rejected the invitation!";
+    private static final String ADD_FRIEND = "add friend";
+    private static final String INVITE_FRIEND = "invite friend";
     private static final int MIN_WIDTH = 900;
     private static final int MIN_HEIGHT = 685;
     private SocialController socialController;
+    private ClientController clientController = ClientController$.MODULE$.getSingletonController();
     private String request;
 
     private String getSelection(ListView<String> listView){
@@ -109,7 +116,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     public void updateParty(java.util.Map<String, String> partyMap) {
         String label = "All players: ";
         for(java.util.Map.Entry<String,String> entry : partyMap.entrySet()){
-            label += entry.getKey() + " (" + entry.getValue() +")\t";
+            label += entry.getKey() + " (" + entry.getValue() + ")\t";
         }
         players.setText(label);
     }
@@ -143,26 +150,36 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
             responsePlayLabel.setText(WAITING_MSG);
 
             message = sender + INVITATION_INFO + role + ". " + INVITATION_REQUEST;
-            showAlertConfirmation(message);
+            showAlertConfirmation(message, INVITE_FRIEND);
 
         }
         else if(role.equals(SocialController$.MODULE$.FRIEND_REQUEST())){
             message = sender + FRIEND_REQUEST;
-            showAlertConfirmation(message);
+            showAlertConfirmation(message, ADD_FRIEND);
         }
 
     }
 
-    private void showAlertConfirmation(String msg){
+    private void showAlertConfirmation(String msg, String type){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, msg, ButtonType.YES, ButtonType.NO);
 
         Optional<ButtonType> result = alert.showAndWait();
         if(result.isPresent()) {
-            if (result.get() == ButtonType.YES) {
-                // player accepted to play
-            } else {
-                // player refused the invitation
+            if(type.equals(ADD_FRIEND)){
+                if (result.get() == ButtonType.YES) {
+                    socialController.notifyFriendMessageResponse(SocialResponse.PositiveResponse$.MODULE$);
+                } else {
+                    socialController.notifyFriendMessageResponse(SocialResponse.NegativeResponse$.MODULE$);
+                }
             }
+            else if(type.equals(INVITE_FRIEND)){
+                if (result.get() == ButtonType.YES) {
+                    socialController.notifyInviteMessageResponse(SocialResponse.PositiveResponse$.MODULE$);
+                } else {
+                    socialController.notifyInviteMessageResponse(SocialResponse.NegativeResponse$.MODULE$);
+                }
+            }
+
         }
     }
 
@@ -245,7 +262,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      */
     public void viewMatch(){
         List<String> matches = new ArrayList<>();
-        // get matches
+
         comboView.getItems().clear();
         comboView.getItems().addAll(matches);
         hideReplayMatch();
