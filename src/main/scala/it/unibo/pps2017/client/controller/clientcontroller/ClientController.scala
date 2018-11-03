@@ -166,6 +166,7 @@ object ClientController {
     override def notifyError(throwable: Throwable): Unit = {
       if (genericGui.isDefined) genericGui.get.notifyError(throwable)
       if (loginGUI.isDefined) loginGUI.get.notifyError(throwable)
+      if (socialController.isDefined) socialController.get.getSocialGUIController.notifyError(throwable)
     }
 
 

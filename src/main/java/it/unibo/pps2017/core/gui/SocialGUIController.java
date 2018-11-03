@@ -1,15 +1,18 @@
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.Controller;
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController$;
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController;
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController$;
 import it.unibo.pps2017.commons.remote.game.MatchNature;
 import it.unibo.pps2017.commons.remote.social.SocialResponse;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import java.util.*;
-import it.unibo.pps2017.client.controller.socialcontroller.SocialController;
+
+import java.util.List;
+import java.util.Optional;
 
 public class SocialGUIController implements it.unibo.pps2017.client.view.social.SocialGUIController, BasicPlayerOptions{
 
@@ -189,10 +192,6 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
         showAlertMessage(message);
     }
 
-    @Override
-    public void setController(it.unibo.pps2017.client.controller.socialcontroller.SocialController controller) {
-        this.socialController = controller;
-    }
 
     private void showAndHideTextResponse(Label label){
         Task<Void> sleeper = new Task<Void>() {
@@ -325,4 +324,13 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
         okComboReplay.setVisible(true);
     }
 
+    @Override
+    public void setController(Controller controller) {
+        this.socialController = (SocialController) controller;
+    }
+
+    @Override
+    public void notifyError(Throwable throwable) {
+        System.out.println("Error thrown");
+    }
 }

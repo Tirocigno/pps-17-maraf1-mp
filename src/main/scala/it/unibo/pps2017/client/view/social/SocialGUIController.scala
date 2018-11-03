@@ -1,9 +1,10 @@
 package it.unibo.pps2017.client.view.social
 
 import java.util
-import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 
-trait SocialGUIController {
+import it.unibo.pps2017.client.view.GUIController
+
+trait SocialGUIController extends GUIController {
 
   /**
     * Open a new alert notifying an error.
@@ -56,8 +57,6 @@ trait SocialGUIController {
     * @param message the body of the request to display.
     */
   def notifyAPIResult(message: String)
-
-  def setController(controller: SocialController)
 
   def displayViewMatches(matches: util.List[String]): Unit
 
