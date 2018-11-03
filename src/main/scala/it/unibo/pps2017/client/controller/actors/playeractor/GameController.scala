@@ -240,7 +240,7 @@ class GameController extends MatchController {
     * Method to stop actor and communicated it at controller.
     */
   def endedMatch(): Unit = {
-    currentActorRef ! PoisonPill
+    if (currentActorRef != null) currentActorRef ! PoisonPill
   }
 
   /**
