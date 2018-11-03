@@ -6,6 +6,7 @@ import it.unibo.pps2017.client.controller.actors.playeractor.MatchController
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.view.game.GameGUIController
+import it.unibo.pps2017.client.view.login.LoginGUIController
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import javafx.fxml.FXMLLoader
 import javafx.scene.{Parent, Scene}
@@ -25,8 +26,10 @@ class GuiLoader() {
     * @return the deployed scene to set inside GUI.
     */
   def deployGuiStage(controllerToBind: Controller, stage: GUIStage): Scene = controllerToBind match {
-    case controller: ClientController =>
+    case controller: ClientController if stage == LoginStage =>
       createAndRegisterScene(GuiLoader.LOGIN_SCENE_FXML, controller, stage)
+    case controller: ClientController if stage == GenericStage =>
+      createAndRegisterScene(GuiLoader.GENERIC_SCENE_FXML, controller, stage)
     case controller: MatchController =>
       createAndRegisterScene(GuiLoader.GAME_SCENE_FXML, controller, stage)
     case controller: SocialController =>
@@ -45,6 +48,7 @@ class GuiLoader() {
     */
   private def createAndRegisterScene(fxmlPath: String, controller: Controller, stage: GUIStage): Scene = {
     val loader = new FXMLLoader(classOf[GuiLoader].getResource(fxmlPath))
+    println(loader)
     val root: Parent = loader.load()
     val scene = new Scene(root)
     stack.addStage(stage, scene)
@@ -68,8 +72,12 @@ class GuiLoader() {
       val castedGui = guiController.asInstanceOf[GameGUIController]
       controller.setCurrentGui(castedGui)
       castedGui.setController(controller)
-    case controller: ClientController =>
+    case controller: ClientController if guiController.isInstanceOf[GenericGUIController] =>
       val castedGui = guiController.asInstanceOf[GenericGUIController]
+      controller.setCurrentGUI(castedGui)
+      castedGui.setController(controller)
+    case controller: ClientController if guiController.isInstanceOf[LoginGUIController] =>
+      val castedGui = guiController.asInstanceOf[LoginGUIController]
       controller.setCurrentGUI(castedGui)
       castedGui.setController(controller)
   }
