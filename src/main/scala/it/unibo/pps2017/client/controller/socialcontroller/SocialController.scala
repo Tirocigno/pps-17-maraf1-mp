@@ -156,6 +156,13 @@ trait SocialController extends ActorController {
     */
   def notifyInviteMessageResponse(socialResponse: SocialResponse): Unit
 
+  /**
+    * Getter for SocialGUIController.
+    *
+    * @return the social GUI controller.
+    */
+  def getSocialGUIController: SocialGUIController
+
 }
 
 object SocialController {
@@ -257,6 +264,8 @@ object SocialController {
 
     override def notifyInviteMessageResponse(socialResponse: SocialResponse): Unit =
       currentActorRef ! TellInvitePlayerResponseMessage(socialResponse)
+
+    override def getSocialGUIController: SocialGUIController = currentGUI.get
 
     private def registerToOnlinePlayerList(): Unit = {
       val encodedActorRef = serializeActorRef(currentActorRef)

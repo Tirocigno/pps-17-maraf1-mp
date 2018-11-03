@@ -227,8 +227,11 @@ object ClientController {
     override def sendRegisterRequest(userName: String, password: String): Unit =
       launchAutentichationAPI(AddUserAPI, userName, password)
 
-    override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit =
-      genericGui.displayMatchesList(playedMatches)
+    override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
+      case Some(controller) => controller.getSocialGUIController
+      case None => genericGui.displayMatchesList(playedMatches)
+    }
+
 
     /**
       * Start watching a current played match.
@@ -257,8 +260,10 @@ object ClientController {
       }
     }
 
-    override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit =
-      genericGui.displayMatchesList(playedMatches)
+    override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
+      case Some(controller) => controller.getSocialGUIController
+      case None => genericGui.displayMatchesList(playedMatches)
+    }
 
     /**
       * Start replay a played match.
