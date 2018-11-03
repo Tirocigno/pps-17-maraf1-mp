@@ -3,6 +3,7 @@ package it.unibo.pps2017.core.gui;
 import it.unibo.pps2017.client.controller.Controller;
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
 import it.unibo.pps2017.client.view.login.LoginGUIController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -56,7 +57,9 @@ public class RegistrationLoginController implements LoginGUIController, Registra
     }
 
     private void showAlertMessage(String message){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
-        alert.showAndWait();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+            alert.showAndWait();
+        });
     }
 }
