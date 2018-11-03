@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.client.model.actors.passiveactors
 
+import akka.actor.ActorRef
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
@@ -13,6 +14,7 @@ import scala.collection.mutable.ListBuffer
 class ViewerActor(override val controller: GameController, var player: String) extends ClientGameActor {
 
   import context._
+
 
   var actorPlayer: ClientGameActor = this
   var firstPlayer: String = player
@@ -33,7 +35,7 @@ class ViewerActor(override val controller: GameController, var player: String) e
         case NotifyBriscolaChosen(seedChosen) =>
           notifyBriscolaChosen(seedChosen)
 
-        case Turn(actualPlayer, endPartialTurn, _) =>
+        case Turn(actualPlayer, endPartialTurn, _, _) =>
           communicateTurn(actualPlayer, endPartialTurn)
 
         case PlayedCard(card, actualPlayer) =>
@@ -49,7 +51,7 @@ class ViewerActor(override val controller: GameController, var player: String) e
   }
 
   private def registerToChannel(id: String): Unit = {
-    val mediator = DistributedPubSub(context.system).mediator
+    val mediator: ActorRef = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(id, self)
   }
 
@@ -59,7 +61,7 @@ class ViewerActor(override val controller: GameController, var player: String) e
     firstPlayer = playersList.head
     controller.updateGUI(DistributedCard(cards.toList, firstPlayer))
     controller.updateGUI(NotifyBriscolaChosen(seed = seed))
-    controller.updateGUI(Turn(player, endPartialTurn = true, isFirstPlayer = false))
+    controller.updateGUI(Turn(player, endPartialTurn = true, isFirstPlayer = false, isReplay = false))
   }
 
   private def communicatePlayersCard(cardsOfPlayer: List[String], actualPlayer: String): Unit =
@@ -70,7 +72,7 @@ class ViewerActor(override val controller: GameController, var player: String) e
     controller.updateGUI(NotifyBriscolaChosen(seed = seedChosen))
 
   private def communicateTurn(actualPlayer: String, endPartialTurn: Boolean): Unit =
-    controller.updateGUI(Turn(actualPlayer, endPartialTurn, isFirstPlayer = false))
+    controller.updateGUI(Turn(actualPlayer, endPartialTurn, isFirstPlayer = false, isReplay = false))
 
   private def communicatePlayedCard(card: String, actualPlayer: String): Unit =
     controller.updateGUI(PlayedCard(card, actualPlayer))

@@ -40,8 +40,10 @@ public interface PlayGame {
      *
      * @param player           current player that must plays the card.
      * @param partialTurnEnded true if the partial turn is ended, false otherwise.
+     * @param isFirstPlayer true if the player is the first of the set.
+     * @param isReplay true if the message is sent from ReplayActor.
      */
-    void setCurrentPlayer(final String player, final boolean partialTurnEnded, final boolean isFirstPlayer);
+    void setCurrentPlayer(final String player, final boolean partialTurnEnded, final boolean isFirstPlayer, final boolean isReplay);
 
     /**
      * This method is called to show the played card from player.

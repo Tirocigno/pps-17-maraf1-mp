@@ -26,6 +26,7 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
   var cardArrived: Boolean = false
   var finalList: ListBuffer[String] = ListBuffer[String]()
 
+
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>
@@ -46,7 +47,7 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
 
     case ClickedCommandActualPlayer(command) => sendClickedCommand(command)
 
-    case Turn(player, endPartialTurn, isFirstPlayer) => communicateTurn(player, endPartialTurn, isFirstPlayer)
+    case Turn(player, endPartialTurn, isFirstPlayer, _) => communicateTurn(player, endPartialTurn, isFirstPlayer)
 
     case PlayedCard(card, player) => communicatePlayedCard(card, player)
 
@@ -104,7 +105,7 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
   private def communicateTurn(player: String, endPartialTurn: Boolean, isFirstPlayer: Boolean): Unit = {
     if (user.equals(player)) controller.setMyTurn(true)
     else controller.setMyTurn(false)
-    controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
+    controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer, isReplay = false))
   }
 
   private def communicatePlayedCard(card: String, player: String): Unit = {

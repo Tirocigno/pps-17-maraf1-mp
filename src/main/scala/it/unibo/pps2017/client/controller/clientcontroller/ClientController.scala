@@ -177,7 +177,7 @@ object ClientController {
 
     override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit = {
       actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", myIP))
-      gameController.createActor(this.playerName, actorSystem.get)
+      //
     }
 
 
@@ -201,8 +201,11 @@ object ClientController {
 
 
     override def handleMatchResponse(gameID: String): Unit = {
+      gameController.createActor(this.playerName, actorSystem.get)
+
       guiStack.setCurrentScene(GameStage, gameController)
       gameController.joinPlayerToMatch(gameID)
+
       socialController match {
         case Some(controller) => controller.notifyAllPlayersGameID(gameID)
         case None =>
@@ -252,7 +255,12 @@ object ClientController {
       *
       * @param matchID ID of the match to watch.
       */
-    override def startMatchWatching(matchID: String): Unit = ??? //TODO IMPLEMENT tHIS
+    override def startMatchWatching(matchID: String): Unit = {
+      guiStack.setCurrentScene(GameStage, gameController)
+
+      gameController.createViewerActor(this.playerName, actorSystem.get)
+      gameController.joinPlayerToMatch(matchID)
+    }
 
     /**
       * Fetch the archive of matches played from a server.
@@ -261,7 +269,10 @@ object ClientController {
       webClient.get.callRemoteAPI(GetSavedMatchAPI, None)
 
 
-    override def handleMatchReplay(gameToReplay: Game): Unit = ??? //TODO IMPLEMENT tHIS
+    override def handleMatchReplay(gameToReplay: Game): Unit = {
+      guiStack.setCurrentScene(GameStage, gameController)
+      gameController.createReplayActor(this.playerName, actorSystem.get, gameToReplay)
+    }
 
     /**
       * Notify to whole system that a game is finished.

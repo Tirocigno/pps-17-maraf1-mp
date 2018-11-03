@@ -243,7 +243,6 @@
                      </font>
                   </Text>
                    <ImageView fx:id="currentUserCommand" fitHeight="106.0" fitWidth="154.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
-                   <ImageView fx:id="gameOverImage" fitHeight="237.0" fitWidth="285.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
                    <Label fx:id="scoreTeams" alignment="CENTER" contentDisplay="CENTER" style="-fx-background-color: black;" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
                      <font>
                          <Font name="Charter Bold" size="16.0" />
@@ -281,6 +280,7 @@
                          <Font name="Tamil Sangam MN Bold" size="14.0" />
                      </font>
                   </Text>
+                   <ImageView fx:id="gameOverImage" fitHeight="237.0" fitWidth="285.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
                    <Text fx:id="waitingTime" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for a match" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
                      <font>
                          <Font name="Tamil Sangam MN Bold" size="24.0" />

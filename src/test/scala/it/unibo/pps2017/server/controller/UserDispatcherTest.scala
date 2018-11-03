@@ -65,8 +65,7 @@ class UserDispatcherTest extends FunSuite with BeforeAndAfterAll {
       val error = read[Error](onSuccess.get)
       assert(error.cause.get == s"User NonExisting$usernameForTest not found!")
     }, cause => {
-      cause.printStackTrace()
-      assert(false)
+      assert(cause.getMessage == s"User NonExisting$usernameForTest not found!")
     }, None, Some(Dispatcher.PORT))
 
     sleep(WAIT_TIMEOUT)
@@ -90,8 +89,8 @@ class UserDispatcherTest extends FunSuite with BeforeAndAfterAll {
     PostRequest(Dispatcher.HOST, "/user/addFriend/" + usernameForTest, onSuccess => {
       val error = read[Error](onSuccess.get)
       assert(error.cause.get == "You didn't specify a friend!")
-    }, _ => {
-      assert(false)
+    }, cause => {
+      assert(cause.getMessage == "You didn't specify a friend!")
     }, None, Some(Dispatcher.PORT))
 
     sleep(WAIT_TIMEOUT)
