@@ -170,6 +170,10 @@ object SocialController {
   val UNKNOWN_MESSAGE = "Unknown message received"
   val FRIEND_REQUEST = "Friend request"
 
+  def apply(parentController: ClientController,
+            playerID: PlayerID, discoveryContext: ServerContext): SocialController =
+    new SocialControllerImpl(parentController, playerID, discoveryContext)
+
   private class SocialControllerImpl(val parentController: ClientController, val playerID: PlayerID, val
   discoveryContext: ServerContext) extends SocialController {
 
