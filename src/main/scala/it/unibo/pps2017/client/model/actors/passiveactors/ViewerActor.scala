@@ -33,7 +33,7 @@ class ViewerActor(override val controller: GameController, var player: String) e
         case NotifyBriscolaChosen(seedChosen) =>
           notifyBriscolaChosen(seedChosen)
 
-        case Turn(actualPlayer, endPartialTurn, _) =>
+        case Turn(actualPlayer, endPartialTurn, _, _) =>
           communicateTurn(actualPlayer, endPartialTurn)
 
         case PlayedCard(card, actualPlayer) =>
@@ -59,7 +59,7 @@ class ViewerActor(override val controller: GameController, var player: String) e
     firstPlayer = playersList.head
     controller.updateGUI(DistributedCard(cards.toList, firstPlayer))
     controller.updateGUI(NotifyBriscolaChosen(seed = seed))
-    controller.updateGUI(Turn(player, endPartialTurn = true, isFirstPlayer = false))
+    controller.updateGUI(Turn(player, endPartialTurn = true, isFirstPlayer = false, isReplay = false))
   }
 
   private def communicatePlayersCard(cardsOfPlayer: List[String], actualPlayer: String): Unit =
@@ -70,7 +70,7 @@ class ViewerActor(override val controller: GameController, var player: String) e
     controller.updateGUI(NotifyBriscolaChosen(seed = seedChosen))
 
   private def communicateTurn(actualPlayer: String, endPartialTurn: Boolean): Unit =
-    controller.updateGUI(Turn(actualPlayer, endPartialTurn, isFirstPlayer = false))
+    controller.updateGUI(Turn(actualPlayer, endPartialTurn, isFirstPlayer = false, isReplay = false))
 
   private def communicatePlayedCard(card: String, actualPlayer: String): Unit =
     controller.updateGUI(PlayedCard(card, actualPlayer))

@@ -214,7 +214,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     @Override
     public void showPlayersPlayedCard(final String player, final String cardPath) {
         Image cardPlayed = getImageFromPath(cardPath);
-
         if (player.equals(player1)) {
             this.hidePlayedCard(cardPath);
             this.user1Field.setImage(cardPlayed);
@@ -229,7 +228,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     }
 
     @Override
-    public void setCurrentPlayer(final String player, final boolean partialTurnIsEnded, final boolean isFirstPlayer) {
+    public void setCurrentPlayer(final String player, final boolean partialTurnIsEnded, final boolean isFirstPlayer, final boolean isReplay) {
 
         if (isFirstPlayer && player.equals(playersList.get(0)) && !coinButton.isVisible()) {
             showCommands();
@@ -238,10 +237,12 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         }
 
         if (partialTurnIsEnded) {
-            try {
-                Thread.sleep(PlayGameViewUtils.getSleepCleanField());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (!isReplay) {
+                try {
+                    Thread.sleep(PlayGameViewUtils.getSleepCleanField());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             cleanField();
         }
