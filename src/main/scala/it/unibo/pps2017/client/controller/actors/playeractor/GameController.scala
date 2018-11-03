@@ -48,7 +48,7 @@ class GameController extends MatchController {
     * @param actorSystem System.
     */
   def createViewerActor(actorId: String, actorSystem: ActorSystem): Unit = {
-    actorSystem.actorOf(Props(new ViewerActor(this, actorId)))
+    currentActorRef = actorSystem.actorOf(Props(new ViewerActor(this, actorId)))
   }
 
   /**

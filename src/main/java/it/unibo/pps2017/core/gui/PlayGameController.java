@@ -203,11 +203,16 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         int cardCounter = 0;
 
         for (final ImageView firstPlayerCard : cardsPlayer1) {
-            Image userCard = getImageFromPath(firstUserCards.get(cardCounter));
-            indexOfMyCards.put(idUserCards.get(cardCounter), firstUserCards.get(cardCounter));
-            firstPlayerCard.setImage(userCard);
-            firstPlayerCard.setVisible(true);
-            cardCounter++;
+            try {
+                Image userCard = getImageFromPath(firstUserCards.get(cardCounter));
+                indexOfMyCards.put(idUserCards.get(cardCounter), firstUserCards.get(cardCounter));
+                firstPlayerCard.setImage(userCard);
+                firstPlayerCard.setVisible(true);
+                cardCounter++;
+            } catch (IndexOutOfBoundsException ignored) {
+
+            }
+
         }
     }
 

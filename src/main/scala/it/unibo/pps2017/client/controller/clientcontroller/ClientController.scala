@@ -163,7 +163,7 @@ object ClientController {
 
     override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit = {
       actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", myIP))
-      gameController.createActor(this.playerName, actorSystem.get)
+      //
     }
 
 
@@ -173,7 +173,8 @@ object ClientController {
 
     override def sendMatchRequest(matchNature: MatchNature,
                                   paramMap: Option[Map[String, String]]): Unit = paramMap match {
-      case Some(_) => startMatch(paramMap.get, matchNature)
+      case Some(_) =>
+        startMatch(paramMap.get, matchNature)
       case None => val map = Map(FoundGameRestAPI.meParamKey -> playerName)
         startMatch(map, matchNature)
 
@@ -184,8 +185,11 @@ object ClientController {
 
 
     override def handleMatchResponse(gameID: String): Unit = {
+      gameController.createActor(this.playerName, actorSystem.get)
+
       guiStack.setCurrentScene(GameStage, gameController)
       gameController.joinPlayerToMatch(gameID)
+
       socialController match {
         case Some(controller) => controller.notifyAllPlayersGameID(gameID)
         case None =>
@@ -232,7 +236,10 @@ object ClientController {
       * @param matchID ID of the match to watch.
       */
     override def startMatchWatching(matchID: String): Unit = {
+      guiStack.setCurrentScene(GameStage, gameController)
+
       gameController.createViewerActor(this.playerName, actorSystem.get)
+      gameController.joinPlayerToMatch(matchID)
     }
 
     /**

@@ -26,6 +26,7 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
   var cardArrived: Boolean = false
   var finalList: ListBuffer[String] = ListBuffer[String]()
 
+
   def receive: PartialFunction[Any, Unit] = {
 
     case PlayersRef(playersList) =>

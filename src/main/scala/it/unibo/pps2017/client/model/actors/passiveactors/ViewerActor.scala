@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.client.model.actors.passiveactors
 
+import akka.actor.ActorRef
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
@@ -13,6 +14,7 @@ import scala.collection.mutable.ListBuffer
 class ViewerActor(override val controller: GameController, var player: String) extends ClientGameActor {
 
   import context._
+
 
   var actorPlayer: ClientGameActor = this
   var firstPlayer: String = player
@@ -49,7 +51,7 @@ class ViewerActor(override val controller: GameController, var player: String) e
   }
 
   private def registerToChannel(id: String): Unit = {
-    val mediator = DistributedPubSub(context.system).mediator
+    val mediator: ActorRef = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(id, self)
   }
 
