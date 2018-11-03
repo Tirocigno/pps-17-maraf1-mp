@@ -1,5 +1,6 @@
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.Controller;
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
 import it.unibo.pps2017.client.view.GenericGUIController;
 import it.unibo.pps2017.commons.remote.game.MatchNature;
@@ -39,10 +40,9 @@ public class GenericController implements GenericGUIController, BasicPlayerOptio
         clientController.startMatchWatching(matchSelected);
     }
 
-
     @Override
-    public void setController(ClientController controller) {
-        this.clientController = controller;
+    public void setController(Controller controller) {
+        this.clientController = (ClientController) controller;
     }
 
     @Override
