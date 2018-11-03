@@ -3,13 +3,12 @@ package it.unibo.pps2017.client.model.actors.passiveactors
 
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
-import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActor.SendHeartbeat
+import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActor.{CARD_FORMAT, CARD_PATH, SendHeartbeat}
 import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActorStatus._
 import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.core.deck.cards.Seed._
 import it.unibo.pps2017.server.model._
-import it.unibo.pps2017.client.model.actors.ReplayActor._
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._

@@ -187,26 +187,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       onCardPlayed(card, player)
   }
 
-  private def onCardPlayed(card: Card, player: PlayerName): Unit = {
-    gameStore.addMove(player, card)
-    mediator ! Publish(topicName, CardOk(TRUE, player))
-    if (gameCycle.isFirst) onFirstCardOfHand(card)
-
-    cardsOnTable += ((card, gameCycle.getCurrent))
-    cardPlayed = true
-    mediator ! Publish(topicName, PlayedCard(cardPath(card), player))
-    cardsInHand(player) -= card
-  }
-
-  private def onFirstCardOfHand(card: Card): Unit = {
-    gameStore.startHand()
-    val currentHand: Set[Card] = cardsInHand(gameCycle.getCurrent)
-    if (currentHand.size == MAX_HAND_CARDS && currentBriscola.get == card.cardSeed && card.cardValue == ACE_VALUE) {
-      checkMarafona(currentHand, gameCycle.getCurrent)
-    }
-    currentSuit = Option(card.cardSeed)
-  }
-
   private def onHandEnd(lastTaker: PlayerName): Unit = {
     gameStore.endHand(lastTaker)
     setEnd = true
@@ -231,16 +211,6 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
 
     }
-  }
-
-  private def getTeamOfPlayer(player: PlayerName): BaseTeam[PlayerName] = getTeamIndexOfPlayer(player) match {
-    case 0 => team1
-    case 1 => team2
-  }
-
-  private def getTeamIndexOfPlayer(player: PlayerName): Int = {
-    if (team1.getMembers.contains(player)) return 0
-    1
   }
 
   private def onSetEnd(): Unit = {
@@ -270,6 +240,14 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     }
   }
 
+  private def notifyWinner(team: BaseTeam[PlayerName]): Unit = {
+    gameEnd = true
+    mediator ! Publish(topicName, GameScore(team.firstMember.get, team.secondMember.get, team1.getScore, team2.getScore, TRUE))
+
+    gameStore.endGame(team.getMembers)
+    onGameEnd(team.asSide)
+  }
+
   private def getGameWinner: Option[BaseTeam[PlayerName]] = {
     if (team1.getScore >= MAX_SCORE && team1.getScore > team2.getScore) return Some(team1)
     if (team2.getScore >= MAX_SCORE && team2.getScore > team1.getScore) return Some(team2)
@@ -277,12 +255,34 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     None
   }
 
-  private def notifyWinner(team: BaseTeam[PlayerName]): Unit = {
-    gameEnd = true
-    mediator ! Publish(topicName, GameScore(team.firstMember.get, team.secondMember.get, team1.getScore, team2.getScore, TRUE))
+  private def getTeamOfPlayer(player: PlayerName): BaseTeam[PlayerName] = getTeamIndexOfPlayer(player) match {
+    case 0 => team1
+    case 1 => team2
+  }
 
-    gameStore.endGame(team.getMembers)
-    onGameEnd(team.asSide)
+  private def getTeamIndexOfPlayer(player: PlayerName): Int = {
+    if (team1.getMembers.contains(player)) return 0
+    1
+  }
+
+  private def onCardPlayed(card: Card, player: PlayerName): Unit = {
+    gameStore.addMove(player, card)
+    mediator ! Publish(topicName, CardOk(TRUE, player))
+    if (gameCycle.isFirst) onFirstCardOfHand(card)
+
+    cardsOnTable += ((card, gameCycle.getCurrent))
+    cardPlayed = true
+    mediator ! Publish(topicName, PlayedCard(cardPath(card), player))
+    cardsInHand(player) -= card
+  }
+
+  private def onFirstCardOfHand(card: Card): Unit = {
+    gameStore.startHand()
+    val currentHand: Set[Card] = cardsInHand(gameCycle.getCurrent)
+    if (currentHand.size == MAX_HAND_CARDS && currentBriscola.get == card.cardSeed && card.cardValue == ACE_VALUE) {
+      checkMarafona(currentHand, gameCycle.getCurrent)
+    }
+    currentSuit = Option(card.cardSeed)
   }
 
   private def checkMarafona(hand: Set[Card], player: PlayerName): Unit = {

@@ -102,7 +102,7 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
 
   private def communicateTurn(player: String, endPartialTurn: Boolean, isFirstPlayer: Boolean): Unit = {
     if (user.equals(player)) controller.setMyTurn(true)
-    else  controller.setMyTurn(false)
+    else controller.setMyTurn(false)
     controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
   }
 

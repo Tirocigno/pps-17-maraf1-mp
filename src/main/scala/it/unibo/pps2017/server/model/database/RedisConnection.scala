@@ -49,18 +49,16 @@ case class RedisConnection() {
 
 object RedisConnection {
   private var redisHost: String = "127.0.0.1"
+  private var redisPort: Int = 6379
+  private var redisPw: Option[String] = None
 
   def setRedisHost(value: String): Unit = redisHost = value
 
   def REDIS_HOST: String = redisHost
 
-  private var redisPort: Int = 6379
-
   def setRedisPort(value: Int): Unit = redisPort = value
 
   def REDIS_PORT: Int = redisPort
-
-  private var redisPw: Option[String] = None
 
   def setRedisPw(value: String): Unit = redisPw = Some(value)
 
