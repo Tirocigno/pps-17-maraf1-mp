@@ -243,6 +243,7 @@ object ClientController {
 
 
     override def handleMatchReplay(gameToReplay: Game): Unit = {
+      guiStack.setCurrentScene(GameStage, gameController)
       gameController.createReplayActor(this.playerName, actorSystem.get, gameToReplay)
     }
 

@@ -75,7 +75,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
     case BriscolaAck =>
       numAck = numAck + 1
       if(numAck == TOT_PLAYERS){
-        mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, TRUE))
+        mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, TRUE, FALSE))
         numAck = 0
       }
 
@@ -90,7 +90,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
           onHandEnd(defineTaker(cardsOnTable))
         }
         else {
-          mediator ! Publish(topicName, Turn(gameCycle.next(), setEnd, gameCycle.isFirst))
+          mediator ! Publish(topicName, Turn(gameCycle.next(), setEnd, gameCycle.isFirst, FALSE))
         }
         numAck = 0
       }
@@ -227,7 +227,7 @@ class GameActor(val topicName: String, val team1: BaseTeam[String], val team2: B
       case Some(player) =>
         if (cardsInHand(player).isEmpty) onSetEnd()
 
-        mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, gameCycle.isFirst))
+        mediator ! Publish(topicName, Turn(nextHandStarter.get, setEnd, gameCycle.isFirst, FALSE))
         setEnd = false
       case None => throw new Exception("FirstPlayerOfTheHand Not Found")
 
