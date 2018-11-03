@@ -10,7 +10,7 @@ import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 
 /**
-  * Mock implementation of a SocialController.
+  * Mock implementation of a SocialGUIController.
   */
 class MockSocialController extends SocialController {
 
