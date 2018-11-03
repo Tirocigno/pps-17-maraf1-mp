@@ -87,9 +87,10 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
   private def sendBriscolaChosen(seed: Seed): Unit =
     gameActor ! BriscolaChosen(seed)
 
-  private def notifyBriscolaChosen(seed: Seed): Unit =
+  private def notifyBriscolaChosen(seed: Seed): Unit = {
     controller.updateGUI(NotifyBriscolaChosen(seed))
     gameActor ! BriscolaAck
+  }
 
   private def sendIndexClickedCard(index: Int): Unit =
     gameActor ! ClickedCard(index, user)
@@ -106,9 +107,10 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
     controller.updateGUI(Turn(player, endPartialTurn, isFirstPlayer))
   }
 
-  private def communicatePlayedCard(card: String, player: String): Unit =
+  private def communicatePlayedCard(card: String, player: String): Unit = {
     controller.updateGUI(PlayedCard(card, player))
     gameActor ! CardPlayedAck
+  }
 
   private def notifyCommandChosen(command: String, player: String): Unit =
     controller.updateGUI(NotifyCommandChosen(command, player))
@@ -123,9 +125,10 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
     mediator ! Subscribe(id, self)
   }
 
-  private def notifyClosedGame(): Unit =
+  private def notifyClosedGame(): Unit = {
     gameActor ! ClosedPlayGameView(user)
     self ! PoisonPill
+  }
 
   private def orderPlayersList(playersList: ListBuffer[String]): ListBuffer[String] = {
     val tempList = playersList ++ playersList
