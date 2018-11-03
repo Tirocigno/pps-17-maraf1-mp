@@ -5,7 +5,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import it.unibo.pps2017.core.game.SimpleTeam
 import it.unibo.pps2017.core.player.GameActor
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{StandardParameters, _}
 import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model.GameType.{GameType, RANKED, UNRANKED}
 import it.unibo.pps2017.server.model.LobbyStatusResponse.{FULL, OK, REVERSE}
@@ -181,7 +181,8 @@ class LobbyActor extends Actor {
             case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
           }
           case None =>
-        }, cause => {}, Some(Map("matchID" -> game.id)), Some(Dispatcher.DISCOVERY_PORT))
+        }, _ => {}, Some(Map("matchID" -> game.id,
+          StandardParameters.PORT_KEY -> Dispatcher.PORT)), Some(Dispatcher.DISCOVERY_PORT))
 
         PostRequest(Dispatcher.DISCOVERY_URL, DecreaseServerMatchesAPI.path, {
           case Some(res) => try {
@@ -198,25 +199,30 @@ class LobbyActor extends Actor {
 
 
         if (gameType == RANKED) {
-          winners.members foreach {RedisUserUtils().incrementScore(_, result => {
-            println("Score increment result -> " + result)
-          }, cause => {
-            println(s"Error on score increment. \nDetails: ${cause.getMessage}")
-          })}
-          if (equalsSide(winners, game.team1.asSide)) {
-            game.team2.getMembers foreach {RedisUserUtils().decrementScore(_, result => {
+          winners.members foreach {
+            RedisUserUtils().incrementScore(_, result => {
               println("Score increment result -> " + result)
             }, cause => {
               println(s"Error on score increment. \nDetails: ${cause.getMessage}")
-            })}
-          } else {
-            game.team1.getMembers foreach {RedisUserUtils().incrementScore(_, result => {
-              println("Score increment result -> " + result)
-            }, cause => {
-              println(s"Error on score increment. \nDetails: ${cause.getMessage}")
-            })}
+            })
           }
-
+          if (equalsSide(winners, game.team1.asSide)) {
+            game.team2.getMembers foreach {
+              RedisUserUtils().decrementScore(_, result => {
+                println("Score increment result -> " + result)
+              }, cause => {
+                println(s"Error on score increment. \nDetails: ${cause.getMessage}")
+              })
+            }
+          } else {
+            game.team1.getMembers foreach {
+              RedisUserUtils().incrementScore(_, result => {
+                println("Score increment result -> " + result)
+              }, cause => {
+                println(s"Error on score increment. \nDetails: ${cause.getMessage}")
+              })
+            }
+          }
 
 
         }
@@ -234,7 +240,8 @@ class LobbyActor extends Actor {
           case _: Exception => println("Unexpected message from the discovery!\nDetails: " + res)
         }
         case None =>
-      }, cause => {}, Some(Map("matchID" -> game.id, StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
+      }, _ => {}, Some(Map("matchID" -> game.id,
+        StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
 
 
       PostRequest(Dispatcher.DISCOVERY_URL, IncreaseServerMatchesAPI.path, {
@@ -248,10 +255,9 @@ class LobbyActor extends Actor {
         case None =>
       }, cause => {
         println("Error on connection with the Discovery!\nDetails: " + cause.getMessage)
-      }, Some(Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> "4700")), Some(Dispatcher.DISCOVERY_PORT))
+      }, Some(Map(StandardParameters.PORT_KEY -> Dispatcher.PORT)), Some(Dispatcher.DISCOVERY_PORT))
     }
   }
-
 
 
   private def equalsSide(side1: Side, side2: Side): Boolean = side1.members.sorted == side2.members.sorted

@@ -3,6 +3,7 @@ package it.unibo.pps2017.server.controller
 
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+import io.vertx.core.http.HttpHeaders
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.HttpServerOptions
@@ -15,6 +16,7 @@ import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model._
 import it.unibo.pps2017.server.model.database.{DatabaseUtils, RedisUtils}
 import org.json4s.jackson.Serialization.read
+import org.json4s.jackson.Serialization.write
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
@@ -91,6 +93,13 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
     if (System.getenv("PORT") != null) port = System.getenv("PORT").toInt
 
+    router.route().handler(ctx => {
+      val err = Error(Some(s"Error 404 not found"))
+
+      ctx.response().setStatusCode(404)
+      ctx.response().putHeader(HttpHeaders.CONTENT_TYPE.toString, "application/json; charset=utf-8")
+      ctx.response().end(write(err))
+    })
 
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
