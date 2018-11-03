@@ -18,7 +18,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     @FXML
     ListView<String> onlineFriends, onlinePlayers;
     @FXML
-    Label responsePlayLabel, responseFriendLabel;
+    Label responsePlayLabel, responseFriendLabel, totalPoints;
     @FXML
     TextArea players;
     @FXML
@@ -288,6 +288,11 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     @Override
     public void resetGUI() {
         enableGUIButtons();
+    }
+
+    @Override
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints.setText(Integer.valueOf(totalPoints).toString());
     }
 
     /**

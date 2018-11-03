@@ -29,10 +29,6 @@ public class GenericController implements  BasicPlayerOptions{
         }
     }
 
-    public void handleWatchMatch(){
-        watchMatch();
-    }
-
     @Override
     public void watchMatch() {
         clientController.fetchCurrentMatchesList();

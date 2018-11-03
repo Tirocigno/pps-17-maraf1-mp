@@ -64,5 +64,7 @@ trait SocialGUIController {
   def displayReplayMatches(matches: util.List[String]): Unit
 
   def resetGUI(): Unit
+
+  def setTotalPoints(totalPoints: Int): Unit
 }
 
