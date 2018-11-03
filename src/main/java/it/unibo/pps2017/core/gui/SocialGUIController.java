@@ -1,16 +1,15 @@
 package it.unibo.pps2017.core.gui;
 
-import it.unibo.pps2017.client.view.social.SocialGUIController;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
 import java.util.*;
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController;
 
-public class SocialController implements SocialGUIController, BasicPlayerOptions{
+public class SocialGUIController implements it.unibo.pps2017.client.view.social.SocialGUIController, BasicPlayerOptions{
 
     @FXML
     Button playButton, viewButton, okComboView, okComboReplay;
@@ -32,8 +31,7 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
     private static final String REJECT_MSG = " rejected the invitation!";
     private static final int MIN_WIDTH = 900;
     private static final int MIN_HEIGHT = 685;
-    private static final int DISCOVERY_PORT = 2000;
-
+    private SocialController socialController;
 
     private String getSelection(ListView<String> listView){
         return listView.getSelectionModel().getSelectedItem();
@@ -47,21 +45,32 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
      * Handles the click of addFriend button by adding the player as friend
      */
     public void addNewFriend(){
-        String friendAdded = getSelection(onlinePlayers);
+        String playerSelected = getSelection(onlinePlayers);
         hideReplayMatch();
         hideViewMatch();
-        //addFriend(newFriend);
+        socialController.tellFriendShipMessage(playerSelected);
     }
 
     /**
      * Handles the click of inviteFriend button by sending to the friend the
-     * invitation to play together
+     * invitation to play together as partner
      */
-    public void invitePlayer(){
-        String playerInvited = getSelection(onlineFriends);
+    public void inviteFriendToPlayAsPartner(){
+        String friendToInvite = getSelection(onlineFriends);
         hideReplayMatch();
         hideViewMatch();
-        //sendPlayerInvitation(playerInvited);
+        socialController.tellInvitePlayerAsPartner(friendToInvite);
+    }
+
+    /**
+     * Handles the click of inviteFriend button by sending to the friend the
+     * invitation to play together as foe
+     */
+    public void inviteFriendToPlayAsFoe(){
+        String friendToInvite = getSelection(onlineFriends);
+        hideReplayMatch();
+        hideViewMatch();
+        socialController.tellInvitePlayerAsPartner(friendToInvite);
     }
 
     @Override
@@ -125,7 +134,7 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
 
     @Override
     public void setController(it.unibo.pps2017.client.controller.socialcontroller.SocialController controller) {
-
+        this.socialController = controller;
     }
 
     private void showAndHideTextResponse(){
@@ -210,7 +219,7 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
      * redirecting the player to the game to watch
      */
     public void okViewMatch(){
-        if(getSelection(comboView) != null){
+        if(!getSelection(comboView).isEmpty()){
             System.out.println(getSelection(comboView));
         }
         //start view match
@@ -234,7 +243,7 @@ public class SocialController implements SocialGUIController, BasicPlayerOptions
      * redirecting the player to the game to replay
      */
     public void okReplayMatch(){
-        if(getSelection(comboReplay) != null){
+        if(!getSelection(comboReplay).isEmpty()){
             System.out.println(getSelection(comboReplay));
         }
         //start view match
