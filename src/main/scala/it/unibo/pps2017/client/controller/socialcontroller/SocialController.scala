@@ -11,9 +11,9 @@ import it.unibo.pps2017.client.model.remote.{RestWebClient, SocialRestWebClient}
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
-import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
+import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
 
@@ -142,6 +142,20 @@ trait SocialController extends ActorController {
     */
   def shutDown(): Unit
 
+  /**
+    * Notify the controller user response to friend request.
+    *
+    * @param socialResponse the response provided by GUI
+    */
+  def notifyFriendMessageResponse(socialResponse: SocialResponse): Unit
+
+  /**
+    * Notify the controller user response to invite request.
+    *
+    * @param socialResponse the response provided by GUI
+    */
+  def notifyInviteMessageResponse(socialResponse: SocialResponse): Unit
+
 }
 
 object SocialController {
@@ -237,6 +251,12 @@ object SocialController {
       unSubscribeFromOnlinePlayerList()
       currentActorRef ! PoisonPill
     }
+
+    override def notifyFriendMessageResponse(socialResponse: SocialResponse): Unit =
+      currentActorRef ! TellAddFriendResponseMessage(socialResponse, playerID)
+
+    override def notifyInviteMessageResponse(socialResponse: SocialResponse): Unit =
+      currentActorRef ! TellInvitePlayerResponseMessage(socialResponse)
 
     private def registerToOnlinePlayerList(): Unit = {
       val encodedActorRef = serializeActorRef(currentActorRef)
