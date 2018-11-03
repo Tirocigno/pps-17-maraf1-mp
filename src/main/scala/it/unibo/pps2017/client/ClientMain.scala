@@ -41,7 +41,8 @@ object ClientMain extends App {
     clientController.startActorSystem(conf.discoveryip(), conf.myip())
     clientController.createRestClient(conf.discoveryip(), conf.myport())
     /*clientController.sendMatchRequest(CasualMatch, None) */
-    clientController.startMatchWatching("1541256231119")
+    /*clientController.startMatchWatching("1541256231119")*/
+    clientController.startMatchReplay("1541237681884")
 
   }
 
