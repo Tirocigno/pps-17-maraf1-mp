@@ -38,7 +38,7 @@ class GameController extends MatchController {
     *
     */
   def createReplayActor(actorId: String, actorSystem: ActorSystem, game: Game): Unit = {
-    currentActorRef = actorSystem.actorOf(Props(new ReplayActor(this, actorId, game)))
+    actorSystem.actorOf(Props(new ReplayActor(this, actorId, game)))
   }
 
   /**
@@ -48,7 +48,7 @@ class GameController extends MatchController {
     * @param actorSystem System.
     */
   def createViewerActor(actorId: String, actorSystem: ActorSystem): Unit = {
-    currentActorRef = actorSystem.actorOf(Props(new ViewerActor(this, actorId)))
+    actorSystem.actorOf(Props(new ViewerActor(this, actorId)))
   }
 
   /**
@@ -72,7 +72,7 @@ class GameController extends MatchController {
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
     case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
-    case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
+    case Turn(player, endPartialTurn, isFirstPlayer, isReplay) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer, isReplay)
     case ComputeGameScore(player, winner1, winner2, score1, score2, endMatch) => cleanFieldEndTotalTurn(player, winner1, winner2, score1, score2, endMatch)
     case _ =>
   }
@@ -206,8 +206,8 @@ class GameController extends MatchController {
     * @param partialTurnIsEnded Boolean to know if turn is ended.
     * @param isFirstPlayer      Boolean to know if the player is the first of the turn (for show or hide commands)
     */
-  def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean): Unit = {
-    playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer)
+  def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean, isReplay: Boolean): Unit = {
+    playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer, isReplay)
   }
 
   /**

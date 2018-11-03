@@ -54,8 +54,9 @@ object ClientMessages {
     * @param player         This player must be plays a card.
     * @param endPartialTurn True if partial turn is ended, false otherwise.
     * @param isFirstPlayer  True if player is the first player of turn, false otherwise.
+    * @param isReplay       True if actor is a replay actor, false otherwise.
     */
-  case class Turn(player: String, endPartialTurn: Boolean, isFirstPlayer: Boolean) extends ActorMessage
+  case class Turn(player: String, endPartialTurn: Boolean, isFirstPlayer: Boolean, isReplay: Boolean) extends ActorMessage
 
   /**
     * Message to inform GameActor of clicked card.
