@@ -1,5 +1,6 @@
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController$;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,26 +13,30 @@ import it.unibo.pps2017.client.controller.socialcontroller.SocialController;
 public class SocialGUIController implements it.unibo.pps2017.client.view.social.SocialGUIController, BasicPlayerOptions{
 
     @FXML
-    Button playButton, viewButton, okComboView, okComboReplay;
+    Button playButton, viewButton, replayButton, okComboView, okComboReplay;
     @FXML
     ListView<String> onlineFriends, onlinePlayers;
     @FXML
-    Label responseLabel;
+    Label responsePlayLabel, responseFriendLabel;
     @FXML
     TextArea players;
     @FXML
     ComboBox<String> comboView, comboReplay;
 
     private static final String INVITATION_INFO = " invited you to play together as ";
+    private static final String PARTNER = "partner";
+    private static final String FOE = "foe";
     private static final String INVITATION_REQUEST = "Do you want to join him?";
+    private static final String FRIEND_REQUEST = " want to add you as friend. Do you want to accept?";
     private static final String WAITING_MSG = "Waiting for friend response ...";
     private static final String POSITIVE_ANSWER = "positive";
-    private static final String NEGATIVE_ANSWER = "false";
+    private static final String NEGATIVE_ANSWER = "negative";
     private static final String ACCEPT_MSG = " accepted the invitation!";
     private static final String REJECT_MSG = " rejected the invitation!";
     private static final int MIN_WIDTH = 900;
     private static final int MIN_HEIGHT = 685;
     private SocialController socialController;
+    private String request;
 
     private String getSelection(ListView<String> listView){
         return listView.getSelectionModel().getSelectedItem();
@@ -56,10 +61,9 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * invitation to play together as partner
      */
     public void inviteFriendToPlayAsPartner(){
-        String friendToInvite = getSelection(onlineFriends);
-        hideReplayMatch();
-        hideViewMatch();
-        socialController.tellInvitePlayerAsPartner(friendToInvite);
+        disableGUIButtons();
+        socialController.tellInvitePlayerAsPartner(getSelectedFriend());
+        request = PARTNER;
     }
 
     /**
@@ -67,10 +71,21 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * invitation to play together as foe
      */
     public void inviteFriendToPlayAsFoe(){
+        disableGUIButtons();
+        socialController.tellInvitePlayerAsFoe(getSelectedFriend());
+        request = FOE;
+    }
+
+    private void disableGUIButtons(){
+        viewButton.setDisable(true);
+        replayButton.setDisable(true);
+    }
+
+    private String getSelectedFriend(){
         String friendToInvite = getSelection(onlineFriends);
         hideReplayMatch();
         hideViewMatch();
-        socialController.tellInvitePlayerAsPartner(friendToInvite);
+        return friendToInvite;
     }
 
     @Override
@@ -101,21 +116,45 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     @Override
     public void notifyMessageResponse(String sender, String responseResult, String request) {
-        if(responseResult.equals(POSITIVE_ANSWER)){
-            responseLabel.setText(sender + ACCEPT_MSG);
+        if(request.equals(PARTNER) || request.equals(FOE)){
+            if(responseResult.equals(POSITIVE_ANSWER)){
+                responsePlayLabel.setText(sender + ACCEPT_MSG);
+            }
+            else if(responseResult.equals(NEGATIVE_ANSWER)){
+                responsePlayLabel.setText(sender + REJECT_MSG);
+            }
+            showAndHideTextResponse(responsePlayLabel);
         }
-        else if(responseResult.equals(NEGATIVE_ANSWER)){
-            responseLabel.setText(sender + REJECT_MSG);
+        else if(request.equals(SocialController$.MODULE$.FRIEND_REQUEST())){
+            if(responseResult.equals(POSITIVE_ANSWER)){
+                responseFriendLabel.setText(sender + ACCEPT_MSG);
+            }
+            else if(responseResult.equals(NEGATIVE_ANSWER)){
+                responseFriendLabel.setText(sender + REJECT_MSG);
+            }
+            showAndHideTextResponse(responseFriendLabel);
         }
-        showAndHideTextResponse();
     }
 
     @Override
     public void displayRequest(String sender, String role) {
-        responseLabel.setText(WAITING_MSG);
+        String message;
+        if(role.equals(PARTNER) || role.equals(FOE)){
+            responsePlayLabel.setText(WAITING_MSG);
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, sender + INVITATION_INFO + role
-                + ". " + INVITATION_REQUEST, ButtonType.YES, ButtonType.NO);
+            message = sender + INVITATION_INFO + role + ". " + INVITATION_REQUEST;
+            showAlertConfirmation(message);
+
+        }
+        else if(role.equals(SocialController$.MODULE$.FRIEND_REQUEST())){
+            message = sender + FRIEND_REQUEST;
+            showAlertConfirmation(message);
+        }
+
+    }
+
+    private void showAlertConfirmation(String msg){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, msg, ButtonType.YES, ButtonType.NO);
 
         Optional<ButtonType> result = alert.showAndWait();
         if(result.isPresent()) {
@@ -137,7 +176,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
         this.socialController = controller;
     }
 
-    private void showAndHideTextResponse(){
+    private void showAndHideTextResponse(Label label){
         Task<Void> sleeper = new Task<Void>() {
             @Override
             protected Void call() {
@@ -150,7 +189,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
             }
         };
 
-        sleeper.setOnSucceeded(event -> responseLabel.setText(""));
+        sleeper.setOnSucceeded(event -> label.setText(""));
         new Thread(sleeper).start();
     }
 

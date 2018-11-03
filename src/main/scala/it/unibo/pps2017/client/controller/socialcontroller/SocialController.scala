@@ -147,6 +147,7 @@ trait SocialController extends ActorController {
 object SocialController {
 
   val UNKNOWN_MESSAGE = "Unknown message received"
+  val FRIEND_REQUEST = "Friend request"
 
   private class SocialControllerImpl(val parentController: ClientController, val playerID: PlayerID, val
   discoveryContext: ServerContext) extends SocialController {
@@ -221,7 +222,7 @@ object SocialController {
         currentGUI.get.notifyMessageResponse(response.myRole.map(_.playerReference.playerID).get,
           response.socialResponse.message, response.request)
       case AddFriendRequestMessage(sender) =>
-        currentGUI.get.displayRequest(sender.playerID, "")
+        currentGUI.get.displayRequest(sender.playerID, FRIEND_REQUEST)
       case InvitePlayerRequestMessage(sender, role) =>
         currentGUI.get.displayRequest(sender.playerID, role.asString)
       case _ => currentGUI.get.notifyErrorOccurred(UNKNOWN_MESSAGE)
