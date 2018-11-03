@@ -8,6 +8,8 @@ package object view {
     */
   sealed trait GUIStage
 
+  case object LoginStage extends GUIStage
+
   case object SocialStage extends GUIStage
 
   case object GameStage extends GUIStage
