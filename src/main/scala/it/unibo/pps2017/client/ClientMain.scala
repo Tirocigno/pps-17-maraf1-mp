@@ -2,9 +2,7 @@
 package it.unibo.pps2017.client
 
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController
-import it.unibo.pps2017.client.controller.socialcontroller.SocialController
-import it.unibo.pps2017.client.view.{GuiStack, SocialStage}
-import it.unibo.pps2017.commons.remote.rest.RestUtils.ServerContext
+import it.unibo.pps2017.client.view.{GuiStack, LoginStage}
 import javafx.application.Application
 import javafx.stage.Stage
 import org.rogach.scallop.ScallopConf
@@ -13,10 +11,13 @@ class ClientMain extends Application {
 
   override def start(primaryStage: Stage): Unit = {
     GuiStack().checkAndSetStage(primaryStage)
-    //GuiStack().setCurrentScene(LoginStage, ClientController.getSingletonController)
-    GuiStack().setCurrentScene(SocialStage,
-      SocialController(ClientController.getSingletonController, "DGjulio", ServerContext("", 0)))
+    GuiStack().setCurrentScene(LoginStage, ClientController.getSingletonController)
+    /*GuiStack().setCurrentScene(SocialStage,
+      SocialController(ClientController.getSingletonController, "DGjulio", ServerContext("", 0)))*/
     primaryStage.show()
+    primaryStage.setOnCloseRequest(_ => {
+      System.exit(0)
+    })
   }
 
 }
