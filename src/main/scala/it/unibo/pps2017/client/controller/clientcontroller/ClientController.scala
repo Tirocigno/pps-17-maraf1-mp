@@ -75,8 +75,6 @@ sealed trait ClientController extends Controller {
 
   /**
     * Handle a login response.
-    *
-    * @param userName the userName notify by the server.
     */
   def handleLoginAndRegistrationResponse(): Unit
 
@@ -204,8 +202,6 @@ object ClientController {
 
     /**
       * Handle a login response.
-      *
-      * @param userName the userName notify by the server.
       */
     override def handleLoginAndRegistrationResponse(): Unit = {
       genericGui //TODO NOTIFY VIDEO MESSAGE
@@ -235,7 +231,9 @@ object ClientController {
       *
       * @param matchID ID of the match to watch.
       */
-    override def startMatchWatching(matchID: String): Unit = ??? //TODO IMPLEMENT tHIS
+    override def startMatchWatching(matchID: String): Unit = {
+      gameController.createViewerActor(this.playerName, actorSystem.get)
+    }
 
     /**
       * Fetch the archive of matches played from a server.
@@ -244,7 +242,9 @@ object ClientController {
       webClient.get.callRemoteAPI(GetSavedMatchAPI, None)
 
 
-    override def handleMatchReplay(gameToReplay: Game): Unit = ??? //TODO IMPLEMENT tHIS
+    override def handleMatchReplay(gameToReplay: Game): Unit = {
+      gameController.createReplayActor(this.playerName, actorSystem.get, gameToReplay)
+    }
 
     /**
       * Notify to whole system that a game is finished.
