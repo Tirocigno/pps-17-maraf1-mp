@@ -22,5 +22,7 @@
       </font>
    </Label>
 
-    <Button fx:id="guestButton" layoutX="279.0" layoutY="223.0" mnemonicParsing="false"  style="-fx-border-color: blue; -fx-border-radius: 5;" text="Continue as guest" />
+    <Button id="continueButton" layoutX="279.0" layoutY="223.0" mnemonicParsing="false"
+            onMouseClicked="#startGenericGUI"
+            style="-fx-border-color: blue; -fx-border-radius: 5;" text="Continue as guest"/>
 </AnchorPane>

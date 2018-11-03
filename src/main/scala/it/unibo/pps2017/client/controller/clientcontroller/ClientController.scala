@@ -136,6 +136,11 @@ sealed trait ClientController extends Controller {
   def handleMatchReplay(gameToReplay: Game): Unit
 
   /**
+    * Start the generic gui when invoked.
+    */
+  def startGenericGUI(): Unit
+
+  /**
     * Notify to whole system that a game is finished.
     */
   def notifyGameFinished():Unit
@@ -287,6 +292,8 @@ object ClientController {
       case Some(controller) => controller.getSocialGUIController.displayReplayMatches(playedMatches.asJava)
       case None => genericGui.get.displayMatchesList(playedMatches.asJava)
     }
+
+    override def startGenericGUI(): Unit = guiStack.setCurrentScene(GenericStage, this)
 
   }
 

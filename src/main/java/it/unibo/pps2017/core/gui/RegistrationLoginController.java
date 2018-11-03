@@ -4,24 +4,16 @@ import it.unibo.pps2017.client.controller.Controller;
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
 import it.unibo.pps2017.client.view.login.LoginGUIController;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
-
-import javax.swing.text.html.ImageView;
 
 public class RegistrationLoginController implements LoginGUIController, Registration, Login {
 
     @FXML
-    Button loginButton, registerButton;
+    Button loginButton, registerButton, continueButton;
     @FXML
     TextField usernameLogin, usernameRegistration;
     @FXML
     PasswordField pwdLogin, pwdRegistration;
-    @FXML
-    ImageView loginImage;
 
     private static final String LOGIN_IMG_PATH = "images/login.jpg";
     private static final String REGISTRATION_IMG_PATH = "images/registration.jpg";
@@ -29,7 +21,7 @@ public class RegistrationLoginController implements LoginGUIController, Registra
 
     @FXML
     public void initialize() {
-       Image image = new Image(this.getClass().getResourceAsStream(LOGIN_IMG_PATH));
+        // Image image = new Image(this.getClass().getResourceAsStream(LOGIN_IMG_PATH));
 
        // loginImage = new Image(this.getClass().getResourceAsStream(REGISTRATION_IMG_PATH));
     }
@@ -57,6 +49,10 @@ public class RegistrationLoginController implements LoginGUIController, Registra
     @Override
     public void notifyError(Throwable throwable) {
         showAlertMessage(throwable.getMessage());
+    }
+
+    public void startGenericGUI() {
+        clientController.startGenericGUI();
     }
 
     private void showAlertMessage(String message){

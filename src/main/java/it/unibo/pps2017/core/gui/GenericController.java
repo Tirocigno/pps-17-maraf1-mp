@@ -4,8 +4,13 @@ import it.unibo.pps2017.client.controller.Controller;
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
 import it.unibo.pps2017.client.view.GenericGUIController;
 import it.unibo.pps2017.commons.remote.game.MatchNature;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
+
 import java.util.List;
 
 public class GenericController implements GenericGUIController, BasicPlayerOptions{
@@ -51,10 +56,12 @@ public class GenericController implements GenericGUIController, BasicPlayerOptio
     }
 
     private void showAlertMessage(String msg){
-        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
-        alert.showAndWait();
-    }
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+            alert.showAndWait();
+        });
 
+    }
     @Override
     public void displayMatchesList(List<String> matchesList) {
         this.matchesList.getItems().clear();
