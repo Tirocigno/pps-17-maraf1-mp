@@ -3,14 +3,11 @@ package it.unibo.pps2017.core.gui;
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController$;
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController$;
+import it.unibo.pps2017.commons.remote.game.MatchNature;
 import it.unibo.pps2017.commons.remote.social.SocialResponse;
-import it.unibo.pps2017.commons.remote.social.SocialResponse$;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import java.util.*;
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController;
 
@@ -39,8 +36,6 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     private static final String REJECT_MSG = " rejected the invitation!";
     private static final String ADD_FRIEND = "add friend";
     private static final String INVITE_FRIEND = "invite friend";
-    private static final int MIN_WIDTH = 900;
-    private static final int MIN_HEIGHT = 685;
     private SocialController socialController;
     private ClientController clientController = ClientController$.MODULE$.getSingletonController();
     private String request;
@@ -86,6 +81,11 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     private void disableGUIButtons(){
         viewButton.setDisable(true);
         replayButton.setDisable(true);
+    }
+
+    private void enableGUIButtons(){
+        viewButton.setDisable(false);
+        replayButton.setDisable(false);
     }
 
     private String getSelectedFriend(){
@@ -138,6 +138,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
             }
             else if(responseResult.equals(NEGATIVE_ANSWER)){
                 responseFriendLabel.setText(sender + REJECT_MSG);
+                enableGUIButtons();
             }
             showAndHideTextResponse(responseFriendLabel);
         }
@@ -222,7 +223,6 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      */
     public void handlePlayMatch(){
         playMatch(false);
-        //set non competitive msg
     }
 
     /**
@@ -231,38 +231,28 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      */
     public void handlePlayCompetitiveMatch(){
         playMatch(true);
-        //set competitive msg
     }
 
     @Override
     public void playMatch(boolean competitive) {
-        Stage primaryStage = (Stage) playButton.getScene().getWindow();
-        primaryStage.setMinHeight(MIN_HEIGHT);
-        primaryStage.setMinWidth(MIN_WIDTH);
-
-        try {
-            final FXMLLoader loader = new FXMLLoader(PlayGameView.class.getResource("PlayGameView.fxml"));
-            Parent root = loader.load();
-            primaryStage.getScene().setRoot(root);
-            primaryStage.centerOnScreen();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(competitive){
+            socialController.startGame(MatchNature.CompetitiveMatch$.MODULE$);
+        }
+        else {
+            socialController.startGame(MatchNature.CasualMatch$.MODULE$);
         }
     }
-
-    @Override
-    public void watchMatch() {
-       //create view actor
-    }
-
     /**
      * Handles the click of viewMatch button by showing a combobox
      * and an ok button in way to choose the game to watch
      */
-    public void viewMatch(){
-        List<String> matches = new ArrayList<>();
 
+    @Override
+    public void watchMatch() {
+       clientController.fetchCurrentMatchesList();
+    }
+
+    public void displayViewMatches(List<String> matches){
         comboView.getItems().clear();
         comboView.getItems().addAll(matches);
         hideReplayMatch();
@@ -276,9 +266,8 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      */
     public void okViewMatch(){
         if(!getSelection(comboView).isEmpty()){
-            System.out.println(getSelection(comboView));
+            clientController.startMatchWatching(getSelection(comboView));
         }
-        //start view match
     }
 
     /**
@@ -286,12 +275,19 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * and an ok button in way to choose the game to replay
      */
     public void replayMatch(){
-        List<String> matches = new ArrayList<>();
-        //get list matches
-        comboView.getItems().clear();
+        clientController.fetchRegisteredMatchesList();
+    }
+
+    public void displayReplayMatches(List<String> matches){
+        comboReplay.getItems().clear();
         comboReplay.getItems().addAll(matches);
         hideViewMatch();
         showReplayMatch();
+    }
+
+    @Override
+    public void resetGUI() {
+        enableGUIButtons();
     }
 
     /**
@@ -300,9 +296,8 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      */
     public void okReplayMatch(){
         if(!getSelection(comboReplay).isEmpty()){
-            System.out.println(getSelection(comboReplay));
+            clientController.startMatchReplay(getSelection(comboReplay));
         }
-        //start view match
     }
 
     private void hideViewMatch(){
