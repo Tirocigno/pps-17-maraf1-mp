@@ -1,10 +1,10 @@
 
-package it.unibo.pps2017.client.model.actors
+package it.unibo.pps2017.client.model.actors.passiveactors
 
 import akka.actor.ActorSystem
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
-import it.unibo.pps2017.client.model.actors.ReplayActor.SendHeartbeat
-import it.unibo.pps2017.client.model.actors.ReplayActorStatus._
+import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActor.SendHeartbeat
+import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActorStatus._
 import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.core.deck.cards.Seed._

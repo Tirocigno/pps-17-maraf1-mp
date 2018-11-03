@@ -86,6 +86,8 @@ object ServerApi {
 
     override def path: String = "/game/:gameId"
 
+    def parameterPath: String = ":gameId"
+
     override def httpMethod: HttpMethod = HttpMethod.GET
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
@@ -95,6 +97,8 @@ object ServerApi {
   case object AddUserAPI extends RestAPI {
     override def path: String = "/user/addUser/:username"
 
+    def parameterPath: String = ":username"
+
     override def httpMethod: HttpMethod = HttpMethod.POST
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
@@ -103,6 +107,8 @@ object ServerApi {
 
   case object GetUserAPI extends RestAPI {
     override def path: String = "/user/:username"
+
+    def parameterPath: String = ":username"
 
     override def httpMethod: HttpMethod = HttpMethod.GET
 
@@ -114,6 +120,8 @@ object ServerApi {
     val password: String = "password"
 
     override def path: String = "/user/login/:username"
+
+    def parameterPath: String = ":username"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -136,6 +144,8 @@ object ServerApi {
 
     override def path: String = "/user/addFriend/:username"
 
+    def parameterPath: String = ":username"
+
     override def httpMethod: HttpMethod = HttpMethod.POST
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
@@ -157,6 +167,8 @@ object ServerApi {
   case object GetFriendsAPI extends RestAPI {
 
     override def path: String = "/user/getFriends/:username"
+
+    def parameterPath: String = ":username"
 
     override def httpMethod: HttpMethod = HttpMethod.GET
 

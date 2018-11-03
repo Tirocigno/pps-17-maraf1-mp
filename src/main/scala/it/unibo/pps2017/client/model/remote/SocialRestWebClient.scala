@@ -15,11 +15,12 @@ import org.json4s.jackson.Serialization.read
 class SocialRestWebClient(val socialController: SocialController, val discoveryContext: ServerContext)
   extends AbstractRestWebClient(discoveryContext) {
 
-  override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
+  override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]], parameterPath: String): Unit = api match {
     case RegisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
     case UnregisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
     case GetAllOnlinePlayersAPI => invokeAPI(api, paramMap, getAllOnlinePlayersCallback, discoveryContext)
-    case AddFriendAPI => invokeAPI(api, paramMap, addAFriendCallback, assignedServerContext.get)
+    case AddFriendAPI => invokeAPI(api, paramMap, addAFriendCallback, assignedServerContext.get,
+      AddFriendAPI.path.replace(AddFriendAPI.parameterPath, parameterPath))
   }
 
   /**

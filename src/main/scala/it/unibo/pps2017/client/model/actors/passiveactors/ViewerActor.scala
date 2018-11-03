@@ -1,5 +1,5 @@
 
-package it.unibo.pps2017.client.model.actors
+package it.unibo.pps2017.client.model.actors.passiveactors
 
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
