@@ -15,7 +15,7 @@ import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterSocialIDAPI, UnregisterSocialIDAPI}
-import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
+import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetUserAPI}
 
 import scala.collection.JavaConverters._
 
@@ -163,6 +163,13 @@ trait SocialController extends ActorController {
     */
   def getSocialGUIController: SocialGUIController
 
+  /**
+    * Set the players score inside GUI.
+    *
+    * @param scores scores of the player.
+    */
+  def setScoreInsideGUI(scores: Int): Unit
+
 }
 
 object SocialController {
@@ -181,6 +188,7 @@ object SocialController {
     override var currentActorRef: ActorRef = _
     var currentGUI: Option[SocialGUIController] = None
     var matchNature: Option[MatchNature] = None
+    socialRestWebClient.callRemoteAPI(GetUserAPI, None, playerID)
 
 
     override def setCurrentGui(gui: SocialGUIController): Unit = currentGUI = Some(gui)
@@ -270,6 +278,8 @@ object SocialController {
       currentActorRef ! TellInvitePlayerResponseMessage(socialResponse)
 
     override def getSocialGUIController: SocialGUIController = currentGUI.get
+
+    override def setScoreInsideGUI(scores: Int): Unit = currentGUI.get.setTotalPoints(scores)
 
     private def registerToOnlinePlayerList(): Unit = {
       val encodedActorRef = serializeActorRef(currentActorRef)
