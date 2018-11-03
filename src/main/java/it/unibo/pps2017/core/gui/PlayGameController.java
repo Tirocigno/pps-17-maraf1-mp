@@ -10,7 +10,9 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -507,5 +509,12 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     @Override
     public void setController(Controller controller) {
         this.gameController = (GameController) controller;
+    }
+
+    @Override
+    public void notifyError(Throwable throwable) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, throwable.getMessage(), ButtonType.OK);
+        alert.showAndWait();
+
     }
 }

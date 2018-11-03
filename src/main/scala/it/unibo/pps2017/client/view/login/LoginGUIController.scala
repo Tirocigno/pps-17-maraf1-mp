@@ -16,10 +16,4 @@ trait LoginGUIController extends GUIController {
     */
   def handleResponse(message: String)
 
-  /**
-    * Set current GUI inside logincontroller.
-    *
-    * @param clientController clientController to register.
-    */
-  def setCurrentGUI(clientController: ClientController): Unit
 }

@@ -6,12 +6,6 @@ import it.unibo.pps2017.commons.remote.rest.RestUtils.MatchRef
 trait GenericGUIController extends GUIController {
 
   /**
-    * Set a controller inside the GUI.
-    *
-    * @param controller the controller to set inside.
-    */
-  def setController(controller: ClientController)
-  /**
     * Notify an error occurred inside the model to GUI.
     *
     * @param throwable the error occurred.

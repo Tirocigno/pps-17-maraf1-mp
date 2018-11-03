@@ -10,8 +10,8 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="540.0" prefWidth="488.0" style="-fx-background-color: #4286f4;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.RegistrationLoginController">
-      <ImageView fitHeight="92.0" fitWidth="288.0" layoutX="101.0" layoutY="282.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@images/registration.jpg" />
+      <ImageView fx:id="registrationImage" fitHeight="92.0" fitWidth="288.0" layoutX="101.0" layoutY="282.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="" />
       </ImageView>
       <Label layoutX="99.0" layoutY="382.0" text="Create a new account" />
       <Label layoutX="101.0" layoutY="414.0" style="-fx-font-weight: bold;" text="Username" />
@@ -29,10 +29,6 @@
          <Font size="20.0" />
       </font>
    </Label>
-   <ImageView fitHeight="90.0" fitWidth="288.0" layoutX="100.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
-      <image>
-         <Image url="@images/login.jpg" />
-      </image>
-   </ImageView>
-   <Button fx:id="guestButton" layoutX="279.0" layoutY="223.0" mnemonicParsing="false" onMouseClicked="#changeViewToGeneric" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Continue as guest" />
+   <ImageView fx:id="" fitHeight="90.0" fitWidth="288.0" layoutX="100.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+   <Button fx:id="guestButton" layoutX="279.0" layoutY="223.0" mnemonicParsing="false"  style="-fx-border-color: blue; -fx-border-radius: 5;" text="Continue as guest" />
 </AnchorPane>
