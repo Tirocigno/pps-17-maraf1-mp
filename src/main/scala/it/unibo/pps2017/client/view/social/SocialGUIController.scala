@@ -1,5 +1,6 @@
 package it.unibo.pps2017.client.view.social
 
+import java.util
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 
 trait SocialGUIController {
@@ -57,5 +58,11 @@ trait SocialGUIController {
   def notifyAPIResult(message: String)
 
   def setController(controller: SocialController)
+
+  def displayViewMatches(matches: util.List[String]): Unit
+
+  def displayReplayMatches(matches: util.List[String]): Unit
+
+  def resetGUI(): Unit
 }
 

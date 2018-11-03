@@ -15,6 +15,7 @@ import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, MatchRef, Port
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetAllMatchesAPI
 import it.unibo.pps2017.server.model.Game
 import it.unibo.pps2017.server.model.ServerApi._
+import scala.collection.JavaConverters._
 
 
 sealed trait ClientController extends Controller {
@@ -76,7 +77,6 @@ sealed trait ClientController extends Controller {
   /**
     * Handle a login response.
     *
-    * @param userName the userName notify by the server.
     */
   def handleLoginAndRegistrationResponse(): Unit
 
@@ -205,7 +205,6 @@ object ClientController {
     /**
       * Handle a login response.
       *
-      * @param userName the userName notify by the server.
       */
     override def handleLoginAndRegistrationResponse(): Unit = {
       genericGui //TODO NOTIFY VIDEO MESSAGE
@@ -228,7 +227,7 @@ object ClientController {
       launchAutentichationAPI(AddUserAPI, userName, password)
 
     override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
-      case Some(controller) => controller.getSocialGUIController
+      case Some(controller) => controller.getSocialGUIController.displayViewMatches(playedMatches.asJava)
       case None => genericGui.displayMatchesList(playedMatches)
     }
 
@@ -261,7 +260,7 @@ object ClientController {
     }
 
     override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
-      case Some(controller) => controller.getSocialGUIController
+      case Some(controller) => controller.getSocialGUIController.displayReplayMatches(playedMatches.asJava)
       case None => genericGui.displayMatchesList(playedMatches)
     }
 
