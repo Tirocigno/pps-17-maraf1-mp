@@ -5,7 +5,7 @@ import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetAllMatchesAPI
 import it.unibo.pps2017.server.model.ServerApi.{AddUserAPI, FoundGameRestAPI, GameRestAPI, LoginAPI}
-import it.unibo.pps2017.server.model.{Game, GameFound, MatchesSetEncoder}
+import it.unibo.pps2017.server.model.{Game, GameFound, MatchesSetEncoder, SavedMatches}
 import org.json4s.jackson.Serialization.read
 
 /**
@@ -70,6 +70,11 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
   private def getAllMatchesApiCallBack(jSonSource: Option[String]): Unit = {
     val matchesList = read[MatchesSetEncoder](jSonSource.get).set.toList
     clientController.displayCurrentMatchesList(matchesList)
+  }
+
+  private def getAllRegisteredMatchesApi(jSonSource: Option[String]): Unit = {
+    val matchesSeq = read[SavedMatches](jSonSource.get).games
+    clientController.displayRegisteredMatchesList(matchesSeq.map(_.gameId).toList)
   }
 
 }

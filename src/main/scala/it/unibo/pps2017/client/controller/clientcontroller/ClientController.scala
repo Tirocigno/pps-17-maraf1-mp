@@ -14,7 +14,7 @@ import it.unibo.pps2017.commons.remote.rest.API.RestAPI
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, MatchRef, Port, ServerContext}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetAllMatchesAPI
 import it.unibo.pps2017.server.model.Game
-import it.unibo.pps2017.server.model.ServerApi.{FoundGameRestAPI, GameRestAPI, LoginAPI}
+import it.unibo.pps2017.server.model.ServerApi._
 
 
 sealed trait ClientController extends Controller {
@@ -194,11 +194,13 @@ object ClientController {
       }
     }
 
-    override def sendLoginRequest(userName: String, password: String): Unit = {
-      val map = Map(LoginAPI.password -> password)
-      webClient.get.callRemoteAPI(LoginAPI, Some(map), userName)
-    }
+    override def sendLoginRequest(userName: String, password: String): Unit =
+      launchAutentichationAPI(LoginAPI, userName, password)
 
+    private def launchAutentichationAPI(api: RestAPI, username: String, password: String): Unit = {
+      val map = Map(LoginAPI.password -> password)
+      webClient.get.callRemoteAPI(api, Some(map), username)
+    }
 
     /**
       * Handle a login response.
@@ -206,16 +208,8 @@ object ClientController {
       * @param userName the userName notify by the server.
       */
     override def handleLoginAndRegistrationResponse(): Unit = {
-      genericGui
+      genericGui //TODO NOTIFY VIDEO MESSAGE
     }
-
-    /**
-      * Send a registration request to remote server.
-      *
-      * @param userName a string containing the username of the player to register.
-      * @param password a string containing the password of the player to register.
-      */
-    override def sendRegisterRequest(userName: String, password: String): Unit = ???
 
     /**
       * Fetch current played matches from server.
@@ -230,10 +224,8 @@ object ClientController {
         webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
     }
 
-    /**
-      * Fetch the archive of matches played from a server.
-      */
-    override def fetchRegisteredMatchesList(): Unit = ???
+    override def sendRegisterRequest(userName: String, password: String): Unit =
+      launchAutentichationAPI(AddUserAPI, userName, password)
 
     override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit =
       genericGui.displayMatchesList(playedMatches)
@@ -246,14 +238,10 @@ object ClientController {
     override def startMatchWatching(matchID: String): Unit = ??? //TODO IMPLEMENT tHIS
 
     /**
-      * Start replay a played match.
-      *
-      * @param matchID ID of the match to replay.
+      * Fetch the archive of matches played from a server.
       */
-    override def startMatchReplay(matchID: String): Unit = {
-      var map = Map("" -> matchID) //TODO IMPLEMENT THIS PARAMETER.
-      webClient.get.callRemoteAPI(GameRestAPI, Some(map))
-    }
+    override def fetchRegisteredMatchesList(): Unit =
+      webClient.get.callRemoteAPI(GetSavedMatchAPI, None)
 
 
     override def handleMatchReplay(gameToReplay: Game): Unit = ??? //TODO IMPLEMENT tHIS
@@ -269,10 +257,18 @@ object ClientController {
       }
     }
 
-    //TODO DEPLOY THIS METHOD
-    private def executeAutenticationApiCall(userName: String, password: String, api: RestAPI): Unit = ???
-
     override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit =
       genericGui.displayMatchesList(playedMatches)
+
+    /**
+      * Start replay a played match.
+      *
+      * @param matchID ID of the match to replay.
+      */
+    override def startMatchReplay(matchID: String): Unit = {
+      webClient.get.callRemoteAPI(GameRestAPI, None, matchID)
+    }
+
   }
+
 }
