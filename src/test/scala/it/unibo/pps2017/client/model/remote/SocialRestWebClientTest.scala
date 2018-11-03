@@ -9,8 +9,8 @@ import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
 import it.unibo.pps2017.commons.remote.game.MatchNature
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
-import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
+import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
 import it.unibo.pps2017.discovery.ServerDiscovery
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
 import it.unibo.pps2017.server.controller.Dispatcher
@@ -100,7 +100,6 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
 
     override def notifyErrorToGUI(throwable: Throwable): Unit = {}
 
-
     override def registerNewFriend(friendId: PlayerID): Unit = {}
 
     override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit = {}
@@ -111,64 +110,31 @@ class SocialRestWebClientTest extends FunSuite with BeforeAndAfterEach {
 
     override def updateOnlinePlayerList(friendList: FriendList): Unit = {}
 
-    /**
-      * Tell the actor to add a new friend.
-      *
-      * @param playerID the ID of the player to add as a friend.
-      */
     override def tellFriendShipMessage(playerID: PlayerID): Unit = {}
 
-    /**
-      * Tell the actor to invite a player to play as his partner.
-      *
-      * @param playerID the ID of the player to invite.
-      */
     override def tellInvitePlayerAsPartner(playerID: PlayerID): Unit = {}
 
-    /**
-      * Tell the actor to invite a player to play as his foe.
-      *
-      * @param playerID the ID of the player to invite.
-      */
     override def tellInvitePlayerAsFoe(playerID: PlayerID): Unit = {}
 
-    /**
-      * Start a new game
-      *
-      * @param matchNature the nature of the game to play.
-      */
     override def startGame(matchNature: MatchNature.MatchNature): Unit = {}
 
-    /**
-      * Reset the party and notify the GUI a match conclusion.
-      */
     override def finishGame(): Unit = {}
 
-    /**
-      * Set the current GUI controller inside SocialActor
-      *
-      * @param gui the GUI to set.
-      */
     override def setCurrentGui(gui: SocialGUIController): Unit = {}
 
-    /**
-      * Notify all the players that a gameID has arrived.
-      *
-      * @param gameID id of the game notified to party.
-      */
     override def notifyAllPlayersGameID(gameID: String): Unit = {}
 
-    /**
-      * Notify game controller that a game has been joined.
-      *
-      * @param gameID the joined game's id.
-      */
     override def notifyGameController(gameID: String): Unit = {}
 
-    /**
-      * Shutdown the socialActor and remove its reference from the online list.
-      */
     override def shutDown(): Unit = {}
+
+    override def notifyFriendMessageResponse(socialResponse: SocialResponse): Unit = {}
+
+    override def notifyInviteMessageResponse(socialResponse: SocialResponse): Unit = {}
+
+    override def getSocialGUIController: SocialGUIController = new it.unibo.pps2017.core.gui.SocialGUIController()
+
+    override def setScoreInsideGUI(scores: Int): Unit = {}
   }
 
 
