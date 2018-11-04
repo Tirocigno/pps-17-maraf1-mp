@@ -47,6 +47,11 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     clientController.handleLoginAndRegistrationResponse(jSonSource.get)
   }
 
+  /**
+    * Handler for the registration callback.
+    *
+    * @param jSonSource the body of the response.
+    */
   private def registerCallBack(jSonSource: Option[String]): Unit = {
     clientController.handleLoginAndRegistrationResponse(jSonSource.get)
   }
@@ -72,6 +77,11 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     clientController.displayCurrentMatchesList(matchesList)
   }
 
+  /**
+    * Handler for getAllRegisteredMatchAPI
+    *
+    * @param jSonSource the body response of the API.
+    */
   private def getAllRegisteredMatchesApi(jSonSource: Option[String]): Unit = {
     val matchesSeq = read[SavedMatches](jSonSource.get).games
     clientController.displayRegisteredMatchesList(matchesSeq.map(_.gameId).toList)

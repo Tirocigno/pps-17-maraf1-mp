@@ -221,7 +221,7 @@ object ClientController {
 
     override def handleLoginAndRegistrationResponse(message: String): Unit = {
       loginGUI.get.handleResponse(message)
-      //onAuthenticationSucceded()
+      onAuthenticationSucceded()
     }
 
     override def fetchCurrentMatchesList(): Unit =
@@ -237,29 +237,14 @@ object ClientController {
     override def sendRegisterRequest(userName: String, password: String): Unit =
       launchAutentichationAPI(AddUserAPI, userName, password)
 
-    /**
-      * Define the operation to do after a successful authentication.
-      */
-    private def onAuthenticationSucceded(): Unit = {
-      playerName = unconfirmedUserName
-      socialController =
-        Some(SocialController(this, playerName, webClient.get.discoveryServerContext))
-      socialController.get.createActor(playerName, actorSystem.get)
-      guiStack.setCurrentScene(SocialStage, socialController.get)
-    }
-
 
     override def startMatchWatching(matchID: String): Unit = {
-      println("Entro in matchwatching")
       guiStack.setCurrentScene(GameStage, gameController)
 
       gameController.createViewerActor(this.playerName, actorSystem.get)
       gameController.joinPlayerToMatch(matchID)
     }
 
-    /**
-      * Fetch the archive of matches played from a server.
-      */
     override def fetchRegisteredMatchesList(): Unit =
       webClient.get.callRemoteAPI(GetSavedMatchAPI, None)
 
@@ -269,9 +254,6 @@ object ClientController {
       gameController.createReplayActor(this.playerName, actorSystem.get, gameToReplay)
     }
 
-    /**
-      * Notify to whole system that a game is finished.
-      */
     override def notifyGameFinished(): Unit = {
       guiStack.restorePreviousScene()
       socialController match {
@@ -285,11 +267,6 @@ object ClientController {
       case None => genericGui.get.displayMatchesList(playedMatches.asJava)
     }
 
-    /**
-      * Start replay a played match.
-      *
-      * @param matchID ID of the match to replay.
-      */
     override def startMatchReplay(matchID: String): Unit = {
       webClient.get.callRemoteAPI(GameRestAPI, None, matchID)
     }
@@ -300,6 +277,16 @@ object ClientController {
     }
 
     override def startGenericGUI(): Unit = guiStack.setCurrentScene(GenericStage, this)
+
+    /**
+      * Define the operation to do after a successful authentication.
+      */
+    private def onAuthenticationSucceded(): Unit = {
+      guiStack.setCurrentScene(SocialStage, socialController.get)
+      playerName = unconfirmedUserName
+      socialController = Some(SocialController(this, playerName, webClient.get.discoveryServerContext))
+      socialController.get.createActor(playerName, actorSystem.get)
+    }
 
   }
 
