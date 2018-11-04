@@ -171,6 +171,12 @@ trait SocialController extends ActorController {
     */
   def setScoreInsideGUI(scores: Int): Unit
 
+  /**
+    * Execute an api call with the effect to produce a heartbeat on the social topic channel.
+    * This beat will be intercepted by the SocialActor which will obtain the reference to the RegistryActor.
+    */
+  def startHeartBeatRequest(): Unit
+
 }
 
 object SocialController {
@@ -189,6 +195,8 @@ object SocialController {
     override var currentActorRef: ActorRef = _
     var currentGUI: Option[SocialGUIController] = None
     var matchNature: Option[MatchNature] = None
+
+    override def startHeartBeatRequest(): Unit = registerToOnlinePlayerList()
 
     override def setCurrentGui(gui: SocialGUIController): Unit = {
       currentGUI = Some(gui)
@@ -245,10 +253,9 @@ object SocialController {
       currentGUI.get.updateParty(Map[String,String]().asJava)
     }
 
-    override def createActor(actorID: String, actorSystem: ActorSystem): Unit = {
+    override def createActor(actorID: String, actorSystem: ActorSystem): Unit =
       currentActorRef = SocialActor(actorSystem, this, actorID)
-      registerToOnlinePlayerList()
-    }
+
 
     override def updateGUI(message: ActorMessage): Unit = message match {
       case response: AddFriendResponseMessage =>
@@ -283,7 +290,6 @@ object SocialController {
     override def setScoreInsideGUI(scores: Int): Unit = currentGUI.get.setTotalPoints(scores)
 
     private def registerToOnlinePlayerList(): Unit = {
-      Thread.sleep(1000)
       socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, None)
     }
 

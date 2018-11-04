@@ -5,7 +5,7 @@ import java.util.NoSuchElementException
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props, Stash}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
+import akka.cluster.pubsub.DistributedPubSubMediator.{Subscribe, SubscribeAck}
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.ModelActor
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
@@ -44,10 +44,8 @@ object SocialActor {
     val socialPlayersMap: SocialPlayersMap = SocialPlayersMap(currentContext.playerID)
     val requestHandler: RequestHandler = RequestHandler(currentContext, socialParty)
     val mediator: ActorRef = DistributedPubSub(context.system).mediator
-    mediator ! Subscribe(RegistryActor.SOCIALCHANNEL, self)
-    println(mediator)
+    mediator ! Subscribe(RegistryActor.SOCIAL_CHANNEL, self)
     var remoteRegistryActor: Option[ActorRef] = None
-    println("Social actor creaded")
 
     override def receive: Receive = {
       case SetFriendsList(friendsList) => socialPlayersMap.setFriendsList(friendsList)
@@ -73,17 +71,17 @@ object SocialActor {
       case HeartBeatMessage(sender) => heartBeatHandler(sender)
       case OnlinePlayerListMessage(map) => onlinePlayerListMessageHandler(map)
       case KillYourSelf => killYourSelfHandler()
+      case SubscribeAck(_) => controller.startHeartBeatRequest()
     }
 
     private def heartBeatHandler(sender: ActorRef): Unit = remoteRegistryActor match {
       case Some(_) =>
-      case None => println("HaertBeet rivive")
+      case None =>
         remoteRegistryActor = Some(sender)
         sender ! AddUserToRegisterMessage(currentContext.playerID, currentContext.playerRef)
     }
 
     private def onlinePlayerListMessageHandler(socialMap: SocialMap): Unit = {
-      println("Updating the online player list...")
       val players = socialMap.map(entry => PlayerReference(entry._1, entry._2)).toList
       socialPlayersMap.setOnlinePlayerList(players)
       controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
