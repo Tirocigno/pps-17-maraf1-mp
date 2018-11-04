@@ -8,6 +8,7 @@ import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.socialactor.SocialActor
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
 import it.unibo.pps2017.client.model.remote.{RestWebClient, SocialRestWebClient}
+import it.unibo.pps2017.client.view.GuiStack
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
@@ -188,10 +189,11 @@ object SocialController {
     override var currentActorRef: ActorRef = _
     var currentGUI: Option[SocialGUIController] = None
     var matchNature: Option[MatchNature] = None
-    socialRestWebClient.callRemoteAPI(GetUserAPI, None, playerID)
 
-
-    override def setCurrentGui(gui: SocialGUIController): Unit = currentGUI = Some(gui)
+    override def setCurrentGui(gui: SocialGUIController): Unit = {
+      currentGUI = Some(gui)
+      onGUISetting()
+    }
 
     override def notifyCallResultToGUI(message: Option[String]): Unit =
       currentGUI.get.notifyAPIResult(message.get)
@@ -291,6 +293,14 @@ object SocialController {
     private def unSubscribeFromOnlinePlayerList(): Unit = {
       val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> playerID)
       socialRestWebClient.callRemoteAPI(UnregisterSocialIDAPI, Some(paramMap))
+    }
+
+    private def onGUISetting(): Unit = {
+      socialRestWebClient.callRemoteAPI(GetUserAPI, None, playerID)
+      GuiStack().stage.setOnCloseRequest(_ => {
+        this.shutDown()
+        System.exit(0)
+      })
     }
 
   }

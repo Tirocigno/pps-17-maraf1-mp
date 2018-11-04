@@ -7,6 +7,7 @@ import it.unibo.pps2017.client.controller.socialcontroller.SocialController;
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController$;
 import it.unibo.pps2017.commons.remote.game.MatchNature;
 import it.unibo.pps2017.commons.remote.social.SocialResponse;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -211,8 +212,10 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     }
 
     private void showAlertMessage(String msg){
-        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
-        alert.showAndWait();
+        runSafeOnFXThread(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+            alert.showAndWait();
+        });
     }
 
 
@@ -291,7 +294,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     @Override
     public void setTotalPoints(int totalPoints) {
-        this.totalPoints.setText(Integer.valueOf(totalPoints).toString());
+        runSafeOnFXThread(() -> this.totalPoints.setText(Integer.valueOf(totalPoints).toString()));
     }
 
     /**
@@ -331,6 +334,18 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     @Override
     public void notifyError(Throwable throwable) {
-        System.out.println("Error thrown");
+        runSafeOnFXThread(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR, throwable.toString(), ButtonType.OK);
+            alert.showAndWait();
+        });
+    }
+
+    /**
+     * Private method for run safe an update on GUI.
+     *
+     * @param runnable the runnable thread.
+     */
+    private void runSafeOnFXThread(Runnable runnable) {
+        Platform.runLater(runnable);
     }
 }

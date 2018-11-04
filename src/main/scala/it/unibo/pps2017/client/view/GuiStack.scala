@@ -36,6 +36,13 @@ trait GuiStack {
     */
   def checkAndSetStage(stage: Stage)
 
+  /**
+    * Getter for the stage.
+    *
+    * @return the stage on which the application is running.
+    */
+  def stage: Stage
+
 }
 
 object GuiStack {
@@ -66,6 +73,13 @@ object GuiStack {
 
     override def restorePreviousScene(): Unit = switchScene(previousScene.get)
 
+    override def checkAndSetStage(stage: Stage): Unit = mainStage match {
+      case None => mainStage = Some(stage)
+      case Some(_) =>
+    }
+
+    override def stage: Stage = mainStage.get
+
     private def switchScene(scene: Scene): Unit = {
         mainStage.get.setScene(scene)
 
@@ -75,14 +89,11 @@ object GuiStack {
       strategyToRunLater()
     })
 
-    override def checkAndSetStage(stage: Stage): Unit = mainStage match {
-      case None => mainStage = Some(stage)
-      case Some(_) =>
-    }
 
     private def loadScene(controller: Controller, stage: GUIStage): Scene = {
       guiLoader.deployGuiStage(controller, stage)
     }
+
 
   }
 

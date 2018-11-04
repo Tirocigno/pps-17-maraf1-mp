@@ -170,9 +170,16 @@ object ClientController {
     var loginGUI: Option[LoginGUIController] = None
 
     override def notifyError(throwable: Throwable): Unit = {
-      if (genericGui.isDefined) genericGui.get.notifyError(throwable)
-      if (loginGUI.isDefined) loginGUI.get.notifyError(throwable)
-      if (socialController.isDefined) socialController.get.getSocialGUIController.notifyError(throwable)
+      if (socialController.isDefined) {
+        socialController.get.getSocialGUIController.notifyError(throwable)
+      }
+      else if (genericGui.isDefined) {
+        genericGui.get.notifyError(throwable)
+      }
+      else {
+        loginGUI.get.notifyError(throwable)
+      }
+
     }
 
 
@@ -211,8 +218,11 @@ object ClientController {
       }
     }
 
-    override def sendLoginRequest(userName: String, password: String): Unit =
+    override def sendLoginRequest(userName: String, password: String): Unit = {
+      unconfirmedUserName = userName
       launchAutentichationAPI(LoginAPI, userName, password)
+    }
+
 
     private def launchAutentichationAPI(api: RestAPI, username: String, password: String): Unit = {
       val map = Map(LoginAPI.password -> password)
@@ -234,8 +244,11 @@ object ClientController {
         webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
     }
 
-    override def sendRegisterRequest(userName: String, password: String): Unit =
+    override def sendRegisterRequest(userName: String, password: String): Unit = {
+      unconfirmedUserName = userName
       launchAutentichationAPI(AddUserAPI, userName, password)
+    }
+
 
 
     override def startMatchWatching(matchID: String): Unit = {
@@ -282,9 +295,9 @@ object ClientController {
       * Define the operation to do after a successful authentication.
       */
     private def onAuthenticationSucceded(): Unit = {
-      guiStack.setCurrentScene(SocialStage, socialController.get)
       playerName = unconfirmedUserName
       socialController = Some(SocialController(this, playerName, webClient.get.discoveryServerContext))
+      guiStack.setCurrentScene(SocialStage, socialController.get)
       socialController.get.createActor(playerName, actorSystem.get)
     }
 
