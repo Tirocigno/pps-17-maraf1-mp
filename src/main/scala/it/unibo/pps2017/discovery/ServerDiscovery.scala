@@ -37,6 +37,8 @@ object ServerDiscovery {
     */
   type APIHandler = (RoutingContext, RouterResponse) => Unit
 
+  val REGISTRATION_START_MESSAGE = "Registration started"
+
   def apply(port: Port, timeout: Int): ServerDiscovery = new ServerDiscoveryImpl(port, timeout)
 
 
@@ -46,12 +48,6 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   val serverMap: ServerMap = ServerMap()
   val matchesSet: MatchesSet = MatchesSet()
   val socialActorsMap: SocialActorsMap = SocialActorsMap()
-  /**
-    * Handler for RegisterSocialIDAPI
-    */
-  private val registerSocialIDAPI: APIHandler = (router, response) => {
-    actorRef ! HeartBeatMessage(actorRef)
-  }
   var actorRef: ActorRef = _
 
   /**
@@ -130,6 +126,14 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
       case _: NoSuchFieldException => setErrorAndRespond(response,
         RemoveMatchAPI.errorMessage)
     }
+  }
+
+  /**
+    * Handler for RegisterSocialIDAPI
+    */
+  private val registerSocialIDAPI: APIHandler = (router, response) => {
+    actorRef ! HeartBeatMessage(actorRef)
+    setMessageAndRespond(response, REGISTRATION_START_MESSAGE)
   }
 
   override def startAkkaCluster(ipAddress: String): Unit = {

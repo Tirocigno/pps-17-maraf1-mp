@@ -11,7 +11,7 @@ import it.unibo.pps2017.client.model.remote.{RestWebClient, SocialRestWebClient}
 import it.unibo.pps2017.client.view.GuiStack
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
-import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
+import it.unibo.pps2017.commons.remote.rest.RestUtils.ServerContext
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
@@ -283,10 +283,7 @@ object SocialController {
     override def setScoreInsideGUI(scores: Int): Unit = currentGUI.get.setTotalPoints(scores)
 
     private def registerToOnlinePlayerList(): Unit = {
-      val encodedActorRef = serializeActorRef(currentActorRef)
-      val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> playerID,
-        RegisterSocialIDAPI.SOCIAL_ACTOR -> encodedActorRef)
-      socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, Some(paramMap))
+      socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, None)
     }
 
 
