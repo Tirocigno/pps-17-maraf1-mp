@@ -21,7 +21,10 @@ class RegistryActor extends Actor {
       notifyListUpdate()
     case RemoveUserFromRegisterMessage(playerID) => socialActorsMap.unregisterUser(playerID)
       notifyListUpdate()
-    case HeartBeatMessage => mediator ! Publish(RegistryActor.SOCIALCHANNEL, HeartBeatMessage(self))
+    case HeartBeatMessage => {
+      println("HeartBeat lanciato")
+      mediator ! Publish(RegistryActor.SOCIALCHANNEL, HeartBeatMessage(self))
+    }
   }
 
   private def notifyListUpdate(): Unit = {

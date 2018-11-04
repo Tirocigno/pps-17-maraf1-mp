@@ -75,7 +75,8 @@ object SocialActor {
 
     private def heartBeatHandler(sender: ActorRef): Unit = remoteRegistryActor match {
       case Some(_) =>
-      case None => remoteRegistryActor = Some(sender)
+      case None => println("HaertBeet rivive")
+        remoteRegistryActor = Some(sender)
         sender ! AddUserToRegisterMessage(currentContext.playerID, currentContext.playerRef)
     }
 
