@@ -128,6 +128,11 @@ object SocialMessages {
     */
   case object ResetParty extends SocialMessage
 
+  /**
+    * Tell the actor to kill himself.
+    */
+  case object KillYourSelf extends SocialMessage
+
 
 
 }

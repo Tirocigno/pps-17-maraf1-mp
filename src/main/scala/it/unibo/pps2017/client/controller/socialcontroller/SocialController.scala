@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.controller.socialcontroller
 
-import akka.actor.{ActorRef, ActorSystem, PoisonPill}
+import akka.actor.{ActorRef, ActorSystem}
 import it.unibo.pps2017.client.controller.ActorController
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.model.actors.ActorMessage
@@ -15,7 +15,7 @@ import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeA
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterSocialIDAPI, UnregisterSocialIDAPI}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
 import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetUserAPI}
 
 import scala.collection.JavaConverters._
@@ -269,8 +269,7 @@ object SocialController {
     override def notifyGameController(gameID: String): Unit = parentController.handleMatchResponse(gameID)
 
     override def shutDown(): Unit = {
-      unSubscribeFromOnlinePlayerList()
-      currentActorRef ! PoisonPill
+      currentActorRef ! KillYourSelf
     }
 
     override def notifyFriendMessageResponse(socialResponse: SocialResponse): Unit =
@@ -290,10 +289,6 @@ object SocialController {
       socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, Some(paramMap))
     }
 
-    private def unSubscribeFromOnlinePlayerList(): Unit = {
-      val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> playerID)
-      socialRestWebClient.callRemoteAPI(UnregisterSocialIDAPI, Some(paramMap))
-    }
 
     private def onGUISetting(): Unit = {
       socialRestWebClient.callRemoteAPI(GetUserAPI, None, playerID)
