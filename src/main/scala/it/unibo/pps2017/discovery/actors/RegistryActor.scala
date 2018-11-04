@@ -5,7 +5,7 @@ import akka.actor.{Actor, ActorRef}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, SocialMap}
-import it.unibo.pps2017.discovery.actors.RegistryActor.{AddUserToRegisterMessage, OnlinePlayerListMessage, RemoveUserFromRegisterMessage}
+import it.unibo.pps2017.discovery.actors.RegistryActor.{AddUserToRegisterMessage, HeartBeatMessage, OnlinePlayerListMessage, RemoveUserFromRegisterMessage}
 import it.unibo.pps2017.discovery.structures.SocialActorsMap
 
 /**
@@ -18,7 +18,10 @@ class RegistryActor extends Actor {
 
   override def receive: Receive = {
     case AddUserToRegisterMessage(playerID, actorRef) => socialActorsMap.registerUser(playerID, actorRef)
+      notifyListUpdate()
     case RemoveUserFromRegisterMessage(playerID) => socialActorsMap.unregisterUser(playerID)
+      notifyListUpdate()
+    case HeartBeatMessage => mediator ! Publish(RegistryActor.SOCIALCHANNEL, HeartBeatMessage(self))
   }
 
   private def notifyListUpdate(): Unit = {
@@ -53,5 +56,12 @@ object RegistryActor {
     * @param map the map of current online players
     */
   case class OnlinePlayerListMessage(map: SocialMap)
+
+  /**
+    * Trigger an heartbeat on the channel.
+    *
+    * @param registryActorRef the actor ref of the registry, if none, this message is used to trigger a new heartbeat
+    */
+  case class HeartBeatMessage(registryActorRef: ActorRef)
 
 }

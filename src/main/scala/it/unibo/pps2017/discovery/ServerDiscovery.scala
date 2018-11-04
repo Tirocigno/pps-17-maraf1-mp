@@ -1,11 +1,14 @@
 
 package it.unibo.pps2017.discovery
 
+import akka.actor.{ActorRef, Props}
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.Port
+import it.unibo.pps2017.discovery.actors.RegistryActor
+import it.unibo.pps2017.discovery.actors.RegistryActor.HeartBeatMessage
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap, SocialActorsMap}
@@ -24,7 +27,7 @@ trait ServerDiscovery extends ScalaVerticle{
   /**
     * Starts the seed for the cluster.
     */
-  def startAkkaCluster(ipAddress: String): Unit = AkkaClusterUtils.startSeedCluster(ipAddress)
+  def startAkkaCluster(ipAddress: String): Unit
 
 }
 
@@ -43,6 +46,13 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   val serverMap: ServerMap = ServerMap()
   val matchesSet: MatchesSet = MatchesSet()
   val socialActorsMap: SocialActorsMap = SocialActorsMap()
+  /**
+    * Handler for RegisterSocialIDAPI
+    */
+  private val registerSocialIDAPI: APIHandler = (router, response) => {
+    actorRef ! HeartBeatMessage(actorRef)
+  }
+  var actorRef: ActorRef = _
 
   /**
     * Handler for the GetServerAPI
@@ -122,42 +132,12 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     }
   }
 
-  /**
-    * Handler for RegisterSocialIDAPI
-    */
-  private val registerSocialIDAPI: APIHandler = (router, response) => {
-    try {
-      val playerID = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ID)
-        .getOrElse(throw new NoSuchFieldException())
-      val actorRef = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ACTOR)
-        .getOrElse(throw new NoSuchFieldException())
-      socialActorsMap.registerUser(playerID, actorRef)
-      setMessageAndRespond(response, RegisterSocialIDAPI.okMessage)
-    } catch {
-      case _: NoSuchFieldException => setErrorAndRespond(response, RegisterSocialIDAPI.errorMessage)
-    }
+  override def startAkkaCluster(ipAddress: String): Unit = {
+    AkkaClusterUtils.startSeedCluster(ipAddress)
+    val system = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(ipAddress, "0", ipAddress)
+    actorRef = system.actorOf(Props(new RegistryActor()))
   }
 
-  /**
-    * Handler for UnregisterSocialIDAPI
-    */
-  private val unregisterSocialIDAPI: APIHandler = (router, response) => {
-    try {
-      val playerID = router.request().getFormAttribute(UnregisterSocialIDAPI.SOCIAL_ID)
-        .getOrElse(throw new NoSuchFieldException())
-      socialActorsMap.unregisterUser(playerID)
-      setMessageAndRespond(response, UnregisterSocialIDAPI.okMessage)
-    } catch {
-      case _: NoSuchFieldException => setErrorAndRespond(response, UnregisterSocialIDAPI.errorMessage)
-    }
-  }
-
-  /**
-    * Handler for GetAllOnlinePlayersAPI.
-    */
-  private val getAllOnlinePlayersAPI: APIHandler = (_, response) => {
-    response.sendResponse(socialActorsMap.getCurrentOnlinePlayerMap)
-  }
 
   /**
     * Private method to send an OK response with a message.
@@ -207,10 +187,6 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
         removeMatchAPIHandler)
       case api@RegisterSocialIDAPI => api.asRequest(router,
         registerSocialIDAPI)
-      case api@UnregisterSocialIDAPI => api.asRequest(router,
-        unregisterSocialIDAPI)
-      case api@GetAllOnlinePlayersAPI => api.asRequest(router,
-        getAllOnlinePlayersAPI)
       case api@_ => api.asRequest(router, mockHandler)
     })
 
