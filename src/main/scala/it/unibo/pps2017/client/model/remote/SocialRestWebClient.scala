@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.model.remote
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
 import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetUserAPI}
 import it.unibo.pps2017.server.model.{OnlinePlayersMapEncoder, User}
 import org.json4s.jackson.Serialization.read
@@ -17,8 +17,6 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
 
   override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]], parameterPath: String): Unit = api match {
     case RegisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
-    case UnregisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
-    case GetAllOnlinePlayersAPI => invokeAPI(api, paramMap, getAllOnlinePlayersCallBack, discoveryContext)
     case AddFriendAPI => invokeAPI(api, paramMap, addAFriendCallBack, assignedServerContext.get,
       AddFriendAPI.path.replace(AddFriendAPI.parameterPath, parameterPath))
     case GetUserAPI => invokeAPI(api, paramMap, getUserCallBack, assignedServerContext.get,
@@ -31,7 +29,7 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
     * @param responseBody the body of the response.
     */
   private def registerAndUnregisterSocialIDCallBack(responseBody: Option[String]): Unit =
-    socialController.notifyCallResultToGUI(responseBody)
+    println(responseBody.get)
 
 
   /**

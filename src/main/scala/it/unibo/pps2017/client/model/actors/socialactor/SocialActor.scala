@@ -80,6 +80,7 @@ object SocialActor {
     }
 
     private def onlinePlayerListMessageHandler(socialMap: SocialMap): Unit = {
+      println("Updating the online player list...")
       val players = socialMap.map(entry => PlayerReference(entry._1, entry._2)).toList
       socialPlayersMap.setOnlinePlayerList(players)
       controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
