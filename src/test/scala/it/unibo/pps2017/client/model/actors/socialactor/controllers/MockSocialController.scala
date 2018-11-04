@@ -61,4 +61,6 @@ class MockSocialController extends SocialController {
   override def getSocialGUIController: SocialGUIController = new it.unibo.pps2017.core.gui.SocialGUIController()
 
   override def setScoreInsideGUI(scores: Int): Unit = {}
+
+  override def startHeartBeatRequest(): Unit = {}
 }
