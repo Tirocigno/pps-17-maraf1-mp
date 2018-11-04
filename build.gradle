@@ -201,7 +201,7 @@ testScoverage {
 defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
 
 //TO CHANGE FOR SHADOWJAR
-mainClassName = 'it.unibo.pps2017.client.ClientMain'
+mainClassName = 'it.unibo.server.Runner'
 
 
 task stage {

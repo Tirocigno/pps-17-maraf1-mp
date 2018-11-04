@@ -79,8 +79,9 @@ sealed trait ClientController extends Controller {
   /**
     * Handle a login response.
     *
+    * @param response the response given to the login or authentication request.
     */
-  def handleLoginAndRegistrationResponse(): Unit
+  def handleLoginAndRegistrationResponse(response: String): Unit
 
   /**
     * Send a registration request to remote server.
@@ -218,9 +219,9 @@ object ClientController {
       webClient.get.callRemoteAPI(api, Some(map), username)
     }
 
-    override def handleLoginAndRegistrationResponse(): Unit = {
-      loginGUI.get.handleResponse("Access succeeded")
-      onAuthenticationSucceded()
+    override def handleLoginAndRegistrationResponse(message: String): Unit = {
+      loginGUI.get.handleResponse(message)
+      //onAuthenticationSucceded()
     }
 
     override def fetchCurrentMatchesList(): Unit =

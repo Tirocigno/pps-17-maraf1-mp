@@ -44,11 +44,11 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     * @param jSonSource the body of the response.
     */
   private def loginCallBack(jSonSource: Option[String]): Unit = {
-    clientController.handleLoginAndRegistrationResponse()
+    clientController.handleLoginAndRegistrationResponse(jSonSource.get)
   }
 
   private def registerCallBack(jSonSource: Option[String]): Unit = {
-    clientController.handleLoginAndRegistrationResponse()
+    clientController.handleLoginAndRegistrationResponse(jSonSource.get)
   }
 
 
