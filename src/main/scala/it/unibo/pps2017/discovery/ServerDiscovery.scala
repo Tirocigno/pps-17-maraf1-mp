@@ -132,6 +132,8 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     * Handler for RegisterSocialIDAPI
     */
   private val registerSocialIDAPI: APIHandler = (router, response) => {
+    println(actorRef)
+    println("HO RICEVUTO RICHIESTA")
     actorRef ! HeartBeatMessage(actorRef)
     setMessageAndRespond(response, REGISTRATION_START_MESSAGE)
   }

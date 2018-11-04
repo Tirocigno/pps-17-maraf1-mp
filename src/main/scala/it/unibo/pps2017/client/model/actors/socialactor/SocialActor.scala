@@ -45,7 +45,9 @@ object SocialActor {
     val requestHandler: RequestHandler = RequestHandler(currentContext, socialParty)
     val mediator: ActorRef = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(RegistryActor.SOCIALCHANNEL, self)
+    println(mediator)
     var remoteRegistryActor: Option[ActorRef] = None
+    println("Social actor creaded")
 
     override def receive: Receive = {
       case SetFriendsList(friendsList) => socialPlayersMap.setFriendsList(friendsList)

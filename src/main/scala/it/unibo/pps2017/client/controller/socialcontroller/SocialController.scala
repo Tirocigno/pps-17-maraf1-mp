@@ -283,6 +283,7 @@ object SocialController {
     override def setScoreInsideGUI(scores: Int): Unit = currentGUI.get.setTotalPoints(scores)
 
     private def registerToOnlinePlayerList(): Unit = {
+      Thread.sleep(1000)
       socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, None)
     }
 
