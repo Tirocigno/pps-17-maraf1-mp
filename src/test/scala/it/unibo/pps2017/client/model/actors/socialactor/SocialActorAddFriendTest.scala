@@ -4,18 +4,19 @@ package it.unibo.pps2017.client.model.actors.socialactor
 import akka.actor.ActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeSocialActorAddFriendController, PositiveSocialActorAddFriendController, SenderSocialActorAddFriendController, SocialActorRequestController}
-import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{AddFriendRequestMessage, AddFriendResponseMessage, SetOnlinePlayersMapMessage, TellAddFriendRequestMessage}
-import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{AddFriendRequestMessage, AddFriendResponseMessage, TellAddFriendRequestMessage}
+import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.commons.remote.social.SocialResponse
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, PlayerReference}
+import it.unibo.pps2017.discovery.actors.RegistryActor.OnlinePlayerListMessage
 import org.junit.runner.RunWith
 import org.scalatest.FunSuiteLike
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class SocialActorAddFriendTest()
-  extends TestKit(AkkaTestUtils.generateTestActorSystem()) with ImplicitSender with FunSuiteLike {
+  extends TestKit(AkkaClusterUtils.startJoiningActorSystem("0", "127.0.0.1")) with ImplicitSender with FunSuiteLike {
 
   val PLAYER_ID: PlayerID = SocialActorRequestController.MOCK_PLAYER_ID
   val SENDER_ID: PlayerID = "SENDER"
@@ -62,7 +63,7 @@ class SocialActorAddFriendTest()
     val senderController = new SenderSocialActorAddFriendController()
     val senderActor = SocialActor(system, senderController, SENDER_ID)
     senderController.setCurrentActorRef(senderActor)
-    senderActor ! SetOnlinePlayersMapMessage(List(PlayerReference(PLAYER_ID, socialRef)))
+    senderActor ! OnlinePlayerListMessage(Map(PLAYER_ID -> socialRef))
     senderActor ! TellAddFriendRequestMessage(PLAYER_ID)
     waitMessageExchange()
     assert(senderController.playerID.equals(PLAYER_ID) && senderController.response.equals(expectedResponse))
