@@ -60,7 +60,6 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
   private def gameCallBack(jSonSource: Option[String]): Unit = {
     val game = read[Game](jSonSource.get)
     clientController.handleMatchReplay(game)
-    println("CIAO" + game)
   }
 
   /**
