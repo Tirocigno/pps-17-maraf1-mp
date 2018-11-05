@@ -101,7 +101,7 @@ object GuiStack {
     }
 
     private def setGameStage(): Unit = {
-      mainStage.get.setFullScreen(true)
+      //mainStage.get.setFullScreen(true)
       mainStage.get.setResizable(true)
       mainStage.get.centerOnScreen()
     }
