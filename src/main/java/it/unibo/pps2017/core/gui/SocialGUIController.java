@@ -18,7 +18,8 @@ import java.util.Optional;
 public class SocialGUIController implements it.unibo.pps2017.client.view.social.SocialGUIController, BasicPlayerOptions{
 
     @FXML
-    Button playButton, viewButton, replayButton, okComboView, okComboReplay;
+    Button playButton, playCompetitiveButton, viewButton, replayButton, okComboView, okComboReplay, partnerButton,
+            foeButton, addFriendButton;
     @FXML
     ListView<String> onlineFriends, onlinePlayers;
     @FXML
@@ -33,7 +34,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     private static final String FOE = "Foe";
     private static final String INVITATION_REQUEST = "Do you want to join him?";
     private static final String FRIEND_REQUEST = " want to add you as friend. Do you want to accept?";
-    private static final String WAITING_MSG = "Waiting for friend response ...";
+    private static final String WAITING_MSG = "Waiting ...";
     private static final String POSITIVE_ANSWER = "positive";
     private static final String NEGATIVE_ANSWER = "negative";
     private static final String ACCEPT_MSG = " accepted the invitation!";
@@ -56,6 +57,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * Handles the click of addFriend button by adding the player as friend
      */
     public void addNewFriend(){
+        responseFriendLabel.setText(WAITING_MSG);
         String playerSelected = getSelection(onlinePlayers);
         hideReplayMatch();
         hideViewMatch();
@@ -67,7 +69,8 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * invitation to play together as partner
      */
     public void inviteFriendToPlayAsPartner(){
-        disableGUIButtons();
+        responsePlayLabel.setText(WAITING_MSG);
+        disableReplayViewButtons();
         socialController.tellInvitePlayerAsPartner(getSelectedFriend());
         request = PARTNER;
     }
@@ -77,19 +80,35 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * invitation to play together as foe
      */
     public void inviteFriendToPlayAsFoe(){
-        disableGUIButtons();
+        responsePlayLabel.setText(WAITING_MSG);
+        disableReplayViewButtons();
         socialController.tellInvitePlayerAsFoe(getSelectedFriend());
         request = FOE;
+    }
+
+    private void disableReplayViewButtons(){
+        viewButton.setDisable(true);
+        replayButton.setDisable(true);
     }
 
     private void disableGUIButtons(){
         viewButton.setDisable(true);
         replayButton.setDisable(true);
+        playButton.setDisable(true);
+        playCompetitiveButton.setDisable(true);
+        partnerButton.setDisable(true);
+        foeButton.setDisable(true);
+        addFriendButton.setDisable(true);
     }
 
     private void enableGUIButtons(){
         viewButton.setDisable(false);
         replayButton.setDisable(false);
+        playButton.setDisable(false);
+        playCompetitiveButton.setDisable(false);
+        partnerButton.setDisable(false);
+        foeButton.setDisable(false);
+        addFriendButton.setDisable(false);
     }
 
     private String getSelectedFriend(){
@@ -134,6 +153,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
         runSafeOnFXThread(() -> {
             if (request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
+                System.out.println("Friend request");
                 if (responseResult.equals(POSITIVE_ANSWER)) {
                     responseFriendLabel.setText(sender + ACCEPT_MSG);
                 } else if (responseResult.equals(NEGATIVE_ANSWER)) {
@@ -142,13 +162,13 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
                 }
                 showAndHideTextResponse(responseFriendLabel);
             } else {
+                System.out.println("Play request");
                 if (responseResult.equals(POSITIVE_ANSWER)) {
                     responsePlayLabel.setText(sender + ACCEPT_MSG);
                 } else if (responseResult.equals(NEGATIVE_ANSWER)) {
                     responsePlayLabel.setText(sender + REJECT_MSG);
                 }
                 showAndHideTextResponse(responsePlayLabel);
-
             }
         });
     }
@@ -159,8 +179,6 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
         runSafeOnFXThread(() -> {
             String message;
             if (role.equals(PARTNER) || role.equals(FOE)) {
-                responsePlayLabel.setText(WAITING_MSG);
-
                 message = sender + INVITATION_INFO + role + ". " + INVITATION_REQUEST;
                 showAlertConfirmation(message, INVITE_FRIEND);
 
@@ -186,6 +204,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
                     }
                 } else if (type.equals(INVITE_FRIEND)) {
                     if (result.get() == ButtonType.YES) {
+                        disableGUIButtons();
                         socialController.notifyInviteMessageResponse(SocialResponse.PositiveResponse$.MODULE$);
                     } else {
                         socialController.notifyInviteMessageResponse(SocialResponse.NegativeResponse$.MODULE$);
@@ -232,7 +251,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * can play a non-competitive game without effect in ranking
      */
     public void handlePlayMatch(){
-        playMatch(false);
+        playNonCompetitiveMatch();
     }
 
     /**
@@ -240,18 +259,18 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * can play a competitive game with effect in ranking
      */
     public void handlePlayCompetitiveMatch(){
-        playMatch(true);
+        playCompetitiveMatch();
     }
 
     @Override
-    public void playMatch(boolean competitive) {
-        if(competitive){
-            socialController.startGame(MatchNature.CompetitiveMatch$.MODULE$);
-        }
-        else {
+    public void playNonCompetitiveMatch() {
             socialController.startGame(MatchNature.CasualMatch$.MODULE$);
-        }
     }
+
+    private void playCompetitiveMatch() {
+            socialController.startGame(MatchNature.CompetitiveMatch$.MODULE$);
+    }
+
     /**
      * Handles the click of viewMatch button by showing a combobox
      * and an ok button in way to choose the game to watch

@@ -111,7 +111,7 @@ sealed trait BaseTeam[A] {
 /**
   * This class manage a Team. Identified by a name and a list of members.
   *
-  * @param name
+  * @param teamIndex
   * Name of the team
   * @param members
   * Members of the team. Limited at max 2.

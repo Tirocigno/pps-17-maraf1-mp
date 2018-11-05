@@ -24,16 +24,14 @@ public class GenericController implements GenericGUIController, BasicPlayerOptio
 
     @FXML
     private void handlePlayMatch(){
-        playMatch(false);
+        playNonCompetitiveMatch();
     }
 
     @Override
-    public void playMatch(boolean competitive) {
+    public void playNonCompetitiveMatch() {
         scala.Option<scala.collection.immutable.Map<java.lang.String, java.lang.String>> paramMap =
                 scala.Option.apply(null);
-        if(!competitive){
             clientController.sendMatchRequest(MatchNature.CasualMatch$.MODULE$, paramMap);
-        }
     }
 
     @Override

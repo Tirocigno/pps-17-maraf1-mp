@@ -13,7 +13,7 @@ class ClientMain extends Application {
     GuiStack().checkAndSetStage(primaryStage)
     GuiStack().setCurrentScene(LoginStage, ClientController.getSingletonController)
     primaryStage.show()
-    primaryStage.centerOnScreen()
+    //primaryStage.centerOnScreen()
     primaryStage.setOnCloseRequest(_ => {
       System.exit(0)
     })
