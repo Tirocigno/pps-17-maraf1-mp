@@ -98,6 +98,7 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         this.waitingTime.setVisible(true);
     }
 
+
     @Override
     public void setGameController(final GameController controller) {
         this.gameController = controller;

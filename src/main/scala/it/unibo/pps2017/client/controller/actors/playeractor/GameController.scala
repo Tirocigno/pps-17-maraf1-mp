@@ -5,6 +5,7 @@ import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.passiveactors.{ReplayActor, ViewerActor}
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient
+import it.unibo.pps2017.client.view.GuiStack
 import it.unibo.pps2017.client.view.game.GameGUIController
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
@@ -114,6 +115,10 @@ class GameController extends MatchController {
     * @param id Match's id.
     */
   def joinPlayerToMatch(id: String): Unit = {
+    GuiStack().stage.setOnCloseRequest(_ => {
+      this.closedPlayGameView()
+      System.exit(0)
+    })
     currentActorRef ! IdChannelPublishSubscribe(id)
   }
 
