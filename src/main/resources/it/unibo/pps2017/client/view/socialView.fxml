@@ -35,26 +35,26 @@
          </font>
       </Label>
       <ListView fx:id="onlinePlayers" layoutX="326.0" layoutY="330.0" prefHeight="143.0" prefWidth="172.0" />
-      <Button layoutX="372.0" layoutY="503.0" mnemonicParsing="false" onAction="#addNewFriend" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: yellow; -fx-border-color: blue; -fx-border-radius: 3;" text="Add friend" />
+      <Button layoutX="365.0" layoutY="503.0" mnemonicParsing="false" onAction="#addNewFriend" prefHeight="27.0" prefWidth="94.0" style="-fx-background-color: yellow; -fx-border-color: blue; -fx-border-radius: 3;" text="Add friend" />
       <Button layoutX="66.0" layoutY="503.0" mnemonicParsing="false" onMouseClicked="#inviteFriendToPlayAsPartner" prefHeight="27.0" prefWidth="81.0" style="-fx-border-radius: 3; -fx-background-color: yellow; -fx-border-color: blue;" text="Partner" />
-      <Label fx:id="responsePlayLabel" layoutX="68.0" layoutY="540.0" prefHeight="17.0" prefWidth="172.0" />
+      <Label fx:id="responsePlayLabel" layoutX="68.0" layoutY="540.0" prefHeight="17.0" prefWidth="252.0" />
       <ComboBox fx:id="comboView" layoutX="106.0" layoutY="249.0" prefHeight="25.0" prefWidth="132.0" style="-fx-background-color: #f8ff1f;" visible="false" />
       <ComboBox fx:id="comboReplay" layoutX="363.0" layoutY="249.0" prefHeight="25.0" prefWidth="132.0" style="-fx-background-color: #ff4848;" visible="false" />
       <Button fx:id="okComboView" layoutX="240.0" layoutY="248.0" mnemonicParsing="false" onMouseClicked="#okViewMatch" prefHeight="27.0" prefWidth="34.0" style="-fx-background-color: #f8ff1f; -fx-border-color: black; -fx-border-radius: 3;" text="Ok" visible="false" />
       <Button fx:id="okComboReplay" layoutX="498.0" layoutY="248.0" mnemonicParsing="false" onMouseClicked="#okReplayMatch" style="-fx-background-color: #ff4848; -fx-border-color: black; -fx-border-radius: 3;" text="Ok" visible="false" />
    <TextArea fx:id="players" editable="false" layoutX="68.0" layoutY="83.0" prefHeight="42.0" prefWidth="428.0" promptText="Players in the table:" />
    <Button layoutX="160.0" layoutY="503.0" mnemonicParsing="false" onMouseClicked="#inviteFriendToPlayAsFoe" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: yellow; -fx-border-radius: 3; -fx-border-color: blue;" text="Foe" />
-   <Label layoutX="68.0" layoutY="480.0" text="Invite friend to play as:" />
-   <Label fx:id="responseFriendLabel" layoutX="335.0" layoutY="540.0" prefHeight="17.0" prefWidth="165.0" />
+   <Label layoutX="68.0" layoutY="480.0" prefHeight="17.0" prefWidth="172.0" text="Invite friend to play as:" />
+   <Label fx:id="responseFriendLabel" layoutX="335.0" layoutY="540.0" prefHeight="17.0" prefWidth="252.0" />
    <Circle fill="#ff0009fa" layoutX="550.0" layoutY="76.0" radius="37.0" stroke="BLACK" strokeType="INSIDE" />
    <Label layoutX="516.0" layoutY="117.0" text="Total points">
       <font>
          <Font name="System Bold Italic" size="12.0" />
       </font>
    </Label>
-   <Label fx:id="totalPoints" layoutX="532.0" layoutY="61.0">
+   <Label fx:id="totalPoints" layoutX="532.0" layoutY="61.0" prefHeight="35.0" prefWidth="51.0" text="200">
       <font>
-         <Font name="Britannic Bold" size="30.0" />
+         <Font name="Britannic Bold" size="19.0" />
       </font>
    </Label>
 </AnchorPane>
