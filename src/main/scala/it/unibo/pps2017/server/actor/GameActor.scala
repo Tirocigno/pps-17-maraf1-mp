@@ -1,4 +1,4 @@
-package it.unibo.pps2017.core.player
+package it.unibo.pps2017.server.actor
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.cluster.Cluster
@@ -11,7 +11,7 @@ import it.unibo.pps2017.core.deck.cards.Seed.{Coin, Seed}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl, Seed}
 import it.unibo.pps2017.core.deck.{ComposedDeck, GameDeck}
 import it.unibo.pps2017.core.game._
-import it.unibo.pps2017.core.player.GameActor._
+import it.unibo.pps2017.server.actor.GameActor._
 import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable

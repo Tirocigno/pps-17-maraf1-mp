@@ -2,7 +2,7 @@
 package it.unibo.pps2017.server.model
 
 import it.unibo.pps2017.core.game.SimpleTeam
-import it.unibo.pps2017.core.player.{FullTeamException, GameActor}
+import it.unibo.pps2017.server.actor.{FullTeamException, GameActor}
 import it.unibo.pps2017.server.model.LobbyStatusResponse.{FULL, LobbyStatusResponse, OK, REVERSE}
 
 sealed trait Lobby {

@@ -4,7 +4,6 @@ package it.unibo.pps2017.server.actor
 import akka.actor.{Actor, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import it.unibo.pps2017.core.game.SimpleTeam
-import it.unibo.pps2017.core.player.GameActor
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{StandardParameters, _}
 import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model.GameType.{GameType, RANKED, UNRANKED}

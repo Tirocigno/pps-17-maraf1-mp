@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.core.player.GameActor._
+import it.unibo.pps2017.server.actor.GameActor._
 
 
 

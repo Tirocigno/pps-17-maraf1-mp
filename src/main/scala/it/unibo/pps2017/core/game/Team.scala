@@ -2,8 +2,8 @@
 package it.unibo.pps2017.core.game
 
 import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
-import it.unibo.pps2017.core.player.GameActor._
-import it.unibo.pps2017.core.player.{FullTeamException, GameActor}
+import it.unibo.pps2017.server.actor.GameActor._
+import it.unibo.pps2017.server.actor.{FullTeamException, GameActor}
 import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable.ListBuffer
