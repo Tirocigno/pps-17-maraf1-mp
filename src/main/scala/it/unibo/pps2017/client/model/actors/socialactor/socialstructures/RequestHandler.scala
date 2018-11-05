@@ -1,6 +1,7 @@
 
 package it.unibo.pps2017.client.model.actors.socialactor.socialstructures
 
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
 import it.unibo.pps2017.commons.remote.exceptions.AlreadyProcessingARequestException
 import it.unibo.pps2017.commons.remote.social.PartyPlayer.{FoePlayer, PartnerPlayer}
@@ -41,11 +42,14 @@ trait RequestHandler {
 
 object RequestHandler {
 
-  def apply(currentPlayerRef: PlayerReference, currentParty: SocialParty, currentPlayerMap: SocialPlayersMap): RequestHandler =
-    new RequestHandlerImpl(currentPlayerRef, currentParty, currentPlayerMap)
+  def apply(currentPlayerRef: PlayerReference, currentParty: SocialParty, currentPlayerMap: SocialPlayersMap,
+            socialController: SocialController)
+  : RequestHandler =
+    new RequestHandlerImpl(currentPlayerRef, currentParty, currentPlayerMap, socialController)
 
   private class RequestHandlerImpl(val currentPlayerRef: PlayerReference, val currentParty: SocialParty,
-                                   val currentSocialMap: SocialPlayersMap) extends RequestHandler {
+                                   val currentSocialMap: SocialPlayersMap,
+                                   val socialController: SocialController) extends RequestHandler {
     var currentMessage: Option[RequestMessage] = None
 
 
@@ -118,7 +122,11 @@ object RequestHandler {
     private def elaborateResponse(socialMessage: RequestMessage, socialResponse: SocialResponse): Unit =
       socialMessage match {
         case AddFriendRequestMessage(sender) =>
-          currentSocialMap.updateFriendList(sender.playerID)
+          if (socialResponse.equals(SocialResponse.PositiveResponse)) {
+            currentSocialMap.updateFriendList(sender.playerID)
+            socialController.updateOnlineFriendsList(currentSocialMap.getAllOnlineFriends)
+            socialController.updateOnlinePlayerList(currentSocialMap.getAllOnlineStrangers)
+          }
           generateFriendResponse(socialResponse, sender)
           resetRequestHandler()
         case InvitePlayerRequestMessage(sender, role) => generateInviteResponse(socialResponse, sender, role); resetRequestHandler()
@@ -142,7 +150,7 @@ object RequestHandler {
       */
     private def generateInviteResponse(socialResponse: SocialResponse,
                                        playerReference: PlayerReference, role: PartyRole): Unit = socialResponse match {
-      case NegativeResponse => println("Generata risposta")
+      case NegativeResponse =>
         playerReference.playerRef ! InvitePlayerResponseMessage(socialResponse,
           generatePartyPlayer(role), None)
         resetRequestHandler()
