@@ -12,7 +12,7 @@ import javafx.scene.image.ImageView;
 public class RegistrationLoginController implements LoginGUIController, Registration, Login {
 
     @FXML
-    Button loginButton, registerButton, continueButton;
+    Button loginButton, registerButton;
     @FXML
     TextField usernameLogin, usernameRegistration;
     @FXML
@@ -22,6 +22,7 @@ public class RegistrationLoginController implements LoginGUIController, Registra
 
     private static final String LOGIN_IMG_PATH = "images/login.jpg";
     private static final String REGISTRATION_IMG_PATH = "images/registration.jpg";
+    private static final int JSON_MSG_START_INDEX = 12;
     private ClientController clientController;
 
     @FXML
@@ -68,4 +69,5 @@ public class RegistrationLoginController implements LoginGUIController, Registra
             alert.showAndWait();
         });
     }
+
 }

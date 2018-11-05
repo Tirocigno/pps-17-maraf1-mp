@@ -13,8 +13,8 @@
     <Label layoutX="99.0" layoutY="382.0" text="Create a new account" />
       <Label layoutX="101.0" layoutY="414.0" style="-fx-font-weight: bold;" text="Username" />
       <Label layoutX="102.0" layoutY="456.0" style="-fx-font-weight: bold;" text="Password" />
-      <PasswordField fx:id="pwdRegistration" layoutX="187.0" layoutY="452.0" prefHeight="25.0" prefWidth="201.0" promptText="Insert password" />
       <TextField fx:id="usernameRegistration" layoutX="187.0" layoutY="410.0" prefHeight="25.0" prefWidth="201.0" promptText="Insert username" />
+    <PasswordField fx:id="pwdRegistration" layoutX="187.0" layoutY="452.0" prefHeight="25.0" prefWidth="201.0" promptText="Insert password" />
     <Button fx:id="registerButton" layoutX="308.0" layoutY="499.0" mnemonicParsing="false" onMouseClicked="#registerUser" prefHeight="27.0" prefWidth="80.0" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Register" />
    <Label layoutX="103.0" layoutY="114.0" style="-fx-font-weight: bold;" text="Username" />
    <Label layoutX="104.0" layoutY="151.0" style="-fx-font-weight: bold;" text="Password" />
