@@ -112,8 +112,10 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     @Override
     public void updateOnlinePlayersList(List<String> playersList) {
-        onlinePlayers.getItems().clear();
-        onlinePlayers.getItems().addAll(playersList);
+        runSafeOnFXThread(() -> {
+            onlinePlayers.getItems().clear();
+            onlinePlayers.getItems().addAll(playersList);
+        });
     }
 
     @Override
@@ -284,11 +286,12 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     }
 
     public void displayReplayMatches(List<String> matches){
-        System.out.println("Match arrivati");
-        comboReplay.getItems().clear();
-        comboReplay.getItems().addAll(matches);
-        hideViewMatch();
-        showReplayMatch();
+        runSafeOnFXThread(() -> {
+            comboReplay.getItems().clear();
+            comboReplay.getItems().addAll(matches);
+            hideViewMatch();
+            showReplayMatch();
+        });
     }
 
     @Override
