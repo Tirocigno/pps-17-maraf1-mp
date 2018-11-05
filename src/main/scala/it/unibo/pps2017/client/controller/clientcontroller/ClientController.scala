@@ -286,6 +286,7 @@ object ClientController {
 
     override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
       case Some(controller) => controller.getSocialGUIController.displayReplayMatches(playedMatches.asJava)
+        println("Match instradati alla Social GUI")
       case None => genericGui.get.displayMatchesList(playedMatches.asJava)
     }
 

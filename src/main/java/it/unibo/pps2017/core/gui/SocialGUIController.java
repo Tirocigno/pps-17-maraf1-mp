@@ -284,6 +284,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     }
 
     public void displayReplayMatches(List<String> matches){
+        System.out.println("Match arrivati");
         comboReplay.getItems().clear();
         comboReplay.getItems().addAll(matches);
         hideViewMatch();
