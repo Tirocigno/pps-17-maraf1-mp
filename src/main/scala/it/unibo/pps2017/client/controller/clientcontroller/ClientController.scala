@@ -159,7 +159,7 @@ object ClientController {
   def getSingletonController: ClientController = staticController
 
   private class ClientControllerImpl() extends ClientController {
-    val gameController = new GameController()
+    val gameController = new GameController(this)
     val guiStack: GuiStack = GuiStack()
     var playerName: String = getRandomID
     var unconfirmedUserName: String = playerName
