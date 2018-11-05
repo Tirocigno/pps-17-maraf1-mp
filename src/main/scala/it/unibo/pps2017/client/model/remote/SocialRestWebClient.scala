@@ -6,7 +6,7 @@ import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
 import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetUserAPI}
-import it.unibo.pps2017.server.model.{OnlinePlayersMapEncoder, User}
+import it.unibo.pps2017.server.model.{User, UserFriends}
 import org.json4s.jackson.Serialization.read
 
 /**
@@ -31,15 +31,9 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
   private def registerAndUnregisterSocialIDCallBack(responseBody: Option[String]): Unit =
     println(responseBody.get)
 
-
-  /**
-    * Callback for the GetAllOnlinePlayers API.
-    *
-    * @param responseBody the body of the response.
-    */
-  private def getAllOnlinePlayersCallBack(responseBody: Option[String]): Unit = {
-    val playerMap = read[OnlinePlayersMapEncoder](responseBody.get).map
-    socialController.setOnlinePlayerList(playerMap)
+  private def getAllFriendsCallBack(responseBody: Option[String]): Unit = {
+    val friendList = read[UserFriends](responseBody.get).friends.toList
+    socialController.setFriendsList(friendList)
   }
 
   private def addAFriendCallBack(responseBody: Option[String]): Unit = {

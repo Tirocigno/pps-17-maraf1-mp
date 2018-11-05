@@ -2,7 +2,6 @@
 
 package it.unibo.pps2017.server.model
 
-import akka.actor.ActorRef
 import it.unibo.pps2017.commons.remote.rest.RestUtils.MatchRef
 import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
 
@@ -35,9 +34,6 @@ case class LiveGame(gameId: String, team1: Side, team2: Side, gameType: String) 
 
 case class Ranking(members: Seq[RankElement]) extends JsonResponse
 case class RankElement(player: String, score: Long)
-
-case class EncodedActorRef(actorRef: ActorRef) extends JsonResponse
-
 
 
 /**

@@ -16,7 +16,7 @@ import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
 import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
-import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetUserAPI}
+import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetFriendsAPI, GetUserAPI}
 
 import scala.collection.JavaConverters._
 
@@ -41,6 +41,13 @@ trait SocialController extends ActorController {
     * @param onlinePlayers the list of current online players.
     */
   def setOnlinePlayerList(onlinePlayers: SocialMap): Unit
+
+  /**
+    * Set the friend list inside the actor
+    *
+    * @param friendList the list of friends of the current player.
+    */
+  def setFriendsList(friendList: FriendList): Unit
 
   /**
     * Notify an error to GUI
@@ -206,9 +213,12 @@ object SocialController {
     override def notifyCallResultToGUI(message: Option[String]): Unit =
       currentGUI.get.notifyAPIResult(message.get)
 
-    override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit = {
+    override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit =
       sendMessage(SetOnlinePlayersMapMessage(onlinePlayers))
-    }
+
+    override def setFriendsList(friendList: FriendList): Unit =
+      sendMessage(SetFriendsList(friendList))
+
 
     override def notifyErrorToGUI(throwable: Throwable): Unit =
       currentGUI.get.notifyErrorOccurred(throwable.getMessage)
@@ -217,8 +227,6 @@ object SocialController {
       val paramMap = Map(AddFriendAPI.friendUsername -> friendId)
       socialRestWebClient.callRemoteAPI(AddFriendAPI, Some(paramMap), playerID)
     }
-
-
 
     override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit =
       currentGUI.get.updateParty(currentPartyMap.map(entry => (entry._1.asString, entry._2)).asJava)
@@ -294,7 +302,11 @@ object SocialController {
 
     private def registerToOnlinePlayerList(): Unit = {
       socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, None)
+      fetchFriendList()
     }
+
+    private def fetchFriendList(): Unit =
+      socialRestWebClient.callRemoteAPI(GetFriendsAPI, None, playerID)
 
 
     private def onGUISetting(): Unit = {
