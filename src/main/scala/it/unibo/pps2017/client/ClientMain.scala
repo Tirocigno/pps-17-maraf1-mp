@@ -12,14 +12,12 @@ class ClientMain extends Application {
   override def start(primaryStage: Stage): Unit = {
     GuiStack().checkAndSetStage(primaryStage)
     GuiStack().setCurrentScene(LoginStage, ClientController.getSingletonController)
-    /*GuiStack().setCurrentScene(SocialStage,
-      SocialController(ClientController.getSingletonController, "DGjulio", ServerContext("", 0)))*/
     primaryStage.show()
+    primaryStage.centerOnScreen()
     primaryStage.setOnCloseRequest(_ => {
       System.exit(0)
     })
   }
-
 }
 
 class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
