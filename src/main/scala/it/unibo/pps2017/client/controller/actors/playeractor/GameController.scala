@@ -255,7 +255,7 @@ class GameController (val clientControllerRef: ClientController) extends MatchCo
     * Method to notify actor that view was closed.
     */
   def closedPlayGameView(): Unit = {
-    currentActorRef ! NotifyClosedPlayGameView
+    currentActorRef ! NotifyClosedPlayGameView()
   }
 
   /**
