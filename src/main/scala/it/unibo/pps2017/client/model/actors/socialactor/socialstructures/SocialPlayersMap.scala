@@ -18,6 +18,7 @@ trait SocialPlayersMap extends SocialActorsMap {
   def getAllOnlineStrangers: FriendList
 
   def getAllOnlineFriends: FriendList
+
 }
 
 object SocialPlayersMap {
@@ -32,17 +33,21 @@ object SocialPlayersMap {
 
     override def getCurrentOnlinePlayerMap: SocialMap = socialActorsMap.getCurrentOnlinePlayerMap
 
-    override def setOnlinePlayerList(playersList: List[PlayerReference]): Unit =
+    override def setOnlinePlayerList(playersList: List[PlayerReference]): Unit = {
+      resetMap()
       playersList.foreach(player => registerUser(player.playerID, player.playerRef))
+    }
+
 
     override def unregisterUser(userID: String): Unit = socialActorsMap.unregisterUser(userID)
 
     override def registerUser(userID: String, socialActorRef: ActorRef): Unit = {
-
       if (!userID.equals(playerID)) {
         socialActorsMap.registerUser(userID, socialActorRef)
       }
     }
+
+    override def resetMap(): Unit = socialActorsMap.resetMap()
 
     override def setFriendsList(friendList: FriendList): Unit =
       friendList.foreach(friend => this.friendList = friend :: this.friendList)

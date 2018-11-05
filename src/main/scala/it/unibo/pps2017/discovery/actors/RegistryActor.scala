@@ -29,6 +29,7 @@ class RegistryActor extends Actor {
       notifyListUpdate()
     case HeartBeatMessage(_) => {
       context.system.scheduler.scheduleOnce(RegistryActor.BEAT_DELAY second) {
+        println("PUBBLICO SUL CANALE")
         mediator ! Publish(RegistryActor.SOCIAL_CHANNEL, HeartBeatMessage(self))
       }
     }
@@ -45,7 +46,7 @@ object RegistryActor {
     * This delay is absolutely necessary for the correct operation of the publish subscribe mediator.
     * Without it, a message sent to a registered subscribe, even if he has received the subscription ack will be lost.
     */
-  val BEAT_DELAY: Int = 3
+  val BEAT_DELAY: Int = 5
   /**
     * ID of the channel on which the messages will be sent.
     */

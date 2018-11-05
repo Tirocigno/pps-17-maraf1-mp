@@ -36,14 +36,16 @@ trait RequestHandler {
     * @param socialResponse the response sent by the user.
     */
   def respondToRequest(socialResponse: SocialResponse): Unit
+
 }
 
 object RequestHandler {
 
-  def apply(currentPlayerRef: PlayerReference, currentParty: SocialParty): RequestHandler =
-    new RequestHandlerImpl(currentPlayerRef, currentParty)
+  def apply(currentPlayerRef: PlayerReference, currentParty: SocialParty, currentPlayerMap: SocialPlayersMap): RequestHandler =
+    new RequestHandlerImpl(currentPlayerRef, currentParty, currentPlayerMap)
 
-  private class RequestHandlerImpl(val currentPlayerRef: PlayerReference, val currentParty: SocialParty) extends RequestHandler {
+  private class RequestHandlerImpl(val currentPlayerRef: PlayerReference, val currentParty: SocialParty,
+                                   val currentSocialMap: SocialPlayersMap) extends RequestHandler {
     var currentMessage: Option[RequestMessage] = None
 
 
@@ -115,7 +117,10 @@ object RequestHandler {
       */
     private def elaborateResponse(socialMessage: RequestMessage, socialResponse: SocialResponse): Unit =
       socialMessage match {
-        case AddFriendRequestMessage(sender) => generateFriendResponse(socialResponse, sender); resetRequestHandler()
+        case AddFriendRequestMessage(sender) =>
+          currentSocialMap.updateFriendList(sender.playerID)
+          generateFriendResponse(socialResponse, sender)
+          resetRequestHandler()
         case InvitePlayerRequestMessage(sender, role) => generateInviteResponse(socialResponse, sender, role); resetRequestHandler()
       }
 
