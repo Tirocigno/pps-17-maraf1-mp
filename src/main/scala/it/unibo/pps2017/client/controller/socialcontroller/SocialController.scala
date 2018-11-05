@@ -262,6 +262,7 @@ object SocialController {
     override def finishGame(): Unit = {
       sendMessage(ResetParty)
       currentGUI.get.updateParty(Map[String,String]().asJava)
+      currentGUI.get.resetGUI()
     }
 
     override def createActor(actorID: String, actorSystem: ActorSystem): Unit =
@@ -284,7 +285,9 @@ object SocialController {
     override def notifyAllPlayersGameID(gameID: String): Unit =
       sendMessage(NotifyGameIDMessage(gameID))
 
-    override def notifyGameController(gameID: String): Unit = parentController.handleMatchResponse(gameID)
+    override def notifyGameController(gameID: String): Unit = {
+      parentController.handleMatchResponse(gameID)
+    }
 
     override def shutDown(): Unit = {
       currentActorRef ! KillYourSelf

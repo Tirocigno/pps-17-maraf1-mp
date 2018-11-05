@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.model.actors.socialactor.socialstructures
 
-import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.NotifyGameIDMessage
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.GameIDMessage
 import it.unibo.pps2017.commons.remote.social.PartyRole
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Leader, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
@@ -85,7 +85,7 @@ object SocialParty {
     override def getPartner: Option[PlayerReference] = partyMap.get(Partner)
 
     override def notifyGameIDToAllPlayers(gameID: String): Unit =
-      partyMap.values.filter(!_.equals(currentReference)).map(_.playerRef).foreach(_ ! NotifyGameIDMessage(gameID))
+      partyMap.values.filter(!_.equals(currentReference)).map(_.playerRef).foreach(_ ! GameIDMessage(gameID))
   }
 
 }
