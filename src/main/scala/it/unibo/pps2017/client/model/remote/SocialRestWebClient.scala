@@ -5,7 +5,7 @@ import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
-import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetUserAPI}
+import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetFriendsAPI, GetUserAPI}
 import it.unibo.pps2017.server.model.{User, UserFriends}
 import org.json4s.jackson.Serialization.read
 
@@ -21,6 +21,8 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
       AddFriendAPI.path.replace(AddFriendAPI.parameterPath, parameterPath))
     case GetUserAPI => invokeAPI(api, paramMap, getUserCallBack, assignedServerContext.get,
       GetUserAPI.path.replace(GetUserAPI.parameterPath, parameterPath))
+    case GetFriendsAPI => invokeAPI(api, paramMap, getAllFriendsCallBack, assignedServerContext.get,
+      GetFriendsAPI.path.replace(GetFriendsAPI.parameterPath, parameterPath))
   }
 
   /**

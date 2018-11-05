@@ -1,13 +1,11 @@
 
 package it.unibo.pps2017
 
-import akka.actor.ActorRef
 import io.vertx.scala.ext.web.RoutingContext
-import it.unibo.pps2017.commons.remote.rest.RestUtils.{MatchRef, ServerContext, formats}
+import it.unibo.pps2017.commons.remote.rest.RestUtils.{MatchRef, ServerContext}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.SocialMap
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.StandardParameters
-import it.unibo.pps2017.server.model.{EncodedActorRef, MatchesSetEncoder, OnlinePlayersMapEncoder}
-import org.json4s.jackson.Serialization.read
+import it.unibo.pps2017.server.model.{MatchesSetEncoder, OnlinePlayersMapEncoder}
 
 import scala.language.implicitConversions
 
@@ -38,17 +36,5 @@ package object discovery {
 
   implicit def socialActorMapToJson(socialMap: SocialMap): OnlinePlayersMapEncoder =
     OnlinePlayersMapEncoder(socialMap)
-
-  /**
-    * Decode a serialized actorRef
-    *
-    * @param encodedActorRef an encoded ActorRef as String.
-    * @return the decoded ActorRef
-    */
-  implicit def deserializeActorRef(encodedActorRef: String): ActorRef = {
-    println(encodedActorRef)
-    read[EncodedActorRef](encodedActorRef).actorRef
-  }
-
 
 }
