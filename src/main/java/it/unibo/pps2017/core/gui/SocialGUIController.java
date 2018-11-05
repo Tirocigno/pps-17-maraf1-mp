@@ -106,8 +106,10 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     @Override
     public void updateOnlineFriendsList(List<String> friendList) {
-        onlineFriends.getItems().clear();
-        onlineFriends.getItems().addAll(friendList);
+        runSafeOnFXThread(() -> {
+            onlineFriends.getItems().clear();
+            onlineFriends.getItems().addAll(friendList);
+        });
     }
 
     @Override

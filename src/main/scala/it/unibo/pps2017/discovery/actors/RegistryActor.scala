@@ -22,9 +22,12 @@ class RegistryActor extends Actor {
 
 
   override def receive: Receive = {
-    case AddUserToRegisterMessage(playerID, actorRef) => socialActorsMap.registerUser(playerID, actorRef)
+    case AddUserToRegisterMessage(playerID, actorRef) =>
+      println("ATTORE REGISTRATO")
+      socialActorsMap.registerUser(playerID, actorRef)
       notifyListUpdate()
     case RemoveUserFromRegisterMessage(playerID) =>
+      println("ATTORE RIMOSSO")
       socialActorsMap.unregisterUser(playerID)
       notifyListUpdate()
     case HeartBeatMessage(_) => {
@@ -36,6 +39,7 @@ class RegistryActor extends Actor {
   }
 
   private def notifyListUpdate(): Unit = {
+    println("UPDATE PUBBLICATO")
     mediator ! Publish(RegistryActor.SOCIAL_CHANNEL, OnlinePlayerListMessage(socialActorsMap.getCurrentOnlinePlayerMap))
   }
 }

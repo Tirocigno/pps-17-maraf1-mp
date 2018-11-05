@@ -85,6 +85,7 @@ object SocialActor {
       val players = socialMap.map(entry => PlayerReference(entry._1, entry._2)).toList
       socialPlayersMap.setOnlinePlayerList(players)
       controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
+      controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
     }
 
     private def killYourSelfHandler(): Unit = {

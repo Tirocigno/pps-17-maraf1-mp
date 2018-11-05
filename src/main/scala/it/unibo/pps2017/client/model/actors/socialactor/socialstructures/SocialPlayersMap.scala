@@ -35,6 +35,8 @@ object SocialPlayersMap {
 
     override def setOnlinePlayerList(playersList: List[PlayerReference]): Unit = {
       resetMap()
+      println(playersList)
+      println("Aggiorno la mappa")
       playersList.foreach(player => registerUser(player.playerID, player.playerRef))
     }
 
