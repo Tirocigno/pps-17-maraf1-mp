@@ -29,7 +29,8 @@ public class GenericController implements GenericGUIController, BasicPlayerOptio
 
     @Override
     public void playMatch(boolean competitive) {
-        scala.Option paramMap = scala.Option.apply(null);
+        scala.Option<scala.collection.immutable.Map<java.lang.String, java.lang.String>> paramMap =
+                scala.Option.apply(null);
         if(!competitive){
             clientController.sendMatchRequest(MatchNature.CasualMatch$.MODULE$, paramMap);
         }
