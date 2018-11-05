@@ -42,14 +42,14 @@ object SocialActor {
     val currentContext = PlayerReference(username, self)
     val socialParty: SocialParty = SocialParty(currentContext)
     val socialPlayersMap: SocialPlayersMap = SocialPlayersMap(currentContext.playerID)
-    val requestHandler: RequestHandler = RequestHandler(currentContext, socialParty, socialPlayersMap)
+    val requestHandler: RequestHandler = RequestHandler(currentContext, socialParty, socialPlayersMap, controller)
     val mediator: ActorRef = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(RegistryActor.SOCIAL_CHANNEL, self)
     var remoteRegistryActor: Option[ActorRef] = None
 
     override def receive: Receive = {
       case SetFriendsList(friendsList) => socialPlayersMap.setFriendsList(friendsList)
-        controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
+        updatePlayersList()
       case TellAddFriendRequestMessage(playerID) => tellAddFriendRequestHandler(playerID)
       case message: AddFriendRequestMessage => stashOrElse(message, message.sender, addFriendRequestHandler)
       case TellAddFriendResponseMessage(response, _) => tellAddFriendResponseHandler(response)
@@ -84,8 +84,7 @@ object SocialActor {
     private def onlinePlayerListMessageHandler(socialMap: SocialMap): Unit = {
       val players = socialMap.map(entry => PlayerReference(entry._1, entry._2)).toList
       socialPlayersMap.setOnlinePlayerList(players)
-      controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
-      controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
+      updatePlayersList()
     }
 
     private def killYourSelfHandler(): Unit = {
@@ -133,8 +132,7 @@ object SocialActor {
     private def tellAddFriendResponseHandler(response: SocialResponse): Unit = {
       response match {
         case PositiveResponse =>
-          controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
-          controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
+          updatePlayersList()
         case NegativeResponse =>
       }
       requestHandler.respondToRequest(response)
@@ -144,8 +142,7 @@ object SocialActor {
     private def addFriendResponseHandler(response: SocialResponse, playerID: PlayerID): Unit = response match {
       case PositiveResponse => controller.registerNewFriend(playerID)
         socialPlayersMap.updateFriendList(playerID)
-        controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
-        controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
+        updatePlayersList()
       case _ =>
     }
 
@@ -182,6 +179,11 @@ object SocialActor {
       val parameterMap: Map[String, String] =
         socialParty.getAllPlayers.map(tuple => (tuple._1.asRestParameter, tuple._2.playerID))
       controller.executeFoundGameCall(parameterMap)
+    }
+
+    private def updatePlayersList(): Unit = {
+      controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
+      controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
     }
 
   }

@@ -238,7 +238,10 @@ object ClientController {
       webClient.get.callRemoteAPI(GetAllMatchesAPI, None)
 
     private def startMatch(paramMap: Map[String, String], matchNature: MatchNature): Unit = matchNature match {
-      case MatchNature.CasualMatch => webClient.get.callRemoteAPI(FoundGameRestAPI, Some(paramMap))
+      case MatchNature.CasualMatch => {
+        println("MAPPA: " + paramMap)
+        webClient.get.callRemoteAPI(FoundGameRestAPI, Some(paramMap))
+      }
       case MatchNature.CompetitiveMatch => val map = paramMap +
         (FoundGameRestAPI.RANKED_PARAMETER -> FoundGameRestAPI.RANKED_VALUE)
         webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
