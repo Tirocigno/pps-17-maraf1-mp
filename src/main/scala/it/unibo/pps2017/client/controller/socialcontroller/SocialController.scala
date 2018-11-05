@@ -297,9 +297,7 @@ object SocialController {
     private def onGUISetting(): Unit = {
       socialRestWebClient.callRemoteAPI(GetUserAPI, None, playerID)
       GuiStack().stage.setOnCloseRequest(_ => {
-        println("ciao")
         this.shutDown()
-        println("ciao1")
         System.exit(0)
       })
     }
