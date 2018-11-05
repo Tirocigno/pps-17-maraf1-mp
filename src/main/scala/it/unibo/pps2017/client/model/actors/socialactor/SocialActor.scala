@@ -130,6 +130,11 @@ object SocialActor {
     }
 
     private def tellAddFriendResponseHandler(response: SocialResponse): Unit = {
+      response match {
+        case PositiveResponse => controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
+          controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
+        case NegativeResponse =>
+      }
       requestHandler.respondToRequest(response)
       unstashAll()
     }
@@ -137,6 +142,8 @@ object SocialActor {
     private def addFriendResponseHandler(response: SocialResponse, playerID: PlayerID): Unit = response match {
       case PositiveResponse => controller.registerNewFriend(playerID)
         socialPlayersMap.updateFriendList(playerID)
+        controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
+        controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
       case _ =>
     }
 

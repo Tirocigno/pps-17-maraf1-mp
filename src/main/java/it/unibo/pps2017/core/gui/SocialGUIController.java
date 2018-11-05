@@ -127,65 +127,68 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     @Override
     public void notifyMessageResponse(String sender, String responseResult, String request) {
-        if(request.equals(PARTNER) || request.equals(FOE)){
-            if(responseResult.equals(POSITIVE_ANSWER)){
-                responsePlayLabel.setText(sender + ACCEPT_MSG);
+
+        runSafeOnFXThread(() -> {
+            if (request.equals(PARTNER) || request.equals(FOE)) {
+                if (responseResult.equals(POSITIVE_ANSWER)) {
+                    responsePlayLabel.setText(sender + ACCEPT_MSG);
+                } else if (responseResult.equals(NEGATIVE_ANSWER)) {
+                    responsePlayLabel.setText(sender + REJECT_MSG);
+                }
+                showAndHideTextResponse(responsePlayLabel);
+            } else if (request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
+                if (responseResult.equals(POSITIVE_ANSWER)) {
+                    responseFriendLabel.setText(sender + ACCEPT_MSG);
+                } else if (responseResult.equals(NEGATIVE_ANSWER)) {
+                    responseFriendLabel.setText(sender + REJECT_MSG);
+                    enableGUIButtons();
+                }
+                showAndHideTextResponse(responseFriendLabel);
             }
-            else if(responseResult.equals(NEGATIVE_ANSWER)){
-                responsePlayLabel.setText(sender + REJECT_MSG);
-            }
-            showAndHideTextResponse(responsePlayLabel);
-        }
-        else if(request.equals(SocialController$.MODULE$.FRIEND_REQUEST())){
-            if(responseResult.equals(POSITIVE_ANSWER)){
-                responseFriendLabel.setText(sender + ACCEPT_MSG);
-            }
-            else if(responseResult.equals(NEGATIVE_ANSWER)){
-                responseFriendLabel.setText(sender + REJECT_MSG);
-                enableGUIButtons();
-            }
-            showAndHideTextResponse(responseFriendLabel);
-        }
+        });
     }
 
     @Override
     public void displayRequest(String sender, String role) {
-        String message;
-        if(role.equals(PARTNER) || role.equals(FOE)){
-            responsePlayLabel.setText(WAITING_MSG);
 
-            message = sender + INVITATION_INFO + role + ". " + INVITATION_REQUEST;
-            showAlertConfirmation(message, INVITE_FRIEND);
+        runSafeOnFXThread(() -> {
+            String message;
+            if (role.equals(PARTNER) || role.equals(FOE)) {
+                responsePlayLabel.setText(WAITING_MSG);
 
-        }
-        else if(role.equals(SocialController$.MODULE$.FRIEND_REQUEST())){
-            message = sender + FRIEND_REQUEST;
-            showAlertConfirmation(message, ADD_FRIEND);
-        }
+                message = sender + INVITATION_INFO + role + ". " + INVITATION_REQUEST;
+                showAlertConfirmation(message, INVITE_FRIEND);
 
+            } else if (role.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
+                message = sender + FRIEND_REQUEST;
+                showAlertConfirmation(message, ADD_FRIEND);
+            }
+        });
     }
 
     private void showAlertConfirmation(String msg, String type){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, msg, ButtonType.YES, ButtonType.NO);
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if(result.isPresent()) {
-            if(type.equals(ADD_FRIEND)){
-                if (result.get() == ButtonType.YES) {
-                    socialController.notifyFriendMessageResponse(SocialResponse.PositiveResponse$.MODULE$);
-                } else {
-                    socialController.notifyFriendMessageResponse(SocialResponse.NegativeResponse$.MODULE$);
-                }
-            }
-            else if(type.equals(INVITE_FRIEND)){
-                if (result.get() == ButtonType.YES) {
-                    socialController.notifyInviteMessageResponse(SocialResponse.PositiveResponse$.MODULE$);
-                } else {
-                    socialController.notifyInviteMessageResponse(SocialResponse.NegativeResponse$.MODULE$);
-                }
-            }
+        runSafeOnFXThread(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, msg, ButtonType.YES, ButtonType.NO);
 
-        }
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent()) {
+                if (type.equals(ADD_FRIEND)) {
+                    if (result.get() == ButtonType.YES) {
+                        socialController.notifyFriendMessageResponse(SocialResponse.PositiveResponse$.MODULE$);
+                    } else {
+                        socialController.notifyFriendMessageResponse(SocialResponse.NegativeResponse$.MODULE$);
+                    }
+                } else if (type.equals(INVITE_FRIEND)) {
+                    if (result.get() == ButtonType.YES) {
+                        socialController.notifyInviteMessageResponse(SocialResponse.PositiveResponse$.MODULE$);
+                    } else {
+                        socialController.notifyInviteMessageResponse(SocialResponse.NegativeResponse$.MODULE$);
+                    }
+                }
+
+            }
+        });
     }
 
     @Override
