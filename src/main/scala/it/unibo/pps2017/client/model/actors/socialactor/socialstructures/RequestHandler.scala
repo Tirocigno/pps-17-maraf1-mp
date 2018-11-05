@@ -184,6 +184,7 @@ object RequestHandler {
     private def generatePartyPlayer(role: PartyRole): PartyPlayer = role match {
       case Partner => PartnerPlayer(currentPlayerRef)
       case Foe => FoePlayer(currentPlayerRef)
+      case _ => throw new IllegalArgumentException()
     }
 
 
