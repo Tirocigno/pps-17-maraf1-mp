@@ -29,8 +29,8 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     ComboBox<String> comboView, comboReplay;
 
     private static final String INVITATION_INFO = " invited you to play together as ";
-    private static final String PARTNER = "partner";
-    private static final String FOE = "foe";
+    private static final String PARTNER = "Partner";
+    private static final String FOE = "Foe";
     private static final String INVITATION_REQUEST = "Do you want to join him?";
     private static final String FRIEND_REQUEST = " want to add you as friend. Do you want to accept?";
     private static final String WAITING_MSG = "Waiting for friend response ...";

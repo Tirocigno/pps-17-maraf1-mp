@@ -100,8 +100,10 @@ object SocialActor {
       if (requestHandler.isAlreadyProcessingARequest) {
         stash()
       } else {
+        println("Richiesta ricevuta")
         requestHandler.registerRequest(message)
         if (requestHandler.isAlreadyProcessingARequest) {
+          println("Updato la GUIss")
           controller.updateGUI(message)
         }
       }
