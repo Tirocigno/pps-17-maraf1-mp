@@ -76,12 +76,6 @@ public interface PlayGame {
     void showBriscolaCommands();
 
     /**
-     * This method is called to assign gameController at GUI.
-     * @param controller game controller's object.
-     */
-    void setGameController(final GameController controller);
-
-    /**
      * This method is called to set four players in GUI.
      * @param playersList players' list.
      */
