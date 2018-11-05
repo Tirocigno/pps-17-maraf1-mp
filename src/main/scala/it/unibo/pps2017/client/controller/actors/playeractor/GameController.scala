@@ -1,6 +1,7 @@
 package it.unibo.pps2017.client.controller.actors.playeractor
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.passiveactors.{ReplayActor, ViewerActor}
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
@@ -13,9 +14,10 @@ import it.unibo.pps2017.server.model.Game
 
 import scala.collection.JavaConverters._
 
-class GameController extends MatchController {
+class GameController (val clientControllerRef: ClientController) extends MatchController {
 
   var playGameController: PlayGameController = _
+  val clientController: ClientController = clientControllerRef
   var currentActorRef: ActorRef = _
   var myTurn: Boolean = false
   var amIWinner: Boolean = false
@@ -245,6 +247,7 @@ class GameController extends MatchController {
     * Method to stop actor and communicated it at controller.
     */
   def endedMatch(): Unit = {
+    clientController.notifyGameFinished()
     if (currentActorRef != null) currentActorRef ! PoisonPill
   }
 
