@@ -24,7 +24,8 @@ class RegistryActor extends Actor {
   override def receive: Receive = {
     case AddUserToRegisterMessage(playerID, actorRef) => socialActorsMap.registerUser(playerID, actorRef)
       notifyListUpdate()
-    case RemoveUserFromRegisterMessage(playerID) => socialActorsMap.unregisterUser(playerID)
+    case RemoveUserFromRegisterMessage(playerID) =>
+      socialActorsMap.unregisterUser(playerID)
       notifyListUpdate()
     case HeartBeatMessage(_) => {
       context.system.scheduler.scheduleOnce(RegistryActor.BEAT_DELAY second) {
