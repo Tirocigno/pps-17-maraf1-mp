@@ -93,7 +93,7 @@ object GuiStack {
       stage match {
         case GameStage => setGameStage()
         case _ => setOtherScene()
-      }
+     }
     }
 
     private def loadScene(controller: Controller, stage: GUIStage): Scene = {
@@ -102,6 +102,8 @@ object GuiStack {
 
     private def setGameStage(): Unit = {
       //mainStage.get.setFullScreen(true)
+      //mainStage.get.setMinHeight(MIN_HEIGHT)
+      //mainStage.get.setMinWidth(MIN_WIDTH)
       mainStage.get.setResizable(true)
       mainStage.get.centerOnScreen()
     }
