@@ -4,7 +4,10 @@ package it.unibo.pps2017.commons.remote.rest
 import it.unibo.pps2017.server.model.ServerContextEncoder
 import org.json4s.DefaultFormats
 
+import scala.language.implicitConversions
+
 object RestUtils {
+
 
   type IPAddress = String
 
