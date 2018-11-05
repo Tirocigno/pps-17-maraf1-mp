@@ -16,7 +16,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane minHeight="800.0" minWidth="900.0" prefHeight="850.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.PlayGameController">
+<AnchorPane minHeight="685.0" minWidth="900.0" prefHeight="685.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.PlayGameController">
        <Pane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <ImageView fx:id="wallpaper" fitHeight="1500.0" fitWidth="1500.0" pickOnBounds="true" preserveRatio="true">
                    <Image url="@../../core/gui/images/wall.jpg" />
@@ -39,7 +39,7 @@
          </bottom>
          <left>
             <AnchorPane prefWidth="85.0">
-                  <VBox AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="134.0">
+                  <VBox AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0">
                          <ImageView fx:id="firstCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
                         </ImageView>
                          <ImageView fx:id="secondCardUser4" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false">
@@ -65,7 +65,7 @@
          </left>
          <right>
             <AnchorPane BorderPane.alignment="CENTER">
-                   <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="41.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="134.0">
+                   <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="41.0" AnchorPane.rightAnchor="0.0">
                          <ImageView fx:id="tenthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
                          <ImageView fx:id="ninthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
                          <ImageView fx:id="eighthCardUser2" fitHeight="55.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true" visible="false" />
