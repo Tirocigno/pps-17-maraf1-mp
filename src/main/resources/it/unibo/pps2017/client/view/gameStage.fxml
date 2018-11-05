@@ -213,17 +213,17 @@
                   </Button>
                    <Button fx:id="bussoButton" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Busso" visible="false" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
                      <font>
-                         <Font name="System Bold" size="15.0" />
+                         <Font name="System Bold" size="13.0" />
                      </font>
                   </Button>
-                   <Button fx:id="striscioButton" alignment="CENTER" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Striscio" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8">
+                   <Button fx:id="striscioButton" alignment="CENTER" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Striscio" textAlignment="CENTER" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8">
                      <font>
-                         <Font name="System Bold" size="15.0" />
+                         <Font name="System Bold" size="13.0" />
                      </font>
                   </Button>
                    <Button fx:id="voloButton" mnemonicParsing="false" onAction="#signalMyCommands" prefHeight="53.0" prefWidth="78.0" style="-fx-background-color: #48C072; -fx-background-radius: 200; -fx-border-radius: 200;" text="Volo" visible="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="8">
                      <font>
-                         <Font name="System Bold" size="15.0" />
+                         <Font name="System Bold" size="13.0" />
                      </font>
                   </Button>
                    <Text fx:id="briscolaLabel" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose your briscola" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="9">
