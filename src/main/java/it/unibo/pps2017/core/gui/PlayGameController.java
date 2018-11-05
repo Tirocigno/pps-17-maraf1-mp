@@ -305,7 +305,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
                     finalImage = getImageFromPath(PlayGameViewUtils.getLoseMatch());
                     createImageScaleTransition(finalImage);
                 }
-                this.endedMatch();
             }
             this.scoreTeams.setText("");
         });
@@ -317,7 +316,11 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         scoreTransition.setToX(PlayGameViewUtils.getEndAnimationPosition() + 1);
         scoreTransition.setToY(PlayGameViewUtils.getEndAnimationPosition() + 1);
         scoreTransition.play();
-        scoreTransition.setOnFinished(endScore -> this.gameOverImage.setVisible(false));
+        scoreTransition.setOnFinished(endScore -> {
+            this.gameOverImage.setVisible(false);
+            this.endedMatch();
+        });
+
     }
 
     @Override
