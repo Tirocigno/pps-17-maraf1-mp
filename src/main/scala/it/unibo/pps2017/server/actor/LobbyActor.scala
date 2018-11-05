@@ -61,12 +61,12 @@ class LobbyActor extends Actor {
             case Some(opponents) =>
               lobby.canContains(team1, Some(opponents)) match {
                 case OK =>
-                  lobby.addTeam(team1)
-                  lobby.addTeam(opponents)
+                  lobby.addTeam(team1, Lobby.PARTNER_ADD)
+                  lobby.addTeam(opponents, Lobby.FOE_ADD)
                   notifyGameFound(lobby, gameFoundEvent, gameType)
                 case REVERSE =>
-                  lobby.addTeam(opponents)
-                  lobby.addTeam(team1)
+                  lobby.addTeam(opponents, Lobby.PARTNER_ADD)
+                  lobby.addTeam(team1, Lobby.FOE_ADD)
                   notifyGameFound(lobby, gameFoundEvent, gameType)
                 case FULL =>
                   nextLobby(lobby, team1, team2, gameFoundEvent, gameType)
@@ -74,10 +74,10 @@ class LobbyActor extends Actor {
             case None =>
               lobby.canContains(team1, None) match {
                 case OK =>
-                  lobby.addTeam(team1)
+                  lobby.addTeam(team1, Lobby.CASUAL_ADD)
                   notifyGameFound(lobby, gameFoundEvent, gameType)
                 case REVERSE =>
-                  lobby.addTeam(team1)
+                  lobby.addTeam(team1, Lobby.CASUAL_ADD)
                   notifyGameFound(lobby, gameFoundEvent, gameType)
                 case FULL =>
                   nextLobby(lobby, team1, team2, gameFoundEvent, gameType)
@@ -155,10 +155,10 @@ class LobbyActor extends Actor {
 
 
     val lobby = createLobby(onGameFound, gameType)
-    lobby.addTeam(team)
+    lobby.addTeam(team, Lobby.PARTNER_ADD)
 
     opponents match {
-      case Some(opponentsTeam) => lobby.addTeam(opponentsTeam)
+      case Some(opponentsTeam) => lobby.addTeam(opponentsTeam, Lobby.FOE_ADD)
       case None =>
     }
 

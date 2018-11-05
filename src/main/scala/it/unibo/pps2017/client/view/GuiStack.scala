@@ -74,7 +74,12 @@ object GuiStack {
 
     override def addStage(stage: GUIStage, scene: Scene): Unit = sceneMap += (stage -> scene)
 
-    override def restorePreviousScene(): Unit = switchScene(previousScene.get, previousStage.get)
+    override def restorePreviousScene(): Unit = {
+
+      if (currentStage.get.equals(GameStage)) sceneMap = sceneMap - GameStage
+
+      switchScene(previousScene.get, previousStage.get)
+    }
 
     override def checkAndSetStage(stage: Stage): Unit = mainStage match {
       case None => mainStage = Some(stage)

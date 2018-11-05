@@ -154,7 +154,6 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     val team1: ListBuffer[String] = ListBuffer()
     val team2: ListBuffer[String] = ListBuffer()
 
-
     player match {
       case Some(id) =>
         team1 += id
@@ -163,6 +162,9 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
         vs.map(team2 += _)
         vsPartner.map(team2 += _)
 
+
+        println("\n team1 " + team1)
+        println("\n team2 " + team2)
         if (isRanked) {
           lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent, RANKED)
         } else {
