@@ -28,6 +28,11 @@ trait SocialActorsMap {
     */
   def getCurrentOnlinePlayerMap: SocialMap
 
+  /**
+    * Reset the internal map.
+    */
+  def resetMap(): Unit
+
 }
 
 object SocialActorsMap {
@@ -46,6 +51,8 @@ object SocialActorsMap {
     override def unregisterUser(userID: String): Unit = actorsMap -= userID
 
     override def getCurrentOnlinePlayerMap: SocialMap = actorsMap.toMap
+
+    override def resetMap(): Unit = actorsMap = scala.collection.mutable.Map[String, ActorRef]()
   }
 
 }

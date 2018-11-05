@@ -10,7 +10,9 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -94,11 +96,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     public void initialize() {
         createCardsListPlayers();
         this.waitingTime.setVisible(true);
-    }
-
-    @Override
-    public void setGameController(final GameController controller) {
-        this.gameController = controller;
     }
 
     @Override
@@ -302,7 +299,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
                     finalImage = getImageFromPath(PlayGameViewUtils.getLoseMatch());
                     createImageScaleTransition(finalImage);
                 }
-                this.endedMatch();
             }
             this.scoreTeams.setText("");
         });
@@ -314,7 +310,11 @@ public class PlayGameController extends GameGUIController implements PlayGame {
         scoreTransition.setToX(PlayGameViewUtils.getEndAnimationPosition() + 1);
         scoreTransition.setToY(PlayGameViewUtils.getEndAnimationPosition() + 1);
         scoreTransition.play();
-        scoreTransition.setOnFinished(endScore -> this.gameOverImage.setVisible(false));
+        scoreTransition.setOnFinished(endScore -> {
+            this.gameOverImage.setVisible(false);
+            this.endedMatch();
+        });
+
     }
 
     @Override
@@ -513,5 +513,12 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     @Override
     public void setController(Controller controller) {
         this.gameController = (GameController) controller;
+    }
+
+    @Override
+    public void notifyError(Throwable throwable) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, throwable.getMessage(), ButtonType.OK);
+        alert.showAndWait();
+
     }
 }

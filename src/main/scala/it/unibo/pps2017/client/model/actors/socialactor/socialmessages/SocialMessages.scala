@@ -94,7 +94,7 @@ object SocialMessages {
     * @param myRole         the roles on which the player will play
     * @param partnerRole    the information about the partner of the player.
     */
-  case class InvitePlayerResponseMessage(socialResponse: SocialResponse, myRole: Option[PartyPlayer],
+  case class InvitePlayerResponseMessage(socialResponse: SocialResponse, myRole: PartyPlayer,
                                          partnerRole: Option[PlayerReference]) extends ResponseMessage {
     override def request: String = "Invite Request"
   }
@@ -127,6 +127,11 @@ object SocialMessages {
     * Message to reset the internal party.
     */
   case object ResetParty extends SocialMessage
+
+  /**
+    * Tell the actor to kill himself.
+    */
+  case object KillYourSelf extends SocialMessage
 
 
 

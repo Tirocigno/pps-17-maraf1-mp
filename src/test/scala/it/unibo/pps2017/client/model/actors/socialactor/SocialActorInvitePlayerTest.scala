@@ -4,14 +4,15 @@ package it.unibo.pps2017.client.model.actors.socialactor
 import akka.actor.ActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import it.unibo.pps2017.client.model.actors.socialactor.controllers.{NegativeInviteController, PositiveInviteController, SenderSocialActorInviteController, SocialActorRequestController}
-import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.{SetOnlinePlayersMapMessage, TellInvitePlayerRequestMessage}
-import it.unibo.pps2017.commons.remote.akka.AkkaTestUtils
+import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages.TellInvitePlayerRequestMessage
+import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
+import it.unibo.pps2017.discovery.actors.RegistryActor.OnlinePlayerListMessage
 import org.scalatest.{BeforeAndAfterEach, FunSuiteLike}
 
-class SocialActorInvitePlayerTest extends TestKit(AkkaTestUtils.generateTestActorSystem())
+class SocialActorInvitePlayerTest extends TestKit(AkkaClusterUtils.startJoiningActorSystem("0", "127.0.0.1"))
   with ImplicitSender with FunSuiteLike with BeforeAndAfterEach {
 
   val LEADER_ID = "Morgoth"
@@ -126,7 +127,8 @@ class SocialActorInvitePlayerTest extends TestKit(AkkaTestUtils.generateTestActo
   }
 
   private def setupOnlinePlayersList(actorRef: ActorRef): Unit =
-    actorRef ! SetOnlinePlayersMapMessage(onlinePlayerList)
+    actorRef !
+      OnlinePlayerListMessage(onlinePlayerList.map(player => (player.playerID, player.playerRef)).toMap)
 
   private def awaitForMessageExchange(): Unit = Thread.sleep(DEFAULT_WAIT)
 

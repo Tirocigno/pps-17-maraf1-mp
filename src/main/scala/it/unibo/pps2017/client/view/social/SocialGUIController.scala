@@ -1,8 +1,10 @@
 package it.unibo.pps2017.client.view.social
 
-import it.unibo.pps2017.client.controller.socialcontroller.SocialController
+import java.util
 
-trait SocialGUIController {
+import it.unibo.pps2017.client.view.GUIController
+
+trait SocialGUIController extends GUIController {
 
   /**
     * Open a new alert notifying an error.
@@ -56,6 +58,12 @@ trait SocialGUIController {
     */
   def notifyAPIResult(message: String)
 
-  def setController(controller: SocialController)
+  def displayViewMatches(matches: util.List[String]): Unit
+
+  def displayReplayMatches(matches: util.List[String]): Unit
+
+  def resetGUI(): Unit
+
+  def setTotalPoints(totalPoints: Int): Unit
 }
 

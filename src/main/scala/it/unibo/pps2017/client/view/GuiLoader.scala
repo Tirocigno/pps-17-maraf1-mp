@@ -6,6 +6,7 @@ import it.unibo.pps2017.client.controller.actors.playeractor.MatchController
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.view.game.GameGUIController
+import it.unibo.pps2017.client.view.login.LoginGUIController
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import javafx.fxml.FXMLLoader
 import javafx.scene.{Parent, Scene}
@@ -24,13 +25,15 @@ class GuiLoader() {
     * @param controllerToBind the controller to bind to the GUI.
     * @return the deployed scene to set inside GUI.
     */
-  def deployGuiStage(controllerToBind: Controller): Scene = controllerToBind match {
-    case controller: ClientController =>
-      createAndRegisterScene(GuiLoader.MAIN_SCENE_FXML, GuiLoader.MAIN_SCENE_CSS, controller, GenericStage)
+  def deployGuiStage(controllerToBind: Controller, stage: GUIStage): Scene = controllerToBind match {
+    case controller: ClientController if stage == LoginStage =>
+      createAndRegisterScene(GuiLoader.LOGIN_SCENE_FXML, controller, stage)
+    case controller: ClientController if stage == GenericStage =>
+      createAndRegisterScene(GuiLoader.GENERIC_SCENE_FXML, controller, stage)
     case controller: MatchController =>
-      createAndRegisterScene(GuiLoader.GAME_SCENE_FXML, GuiLoader.GAME_SCENE_CSS, controller, GameStage)
+      createAndRegisterScene(GuiLoader.GAME_SCENE_FXML, controller, stage)
     case controller: SocialController =>
-      createAndRegisterScene(GuiLoader.SOCIAL_SCENE_FXML, GuiLoader.SOCIAL_SCENE_CSS, controller, SocialStage)
+      createAndRegisterScene(GuiLoader.SOCIAL_SCENE_FXML, controller, stage)
     case _ => throw new IllegalArgumentException()
   }
 
@@ -39,17 +42,15 @@ class GuiLoader() {
     * Create a scene and register it inside the GUIStack
     *
     * @param fxmlPath   path of fxml file to load.
-    * @param cssPath    path of css file to load.
     * @param controller controller to bind to created scene.
     * @param stage      the stage key for the scene to be registered inside GUIStack.
     * @return a scene built upon these parameters.
     */
-  private def createAndRegisterScene(fxmlPath: String, cssPath: String,
-                                     controller: Controller, stage: GUIStage): Scene = {
+  private def createAndRegisterScene(fxmlPath: String, controller: Controller, stage: GUIStage): Scene = {
     val loader = new FXMLLoader(classOf[GuiLoader].getResource(fxmlPath))
+    println(loader)
     val root: Parent = loader.load()
     val scene = new Scene(root)
-    scene.getStylesheets.add(getClass.getResource(cssPath).toExternalForm)
     stack.addStage(stage, scene)
     val guiController: GUIController = loader.getController()
     bindControllers(controller, guiController)
@@ -71,8 +72,12 @@ class GuiLoader() {
       val castedGui = guiController.asInstanceOf[GameGUIController]
       controller.setCurrentGui(castedGui)
       castedGui.setController(controller)
-    case controller: ClientController =>
+    case controller: ClientController if guiController.isInstanceOf[GenericGUIController] =>
       val castedGui = guiController.asInstanceOf[GenericGUIController]
+      controller.setCurrentGUI(castedGui)
+      castedGui.setController(controller)
+    case controller: ClientController if guiController.isInstanceOf[LoginGUIController] =>
+      val castedGui = guiController.asInstanceOf[LoginGUIController]
       controller.setCurrentGUI(castedGui)
       castedGui.setController(controller)
   }
@@ -83,10 +88,8 @@ class GuiLoader() {
 
 object GuiLoader {
 
-  val MAIN_SCENE_FXML = ""
-  val MAIN_SCENE_CSS = ""
-  val SOCIAL_SCENE_FXML = ""
-  val SOCIAL_SCENE_CSS = ""
+  val LOGIN_SCENE_FXML = "registration.fxml"
+  val SOCIAL_SCENE_FXML = "socialView.fxml"
   val GAME_SCENE_FXML = "gameStage.fxml"
-  val GAME_SCENE_CSS = "gameCSS.css"
+  val GENERIC_SCENE_FXML = "genericView.fxml"
 }

@@ -3,7 +3,9 @@ package it.unibo.pps2017.client.model.actors.socialactor
 
 import java.util.NoSuchElementException
 
-import akka.actor.{ActorRef, ActorSystem, Props, Stash}
+import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props, Stash}
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.{Subscribe, SubscribeAck}
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.ModelActor
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
@@ -11,8 +13,10 @@ import it.unibo.pps2017.client.model.actors.socialactor.socialstructures.{Reques
 import it.unibo.pps2017.commons.remote.social.PartyPlayer.{FoePlayer, PartnerPlayer}
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, FoePartner, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
-import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, PlayerReference}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{PlayerID, PlayerReference, SocialMap}
 import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialResponse}
+import it.unibo.pps2017.discovery.actors.RegistryActor
+import it.unibo.pps2017.discovery.actors.RegistryActor.{AddUserToRegisterMessage, HeartBeatMessage, OnlinePlayerListMessage, RemoveUserFromRegisterMessage}
 
 /**
   * The socialActor will be responsable of all the function in which real time
@@ -38,13 +42,14 @@ object SocialActor {
     val currentContext = PlayerReference(username, self)
     val socialParty: SocialParty = SocialParty(currentContext)
     val socialPlayersMap: SocialPlayersMap = SocialPlayersMap(currentContext.playerID)
-    val requestHandler: RequestHandler = RequestHandler(currentContext, socialParty)
+    val requestHandler: RequestHandler = RequestHandler(currentContext, socialParty, socialPlayersMap, controller)
+    val mediator: ActorRef = DistributedPubSub(context.system).mediator
+    mediator ! Subscribe(RegistryActor.SOCIAL_CHANNEL, self)
+    var remoteRegistryActor: Option[ActorRef] = None
 
     override def receive: Receive = {
-      case SetOnlinePlayersMapMessage(players) => socialPlayersMap.setOnlinePlayerList(players)
-        controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
       case SetFriendsList(friendsList) => socialPlayersMap.setFriendsList(friendsList)
-        controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
+        updatePlayersList()
       case TellAddFriendRequestMessage(playerID) => tellAddFriendRequestHandler(playerID)
       case message: AddFriendRequestMessage => stashOrElse(message, message.sender, addFriendRequestHandler)
       case TellAddFriendResponseMessage(response, _) => tellAddFriendResponseHandler(response)
@@ -63,7 +68,31 @@ object SocialActor {
       case GetPartyAndStartGameMessage => buildStartGameRequest()
       case ResetParty => socialParty.resetParty()
       case UnstashAllMessages => unstashAll()
+      case HeartBeatMessage(sender) => heartBeatHandler(sender)
+      case OnlinePlayerListMessage(map) => onlinePlayerListMessageHandler(map)
+      case KillYourSelf => killYourSelfHandler()
+      case SubscribeAck(_) => controller.startHeartBeatRequest()
+    }
 
+    private def heartBeatHandler(sender: ActorRef): Unit = remoteRegistryActor match {
+      case Some(_) =>
+      case None =>
+        remoteRegistryActor = Some(sender)
+        sender ! AddUserToRegisterMessage(currentContext.playerID, currentContext.playerRef)
+    }
+
+    private def onlinePlayerListMessageHandler(socialMap: SocialMap): Unit = {
+      val players = socialMap.map(entry => PlayerReference(entry._1, entry._2)).toList
+      socialPlayersMap.setOnlinePlayerList(players)
+      updatePlayersList()
+    }
+
+    private def killYourSelfHandler(): Unit = {
+      remoteRegistryActor match {
+        case Some(actorRef) => actorRef ! RemoveUserFromRegisterMessage(currentContext.playerID)
+        case None =>
+      }
+      self ! PoisonPill
     }
 
     private def stashOrElse(message: RequestMessage): Unit = {
@@ -101,6 +130,11 @@ object SocialActor {
     }
 
     private def tellAddFriendResponseHandler(response: SocialResponse): Unit = {
+      response match {
+        case PositiveResponse =>
+          updatePlayersList()
+        case NegativeResponse =>
+      }
       requestHandler.respondToRequest(response)
       unstashAll()
     }
@@ -108,6 +142,7 @@ object SocialActor {
     private def addFriendResponseHandler(response: SocialResponse, playerID: PlayerID): Unit = response match {
       case PositiveResponse => controller.registerNewFriend(playerID)
         socialPlayersMap.updateFriendList(playerID)
+        updatePlayersList()
       case _ =>
     }
 
@@ -124,10 +159,10 @@ object SocialActor {
       unstashAll()
     }
 
-    private def invitePlayerResponseHandler(socialResponse: SocialResponse, myRole: Option[PartyPlayer],
+    private def invitePlayerResponseHandler(socialResponse: SocialResponse, myRole: PartyPlayer,
                                             partnerRole: Option[PlayerReference]): Unit = socialResponse match {
       case NegativeResponse =>
-      case PositiveResponse => updateParty(myRole.get, partnerRole)
+      case PositiveResponse => updateParty(myRole, partnerRole)
         controller.updateParty(socialParty.getAllPlayers.map(r => (r._1, r._2.playerID)))
     }
 
@@ -144,6 +179,11 @@ object SocialActor {
       val parameterMap: Map[String, String] =
         socialParty.getAllPlayers.map(tuple => (tuple._1.asRestParameter, tuple._2.playerID))
       controller.executeFoundGameCall(parameterMap)
+    }
+
+    private def updatePlayersList(): Unit = {
+      controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
+      controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
     }
 
   }

@@ -54,11 +54,12 @@ sealed trait Lobby {
     *
     * @param team
     * Simple team with player's IDs
+    * @param teamIndex team index
     * @throws it.unibo.pps2017.server.model.FullLobbyException
     * If the lobby can't contain a new team.
     */
   @throws(classOf[FullLobbyException])
-  def addTeam(team: SimpleTeam)
+  def addTeam(team: SimpleTeam, teamIndex: Int)
 
 
   /**
@@ -116,15 +117,29 @@ case class LobbyImpl(onFullLobby: Lobby => Unit,
     * @throws it.unibo.pps2017.server.model.FullLobbyException
     * If the lobby can't contain a new team.
     */
-  override def addTeam(team: SimpleTeam): Unit = {
-    if (team1.canContains(team)) {
-      team.getMembers.foreach(team1.addPlayer)
-    } else if (team2.canContains(team)) {
-      team.getMembers.foreach(team2.addPlayer)
-    } else {
-      throw FullLobbyException()
-    }
+  override def addTeam(team: SimpleTeam, teamIndex: Int): Unit = {
 
+    if (teamIndex == Lobby.CASUAL_ADD) {
+      if (team1.canContains(team)) {
+        team.getMembers.foreach(team1.addPlayer)
+      } else if (team2.canContains(team)) {
+        team.getMembers.foreach(team2.addPlayer)
+      } else {
+        throw FullLobbyException()
+      }
+    } else if (teamIndex == Lobby.PARTNER_ADD) {
+      if (team1.canContains(team)) {
+        team.getMembers.foreach(team1.addPlayer)
+      } else {
+        throw FullLobbyException()
+      }
+    } else if (teamIndex == Lobby.FOE_ADD) {
+      if (team2.canContains(team)) {
+        team.getMembers.foreach(team2.addPlayer)
+      } else {
+        throw FullLobbyException()
+      }
+    }
     checkFullLobby()
   }
 
@@ -233,6 +248,12 @@ object GameType {
     * @return a Iterable containing all the available seeds.
     */
   def values: Iterable[GameType] = Iterable(RANKED, UNRANKED)
+}
+
+object Lobby {
+  val CASUAL_ADD: Int = 0
+  val PARTNER_ADD: Int = 1
+  val FOE_ADD: Int = 2
 }
 
 

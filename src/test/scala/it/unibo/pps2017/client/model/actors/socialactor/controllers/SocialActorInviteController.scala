@@ -33,17 +33,20 @@ class SenderSocialActorInviteController() extends SocialActorInviteController {
 
   override def updateGUI(message: ActorMessage): Unit = message match {
     case InvitePlayerResponseMessage(response, myRole, partnerRole) => socialResponse = response
-      myRole match {
-        case Some(role) => role match {
-          case PartnerPlayer(playerReference) => partner = Some(playerReference.playerID)
-          case FoePlayer(playerReference) => foe = Some(playerReference.playerID)
+      response match {
+        case PositiveResponse => {
+          myRole match {
+            case PartnerPlayer(playerReference) => partner = Some(playerReference.playerID)
+            case FoePlayer(playerReference) => foe = Some(playerReference.playerID)
+          }
         }
           partnerRole match {
             case Some(foeP) => this.foePartner = Some(foeP.playerID)
             case None =>
           }
-        case None =>
+        case NegativeResponse =>
       }
+
 
     case InvitePlayerRequestMessage(_, _) => currentActorRef ! TellInvitePlayerResponseMessage(PositiveResponse)
   }

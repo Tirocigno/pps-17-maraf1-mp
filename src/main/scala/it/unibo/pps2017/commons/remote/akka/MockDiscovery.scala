@@ -2,7 +2,7 @@ package it.unibo.pps2017.commons.remote.akka
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.Publish
+import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Put}
 
 object MockDiscovery extends App {
 
@@ -26,8 +26,11 @@ object MockDiscovery extends App {
 class PongoActorDistributor extends Actor with ActorLogging {
 
   val mediator: ActorRef = DistributedPubSub(context.system).mediator
+  // activate the extension
 
   log.info("Actor created")
+
+  mediator ! Put(self)
 
   override def receive: Receive = {
     case PongoMessage(_, _) => log.info("Received message")

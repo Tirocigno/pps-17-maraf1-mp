@@ -1,10 +1,12 @@
 package it.unibo.pps2017.client.controller.actors.playeractor
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.passiveactors.{ReplayActor, ViewerActor}
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient
+import it.unibo.pps2017.client.view.GuiStack
 import it.unibo.pps2017.client.view.game.GameGUIController
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
@@ -12,9 +14,10 @@ import it.unibo.pps2017.server.model.Game
 
 import scala.collection.JavaConverters._
 
-class GameController extends MatchController {
+class GameController (val clientControllerRef: ClientController) extends MatchController {
 
   var playGameController: PlayGameController = _
+  val clientController: ClientController = clientControllerRef
   var currentActorRef: ActorRef = _
   var myTurn: Boolean = false
   var amIWinner: Boolean = false
@@ -114,6 +117,10 @@ class GameController extends MatchController {
     * @param id Match's id.
     */
   def joinPlayerToMatch(id: String): Unit = {
+    GuiStack().stage.setOnCloseRequest(_ => {
+      this.closedPlayGameView()
+      System.exit(0)
+    })
     currentActorRef ! IdChannelPublishSubscribe(id)
   }
 
@@ -240,6 +247,7 @@ class GameController extends MatchController {
     * Method to stop actor and communicated it at controller.
     */
   def endedMatch(): Unit = {
+    clientController.notifyGameFinished()
     if (currentActorRef != null) currentActorRef ! PoisonPill
   }
 
@@ -247,7 +255,7 @@ class GameController extends MatchController {
     * Method to notify actor that view was closed.
     */
   def closedPlayGameView(): Unit = {
-    currentActorRef ! NotifyClosedPlayGameView
+    currentActorRef ! NotifyClosedPlayGameView()
   }
 
   /**

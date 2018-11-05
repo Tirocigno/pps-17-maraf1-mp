@@ -1,13 +1,14 @@
 
 package it.unibo.pps2017.client.model.actors.socialactor.socialstructures
 
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
 import it.unibo.pps2017.commons.remote.exceptions.AlreadyProcessingARequestException
 import it.unibo.pps2017.commons.remote.social.PartyPlayer.{FoePlayer, PartnerPlayer}
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
-import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
+import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialResponse}
 
 /**
   * A class for register the status of a received request.
@@ -36,14 +37,19 @@ trait RequestHandler {
     * @param socialResponse the response sent by the user.
     */
   def respondToRequest(socialResponse: SocialResponse): Unit
+
 }
 
 object RequestHandler {
 
-  def apply(currentPlayerRef: PlayerReference, currentParty: SocialParty): RequestHandler =
-    new RequestHandlerImpl(currentPlayerRef, currentParty)
+  def apply(currentPlayerRef: PlayerReference, currentParty: SocialParty, currentPlayerMap: SocialPlayersMap,
+            socialController: SocialController)
+  : RequestHandler =
+    new RequestHandlerImpl(currentPlayerRef, currentParty, currentPlayerMap, socialController)
 
-  private class RequestHandlerImpl(val currentPlayerRef: PlayerReference, val currentParty: SocialParty) extends RequestHandler {
+  private class RequestHandlerImpl(val currentPlayerRef: PlayerReference, val currentParty: SocialParty,
+                                   val currentSocialMap: SocialPlayersMap,
+                                   val socialController: SocialController) extends RequestHandler {
     var currentMessage: Option[RequestMessage] = None
 
 
@@ -115,7 +121,14 @@ object RequestHandler {
       */
     private def elaborateResponse(socialMessage: RequestMessage, socialResponse: SocialResponse): Unit =
       socialMessage match {
-        case AddFriendRequestMessage(sender) => generateFriendResponse(socialResponse, sender); resetRequestHandler()
+        case AddFriendRequestMessage(sender) =>
+          if (socialResponse.equals(SocialResponse.PositiveResponse)) {
+            currentSocialMap.updateFriendList(sender.playerID)
+            socialController.updateOnlineFriendsList(currentSocialMap.getAllOnlineFriends)
+            socialController.updateOnlinePlayerList(currentSocialMap.getAllOnlineStrangers)
+          }
+          generateFriendResponse(socialResponse, sender)
+          resetRequestHandler()
         case InvitePlayerRequestMessage(sender, role) => generateInviteResponse(socialResponse, sender, role); resetRequestHandler()
       }
 
@@ -137,7 +150,9 @@ object RequestHandler {
       */
     private def generateInviteResponse(socialResponse: SocialResponse,
                                        playerReference: PlayerReference, role: PartyRole): Unit = socialResponse match {
-      case NegativeResponse => playerReference.playerRef ! InvitePlayerResponseMessage(socialResponse, None, None)
+      case NegativeResponse =>
+        playerReference.playerRef ! InvitePlayerResponseMessage(socialResponse,
+          generatePartyPlayer(role), None)
         resetRequestHandler()
       case PositiveResponse => playerReference.playerRef ! generateInviteResponseMessage(socialResponse, role)
         currentParty.markCurrentPlayerAs(role)
@@ -153,11 +168,24 @@ object RequestHandler {
       */
     private def generateInviteResponseMessage(socialResponse: SocialResponse, role: PartyRole): SocialMessage =
       role match {
-        case Partner => InvitePlayerResponseMessage(socialResponse, Some(PartnerPlayer(currentPlayerRef)), None)
+        case Partner => InvitePlayerResponseMessage(socialResponse, generatePartyPlayer(Partner), None)
         case Foe => InvitePlayerResponseMessage(socialResponse,
-          Some(FoePlayer(currentPlayerRef)), currentParty.getPartner)
+          generatePartyPlayer(Foe), currentParty.getPartner)
         case _ => throw new IllegalArgumentException()
       }
+
+
+    /**
+      * Generate a partner player based on the role.
+      *
+      * @param role the role on which the player will play.
+      * @return a PartyPlayer built upon the role and the player.
+      */
+    private def generatePartyPlayer(role: PartyRole): PartyPlayer = role match {
+      case Partner => PartnerPlayer(currentPlayerRef)
+      case Foe => FoePlayer(currentPlayerRef)
+      case _ => throw new IllegalArgumentException()
+    }
 
 
     /**

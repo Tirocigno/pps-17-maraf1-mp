@@ -1,66 +1,73 @@
 package it.unibo.pps2017.core.gui;
 
+import it.unibo.pps2017.client.controller.Controller;
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController;
+import it.unibo.pps2017.client.view.login.LoginGUIController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
-public class RegistrationLoginController implements Registration, Login {
+public class RegistrationLoginController implements LoginGUIController, Registration, Login {
+
     @FXML
     Button loginButton, registerButton;
     @FXML
     TextField usernameLogin, usernameRegistration;
     @FXML
     PasswordField pwdLogin, pwdRegistration;
+    @FXML
+    ImageView loginImg, registrationImg;
 
-    private static final int MIN_WIDTH = 600;
-    private static final int MIN_HEIGHT = 520;
+    private static final String LOGIN_IMG_PATH = "images/login.jpg";
+    private static final String REGISTRATION_IMG_PATH = "images/registration.jpg";
+    private static final int JSON_MSG_START_INDEX = 12;
+    private ClientController clientController;
+
+    @FXML
+    public void initialize() {
+        Image loginImage = new Image(this.getClass().getResourceAsStream(LOGIN_IMG_PATH));
+        Image registrationImage = new Image(this.getClass().getResourceAsStream(REGISTRATION_IMG_PATH));
+
+        this.loginImg.setImage(loginImage);
+        this.registrationImg.setImage(registrationImage);
+    }
 
     @Override
     public void checkLogin() {
-        System.out.println("Login pressed");
+        clientController.sendLoginRequest(usernameLogin.getText(), pwdLogin.getText());
+    }
 
-        if(usernameLogin.getText().equals("admin") && pwdLogin.getText().equals("admin")) {
-            changeViewToSocial();
-        }
-        else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Login error! Try again!", ButtonType.OK);
+    @Override
+    public void registerUser() {
+        clientController.sendRegisterRequest(usernameRegistration.getText(), pwdRegistration.getText());
+    }
+
+    @Override
+    public void handleResponse(String message) {
+        showAlertMessage(message);
+    }
+
+    @Override
+    public void setController(Controller controller) {
+        this.clientController = (ClientController) controller;
+    }
+
+    @Override
+    public void notifyError(Throwable throwable) {
+        showAlertMessage(throwable.getMessage());
+    }
+
+    public void startGenericGUI() {
+        clientController.startGenericGUI();
+    }
+
+    private void showAlertMessage(String message){
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
             alert.showAndWait();
-        }
+        });
     }
-
-    private void changeViewToSocial(){
-        Stage primaryStage = (Stage) loginButton.getScene().getWindow();
-        primaryStage.setMinHeight(MIN_HEIGHT);
-        primaryStage.setMinWidth(MIN_WIDTH);
-
-        try {
-            final FXMLLoader loader = new FXMLLoader(SocialView.class.getResource("socialView.fxml"));
-            Parent root = loader.load();
-            primaryStage.getScene().setRoot(root);
-            primaryStage.centerOnScreen();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void changeViewToGeneric(){
-        Stage primaryStage = (Stage) loginButton.getScene().getWindow();
-        primaryStage.setMinHeight(MIN_HEIGHT);
-        primaryStage.setMinWidth(MIN_WIDTH);
-
-        try {
-            final FXMLLoader loader = new FXMLLoader(SocialView.class.getResource("genericView.fxml"));
-            Parent root = loader.load();
-            primaryStage.getScene().setRoot(root);
-            primaryStage.centerOnScreen();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
 
 }

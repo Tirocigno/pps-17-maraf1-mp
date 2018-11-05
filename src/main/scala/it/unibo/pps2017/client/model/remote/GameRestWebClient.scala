@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.model.remote
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetAllMatchesAPI
-import it.unibo.pps2017.server.model.ServerApi.{AddUserAPI, FoundGameRestAPI, GameRestAPI, LoginAPI}
+import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model.{Game, GameFound, MatchesSetEncoder, SavedMatches}
 import org.json4s.jackson.Serialization.read
 
@@ -25,6 +25,7 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     (LoginAPI.parameterPath, parameterPath))
     case AddUserAPI => invokeAPI(api, paramMap, registerCallBack, assignedServerContext.get, AddUserAPI.path.replace
     (AddUserAPI.parameterPath, parameterPath))
+    case GetSavedMatchAPI => invokeAPI(api, paramMap, getAllRegisteredMatchesApi, assignedServerContext.get)
 
   }
 
@@ -44,11 +45,16 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     * @param jSonSource the body of the response.
     */
   private def loginCallBack(jSonSource: Option[String]): Unit = {
-    clientController.handleLoginAndRegistrationResponse()
+    clientController.handleLoginAndRegistrationResponse(jSonSource.get)
   }
 
+  /**
+    * Handler for the registration callback.
+    *
+    * @param jSonSource the body of the response.
+    */
   private def registerCallBack(jSonSource: Option[String]): Unit = {
-    clientController.handleLoginAndRegistrationResponse()
+    clientController.handleLoginAndRegistrationResponse(jSonSource.get)
   }
 
 
@@ -60,7 +66,6 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
   private def gameCallBack(jSonSource: Option[String]): Unit = {
     val game = read[Game](jSonSource.get)
     clientController.handleMatchReplay(game)
-    println("CIAO" + game)
   }
 
   /**
@@ -73,11 +78,15 @@ class GameRestWebClient(discoveryServerContext: ServerContext) extends AbstractR
     clientController.displayCurrentMatchesList(matchesList)
   }
 
+  /**
+    * Handler for getAllRegisteredMatchAPI
+    *
+    * @param jSonSource the body response of the API.
+    */
   private def getAllRegisteredMatchesApi(jSonSource: Option[String]): Unit = {
     val matchesSeq = read[SavedMatches](jSonSource.get).games
     clientController.displayRegisteredMatchesList(matchesSeq.map(_.gameId).toList)
   }
-
 }
 
 object GameRestWebClient {

@@ -1,21 +1,22 @@
 
 package it.unibo.pps2017.client.controller.socialcontroller
 
-import akka.actor.{ActorRef, ActorSystem, PoisonPill}
+import akka.actor.{ActorRef, ActorSystem}
 import it.unibo.pps2017.client.controller.ActorController
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.model.actors.socialactor.SocialActor
 import it.unibo.pps2017.client.model.actors.socialactor.socialmessages.SocialMessages._
 import it.unibo.pps2017.client.model.remote.{RestWebClient, SocialRestWebClient}
+import it.unibo.pps2017.client.view.GuiStack
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
-import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, serializeActorRef}
-import it.unibo.pps2017.commons.remote.social.PartyRole
+import it.unibo.pps2017.commons.remote.rest.RestUtils.ServerContext
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterSocialIDAPI, UnregisterSocialIDAPI}
-import it.unibo.pps2017.server.model.ServerApi.AddFriendAPI
+import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
+import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetFriendsAPI, GetUserAPI}
 
 import scala.collection.JavaConverters._
 
@@ -40,6 +41,13 @@ trait SocialController extends ActorController {
     * @param onlinePlayers the list of current online players.
     */
   def setOnlinePlayerList(onlinePlayers: SocialMap): Unit
+
+  /**
+    * Set the friend list inside the actor
+    *
+    * @param friendList the list of friends of the current player.
+    */
+  def setFriendsList(friendList: FriendList): Unit
 
   /**
     * Notify an error to GUI
@@ -142,11 +150,50 @@ trait SocialController extends ActorController {
     */
   def shutDown(): Unit
 
+  /**
+    * Notify the controller user response to friend request.
+    *
+    * @param socialResponse the response provided by GUI
+    */
+  def notifyFriendMessageResponse(socialResponse: SocialResponse): Unit
+
+  /**
+    * Notify the controller user response to invite request.
+    *
+    * @param socialResponse the response provided by GUI
+    */
+  def notifyInviteMessageResponse(socialResponse: SocialResponse): Unit
+
+  /**
+    * Getter for SocialGUIController.
+    *
+    * @return the social GUI controller.
+    */
+  def getSocialGUIController: SocialGUIController
+
+  /**
+    * Set the players score inside GUI.
+    *
+    * @param scores scores of the player.
+    */
+  def setScoreInsideGUI(scores: Int): Unit
+
+  /**
+    * Execute an api call with the effect to produce a heartbeat on the social topic channel.
+    * This beat will be intercepted by the SocialActor which will obtain the reference to the RegistryActor.
+    */
+  def startHeartBeatRequest(): Unit
+
 }
 
 object SocialController {
 
   val UNKNOWN_MESSAGE = "Unknown message received"
+  val FRIEND_REQUEST = "Friend request"
+
+  def apply(parentController: ClientController,
+            playerID: PlayerID, discoveryContext: ServerContext): SocialController =
+    new SocialControllerImpl(parentController, playerID, discoveryContext)
 
   private class SocialControllerImpl(val parentController: ClientController, val playerID: PlayerID, val
   discoveryContext: ServerContext) extends SocialController {
@@ -156,22 +203,30 @@ object SocialController {
     var currentGUI: Option[SocialGUIController] = None
     var matchNature: Option[MatchNature] = None
 
+    override def startHeartBeatRequest(): Unit = registerToOnlinePlayerList()
 
-    override def setCurrentGui(gui: SocialGUIController): Unit = currentGUI = Some(gui)
+    override def setCurrentGui(gui: SocialGUIController): Unit = {
+      currentGUI = Some(gui)
+      onGUISetting()
+    }
 
     override def notifyCallResultToGUI(message: Option[String]): Unit =
       currentGUI.get.notifyAPIResult(message.get)
 
-    override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit = {
+    override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit =
       sendMessage(SetOnlinePlayersMapMessage(onlinePlayers))
-    }
+
+    override def setFriendsList(friendList: FriendList): Unit =
+      sendMessage(SetFriendsList(friendList))
+
 
     override def notifyErrorToGUI(throwable: Throwable): Unit =
       currentGUI.get.notifyErrorOccurred(throwable.getMessage)
 
-    override def registerNewFriend(friendId: PlayerID): Unit =
-      socialRestWebClient.callRemoteAPI(AddFriendAPI, None, friendId)
-
+    override def registerNewFriend(friendId: PlayerID): Unit = {
+      val paramMap = Map(AddFriendAPI.friendUsername -> friendId)
+      socialRestWebClient.callRemoteAPI(AddFriendAPI, Some(paramMap), playerID)
+    }
 
     override def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit =
       currentGUI.get.updateParty(currentPartyMap.map(entry => (entry._1.asString, entry._2)).asJava)
@@ -207,21 +262,21 @@ object SocialController {
     override def finishGame(): Unit = {
       sendMessage(ResetParty)
       currentGUI.get.updateParty(Map[String,String]().asJava)
+      currentGUI.get.resetGUI()
     }
 
-    override def createActor(actorID: String, actorSystem: ActorSystem): Unit = {
+    override def createActor(actorID: String, actorSystem: ActorSystem): Unit =
       currentActorRef = SocialActor(actorSystem, this, actorID)
-      registerToOnlinePlayerList()
-    }
+
 
     override def updateGUI(message: ActorMessage): Unit = message match {
       case response: AddFriendResponseMessage =>
         currentGUI.get.notifyMessageResponse(response.senderID, response.socialResponse.message, response.request)
       case response: InvitePlayerResponseMessage =>
-        currentGUI.get.notifyMessageResponse(response.myRole.map(_.playerReference.playerID).get,
+        currentGUI.get.notifyMessageResponse(response.myRole.playerReference.playerID,
           response.socialResponse.message, response.request)
       case AddFriendRequestMessage(sender) =>
-        currentGUI.get.displayRequest(sender.playerID, "")
+        currentGUI.get.displayRequest(sender.playerID, FRIEND_REQUEST)
       case InvitePlayerRequestMessage(sender, role) =>
         currentGUI.get.displayRequest(sender.playerID, role.asString)
       case _ => currentGUI.get.notifyErrorOccurred(UNKNOWN_MESSAGE)
@@ -230,23 +285,39 @@ object SocialController {
     override def notifyAllPlayersGameID(gameID: String): Unit =
       sendMessage(NotifyGameIDMessage(gameID))
 
-    override def notifyGameController(gameID: String): Unit = parentController.handleMatchResponse(gameID)
+    override def notifyGameController(gameID: String): Unit = {
+      parentController.handleMatchResponse(gameID)
+    }
 
     override def shutDown(): Unit = {
-      unSubscribeFromOnlinePlayerList()
-      currentActorRef ! PoisonPill
+      currentActorRef ! KillYourSelf
     }
+
+    override def notifyFriendMessageResponse(socialResponse: SocialResponse): Unit =
+      currentActorRef ! TellAddFriendResponseMessage(socialResponse, playerID)
+
+    override def notifyInviteMessageResponse(socialResponse: SocialResponse): Unit =
+      currentActorRef ! TellInvitePlayerResponseMessage(socialResponse)
+
+    override def getSocialGUIController: SocialGUIController = currentGUI.get
+
+    override def setScoreInsideGUI(scores: Int): Unit = currentGUI.get.setTotalPoints(scores)
 
     private def registerToOnlinePlayerList(): Unit = {
-      val encodedActorRef = serializeActorRef(currentActorRef)
-      val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> playerID,
-        RegisterSocialIDAPI.SOCIAL_ACTOR -> encodedActorRef)
-      socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, Some(paramMap))
+      socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, None)
+      fetchFriendList()
     }
 
-    private def unSubscribeFromOnlinePlayerList(): Unit = {
-      val paramMap = Map(RegisterSocialIDAPI.SOCIAL_ID -> playerID)
-      socialRestWebClient.callRemoteAPI(UnregisterSocialIDAPI, Some(paramMap))
+    private def fetchFriendList(): Unit =
+      socialRestWebClient.callRemoteAPI(GetFriendsAPI, None, playerID)
+
+
+    private def onGUISetting(): Unit = {
+      socialRestWebClient.callRemoteAPI(GetUserAPI, None, playerID)
+      GuiStack().stage.setOnCloseRequest(_ => {
+        this.shutDown()
+        System.exit(0)
+      })
     }
 
   }

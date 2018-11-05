@@ -10,11 +10,11 @@ sealed trait SocialResponse {
 object SocialResponse {
 
   case object PositiveResponse extends SocialResponse {
-    override def message = " accepted your request"
+    override def message = "positive"
   }
 
   case object NegativeResponse extends SocialResponse {
-    override def message = " refused your request"
+    override def message = "negative"
   }
 
 }

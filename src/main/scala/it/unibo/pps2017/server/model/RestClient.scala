@@ -3,8 +3,9 @@ package it.unibo.pps2017.server.model
 
 import io.vertx.core.buffer.Buffer
 import io.vertx.scala.core.MultiMap
-import io.vertx.scala.ext.web.client.{HttpRequest, WebClient}
+import io.vertx.scala.ext.web.client.{HttpRequest, HttpResponse, WebClient}
 import it.unibo.pps2017.server.controller.Dispatcher.VERTX
+import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
@@ -62,6 +63,22 @@ sealed trait ClientRequest {
     */
   def requestParams: Option[Map[String, Any]]
 
+
+  protected def successRequest(result: HttpResponse[Buffer],
+                               onSuccess: Option[String] => Unit,
+                               onFail: Throwable => Unit): Unit = {
+
+    if (result.statusCode() == ResponseStatus.OK_CODE) {
+      onSuccess(result.bodyAsString())
+    } else {
+      try {
+        val errorMsg = read[Error](result.bodyAsString().get)
+        onFail(new Throwable(errorMsg.cause.getOrElse("No error description")))
+      } catch {
+        case _: Exception => onFail(new Throwable(result.bodyAsString().getOrElse("")))
+      }
+    }
+  }
 }
 
 case class GetRequest(url: String,
@@ -99,7 +116,7 @@ case class GetRequest(url: String,
 
   future.sendFuture().onComplete {
     case Success(result) =>
-      onSuccess(result.bodyAsString())
+      successRequest(result, onSuccess, onFail)
     case Failure(cause) =>
       onFail(cause)
   }
@@ -138,16 +155,16 @@ case class PostRequest(url: String,
   requestParams match {
     case Some(params) =>
       future.sendFormFuture(params)
-            .onComplete {
-        case Success(result) =>
-          onSuccess(result.bodyAsString())
-        case Failure(cause) =>
-          onFail(cause)
-      }
+        .onComplete {
+          case Success(result) =>
+            successRequest(result, onSuccess, onFail)
+          case Failure(cause) =>
+            onFail(cause)
+        }
     case None =>
       future.sendFuture().onComplete {
         case Success(result) =>
-          onSuccess(result.bodyAsString())
+          successRequest(result, onSuccess, onFail)
         case Failure(cause) =>
           onFail(cause)
       }

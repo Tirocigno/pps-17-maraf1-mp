@@ -6,7 +6,8 @@ import it.unibo.pps2017.client.controller.actors.playeractor.GameController
 import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.controller.{Controller, getRandomID}
 import it.unibo.pps2017.client.model.remote.{GameRestWebClient, RestWebClient}
-import it.unibo.pps2017.client.view.{GameStage, GenericGUIController, GuiStack}
+import it.unibo.pps2017.client.view._
+import it.unibo.pps2017.client.view.login.LoginGUIController
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.commons.remote.game.MatchNature
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
@@ -15,6 +16,8 @@ import it.unibo.pps2017.commons.remote.rest.RestUtils.{IPAddress, MatchRef, Port
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetAllMatchesAPI
 import it.unibo.pps2017.server.model.Game
 import it.unibo.pps2017.server.model.ServerApi._
+
+import scala.collection.JavaConverters._
 
 
 sealed trait ClientController extends Controller {
@@ -31,7 +34,7 @@ sealed trait ClientController extends Controller {
     *
     * @param gui a GenericGUIController to be set inside the clientcontroller.
     */
-  def setCurrentGUI(gui: GenericGUIController): Unit
+  def setCurrentGUI(gui: GUIController): Unit
 
 
   /**
@@ -75,8 +78,10 @@ sealed trait ClientController extends Controller {
 
   /**
     * Handle a login response.
+    *
+    * @param response the response given to the login or authentication request.
     */
-  def handleLoginAndRegistrationResponse(): Unit
+  def handleLoginAndRegistrationResponse(response: String): Unit
 
   /**
     * Send a registration request to remote server.
@@ -132,6 +137,11 @@ sealed trait ClientController extends Controller {
   def handleMatchReplay(gameToReplay: Game): Unit
 
   /**
+    * Start the generic gui when invoked.
+    */
+  def startGenericGUI(): Unit
+
+  /**
     * Notify to whole system that a game is finished.
     */
   def notifyGameFinished():Unit
@@ -149,21 +159,32 @@ object ClientController {
   def getSingletonController: ClientController = staticController
 
   private class ClientControllerImpl() extends ClientController {
-    val gameController = new GameController()
+    val gameController = new GameController(this)
     val guiStack: GuiStack = GuiStack()
     var playerName: String = getRandomID
     var unconfirmedUserName: String = playerName
     var actorSystem: Option[ActorSystem] = None
     var webClient: Option[RestWebClient] = None
     var socialController: Option[SocialController] = None
-    var genericGui: GenericGUIController = _
+    var genericGui: Option[GenericGUIController] = None
+    var loginGUI: Option[LoginGUIController] = None
 
-    override def notifyError(throwable: Throwable): Unit = genericGui.notifyError(throwable)
+    override def notifyError(throwable: Throwable): Unit = {
+      if (socialController.isDefined) {
+        socialController.get.getSocialGUIController.notifyError(throwable)
+      }
+      else if (genericGui.isDefined) {
+        genericGui.get.notifyError(throwable)
+      }
+      else {
+        loginGUI.get.notifyError(throwable)
+      }
+
+    }
 
 
     override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit = {
       actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", myIP))
-      //
     }
 
 
@@ -173,15 +194,16 @@ object ClientController {
 
     override def sendMatchRequest(matchNature: MatchNature,
                                   paramMap: Option[Map[String, String]]): Unit = paramMap match {
-      case Some(_) =>
-        startMatch(paramMap.get, matchNature)
+      case Some(_) => startMatch(paramMap.get, matchNature)
       case None => val map = Map(FoundGameRestAPI.meParamKey -> playerName)
         startMatch(map, matchNature)
-
     }
 
 
-    override def setCurrentGUI(gui: GenericGUIController): Unit = genericGui = gui
+    override def setCurrentGUI(gui: GUIController): Unit = gui match {
+      case genericController: GenericGUIController => genericGui = Some(genericController)
+      case loginGUIController: LoginGUIController => loginGUI = Some(loginGUIController)
+    }
 
 
     override def handleMatchResponse(gameID: String): Unit = {
@@ -196,45 +218,42 @@ object ClientController {
       }
     }
 
-    override def sendLoginRequest(userName: String, password: String): Unit =
+    override def sendLoginRequest(userName: String, password: String): Unit = {
+      unconfirmedUserName = userName
       launchAutentichationAPI(LoginAPI, userName, password)
+    }
+
 
     private def launchAutentichationAPI(api: RestAPI, username: String, password: String): Unit = {
       val map = Map(LoginAPI.password -> password)
       webClient.get.callRemoteAPI(api, Some(map), username)
     }
 
-    /**
-      * Handle a login response.
-      */
-    override def handleLoginAndRegistrationResponse(): Unit = {
-      genericGui //TODO NOTIFY VIDEO MESSAGE
+    override def handleLoginAndRegistrationResponse(message: String): Unit = {
+      loginGUI.get.handleResponse(message)
+      onAuthenticationSucceded()
     }
 
-    /**
-      * Fetch current played matches from server.
-      */
     override def fetchCurrentMatchesList(): Unit =
       webClient.get.callRemoteAPI(GetAllMatchesAPI, None)
 
     private def startMatch(paramMap: Map[String, String], matchNature: MatchNature): Unit = matchNature match {
-      case MatchNature.CasualMatch => webClient.get.callRemoteAPI(FoundGameRestAPI, Some(paramMap))
+      case MatchNature.CasualMatch => {
+        println("MAPPA: " + paramMap)
+        webClient.get.callRemoteAPI(FoundGameRestAPI, Some(paramMap))
+      }
       case MatchNature.CompetitiveMatch => val map = paramMap +
         (FoundGameRestAPI.RANKED_PARAMETER -> FoundGameRestAPI.RANKED_VALUE)
         webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
     }
 
-    override def sendRegisterRequest(userName: String, password: String): Unit =
+    override def sendRegisterRequest(userName: String, password: String): Unit = {
+      unconfirmedUserName = userName
       launchAutentichationAPI(AddUserAPI, userName, password)
+    }
 
-    override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit =
-      genericGui.displayMatchesList(playedMatches)
 
-    /**
-      * Start watching a current played match.
-      *
-      * @param matchID ID of the match to watch.
-      */
+
     override def startMatchWatching(matchID: String): Unit = {
       guiStack.setCurrentScene(GameStage, gameController)
 
@@ -242,9 +261,6 @@ object ClientController {
       gameController.joinPlayerToMatch(matchID)
     }
 
-    /**
-      * Fetch the archive of matches played from a server.
-      */
     override def fetchRegisteredMatchesList(): Unit =
       webClient.get.callRemoteAPI(GetSavedMatchAPI, None)
 
@@ -254,9 +270,6 @@ object ClientController {
       gameController.createReplayActor(this.playerName, actorSystem.get, gameToReplay)
     }
 
-    /**
-      * Notify to whole system that a game is finished.
-      */
     override def notifyGameFinished(): Unit = {
       guiStack.restorePreviousScene()
       socialController match {
@@ -265,16 +278,30 @@ object ClientController {
       }
     }
 
-    override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit =
-      genericGui.displayMatchesList(playedMatches)
+    override def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
+      case Some(controller) => controller.getSocialGUIController.displayViewMatches(playedMatches.asJava)
+      case None => genericGui.get.displayMatchesList(playedMatches.asJava)
+    }
 
-    /**
-      * Start replay a played match.
-      *
-      * @param matchID ID of the match to replay.
-      */
     override def startMatchReplay(matchID: String): Unit = {
       webClient.get.callRemoteAPI(GameRestAPI, None, matchID)
+    }
+
+    override def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit = socialController match {
+      case Some(controller) => controller.getSocialGUIController.displayReplayMatches(playedMatches.asJava)
+      case None => genericGui.get.displayMatchesList(playedMatches.asJava)
+    }
+
+    override def startGenericGUI(): Unit = guiStack.setCurrentScene(GenericStage, this)
+
+    /**
+      * Define the operation to do after a successful authentication.
+      */
+    private def onAuthenticationSucceded(): Unit = {
+      playerName = unconfirmedUserName
+      socialController = Some(SocialController(this, playerName, webClient.get.discoveryServerContext))
+      guiStack.setCurrentScene(SocialStage, socialController.get)
+      socialController.get.createActor(playerName, actorSystem.get)
     }
 
   }
