@@ -1,4 +1,3 @@
-
 package it.unibo.pps2017.client.view
 
 import it.unibo.pps2017.client.controller.Controller
@@ -57,21 +56,25 @@ object GuiStack {
     var sceneMap: Map[GUIStage, Scene] = Map()
     var mainStage: Option[Stage] = None
     var previousScene: Option[Scene] = None
-
+    var previousStage: Option[GUIStage] = None
+    var currentStage: Option[GUIStage] = None
 
     override def setCurrentScene(stage: GUIStage, controller: Controller): Unit = {
       Platform.runLater(() => {
         val sceneToSet = sceneMap.getOrElse(stage, loadScene(controller, stage))
+
         if (mainStage.get.getScene != null) {
           previousScene = Some(mainStage.get.getScene)
         }
-        switchScene(sceneToSet)
+        previousStage = currentStage
+        currentStage = Some(stage)
+        switchScene(sceneToSet, stage)
       })
     }
 
     override def addStage(stage: GUIStage, scene: Scene): Unit = sceneMap += (stage -> scene)
 
-    override def restorePreviousScene(): Unit = switchScene(previousScene.get)
+    override def restorePreviousScene(): Unit = switchScene(previousScene.get, previousStage.get)
 
     override def checkAndSetStage(stage: Stage): Unit = mainStage match {
       case None => mainStage = Some(stage)
@@ -80,22 +83,29 @@ object GuiStack {
 
     override def stage: Stage = mainStage.get
 
-    private def switchScene(scene: Scene): Unit = {
-        mainStage.get.setScene(scene)
-
+    private def switchScene(scene: Scene, stage: GUIStage): Unit = {
+      mainStage.get.setScene(scene)
+      stage match {
+        case GameStage => setGameStage()
+        case _ => setOtherScene()
+      }
     }
-
-    private def runLater(strategyToRunLater: () => Unit): Unit = Platform.runLater(() => {
-      strategyToRunLater()
-    })
-
 
     private def loadScene(controller: Controller, stage: GUIStage): Scene = {
       guiLoader.deployGuiStage(controller, stage)
     }
 
+    private def setGameStage(): Unit = {
+      mainStage.get.setFullScreen(true)
+      mainStage.get.setResizable(true)
+      mainStage.get.centerOnScreen()
+    }
 
+    private def setOtherScene(): Unit = {
+      mainStage.get.setFullScreen(false)
+      mainStage.get.setResizable(false)
+      mainStage.get.centerOnScreen()
+    }
   }
-
 
 }

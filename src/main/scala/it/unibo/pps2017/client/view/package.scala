@@ -3,6 +3,9 @@ package it.unibo.pps2017.client
 
 package object view {
 
+  val MIN_HEIGHT: Int = 850
+  val MIN_WIDTH: Int = 900
+
   /**
     * Trait to represent all possible stages handled by the GUI.
     */
