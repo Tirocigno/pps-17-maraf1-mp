@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.client.model.actors.playeractor
 
-import akka.actor.{ActorRef, PoisonPill, Stash}
+import akka.actor.{ActorRef, Stash}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
@@ -128,7 +128,8 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
 
   private def notifyClosedGame(): Unit = {
     gameActor ! ClosedPlayGameView(user)
-    self ! PoisonPill
+    println("MI AMMAZZO DOPO AVER INVIATO L'ADDIO")
+    //self ! PoisonPill
   }
 
   private def orderPlayersList(playersList: ListBuffer[String]): ListBuffer[String] = {
