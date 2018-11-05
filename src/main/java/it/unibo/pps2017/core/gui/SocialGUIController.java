@@ -232,7 +232,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * can play a non-competitive game without effect in ranking
      */
     public void handlePlayMatch(){
-        playMatch(false);
+        playNonCompetitiveMatch();
     }
 
     /**
@@ -240,18 +240,18 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * can play a competitive game with effect in ranking
      */
     public void handlePlayCompetitiveMatch(){
-        playMatch(true);
+        playCompetitiveMatch();
     }
 
     @Override
-    public void playMatch(boolean competitive) {
-        if(competitive){
-            socialController.startGame(MatchNature.CompetitiveMatch$.MODULE$);
-        }
-        else {
+    public void playNonCompetitiveMatch() {
             socialController.startGame(MatchNature.CasualMatch$.MODULE$);
-        }
     }
+
+    private void playCompetitiveMatch() {
+            socialController.startGame(MatchNature.CompetitiveMatch$.MODULE$);
+    }
+
     /**
      * Handles the click of viewMatch button by showing a combobox
      * and an ok button in way to choose the game to watch
