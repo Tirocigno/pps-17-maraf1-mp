@@ -164,10 +164,10 @@ object SocialActor {
       unstashAll()
     }
 
-    private def invitePlayerResponseHandler(socialResponse: SocialResponse, myRole: Option[PartyPlayer],
+    private def invitePlayerResponseHandler(socialResponse: SocialResponse, myRole: PartyPlayer,
                                             partnerRole: Option[PlayerReference]): Unit = socialResponse match {
       case NegativeResponse =>
-      case PositiveResponse => updateParty(myRole.get, partnerRole)
+      case PositiveResponse => updateParty(myRole, partnerRole)
         controller.updateParty(socialParty.getAllPlayers.map(r => (r._1, r._2.playerID)))
     }
 

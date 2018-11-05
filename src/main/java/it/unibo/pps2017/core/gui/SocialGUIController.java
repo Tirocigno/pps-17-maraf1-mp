@@ -133,14 +133,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     public void notifyMessageResponse(String sender, String responseResult, String request) {
 
         runSafeOnFXThread(() -> {
-            if (request.equals(PARTNER) || request.equals(FOE)) {
-                if (responseResult.equals(POSITIVE_ANSWER)) {
-                    responsePlayLabel.setText(sender + ACCEPT_MSG);
-                } else if (responseResult.equals(NEGATIVE_ANSWER)) {
-                    responsePlayLabel.setText(sender + REJECT_MSG);
-                }
-                showAndHideTextResponse(responsePlayLabel);
-            } else if (request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
+            if (request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
                 if (responseResult.equals(POSITIVE_ANSWER)) {
                     responseFriendLabel.setText(sender + ACCEPT_MSG);
                 } else if (responseResult.equals(NEGATIVE_ANSWER)) {
@@ -148,6 +141,14 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
                     enableGUIButtons();
                 }
                 showAndHideTextResponse(responseFriendLabel);
+            } else {
+                if (responseResult.equals(POSITIVE_ANSWER)) {
+                    responsePlayLabel.setText(sender + ACCEPT_MSG);
+                } else if (responseResult.equals(NEGATIVE_ANSWER)) {
+                    responsePlayLabel.setText(sender + REJECT_MSG);
+                }
+                showAndHideTextResponse(responsePlayLabel);
+
             }
         });
     }
@@ -220,7 +221,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     private void showAlertMessage(String msg){
         runSafeOnFXThread(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, msg, ButtonType.OK);
             alert.showAndWait();
         });
     }

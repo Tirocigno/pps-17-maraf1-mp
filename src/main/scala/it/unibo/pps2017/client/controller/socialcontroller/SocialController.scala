@@ -272,7 +272,7 @@ object SocialController {
       case response: AddFriendResponseMessage =>
         currentGUI.get.notifyMessageResponse(response.senderID, response.socialResponse.message, response.request)
       case response: InvitePlayerResponseMessage =>
-        currentGUI.get.notifyMessageResponse(response.myRole.map(_.playerReference.playerID).get,
+        currentGUI.get.notifyMessageResponse(response.myRole.playerReference.playerID,
           response.socialResponse.message, response.request)
       case AddFriendRequestMessage(sender) =>
         currentGUI.get.displayRequest(sender.playerID, FRIEND_REQUEST)

@@ -7,7 +7,7 @@ import it.unibo.pps2017.commons.remote.social.PartyPlayer.{FoePlayer, PartnerPla
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialResponse.{NegativeResponse, PositiveResponse}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
-import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
+import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialResponse}
 
 /**
   * A class for register the status of a received request.
@@ -142,7 +142,9 @@ object RequestHandler {
       */
     private def generateInviteResponse(socialResponse: SocialResponse,
                                        playerReference: PlayerReference, role: PartyRole): Unit = socialResponse match {
-      case NegativeResponse => playerReference.playerRef ! InvitePlayerResponseMessage(socialResponse, None, None)
+      case NegativeResponse => println("Generata risposta")
+        playerReference.playerRef ! InvitePlayerResponseMessage(socialResponse,
+          generatePartyPlayer(role), None)
         resetRequestHandler()
       case PositiveResponse => playerReference.playerRef ! generateInviteResponseMessage(socialResponse, role)
         currentParty.markCurrentPlayerAs(role)
@@ -158,11 +160,23 @@ object RequestHandler {
       */
     private def generateInviteResponseMessage(socialResponse: SocialResponse, role: PartyRole): SocialMessage =
       role match {
-        case Partner => InvitePlayerResponseMessage(socialResponse, Some(PartnerPlayer(currentPlayerRef)), None)
+        case Partner => InvitePlayerResponseMessage(socialResponse, generatePartyPlayer(Partner), None)
         case Foe => InvitePlayerResponseMessage(socialResponse,
-          Some(FoePlayer(currentPlayerRef)), currentParty.getPartner)
+          generatePartyPlayer(Foe), currentParty.getPartner)
         case _ => throw new IllegalArgumentException()
       }
+
+
+    /**
+      * Generate a partner player based on the role.
+      *
+      * @param role the role on which the player will play.
+      * @return a PartyPlayer built upon the role and the player.
+      */
+    private def generatePartyPlayer(role: PartyRole): PartyPlayer = role match {
+      case Partner => PartnerPlayer(currentPlayerRef)
+      case Foe => FoePlayer(currentPlayerRef)
+    }
 
 
     /**

@@ -63,4 +63,6 @@ class MockSocialController extends SocialController {
   override def setScoreInsideGUI(scores: Int): Unit = {}
 
   override def startHeartBeatRequest(): Unit = {}
+
+  override def setFriendsList(friendList: FriendList): Unit = {}
 }
