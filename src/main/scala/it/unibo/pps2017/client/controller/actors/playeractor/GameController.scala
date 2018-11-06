@@ -17,6 +17,7 @@ import scala.collection.JavaConverters._
 
 class GameController(val clientControllerRef: ClientController) extends MatchController {
 
+  val UNKNOWN_ERROR: String = "Unknown message received"
   var playGameController: PlayGameController = _
   val clientController: ClientController = clientControllerRef
   var currentActorRef: ActorRef = _
@@ -78,7 +79,7 @@ class GameController(val clientControllerRef: ClientController) extends MatchCon
     case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
     case Turn(player, endPartialTurn, isFirstPlayer, isReplay) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer, isReplay)
     case ComputeGameScore(player, winner1, winner2, score1, score2, endMatch) => cleanFieldEndTotalTurn(player, winner1, winner2, score1, score2, endMatch)
-    case _ =>
+    case _ => playGameController.notifyError(new Throwable(UNKNOWN_ERROR))
   }
 
   override def setCurrentGui(gui: GameGUIController): Unit = {
