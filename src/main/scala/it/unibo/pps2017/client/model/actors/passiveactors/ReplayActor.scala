@@ -41,7 +41,11 @@ class ReplayActor(override val controller: GameController, player: String, game:
 
   override def preStart() {
     currentSet = game.turns.head
-    system.scheduler.schedule(initialDelay = START_DELAY.milliseconds, interval = INTERVAL_TIME.milliseconds, receiver = self, message = SendHeartbeat)
+    system.scheduler.schedule(
+      initialDelay = START_DELAY.milliseconds,
+      interval = INTERVAL_TIME.milliseconds,
+      receiver = self,
+      message = SendHeartbeat)
   }
 
   def receive: PartialFunction[Any, Unit] = {
@@ -84,7 +88,8 @@ class ReplayActor(override val controller: GameController, player: String, game:
   }
 
   private def computeTurnSet(): Unit = {
-    controller.updateGUI(Turn(currentHand.moves.head.player, endPartialTurn = true, isFirstPlayer = false, isReplay = true))
+    controller.updateGUI(Turn(currentHand.moves.head.player,
+      endPartialTurn = true, isFirstPlayer = false, isReplay = true))
     gameCounter = MIDDLE_SET
   }
 
@@ -109,14 +114,18 @@ class ReplayActor(override val controller: GameController, player: String, game:
     try {
       currentSet = game.turns(game.turns.indexOf(currentSet) + 1)
       if (team1Score > team2Score)
-        controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score, endMatch = false))
-      else controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head, team1Score, team2Score, endMatch = false))
+        controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head,
+          team1Score, team2Score, endMatch = false))
+      else controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head,
+        team1Score, team2Score, endMatch = false))
       gameCounter = START_SET
     } catch {
       case _: Exception => gameCounter = END_GAME
         if (team1Score > team2Score)
-          controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score, endMatch = true))
-        else controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head, team1Score, team2Score, endMatch = true))
+          controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head,
+            team1Score, team2Score, endMatch = true))
+        else controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head,
+          team1Score, team2Score, endMatch = true))
     }
   }
 
