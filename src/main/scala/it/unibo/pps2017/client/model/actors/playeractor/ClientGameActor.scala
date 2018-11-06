@@ -5,8 +5,7 @@ import it.unibo.pps2017.client.model.actors.ModelActor
 
 /**
   * Trait ClientGameActor outline the model for real time communication structure,
-  * based on akka actors, used for playing
-  * a remote Maraphone match.
+  * based on akka actors, used for playing a Marafone game.
   */
 
 trait ClientGameActor extends ModelActor {

@@ -11,12 +11,25 @@ import it.unibo.pps2017.commons.remote.social.{PartyPlayer, PartyRole, SocialRes
   */
 object SocialMessages {
 
-
+  /**
+    * Trait to identify the social messages.
+    */
   sealed trait SocialMessage extends ActorMessage
 
+  /**
+    * Trait to identify the request messages between all social messages
+    */
   sealed trait RequestMessage extends SocialMessage
 
+  /**
+    * Trait to identify all the response messages between all social messages.
+    */
   sealed trait ResponseMessage extends SocialMessage {
+    /**
+      * Define request corresponding to the response.
+      *
+      * @return a string containing the request.
+      */
     def request: String
   }
 
