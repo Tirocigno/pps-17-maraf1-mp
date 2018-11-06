@@ -4,7 +4,7 @@ package it.unibo.pps2017.client.model.actors.passiveactors
 import akka.actor.{ActorSystem, PoisonPill}
 import com.typesafe.config.ConfigFactory
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
-import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActor.{CARD_FORMAT, CARD_PATH, SendHeartbeat}
+import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActor._
 import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActorStatus._
 import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
@@ -17,7 +17,8 @@ import scala.concurrent.duration._
 object ReplayActor {
   val CARD_PATH: String = "cards/"
   val CARD_FORMAT: String = ".png"
-
+  val START_DELAY: Int = 5000
+  val INTERVAL_TIME: Int = 500
   case class SendHeartbeat()
 
 }
@@ -40,7 +41,7 @@ class ReplayActor(override val controller: GameController, player: String, game:
 
   override def preStart() {
     currentSet = game.turns.head
-    system.scheduler.schedule(initialDelay = 5000.milliseconds, interval = 250.milliseconds, receiver = self, message = SendHeartbeat)
+    system.scheduler.schedule(initialDelay = START_DELAY.milliseconds, interval = INTERVAL_TIME.milliseconds, receiver = self, message = SendHeartbeat)
   }
 
   def receive: PartialFunction[Any, Unit] = {
