@@ -62,7 +62,8 @@ class GameController(val clientControllerRef: ClientController) extends MatchCon
     * @param actorRef actor's ref.
     * @return Inner value of the Option.
     */
-  def getOrThrow(actorRef: Option[ActorRef]): ActorRef = actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
+  def getOrThrow(actorRef: Option[ActorRef]): ActorRef =
+    actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
 
   /**
     * Method called from actor (Player, Viewer or Replay) to update GUI.
@@ -77,8 +78,10 @@ class GameController(val clientControllerRef: ClientController) extends MatchCon
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
     case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
-    case Turn(player, endPartialTurn, isFirstPlayer, isReplay) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer, isReplay)
-    case ComputeGameScore(player, winner1, winner2, score1, score2, endMatch) => cleanFieldEndTotalTurn(player, winner1, winner2, score1, score2, endMatch)
+    case Turn(player, endPartialTurn, isFirstPlayer, isReplay)
+    => setCurrentPlayer(player, endPartialTurn, isFirstPlayer, isReplay)
+    case ComputeGameScore(player, winner1, winner2, score1, score2, endMatch)
+    => cleanFieldEndTotalTurn(player, winner1, winner2, score1, score2, endMatch)
     case _ => playGameController.notifyError(new Throwable(UNKNOWN_ERROR))
   }
 
@@ -196,7 +199,8 @@ class GameController(val clientControllerRef: ClientController) extends MatchCon
     * @param score2   Aggregated score of second team.
     * @param endMatch True if match is ended, false otherwise.
     */
-  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit = {
+  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String,
+                             score1: Int, score2: Int, endMatch: Boolean): Unit = {
 
     if (score1 == score2)
       playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
