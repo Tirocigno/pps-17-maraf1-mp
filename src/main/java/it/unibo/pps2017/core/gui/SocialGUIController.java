@@ -62,6 +62,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
         hideReplayMatch();
         hideViewMatch();
         socialController.tellFriendShipMessage(playerSelected);
+        request = SocialController$.MODULE$.FRIEND_REQUEST();
     }
 
     /**
@@ -152,7 +153,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     public void notifyMessageResponse(String sender, String responseResult, String request) {
 
         runSafeOnFXThread(() -> {
-            if (request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
+            if (this.request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
                 System.out.println("Friend request");
                 if (responseResult.equals(POSITIVE_ANSWER)) {
                     responseFriendLabel.setText(sender + ACCEPT_MSG);
