@@ -1,3 +1,4 @@
+
 package it.unibo.pps2017.core.gui;
 
 import it.unibo.pps2017.client.controller.Controller;
@@ -115,13 +116,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     }
 
     /**
-     * This method is called when the player want close match from Gui.
-     */
-    void shutdown() {
-        gameController.closedPlayGameView();
-    }
-
-    /**
      * This method permits to view the command that first user selected.
      * Possibilities: busso, striscio, volo.
      *
@@ -209,7 +203,6 @@ public class PlayGameController extends GameGUIController implements PlayGame {
             } catch (IndexOutOfBoundsException ignored) {
 
             }
-
         }
     }
 
@@ -338,7 +331,9 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     }
 
     private void createTimeline(final ImageView imageViewToShow, final Image imageCreateFromFile) {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(imageViewToShow.imageProperty(), imageCreateFromFile)), new KeyFrame(Duration.seconds(2), new KeyValue(imageViewToShow.imageProperty(), null)));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO,
+                new KeyValue(imageViewToShow.imageProperty(), imageCreateFromFile)),
+                new KeyFrame(Duration.seconds(2), new KeyValue(imageViewToShow.imageProperty(), null)));
         timeline.play();
     }
 
@@ -519,6 +514,5 @@ public class PlayGameController extends GameGUIController implements PlayGame {
     public void notifyError(Throwable throwable) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, throwable.getMessage(), ButtonType.OK);
         alert.showAndWait();
-
     }
 }
