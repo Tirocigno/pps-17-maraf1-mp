@@ -201,42 +201,29 @@ testScoverage {
 defaultTasks 'clean', 'build', 'javadoc', 'scaladoc', 'reportScoverage'
 
 //TO CHANGE FOR SHADOWJAR
-mainClassName = 'it.unibo.pps2017.discovery.DiscoveryMain'
+mainClassName = 'it.unibo.pps2017.client.ClientMain'
 
 
 task stage {
     dependsOn installDist
 }
 
-task serverTestJar(type: ShadowJar) {
-    group = "shadow"
-    description = "Builds a Bitsquare bootstrap node executable jar"
-    manifest.attributes 'Main-Class': 'it.unibo.pps2017.server.Runner'
-    classifier = 'server'
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.output)
-    configurations = [project.configurations.runtime]
-    exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
-}
-
-
-
 task serverJar(type: ShadowJar) {
-    /*
     classifier = 'server'
     manifest.attributes 'Main-Class': 'it.unibo.pps2017.server.Runner'
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.output)
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.resources)
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.runtimeClasspath)
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.compileClasspath)
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.allJava)
-    transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
-        resource = 'reference.conf'
-    }
-    configurations = [project.configurations.runtime]*/
-    classifier = 'server'
-    manifest.attributes 'Main-Class': 'it.unibo.pps2017.server.Runner'
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.output)
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.allSource)
-    configurations = [project.configurations.runtime]
+    from(shadowJar.from())
 }
 
+
+task discoveryJar(type: ShadowJar) {
+    classifier = 'discovery'
+    manifest.attributes 'Main-Class': 'it.unibo.pps2017.discovery.DiscoveryMain'
+    from(shadowJar.from())
+}
+
+
+task clientJar(type: ShadowJar) {
+    classifier = 'client'
+    manifest.attributes 'Main-Class': 'it.unibo.pps2017.client.ClientMain'
+    from(shadowJar.from())
+}
