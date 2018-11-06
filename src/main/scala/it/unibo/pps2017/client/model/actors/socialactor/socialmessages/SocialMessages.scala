@@ -21,13 +21,6 @@ object SocialMessages {
   }
 
   /**
-    * Message to set a new PlayerOnlineMap inside the Actor.
-    *
-    * @param playersList a list containing all the playersRef.
-    */
-  case class SetOnlinePlayersMapMessage(playersList: List[PlayerReference]) extends SocialMessage
-
-  /**
     * Message to set the current friend list.
     *
     * @param friendsList the list of player's friend pulled from database.

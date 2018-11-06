@@ -13,7 +13,7 @@ import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature.MatchNature
 import it.unibo.pps2017.commons.remote.rest.RestUtils.ServerContext
 import it.unibo.pps2017.commons.remote.social.PartyRole.{Foe, Partner}
-import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID}
 import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
 import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetFriendsAPI, GetUserAPI}
@@ -22,7 +22,7 @@ import scala.collection.JavaConverters._
 
 /**
   * This trait is a mediator between the actor that handle the social
-  * function of the system and the GUI.
+  * function and the Social GUI.
   *
   */
 trait SocialController extends ActorController {
@@ -35,15 +35,9 @@ trait SocialController extends ActorController {
     */
   def notifyCallResultToGUI(message: Option[String]): Unit
 
-  /**
-    * Set the current online players map.
-    *
-    * @param onlinePlayers the list of current online players.
-    */
-  def setOnlinePlayerList(onlinePlayers: SocialMap): Unit
 
   /**
-    * Set the friend list inside the actor
+    * Set the friend list inside the actor.
     *
     * @param friendList the list of friends of the current player.
     */
@@ -64,14 +58,14 @@ trait SocialController extends ActorController {
   def registerNewFriend(friendId: PlayerID): Unit
 
   /**
-    * Notify the GUI updates inside the party.
+    * Notify the GUI the party was updated.
     *
     * @param currentPartyMap the party current state.
     */
   def updateParty(currentPartyMap: Map[PartyRole, PlayerID]): Unit
 
   /**
-    * Execute a FoundGame call passing a paramMap.
+    * Execute a FoundGame call passing a paramMap containing all the party members, if present.
     *
     * @param paramMap the parameters of the call to execute.
     */
@@ -113,7 +107,7 @@ trait SocialController extends ActorController {
   def tellInvitePlayerAsFoe(playerID: PlayerID): Unit
 
   /**
-    * Start a new game
+    * Tell the clientController to execute a FoundGame call.
     *
     * @param matchNature the nature of the game to play.
     */
@@ -151,14 +145,16 @@ trait SocialController extends ActorController {
   def shutDown(): Unit
 
   /**
-    * Notify the controller user response to friend request.
+    * Notify the controller user response to friend request,
+    * the controller then will tell the response to his actor.
     *
     * @param socialResponse the response provided by GUI
     */
   def notifyFriendMessageResponse(socialResponse: SocialResponse): Unit
 
   /**
-    * Notify the controller user response to invite request.
+    * Notify the controller user response to invite request,
+    * the controller then will tell the response to his actor.
     *
     * @param socialResponse the response provided by GUI
     */
@@ -212,9 +208,6 @@ object SocialController {
 
     override def notifyCallResultToGUI(message: Option[String]): Unit =
       currentGUI.get.notifyAPIResult(message.get)
-
-    override def setOnlinePlayerList(onlinePlayers: SocialMap): Unit =
-      sendMessage(SetOnlinePlayersMapMessage(onlinePlayers))
 
     override def setFriendsList(friendList: FriendList): Unit =
       sendMessage(SetFriendsList(friendList))
@@ -303,15 +296,24 @@ object SocialController {
 
     override def setScoreInsideGUI(scores: Int): Unit = currentGUI.get.setTotalPoints(scores)
 
+    /**
+      * Start a call to generate an heartbeat from the registry actor located on discovery.
+      */
     private def registerToOnlinePlayerList(): Unit = {
       socialRestWebClient.callRemoteAPI(RegisterSocialIDAPI, None)
       fetchFriendList()
     }
 
+    /**
+      * Fetch from server the friend list with an API call.
+      */
     private def fetchFriendList(): Unit =
       socialRestWebClient.callRemoteAPI(GetFriendsAPI, None, playerID)
 
 
+    /**
+      * Set new operations on GUI closing.
+      */
     private def onGUISetting(): Unit = {
       socialRestWebClient.callRemoteAPI(GetUserAPI, None, playerID)
       GuiStack().stage.setOnCloseRequest(_ => {
