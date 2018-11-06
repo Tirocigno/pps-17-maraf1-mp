@@ -129,7 +129,11 @@ class PlayerActorClient(override val controller: GameController, playerId: Strin
   }
 
   private def notifyClosedGame(): Unit = {
-    gameActor ! ClosedPlayGameView(user)
+    try {
+      gameActor ! ClosedPlayGameView(user)
+    } catch {
+      case exception: NullPointerException =>
+    }
     self ! PoisonPill
   }
 
