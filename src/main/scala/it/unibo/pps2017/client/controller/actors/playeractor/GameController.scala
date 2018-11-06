@@ -197,12 +197,18 @@ class GameController(val clientControllerRef: ClientController) extends MatchCon
     */
   def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit = {
 
-    if (score1 == score2) playGameController cleanFieldEndTotalTurn(score1, score2, endMatch) else {
+    if (score1 == score2)
+      playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+    else {
       if (user.equals(winner1) | user.equals(winner2)) {
-        if (score1 > score2) playGameController cleanFieldEndTotalTurn(score1, score2, endMatch) else playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
+        if (score1 > score2)
+          playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+        else playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
         this.setWinner(endMatch)
       } else {
-        if (score1 > score2) playGameController cleanFieldEndTotalTurn(score2, score1, endMatch) else playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+        if (score1 > score2)
+          playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
+        else playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
       }
     }
   }
