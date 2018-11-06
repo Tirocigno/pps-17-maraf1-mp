@@ -15,7 +15,6 @@ class ViewerActor(override val controller: GameController, var player: String) e
 
   import context._
 
-
   var actorPlayer: ClientGameActor = this
   var firstPlayer: String = player
 
@@ -80,7 +79,8 @@ class ViewerActor(override val controller: GameController, var player: String) e
   private def notifyCommandChosen(command: String, actualPlayer: String): Unit =
     controller.updateGUI(NotifyCommandChosen(command, actualPlayer))
 
-  private def communicateGameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit =
+  private def communicateGameScore(winner1: String, winner2: String,
+                                   score1: Int, score2: Int, endMatch: Boolean): Unit =
     controller.updateGUI(ComputeGameScore(firstPlayer, winner1, winner2, score1, score2, endMatch))
 
   override
