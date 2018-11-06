@@ -41,6 +41,8 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     private static final String REJECT_MSG = " rejected the invitation!";
     private static final String ADD_FRIEND = "add friend";
     private static final String INVITE_FRIEND = "invite friend";
+    private static final String ERROR_MATCH_MSG = "Make sure you have selected the match!";
+    private static final String ERROR_PLAYER_MSG = "Make sure you have selected the player!";
     private SocialController socialController;
     private ClientController clientController = ClientController$.MODULE$.getSingletonController();
     private String request;
@@ -57,12 +59,18 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * Handles the click of addFriend button by adding the player as friend
      */
     public void addNewFriend(){
-        responseFriendLabel.setText(WAITING_MSG);
         String playerSelected = getSelection(onlinePlayers);
-        hideReplayMatch();
-        hideViewMatch();
-        socialController.tellFriendShipMessage(playerSelected);
-        request = SocialController$.MODULE$.FRIEND_REQUEST();
+        try {
+            if (!playerSelected.isEmpty()) {
+                responseFriendLabel.setText(WAITING_MSG);
+                hideReplayMatch();
+                hideViewMatch();
+                socialController.tellFriendShipMessage(playerSelected);
+                request = SocialController$.MODULE$.FRIEND_REQUEST();
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_PLAYER_MSG);
+        }
     }
 
     /**
@@ -70,10 +78,16 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * invitation to play together as partner
      */
     public void inviteFriendToPlayAsPartner(){
-        responsePlayLabel.setText(WAITING_MSG);
-        disableReplayViewButtons();
-        socialController.tellInvitePlayerAsPartner(getSelectedFriend());
-        request = PARTNER;
+        try {
+            if (!getSelectedFriend().isEmpty()) {
+                responsePlayLabel.setText(WAITING_MSG);
+                disableReplayViewButtons();
+                socialController.tellInvitePlayerAsPartner(getSelectedFriend());
+                request = PARTNER;
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_PLAYER_MSG);
+        }
     }
 
     /**
@@ -81,10 +95,16 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * invitation to play together as foe
      */
     public void inviteFriendToPlayAsFoe(){
-        responsePlayLabel.setText(WAITING_MSG);
-        disableReplayViewButtons();
-        socialController.tellInvitePlayerAsFoe(getSelectedFriend());
-        request = FOE;
+        try {
+            if (!getSelectedFriend().isEmpty()) {
+                responsePlayLabel.setText(WAITING_MSG);
+                disableReplayViewButtons();
+                socialController.tellInvitePlayerAsFoe(getSelectedFriend());
+                request = FOE;
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_PLAYER_MSG);
+        }
     }
 
     private void disableReplayViewButtons(){
@@ -302,8 +322,12 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * redirecting the player to the game to watch
      */
     public void okViewMatch(){
-        if(!getSelection(comboView).isEmpty()){
-            clientController.startMatchWatching(getSelection(comboView));
+        try {
+            if (!getSelection(comboView).isEmpty()) {
+                clientController.startMatchWatching(getSelection(comboView));
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_MATCH_MSG);
         }
     }
 
@@ -339,8 +363,12 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * redirecting the player to the game to replay
      */
     public void okReplayMatch(){
-        if(!getSelection(comboReplay).isEmpty()){
-            clientController.startMatchReplay(getSelection(comboReplay));
+        try {
+            if (!getSelection(comboReplay).isEmpty()) {
+                clientController.startMatchReplay(getSelection(comboReplay));
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_MATCH_MSG);
         }
     }
 
