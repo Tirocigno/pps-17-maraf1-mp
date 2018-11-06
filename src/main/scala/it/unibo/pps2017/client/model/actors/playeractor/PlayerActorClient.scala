@@ -53,7 +53,8 @@ class PlayerActorClient(override val controller: GameController, playerId: Strin
 
     case NotifyCommandChosen(command, player) => notifyCommandChosen(command, player)
 
-    case GameScore(winner1, winner2, score1, score2, endMatch) => communicateGameScore(winner1, winner2, score1, score2, endMatch)
+    case GameScore(winner1, winner2, score1, score2, endMatch)
+    => communicateGameScore(winner1, winner2, score1, score2, endMatch)
 
     case SetUsernamePlayer(playerUsername) => setUsername(playerUsername)
 
@@ -116,7 +117,8 @@ class PlayerActorClient(override val controller: GameController, playerId: Strin
   private def notifyCommandChosen(command: String, player: String): Unit =
     controller.updateGUI(NotifyCommandChosen(command, player))
 
-  private def communicateGameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit =
+  private def communicateGameScore(winner1: String, winner2: String,
+                                   score1: Int, score2: Int, endMatch: Boolean): Unit =
     controller.updateGUI(ComputeGameScore(user, winner1, winner2, score1, score2, endMatch))
 
   private def setUsername(playerUsername: String): Unit = user = playerUsername
