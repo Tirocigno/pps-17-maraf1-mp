@@ -1,3 +1,4 @@
+
 package it.unibo.pps2017.core.gui;
 
 class PlayGameViewUtils {
@@ -22,14 +23,6 @@ class PlayGameViewUtils {
     private static final int MAX_CARDS_IN_HAND = 10;
     private static final int SLEEP_CLEAN_FIELD = 1000;
 
-    static String getMyTeam() {
-        return MY_TEAM;
-    }
-
-    static String getOpponentTeam() {
-        return OPPONENT_TEAM;
-    }
-
     static int getDurationAnimation() {
         return DURATION_ANIMATION;
     }
@@ -48,6 +41,14 @@ class PlayGameViewUtils {
 
     static int getSleepCleanField() {
         return SLEEP_CLEAN_FIELD;
+    }
+
+    static String getMyTeam() {
+        return MY_TEAM;
+    }
+
+    static String getOpponentTeam() {
+        return OPPONENT_TEAM;
     }
 
     static String getFormat() {
