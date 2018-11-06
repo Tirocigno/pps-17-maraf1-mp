@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
+
 <AnchorPane onMouseClicked="#goViewMatch" prefHeight="540.0" prefWidth="600.0" style="-fx-background-color: #4286f4;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.GenericController">
       <Button fx:id="playButton" layoutX="202.0" layoutY="115.0" mnemonicParsing="false" onMouseClicked="#handlePlayMatch" prefHeight="35.0" prefWidth="200.0" style="-fx-border-color: blue; -fx-background-color: yellow; -fx-border-radius: 3;" text="Play" />
-      <Button fx:id="viewButton" layoutX="202.0" layoutY="191.0" mnemonicParsing="false" onMouseClicked="#watchMatch" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: yellow; -fx-border-color: blue; -fx-border-radius: 3;" text="View matches" />
-      <Label layoutX="106.0" layoutY="35.0" text="Welcome to Marafone!">
+      <Button fx:id="viewButton" layoutX="202.0" layoutY="191.0" mnemonicParsing="false" onMouseClicked="#handleWatchMatch" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: yellow; -fx-border-color: blue; -fx-border-radius: 3;" text="View matches" />
+      <Label layoutX="108.0" layoutY="36.0" text="Welcome to Marafone!">
          <font>
             <Font name="Gill Sans Ultra Bold" size="28.0" />
          </font>
@@ -15,13 +18,10 @@
       <Circle fill="#ff2121" layoutX="158.0" layoutY="132.0" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
       <Circle fill="#464141" layoutX="158.0" layoutY="208.0" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
       <ListView fx:id="matchesList" layoutX="200.0" layoutY="297.0" prefHeight="175.0" prefWidth="200.0" />
-      <Label layoutX="231.0" layoutY="255.0" text="List of matches">
+      <Label layoutX="232.0" layoutY="255.0" text="List of matches">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-    <Button fx:id="goButton" layoutX="270.0" layoutY="487.0" mnemonicParsing="false" onMouseClicked="#goViewMatch"
-            prefHeight="27.0"
-            prefWidth="64.0" style="-fx-background-color: yellow; -fx-border-radius: 3; -fx-border-color: blue;"
-            text="Go"/>
+    <Button fx:id="goButton" layoutX="270.0" layoutY="487.0" mnemonicParsing="false" onMouseClicked="#goViewMatch" prefHeight="27.0" prefWidth="64.0" style="-fx-background-color: yellow; -fx-border-radius: 3; -fx-border-color: blue;" text="Go" />
 </AnchorPane>

@@ -21,6 +21,7 @@ public class GenericController implements GenericGUIController, BasicPlayerOptio
     ListView<String> matchesList;
 
     private ClientController clientController;
+    private static final String ERROR_MATCH_MSG = "Make sure you have selected the match!";
 
     @FXML
     private void handlePlayMatch(){
@@ -34,14 +35,29 @@ public class GenericController implements GenericGUIController, BasicPlayerOptio
             clientController.sendMatchRequest(MatchNature.CasualMatch$.MODULE$, paramMap);
     }
 
+    @FXML
+    private void handleWatchMatch(){
+        watchMatch();
+    }
+
     @Override
     public void watchMatch() {
         clientController.fetchCurrentMatchesList();
     }
 
+    /**
+     * Handles the click of go button when a guest player wants to watch an online match.
+     * If nothing selected it shows an alert message
+     */
     public void goViewMatch(){
         String matchSelected = matchesList.getSelectionModel().getSelectedItem();
-        clientController.startMatchWatching(matchSelected);
+        try {
+            if (!matchesList.getSelectionModel().getSelectedItem().isEmpty()) {
+                clientController.startMatchWatching(matchSelected);
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_MATCH_MSG);
+        }
     }
 
     @Override
@@ -61,6 +77,7 @@ public class GenericController implements GenericGUIController, BasicPlayerOptio
         });
 
     }
+
     @Override
     public void displayMatchesList(List<String> matchesList) {
         this.matchesList.getItems().clear();

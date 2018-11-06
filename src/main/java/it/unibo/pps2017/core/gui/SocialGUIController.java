@@ -41,6 +41,8 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     private static final String REJECT_MSG = " rejected the invitation!";
     private static final String ADD_FRIEND = "add friend";
     private static final String INVITE_FRIEND = "invite friend";
+    private static final String ERROR_MATCH_MSG = "Make sure you have selected the match!";
+    private static final String ERROR_PLAYER_MSG = "Make sure you have selected the player!";
     private SocialController socialController;
     private ClientController clientController = ClientController$.MODULE$.getSingletonController();
     private String request;
@@ -57,11 +59,18 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * Handles the click of addFriend button by adding the player as friend
      */
     public void addNewFriend(){
-        responseFriendLabel.setText(WAITING_MSG);
         String playerSelected = getSelection(onlinePlayers);
-        hideReplayMatch();
-        hideViewMatch();
-        socialController.tellFriendShipMessage(playerSelected);
+        try {
+            if (!playerSelected.isEmpty()) {
+                responseFriendLabel.setText(WAITING_MSG);
+                hideReplayMatch();
+                hideViewMatch();
+                socialController.tellFriendShipMessage(playerSelected);
+                request = SocialController$.MODULE$.FRIEND_REQUEST();
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_PLAYER_MSG);
+        }
     }
 
     /**
@@ -69,10 +78,16 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * invitation to play together as partner
      */
     public void inviteFriendToPlayAsPartner(){
-        responsePlayLabel.setText(WAITING_MSG);
-        disableReplayViewButtons();
-        socialController.tellInvitePlayerAsPartner(getSelectedFriend());
-        request = PARTNER;
+        try {
+            if (!getSelectedFriend().isEmpty()) {
+                responsePlayLabel.setText(WAITING_MSG);
+                disableReplayViewButtons();
+                socialController.tellInvitePlayerAsPartner(getSelectedFriend());
+                request = PARTNER;
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_PLAYER_MSG);
+        }
     }
 
     /**
@@ -80,15 +95,26 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * invitation to play together as foe
      */
     public void inviteFriendToPlayAsFoe(){
-        responsePlayLabel.setText(WAITING_MSG);
-        disableReplayViewButtons();
-        socialController.tellInvitePlayerAsFoe(getSelectedFriend());
-        request = FOE;
+        try {
+            if (!getSelectedFriend().isEmpty()) {
+                responsePlayLabel.setText(WAITING_MSG);
+                disableReplayViewButtons();
+                socialController.tellInvitePlayerAsFoe(getSelectedFriend());
+                request = FOE;
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_PLAYER_MSG);
+        }
     }
 
     private void disableReplayViewButtons(){
         viewButton.setDisable(true);
         replayButton.setDisable(true);
+    }
+
+    private void enableReplayViewButtons(){
+        viewButton.setDisable(false);
+        replayButton.setDisable(false);
     }
 
     private void disableGUIButtons(){
@@ -152,8 +178,7 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
     public void notifyMessageResponse(String sender, String responseResult, String request) {
 
         runSafeOnFXThread(() -> {
-            if (request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
-                System.out.println("Friend request");
+            if (this.request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
                 if (responseResult.equals(POSITIVE_ANSWER)) {
                     responseFriendLabel.setText(sender + ACCEPT_MSG);
                 } else if (responseResult.equals(NEGATIVE_ANSWER)) {
@@ -162,10 +187,13 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
                 }
                 showAndHideTextResponse(responseFriendLabel);
             } else {
-                System.out.println("Play request");
                 if (responseResult.equals(POSITIVE_ANSWER)) {
+                    if(this.request.equals(PARTNER)){
+                        partnerButton.setDisable(true);
+                    }
                     responsePlayLabel.setText(sender + ACCEPT_MSG);
                 } else if (responseResult.equals(NEGATIVE_ANSWER)) {
+                    enableReplayViewButtons();
                     responsePlayLabel.setText(sender + REJECT_MSG);
                 }
                 showAndHideTextResponse(responsePlayLabel);
@@ -264,13 +292,17 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     @Override
     public void playNonCompetitiveMatch() {
-            socialController.startGame(MatchNature.CasualMatch$.MODULE$);
+        socialController.startGame(MatchNature.CasualMatch$.MODULE$);
     }
 
     private void playCompetitiveMatch() {
             socialController.startGame(MatchNature.CompetitiveMatch$.MODULE$);
     }
 
+    @FXML
+    private void handleWatchMatch(){
+        watchMatch();
+    }
     /**
      * Handles the click of viewMatch button by showing a combobox
      * and an ok button in way to choose the game to watch
@@ -281,6 +313,11 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
        clientController.fetchCurrentMatchesList();
     }
 
+    /**
+     * Displays the list of online matches to the logged-in player so that he can choose
+     * the match he want to watch
+     * @param matches the list of online matches
+     */
     public void displayViewMatches(List<String> matches){
         comboView.getItems().clear();
         comboView.getItems().addAll(matches);
@@ -294,8 +331,12 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * redirecting the player to the game to watch
      */
     public void okViewMatch(){
-        if(!getSelection(comboView).isEmpty()){
-            clientController.startMatchWatching(getSelection(comboView));
+        try {
+            if (!getSelection(comboView).isEmpty()) {
+                clientController.startMatchWatching(getSelection(comboView));
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_MATCH_MSG);
         }
     }
 
@@ -307,6 +348,11 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
         clientController.fetchRegisteredMatchesList();
     }
 
+    /**
+     * Displays the list of finished(saved) matches to the logged-in player so that he can choose
+     * the match he want to watch
+     * @param matches the list of finished matches
+     */
     public void displayReplayMatches(List<String> matches){
         runSafeOnFXThread(() -> {
             comboReplay.getItems().clear();
@@ -331,8 +377,12 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
      * redirecting the player to the game to replay
      */
     public void okReplayMatch(){
-        if(!getSelection(comboReplay).isEmpty()){
-            clientController.startMatchReplay(getSelection(comboReplay));
+        try {
+            if (!getSelection(comboReplay).isEmpty()) {
+                clientController.startMatchReplay(getSelection(comboReplay));
+            }
+        } catch (Exception ex){
+            showAlertMessage(ERROR_MATCH_MSG);
         }
     }
 

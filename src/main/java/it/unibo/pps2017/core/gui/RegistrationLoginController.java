@@ -22,7 +22,6 @@ public class RegistrationLoginController implements LoginGUIController, Registra
 
     private static final String LOGIN_IMG_PATH = "images/login.jpg";
     private static final String REGISTRATION_IMG_PATH = "images/registration.jpg";
-    private static final int JSON_MSG_START_INDEX = 12;
     private ClientController clientController;
 
     @FXML
@@ -34,9 +33,19 @@ public class RegistrationLoginController implements LoginGUIController, Registra
         this.registrationImg.setImage(registrationImage);
     }
 
+    @FXML
+    private void handleCheckLogin(){
+        checkLogin();
+    }
+
     @Override
     public void checkLogin() {
         clientController.sendLoginRequest(usernameLogin.getText(), pwdLogin.getText());
+    }
+
+    @FXML
+    private void handleUserRegistration(){
+        registerUser();
     }
 
     @Override
@@ -59,6 +68,9 @@ public class RegistrationLoginController implements LoginGUIController, Registra
         showAlertMessage(throwable.getMessage());
     }
 
+    /**
+     * Method that changes the GUI scene from login/registration scene to generic scene of guest player
+     */
     public void startGenericGUI() {
         clientController.startGenericGUI();
     }
