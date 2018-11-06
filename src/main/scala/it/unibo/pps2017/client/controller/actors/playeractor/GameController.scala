@@ -1,3 +1,4 @@
+
 package it.unibo.pps2017.client.controller.actors.playeractor
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
@@ -14,7 +15,7 @@ import it.unibo.pps2017.server.model.Game
 
 import scala.collection.JavaConverters._
 
-class GameController (val clientControllerRef: ClientController) extends MatchController {
+class GameController(val clientControllerRef: ClientController) extends MatchController {
 
   var playGameController: PlayGameController = _
   val clientController: ClientController = clientControllerRef
@@ -212,6 +213,7 @@ class GameController (val clientControllerRef: ClientController) extends MatchCo
     * @param player             Player that will be plays a card.
     * @param partialTurnIsEnded Boolean to know if turn is ended.
     * @param isFirstPlayer      Boolean to know if the player is the first of the turn (for show or hide commands)
+    * @param isReplay           Boolean to know if the actor is a ReplayActor
     */
   def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean, isReplay: Boolean): Unit = {
     playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer, isReplay)
@@ -230,14 +232,13 @@ class GameController (val clientControllerRef: ClientController) extends MatchCo
     * @param cardOK Boolean to know if clicked card is ok or not.
     */
   def setCardOK(cardOK: Boolean): Unit = {
-    if (cardOK) playGameController.showPlayedCardOk()
-    else playGameController.showPlayedCardError()
+    if (cardOK) playGameController.showPlayedCardOk() else playGameController.showPlayedCardError()
   }
 
   /**
     * Method to send to GUI four players of the match.
     *
-    * @param playersList layers' list of match.
+    * @param playersList Players' list of match.
     */
   def sendPlayersList(playersList: List[String]): Unit = {
     playGameController.setPlayersList(playersList.asJava)
