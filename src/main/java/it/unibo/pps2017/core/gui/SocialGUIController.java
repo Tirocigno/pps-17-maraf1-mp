@@ -292,13 +292,17 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
     @Override
     public void playNonCompetitiveMatch() {
-            socialController.startGame(MatchNature.CasualMatch$.MODULE$);
+        socialController.startGame(MatchNature.CasualMatch$.MODULE$);
     }
 
     private void playCompetitiveMatch() {
             socialController.startGame(MatchNature.CompetitiveMatch$.MODULE$);
     }
 
+    @FXML
+    private void handleWatchMatch(){
+        watchMatch();
+    }
     /**
      * Handles the click of viewMatch button by showing a combobox
      * and an ok button in way to choose the game to watch
@@ -309,6 +313,11 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
        clientController.fetchCurrentMatchesList();
     }
 
+    /**
+     * Displays the list of online matches to the logged-in player so that he can choose
+     * the match he want to watch
+     * @param matches the list of online matches
+     */
     public void displayViewMatches(List<String> matches){
         comboView.getItems().clear();
         comboView.getItems().addAll(matches);
@@ -339,6 +348,11 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
         clientController.fetchRegisteredMatchesList();
     }
 
+    /**
+     * Displays the list of finished(saved) matches to the logged-in player so that he can choose
+     * the match he want to watch
+     * @param matches the list of finished matches
+     */
     public void displayReplayMatches(List<String> matches){
         runSafeOnFXThread(() -> {
             comboReplay.getItems().clear();
