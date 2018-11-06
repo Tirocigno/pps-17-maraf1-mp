@@ -17,10 +17,10 @@ object PlayerActorClient {
   final val END_SEARCH: Int = 4
 }
 
-class PlayerActorClient(override val controller: GameController, playerid: String) extends ClientGameActor with Stash {
+class PlayerActorClient(override val controller: GameController, playerId: String) extends ClientGameActor with Stash {
 
   var actorPlayer: ClientGameActor = this
-  var user: String = playerid
+  var user: String = playerId
   var orderedPlayersList = new ListBuffer[String]()
   var gameActor: ActorRef = _
   var cardArrived: Boolean = false
@@ -53,7 +53,8 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
 
     case NotifyCommandChosen(command, player) => notifyCommandChosen(command, player)
 
-    case GameScore(winner1, winner2, score1, score2, endMatch) => communicateGameScore(winner1, winner2, score1, score2, endMatch)
+    case GameScore(winner1, winner2, score1, score2, endMatch)
+    => communicateGameScore(winner1, winner2, score1, score2, endMatch)
 
     case SetUsernamePlayer(playerUsername) => setUsername(playerUsername)
 
@@ -116,7 +117,8 @@ class PlayerActorClient(override val controller: GameController, playerid: Strin
   private def notifyCommandChosen(command: String, player: String): Unit =
     controller.updateGUI(NotifyCommandChosen(command, player))
 
-  private def communicateGameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit =
+  private def communicateGameScore(winner1: String, winner2: String,
+                                   score1: Int, score2: Int, endMatch: Boolean): Unit =
     controller.updateGUI(ComputeGameScore(user, winner1, winner2, score1, score2, endMatch))
 
   private def setUsername(playerUsername: String): Unit = user = playerUsername

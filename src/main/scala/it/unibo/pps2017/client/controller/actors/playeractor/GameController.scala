@@ -1,3 +1,4 @@
+
 package it.unibo.pps2017.client.controller.actors.playeractor
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
@@ -14,8 +15,9 @@ import it.unibo.pps2017.server.model.Game
 
 import scala.collection.JavaConverters._
 
-class GameController (val clientControllerRef: ClientController) extends MatchController {
+class GameController(val clientControllerRef: ClientController) extends MatchController {
 
+  val UNKNOWN_ERROR: String = "Unknown message received"
   var playGameController: PlayGameController = _
   val clientController: ClientController = clientControllerRef
   var currentActorRef: ActorRef = _
@@ -60,7 +62,8 @@ class GameController (val clientControllerRef: ClientController) extends MatchCo
     * @param actorRef actor's ref.
     * @return Inner value of the Option.
     */
-  def getOrThrow(actorRef: Option[ActorRef]): ActorRef = actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
+  def getOrThrow(actorRef: Option[ActorRef]): ActorRef =
+    actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
 
   /**
     * Method called from actor (Player, Viewer or Replay) to update GUI.
@@ -75,9 +78,11 @@ class GameController (val clientControllerRef: ClientController) extends MatchCo
     case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
     case NotifyCommandChosen(command, player) => sendCommand(player, command)
     case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
-    case Turn(player, endPartialTurn, isFirstPlayer, isReplay) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer, isReplay)
-    case ComputeGameScore(player, winner1, winner2, score1, score2, endMatch) => cleanFieldEndTotalTurn(player, winner1, winner2, score1, score2, endMatch)
-    case _ =>
+    case Turn(player, endPartialTurn, isFirstPlayer, isReplay)
+    => setCurrentPlayer(player, endPartialTurn, isFirstPlayer, isReplay)
+    case ComputeGameScore(player, winner1, winner2, score1, score2, endMatch)
+    => cleanFieldEndTotalTurn(player, winner1, winner2, score1, score2, endMatch)
+    case _ => playGameController.notifyError(new Throwable(UNKNOWN_ERROR))
   }
 
   override def setCurrentGui(gui: GameGUIController): Unit = {
@@ -194,14 +199,21 @@ class GameController (val clientControllerRef: ClientController) extends MatchCo
     * @param score2   Aggregated score of second team.
     * @param endMatch True if match is ended, false otherwise.
     */
-  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean): Unit = {
+  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String,
+                             score1: Int, score2: Int, endMatch: Boolean): Unit = {
 
-    if (score1 == score2) playGameController cleanFieldEndTotalTurn(score1, score2, endMatch) else {
+    if (score1 == score2)
+      playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+    else {
       if (user.equals(winner1) | user.equals(winner2)) {
-        if (score1 > score2) playGameController cleanFieldEndTotalTurn(score1, score2, endMatch) else playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
+        if (score1 > score2)
+          playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+        else playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
         this.setWinner(endMatch)
       } else {
-        if (score1 > score2) playGameController cleanFieldEndTotalTurn(score2, score1, endMatch) else playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+        if (score1 > score2)
+          playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
+        else playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
       }
     }
   }
@@ -212,6 +224,7 @@ class GameController (val clientControllerRef: ClientController) extends MatchCo
     * @param player             Player that will be plays a card.
     * @param partialTurnIsEnded Boolean to know if turn is ended.
     * @param isFirstPlayer      Boolean to know if the player is the first of the turn (for show or hide commands)
+    * @param isReplay           Boolean to know if the actor is a ReplayActor
     */
   def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean, isReplay: Boolean): Unit = {
     playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer, isReplay)
@@ -230,14 +243,13 @@ class GameController (val clientControllerRef: ClientController) extends MatchCo
     * @param cardOK Boolean to know if clicked card is ok or not.
     */
   def setCardOK(cardOK: Boolean): Unit = {
-    if (cardOK) playGameController.showPlayedCardOk()
-    else playGameController.showPlayedCardError()
+    if (cardOK) playGameController.showPlayedCardOk() else playGameController.showPlayedCardError()
   }
 
   /**
     * Method to send to GUI four players of the match.
     *
-    * @param playersList layers' list of match.
+    * @param playersList Players' list of match.
     */
   def sendPlayersList(playersList: List[String]): Unit = {
     playGameController.setPlayersList(playersList.asJava)

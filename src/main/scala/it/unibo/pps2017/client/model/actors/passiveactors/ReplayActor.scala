@@ -1,9 +1,10 @@
+
 package it.unibo.pps2017.client.model.actors.passiveactors
 
 import akka.actor.{ActorSystem, PoisonPill}
 import com.typesafe.config.ConfigFactory
 import it.unibo.pps2017.client.controller.actors.playeractor.GameController
-import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActor.{CARD_FORMAT, CARD_PATH, SendHeartbeat}
+import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActor._
 import it.unibo.pps2017.client.model.actors.passiveactors.ReplayActorStatus._
 import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
@@ -16,7 +17,8 @@ import scala.concurrent.duration._
 object ReplayActor {
   val CARD_PATH: String = "cards/"
   val CARD_FORMAT: String = ".png"
-
+  val START_DELAY: Int = 5000
+  val INTERVAL_TIME: Int = 500
   case class SendHeartbeat()
 
 }
@@ -38,9 +40,12 @@ class ReplayActor(override val controller: GameController, player: String, game:
   var currentMove: Move = _
 
   override def preStart() {
-
     currentSet = game.turns.head
-    system.scheduler.schedule(initialDelay = 5000.milliseconds, interval = 250.milliseconds, receiver = self, message = SendHeartbeat)
+    system.scheduler.schedule(
+      initialDelay = START_DELAY.milliseconds,
+      interval = INTERVAL_TIME.milliseconds,
+      receiver = self,
+      message = SendHeartbeat)
   }
 
   def receive: PartialFunction[Any, Unit] = {
@@ -83,7 +88,8 @@ class ReplayActor(override val controller: GameController, player: String, game:
   }
 
   private def computeTurnSet(): Unit = {
-    controller.updateGUI(Turn(currentHand.moves.head.player, endPartialTurn = true, isFirstPlayer = false, isReplay = true))
+    controller.updateGUI(Turn(currentHand.moves.head.player,
+      endPartialTurn = true, isFirstPlayer = false, isReplay = true))
     gameCounter = MIDDLE_SET
   }
 
@@ -107,13 +113,20 @@ class ReplayActor(override val controller: GameController, player: String, game:
   private def computeEndSet(): Unit = {
     try {
       currentSet = game.turns(game.turns.indexOf(currentSet) + 1)
-      if (team1Score > team2Score) controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score, endMatch = false)) else controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head, team1Score, team2Score, endMatch = false))
+      if (team1Score > team2Score)
+        controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head,
+          team1Score, team2Score, endMatch = false))
+      else controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head,
+        team1Score, team2Score, endMatch = false))
       gameCounter = START_SET
     } catch {
       case _: Exception => gameCounter = END_GAME
-        if (team1Score > team2Score) controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head, team1Score, team2Score, endMatch = true)) else controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head, team1Score, team2Score, endMatch = true))
+        if (team1Score > team2Score)
+          controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head,
+            team1Score, team2Score, endMatch = true))
+        else controller.updateGUI(ComputeGameScore(user, playersList.head, playersList.head,
+          team1Score, team2Score, endMatch = true))
     }
-
   }
 
   private def computeEndGame(): Unit = {
@@ -137,27 +150,47 @@ object ReplayActorStatus {
     def asString: String
   }
 
+  /**
+    * In PRE_SET state we catch four players in game and send to the Gui.
+    */
   case object PRE_SET extends ReplayActorStatus {
     override val asString: String = "pre_set"
   }
 
+  /**
+    * In STARTS_SET state we catch briscola of this turn, score of both team and cards of first player.
+    */
   case object START_SET extends ReplayActorStatus {
     override val asString: String = "start_set"
   }
 
+  /**
+    * In TURN_SET state we catch turn of next player.
+    */
   case object TURN_SET extends ReplayActorStatus {
     override val asString: String = "turn_set"
   }
 
+  /**
+    * In MIDDLE_SET state we catch every move of actual turn.
+    */
   case object MIDDLE_SET extends ReplayActorStatus {
     override val asString: String = "middle_set"
   }
 
+  /**
+    * In END_SET state we catch teams' score and reset the state to START_SET.
+    * If the match is ended, we set the state to END_GAME.
+    */
   case object END_SET extends ReplayActorStatus {
     override val asString: String = "end_set"
   }
 
+  /**
+    * In END_GAME we kill actor with PoisonPill.
+    */
   case object END_GAME extends ReplayActorStatus {
     override val asString: String = "end_game"
   }
+
 }

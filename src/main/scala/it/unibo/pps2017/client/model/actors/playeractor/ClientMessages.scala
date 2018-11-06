@@ -56,7 +56,8 @@ object ClientMessages {
     * @param isFirstPlayer  True if player is the first player of turn, false otherwise.
     * @param isReplay       True if actor is a replay actor, false otherwise.
     */
-  case class Turn(player: String, endPartialTurn: Boolean, isFirstPlayer: Boolean, isReplay: Boolean) extends ActorMessage
+  case class Turn(player: String, endPartialTurn: Boolean,
+                  isFirstPlayer: Boolean, isReplay: Boolean) extends ActorMessage
 
   /**
     * Message to inform GameActor of clicked card.
@@ -121,7 +122,8 @@ object ClientMessages {
     * @param score2   Second team score.
     * @param endMatch True if match is ended, false otherwise.
     */
-  case class GameScore(winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean) extends ActorMessage
+  case class GameScore(winner1: String, winner2: String,
+                       score1: Int, score2: Int, endMatch: Boolean) extends ActorMessage
 
   /**
     * Message to register player to topic of game.
@@ -150,7 +152,8 @@ object ClientMessages {
     * @param score2   Second team score.
     * @param endMatch True if match is ended, false otherwise.
     */
-  case class ComputeGameScore(player: String, winner1: String, winner2: String, score1: Int, score2: Int, endMatch: Boolean) extends ActorMessage
+  case class ComputeGameScore(player: String, winner1: String, winner2: String,
+                              score1: Int, score2: Int, endMatch: Boolean) extends ActorMessage
 
   /**
     * Message to set username of player.
@@ -167,7 +170,8 @@ object ClientMessages {
     * @param seed        Actual briscola chosen.
     * @param player      First player that viewer represents.
     */
-  case class RecapActualSituation(playersList: ListBuffer[String], cards: ListBuffer[String], seed: Seed, player: String) extends ActorMessage
+  case class RecapActualSituation(playersList: ListBuffer[String], cards: ListBuffer[String],
+                                  seed: Seed, player: String) extends ActorMessage
 
   /**
     * Message to inform GameActor of abandonment of match.
