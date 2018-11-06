@@ -1,6 +1,5 @@
-package it.unibo.pps2017.core.gui;
 
-import it.unibo.pps2017.client.controller.actors.playeractor.GameController;
+package it.unibo.pps2017.core.gui;
 
 import java.util.List;
 
