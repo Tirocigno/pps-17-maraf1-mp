@@ -92,6 +92,11 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
         replayButton.setDisable(true);
     }
 
+    private void enableReplayViewButtons(){
+        viewButton.setDisable(false);
+        replayButton.setDisable(false);
+    }
+
     private void disableGUIButtons(){
         viewButton.setDisable(true);
         replayButton.setDisable(true);
@@ -154,7 +159,6 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
 
         runSafeOnFXThread(() -> {
             if (this.request.equals(SocialController$.MODULE$.FRIEND_REQUEST())) {
-                System.out.println("Friend request");
                 if (responseResult.equals(POSITIVE_ANSWER)) {
                     responseFriendLabel.setText(sender + ACCEPT_MSG);
                 } else if (responseResult.equals(NEGATIVE_ANSWER)) {
@@ -163,10 +167,13 @@ public class SocialGUIController implements it.unibo.pps2017.client.view.social.
                 }
                 showAndHideTextResponse(responseFriendLabel);
             } else {
-                System.out.println("Play request");
                 if (responseResult.equals(POSITIVE_ANSWER)) {
+                    if(this.request.equals(PARTNER)){
+                        partnerButton.setDisable(true);
+                    }
                     responsePlayLabel.setText(sender + ACCEPT_MSG);
                 } else if (responseResult.equals(NEGATIVE_ANSWER)) {
+                    enableReplayViewButtons();
                     responsePlayLabel.setText(sender + REJECT_MSG);
                 }
                 showAndHideTextResponse(responsePlayLabel);
