@@ -11,7 +11,7 @@
 
 <AnchorPane prefHeight="571.0" prefWidth="600.0" style="-fx-background-color: #4286f4;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.pps2017.core.gui.SocialGUIController">
     <Button fx:id="playButton" layoutX="106.0" layoutY="146.0" mnemonicParsing="false" onMouseClicked="#handlePlayMatch" prefHeight="35.0" prefWidth="132.0" text="Play" />
-    <Button fx:id="viewButton" layoutX="106.0" layoutY="198.0" mnemonicParsing="false" onMouseClicked="#watchMatch" prefHeight="35.0" prefWidth="132.0" text="View Game" />
+    <Button fx:id="viewButton" layoutX="106.0" layoutY="198.0" mnemonicParsing="false" onMouseClicked="#handleWatchMatch" prefHeight="35.0" prefWidth="132.0" text="View Game" />
     <Label layoutX="106.0" layoutY="35.0" text="Welcome to Marafone!">
         <font>
             <Font name="Gill Sans Ultra Bold" size="28.0" />

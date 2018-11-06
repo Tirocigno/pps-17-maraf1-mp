@@ -15,12 +15,12 @@
       <Label layoutX="102.0" layoutY="456.0" style="-fx-font-weight: bold;" text="Password" />
       <TextField fx:id="usernameRegistration" layoutX="187.0" layoutY="410.0" prefHeight="25.0" prefWidth="201.0" promptText="Insert username" />
     <PasswordField fx:id="pwdRegistration" layoutX="187.0" layoutY="452.0" prefHeight="25.0" prefWidth="201.0" promptText="Insert password" />
-    <Button fx:id="registerButton" layoutX="308.0" layoutY="499.0" mnemonicParsing="false" onMouseClicked="#registerUser" prefHeight="27.0" prefWidth="80.0" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Register" />
+    <Button fx:id="registerButton" layoutX="308.0" layoutY="499.0" mnemonicParsing="false" onMouseClicked="#handleUserRegistration" prefHeight="27.0" prefWidth="80.0" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Register" />
    <Label layoutX="103.0" layoutY="114.0" style="-fx-font-weight: bold;" text="Username" />
    <Label layoutX="104.0" layoutY="151.0" style="-fx-font-weight: bold;" text="Password" />
    <TextField fx:id="usernameLogin" layoutX="188.0" layoutY="110.0" prefHeight="25.0" prefWidth="201.0" promptText="Insert username" />
    <PasswordField fx:id="pwdLogin" layoutX="188.0" layoutY="147.0" prefHeight="25.0" prefWidth="201.0" promptText="Insert password" />
-   <Button fx:id="loginButton" layoutX="308.0" layoutY="181.0" mnemonicParsing="false" onMouseClicked="#checkLogin" prefHeight="27.0" prefWidth="80.0" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Login" />
+   <Button fx:id="loginButton" layoutX="308.0" layoutY="181.0" mnemonicParsing="false" onMouseClicked="#handleCheckLogin" prefHeight="27.0" prefWidth="80.0" style="-fx-border-color: blue; -fx-border-radius: 5;" text="Login" />
    <Label layoutX="199.0" layoutY="223.0" style="-fx-font-weight: bold;" text="OR">
       <font>
          <Font size="20.0" />
