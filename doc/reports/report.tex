@@ -39,6 +39,8 @@
 \usepackage{setspace}           % serve a fornire comandi di interlinea standard
 \usepackage{xcolor}             % serve per la gestione dei colori nel testo
 \usepackage{graphicx}           % serve per includere immagini e grafici
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}} % serve a cambiare la didascalia dell'immagine basandosi sulla sezione in cui è chiamata
 
 \graphicspath{{./images/}}
 
@@ -78,7 +80,7 @@
     pdftitle={Maraph1-mp Project Report},
     pdflang={it}
 }
-\usepackage[utf8]{inputenc} % serve per avere l'indice di tutti i capitoli all'inizio 
+\usepackage[utf8]{inputenc} % serve per avere l'indice di tutti i capitoli all'inizio
 
 %\usepackage[a-1b]{pdfx}
 \usepackage[%
@@ -102,7 +104,7 @@
 
 
 \begin{document}
-	
+
     \maketitle
     \clearpage
 	\tableofcontents
@@ -111,9 +113,9 @@
       \section{Processo di sviluppo}\label{sec:process}
         \subsection {Metodologia di sviluppo}\label{subsec:metodology}
         \subsection {Strumenti adottati}\label{subsec:tools}
-        
+
         \clearpage
-        
+
     \section*{\Huge {\textbf Capitolo 2}\label{chapter2}}
     \section{Requisiti}\label{sec:requirements}
          \subsection {Requisiti utente}\label{subsec:requirements:business}
@@ -125,29 +127,91 @@
             \subsubsection[Interfaccia utente]{\large {Interfaccia grafica per l'utente}\label{subsub:requirements:gui}}
         \subsection {Requisiti non funzionali}\label{subsec:requirements:notFunctional}
         \subsection {Requisiti implementativi}\label{subsec:requirements:implementative}
-   
+
    \clearpage
-   
+
     \section{Design architetturale}\label{sec:design}
         \subsection[Architettura]{Architettura e pattern utilizzati}\label{subsec:architecture}
             \subsubsection{Architettura server-side}\label{subsub:architecture:server}
             \subsubsection{Architettura client-side}\label{subsub:architecture:client}
         \subsection{Tecnologie}\label{subsec:technologies}
-        
+
         \clearpage
-        
-    \section{Design di dettaglio}\label{sec:design:details}
-    
+
+    \section{Design di dettaglio}\label{sec:details}
+
+	In questa senzione saranno presentate le scelte effettuate a livello di desing nel dettagio. In primo luogo si tratterà dell'organizzazione generale del codice in \texttt{packages} e dei \textit{design patters} applicati più frequentemente, successivamente saranno analizzati nel particolare le principali classi di ogni modulo del sistema, presentando eventuali pattern di desing caratteristici di quella classe.
+
+    \subsection {Organizzazione del codice}\label{subsec:details:codestructure}
+    La struttura del progetto si presenta divisa in cinque \texttt{packages} principali, tre di questi corrispondono perfettamente agli elementi principali dell'architettura distribuita del sistema, i restanti due sono stati pensati come supporto ai principali.
+
+    \begin{itemize}
+    \item{\texttt{client:\/}} All'interno del \texttt{package} client viene modellata l'interazione tra un utente fruitore del gioco e
+    l'architettura remota del sistema, sono presenti quindi tutte le classi necessarie alla realizzazione dell'interfaccia grafica, al supporto delle funzionalità lato client di gioco, ricerca e aggiunta di un amico, replay e visualizzazione in tempo reale di una partita.
+
+
+    \item{\textbf{\texttt{discovery:\/}}}
+      Questo \texttt{package} contiene tutti i sorgenti relativi all'implementazione del \textit{discovery server},
+      server centralizzato che espone un servizio di pagine gialle: consente cioè di mantenere traccia di tutti i \textit{server} attivi
+      all'interno del sistema, nonchè di tutte le partite che stanno venendo disputate e dei giocatori online.
+
+    \item{\texttt{server:\/}}
+      Il \texttt{package} server comprenede i file necessari a mettere in gioco un server backend per gestire le partite,
+      il login e la registrazione degli utenti, il salvataggio in remoto dei punteggi e delle partite.
+
+    \item{\texttt{commons:\/}}
+      Uno dei due \texttt{packages} di supporto: contiene un insieme di classi e oggetti di \textit{utilities} comuni agli altri \texttt{packages} del sistema.
+
+    \item{\texttt{core:\/}}
+      Il secondo \texttt{package} che non corrisponde direttamente a un elemento dell'architettura distribuita, contiene il cuore del sistema, ovvero l'implementazione delle regole e logiche di gioco Marafone; nonostante potesse essere inserito all'interno di uno degli altri \texttt{packages}, si è scelto di mantenerlo separato, in quanto contenente un'insieme di classi ed oggetti ad alto valore per il sistema.
+
+  \end{itemize}
+
+  \subsection {Pattern di progettazione generali}\label{subsec:details:generaldesingpattern}
+  Durante l'intero processo di sviluppo e integrazione sono stati impiegati diversi \textit{desing patterns}, tra questi alcuni si sono prestati meglio di altri a un applicazione costante e ripetuta all'interno di varie strutture.\\
+  Il primo e più utilizzato tra tutti i \textit{patterns} è stato sicuramente il \texttt{Factory Method}: avendo infatti deciso di utilizzare
+  il linguaggio di Programmazione \textit{Scala} come principale linguaggio impiegato all'interno del progetto, è venuto abbastanza naturale adattare il processo di definizione dei metodi di una classe UML alla generazione di un \texttt{trait} e di realizzare la sua implementazione a una classe privata all'interno del \texttt{Companion Object} del trait in questione, mettendo a disposizione il metodo \texttt{apply()} di tale oggetto come \texttt{Factory Method}
+  Un altro pattern decisamente impiegato è stato il pattern \texttt{Strategy}, grazie all'approccio orientato al paradigma funzionale del linguaggio \textit{Scala}, è venuto molto naturale definire classi e strutture che isolassero alcuni algoritmi necessari per il loro funzionamento e permettessero di definirli dinamicamente.
+  Infine è utile citare, sebbene non ricada strettamente in all'interno di una specifica categoria di \textit{desing patterns}, la scelta di desing effettuata nel realizzare insiemi di oggetti statici: invece di utilizzare una struttura basata sulle enumerazioni, si è deciso di sfruttare i costrutti messi a disposizione dal linguaggio scala, ottenendo una soluzione composta da un \texttt{trait} che definisse il contratto da rispettare e una serie di \texttt{case objects} estendenti il \texttt{trait}.
+
+  \subsection {Core}\label{subsec:details:core}
+  Punto di partenza per il desing del sistema è stata la descrizione delle funzionalità e componenti necessarie allo svolgimento di una partita di Marafone, come mostrato dal relativo diagramma delle classi nella figura 4.1.
+
+\begin{figure}
+  \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{initialArchitecture}
+   \caption{diagramma delle classi relativo allo svolgimento di una partita}
+\end{figure}
+
+ E' importante sottolinare che tale diagramma rappresenta una visione di alto livello del sistema dal punto di vista esclusivamente della modellazione di una partita, non catturando in nessun modo caratteristiche legate ad altri domini quali la separazione del sistema secondo un modello distribuito, tuttavia posto che alcuni elementi sarebbero stati realizzati mettendo in gioco scelte di desing piuttosto complesse, il modello fornito dallo schema risultava piuttosto solido.
+ Come è possibile notare, lo schema si struttura seguendo il pattern di progettazione \textit{MVC}, dove i componenti soggetti a una maggiore complessità risultano sicuramente controller e view, mentre model risulta più solido e definito.
+ Di conseguenza si è scelto di catturare all'interno del \texttt{package core} la componente di modello della partita, identificandone i principali componenti:
+
+\begin{itemize}
+  \item{\texttt{mazzo di gioco:\/}} all'interno del package \texttt{deck} sono presenti tutte le strutture e funzionalità necessarie alla gestione del mazzo di gioco, come ad esempio la divisione delle carte nelle mani dei giocatori e il mescolamento delle stesse all'interno del mazzo; viene definita inoltre la struttura necessaria per la registrazione e calcolo del punteggio durante la partita.
+
+
+  \item{\texttt{ciclo di gioco:\/}} il package \texttt{game} contiene l'insieme delle regole e procedure che regolano una partita tra quattro giocatori, definendo inoltre i concetti di set, team e match.
+
+  \item{\texttt{giocatore:\/}} definisce il concetto di giocatore e le operazioni possibili da parte di quest'ultimo.
+
+\end{itemize}
+
+  Per quanto riguarda le funzionalità di controller e gui, esse sono state realizzate all'interno di core in un primo momento, ma sono poi state integrate nei moduli più adeguati al loro utilizzo.
+
+\subsection {Discovery}\label{subsec:details:discovery}
+
+
+
     \clearpage
-    
+
     \section{Implementazione}\label{sec:implementation}
         \subsection{Nicholas Brasini}\label{subsec:brasini}
         \subsection{Gjulio Jakova}\label{subsec:jakova}
         \subsection{Federico Naldini}\label{subsec:naldini}
         \subsection{Jacopo Riciputi}\label{subsec:riciputi}
-        
+
         \clearpage
-        
+
     \section{Retrospettiva}\label{sec:retrospective}
 
 \end{document}
