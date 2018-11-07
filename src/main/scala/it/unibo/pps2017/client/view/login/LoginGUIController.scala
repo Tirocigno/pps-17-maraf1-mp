@@ -1,7 +1,6 @@
 
 package it.unibo.pps2017.client.view.login
 
-import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.view.GUIController
 
 /**

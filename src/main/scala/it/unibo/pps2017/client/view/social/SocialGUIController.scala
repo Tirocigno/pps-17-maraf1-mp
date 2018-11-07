@@ -4,6 +4,9 @@ import java.util
 
 import it.unibo.pps2017.client.view.GUIController
 
+/**
+  * Trait to be extended by every SocialGUI controller implementation.
+  */
 trait SocialGUIController extends GUIController {
 
   /**

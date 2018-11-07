@@ -8,6 +8,7 @@ package object view {
 
   /**
     * Trait to represent all possible stages handled by the GUI.
+    * A stage defines a non ambiguous javafx scene reference, to make easier scene identification and handling.
     */
   sealed trait GUIStage
 
