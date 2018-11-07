@@ -78,6 +78,8 @@
     pdftitle={Maraph1-mp Project Report},
     pdflang={it}
 }
+\usepackage[utf8]{inputenc} % serve per avere l'indice di tutti i capitoli all'inizio 
+
 %\usepackage[a-1b]{pdfx}
 \usepackage[%
     english,italian,    % definizione delle lingue da usare
@@ -98,41 +100,54 @@
     \small{Anni accademici 2017--2018 e 2018--2019}
 }
 
+
 \begin{document}
-
+	
     \maketitle
-
-    \section{Processo di sviluppo}\label{sec:process}
-      \includegraphics{images/happyDog}
-        \subsection{Metodologia di sviluppo}\label{subsec:metodology}
-            \subsubsection{Modalità di divisione dei task}\label{subsub:task}
-            \subsubsection{Interazioni pianificate}\label{subsub:interations}
-            \subsubsection{Modalità di revisione dei task}\label{subsub:revision}
-        \subsection{Strumenti adottati}\label{subsec:tools}
-            \subsubsection{Linguaggi}\label{subsub:languages}
-            \subsubsection{Framework}\label{subsub:framework}
-            \subsubsection{Continuous Integration}\label{subsub:ci}
+    \clearpage
+	\tableofcontents
+	\clearpage
+    \section*{\Huge {Capitolo 1}\label{chapter1}}
+      \section{Processo di sviluppo}\label{sec:process}
+        \subsection {Metodologia di sviluppo}\label{subsec:metodology}
+        \subsection {Strumenti adottati}\label{subsec:tools}
+        
+        \clearpage
+        
+    \section*{\Huge {\textbf Capitolo 2}\label{chapter2}}
     \section{Requisiti}\label{sec:requirements}
-        \subsection{Requisiti utente}\label{subsec:requirements:business}
-        \subsection{Requisiti funzionali}\label{subsec:requirements:functional}
-            \subsubsection[Gioco]{Regole del gioco}\label{subsub:requirements:game}
-            \subsubsection[Autenticazion]{Servizio di autenticazione}\label{subsub:requirements:auth}
-            \subsubsection[Stanze di gioco]{Servizio delle stanze di gioco}\label{subsub:requirements:lobby}
-            \subsubsection[Service discovery]{Servizio di discovery dei servizi}\label{subsub:requirements:discovery}
-            \subsubsection[Interfaccia utente]{Interfaccia grafica per l'utente}\label{subsub:requirements:gui}
-        \subsection{Requisiti non funzionali}\label{subsec:requirements:notFunctional}
-        \subsection{Requisiti implementativi}\label{subsec:requirements:implementative}
+         \subsection {Requisiti utente}\label{subsec:requirements:business}
+             \subsection {Requisiti funzionali}\label{subsec:requirements:functional}
+            \subsubsection[Gioco]{\large {Regole del gioco}\label{subsub:requirements:game}}
+            \subsubsection[NoAutenticazion]{\large {Servizio di gioco senza autenticazione}\label{subsub:requirements:noauth}}
+            \subsubsection[Autenticazion]{\large {Servizio di gioco con autenticazione}\label{subsub:requirements:auth}}
+            \subsubsection[Stanze di gioco]{\large {Servizio delle stanze di gioco}\label{subsub:requirements:lobby}}
+            \subsubsection[Interfaccia utente]{\large {Interfaccia grafica per l'utente}\label{subsub:requirements:gui}}
+        \subsection {Requisiti non funzionali}\label{subsec:requirements:notFunctional}
+        \subsection {Requisiti implementativi}\label{subsec:requirements:implementative}
+   
+   \clearpage
+   
     \section{Design architetturale}\label{sec:design}
         \subsection[Architettura]{Architettura e pattern utilizzati}\label{subsec:architecture}
             \subsubsection{Architettura server-side}\label{subsub:architecture:server}
             \subsubsection{Architettura client-side}\label{subsub:architecture:client}
         \subsection{Tecnologie}\label{subsec:technologies}
+        
+        \clearpage
+        
     \section{Design di dettaglio}\label{sec:design:details}
+    
+    \clearpage
+    
     \section{Implementazione}\label{sec:implementation}
-        \subsection{Nicholas Brasini}\label{subsec:maltoni}
-        \subsection{Gjulio Jakova}\label{subsec:semprini}
-        \subsection{Federico Naldini}\label{subsec:soro}
-        \subsection{Jacopo Riciputi}\label{subsec:valgimigli}
+        \subsection{Nicholas Brasini}\label{subsec:brasini}
+        \subsection{Gjulio Jakova}\label{subsec:jakova}
+        \subsection{Federico Naldini}\label{subsec:naldini}
+        \subsection{Jacopo Riciputi}\label{subsec:riciputi}
+        
+        \clearpage
+        
     \section{Retrospettiva}\label{sec:retrospective}
 
 \end{document}
