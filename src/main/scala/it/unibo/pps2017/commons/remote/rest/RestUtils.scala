@@ -29,6 +29,12 @@ object RestUtils {
     */
   implicit val formats: DefaultFormats.type = DefaultFormats
 
+  /**
+    * Class to encapsulate a pair of an ip address and a port.
+    *
+    * @param ipAddress the ip address of a server
+    * @param port      the port of a server.
+    */
   case class ServerContext(ipAddress: IPAddress, port: Port)
 
   /**

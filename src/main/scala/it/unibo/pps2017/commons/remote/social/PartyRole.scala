@@ -15,24 +15,36 @@ sealed trait PartyRole {
 
 object PartyRole {
 
+  /**
+    * Leader role.
+    */
   case object Leader extends PartyRole {
     override def asRestParameter: String = FoundGameRestAPI.meParamKey
 
     override def asString: String = "Leader"
   }
 
+  /**
+    * Partner Role
+    */
   case object Partner extends PartyRole {
     override def asRestParameter: String = FoundGameRestAPI.partnerParam
 
     override def asString: String = "Partner"
   }
 
+  /**
+    * Foe role.
+    */
   case object Foe extends PartyRole {
     override def asRestParameter: String = FoundGameRestAPI.vsParam
 
     override def asString: String = "Foe"
   }
 
+  /**
+    * Foe partner role.
+    */
   case object FoePartner extends PartyRole {
     override def asRestParameter: String = FoundGameRestAPI.vsPartnerParam
 
@@ -42,7 +54,7 @@ object PartyRole {
 }
 
 /**
-  * A role containing the id of the player who plays as that role.
+  * A trait containing a player reference and the role as which he will fit inside the party.
   */
 sealed trait PartyPlayer {
   def playerReference: PlayerReference
@@ -50,8 +62,18 @@ sealed trait PartyPlayer {
 
 object PartyPlayer {
 
+  /**
+    * Partner player.
+    *
+    * @param playerReference the playerReference of that player.
+    */
   case class PartnerPlayer(playerReference: PlayerReference) extends PartyPlayer
 
+  /**
+    * Foe player.
+    *
+    * @param playerReference the playerReference of that player.
+    */
   case class FoePlayer(playerReference: PlayerReference) extends PartyPlayer
 
 }
