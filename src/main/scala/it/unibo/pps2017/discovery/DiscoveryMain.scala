@@ -3,6 +3,11 @@ package it.unibo.pps2017.discovery
 import io.vertx.scala.core.Vertx
 import org.rogach.scallop.ScallopConf
 
+/**
+  * Class to be used to parse CLI commands, the values declared inside specify name and type of the arguments to parse.
+  *
+  * @param arguments the programs arguments as an array of strings.
+  */
 class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
   val myip = opt[String]()
   val myport = opt[Int]()
