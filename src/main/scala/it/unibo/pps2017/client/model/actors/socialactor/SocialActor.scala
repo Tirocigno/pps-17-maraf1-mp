@@ -19,11 +19,10 @@ import it.unibo.pps2017.discovery.actors.RegistryActor
 import it.unibo.pps2017.discovery.actors.RegistryActor.{AddUserToRegisterMessage, HeartBeatMessage, OnlinePlayerListMessage, RemoveUserFromRegisterMessage}
 
 /**
-  * The socialActor will be responsable of all the function in which real time
+  * The socialActor will be responsible of all the function in which real time
   * connection is necessary, such as sending and receiving friendship and
   * challenge requests.
   */
-
 trait SocialActor extends ModelActor {
   override val controller: SocialController
 }
@@ -74,6 +73,11 @@ object SocialActor {
       case SubscribeAck(_) => controller.startHeartBeatRequest()
     }
 
+    /**
+      * Handler for an heartbeat message.
+      *
+      * @param sender actorRef of the message sender.
+      */
     private def heartBeatHandler(sender: ActorRef): Unit = remoteRegistryActor match {
       case Some(_) =>
       case None =>
@@ -81,12 +85,20 @@ object SocialActor {
         sender ! AddUserToRegisterMessage(currentContext.playerID, currentContext.playerRef)
     }
 
+    /**
+      * Handler for an OnlinePlayerListMessage message.
+      *
+      * @param socialMap a map containing the current online players usernames and actorRefs.
+      */
     private def onlinePlayerListMessageHandler(socialMap: SocialMap): Unit = {
       val players = socialMap.map(entry => PlayerReference(entry._1, entry._2)).toList
       socialPlayersMap.setOnlinePlayerList(players)
       updatePlayersList()
     }
 
+    /**
+      * Handler for the KillYourSelfMessage message.
+      */
     private def killYourSelfHandler(): Unit = {
       remoteRegistryActor match {
         case Some(actorRef) => actorRef ! RemoveUserFromRegisterMessage(currentContext.playerID)
@@ -95,6 +107,11 @@ object SocialActor {
       self ! PoisonPill
     }
 
+    /**
+      * Check if a request is already processed, if it is, then stash the message, else register that request.
+      *
+      * @param message the message to process.
+      */
     private def stashOrElse(message: RequestMessage): Unit = {
       if (requestHandler.isAlreadyProcessingARequest) {
         stash()
@@ -106,7 +123,14 @@ object SocialActor {
       }
     }
 
-
+    /**
+      * Generic version of the stashOrElse function.
+      *
+      * @param message      the message to process.
+      * @param arg          the argument to be passed to the handler
+      * @param elseStrategy a strategy function to be applied if the message is not stashed.
+      * @tparam A the generic type of the argument.
+      */
     private def stashOrElse[A](message: RequestMessage, arg: A, elseStrategy: A => Unit): Unit = {
       if (requestHandler.isAlreadyProcessingARequest) {
         stash()
@@ -117,6 +141,11 @@ object SocialActor {
       }
     }
 
+    /**
+      * Handler for TellAddFriendRequest message.
+      *
+      * @param friendID the username of the player to contact.
+      */
     private def tellAddFriendRequestHandler(friendID: PlayerID): Unit = {
       try {
           socialPlayersMap.getPlayerID(friendID) ! AddFriendRequestMessage(currentContext)
@@ -125,10 +154,20 @@ object SocialActor {
       }
     }
 
+    /**
+      * Handler for AddFriendRequest message.
+      *
+      * @param sender message sender's username.
+      */
     private def addFriendRequestHandler(sender: PlayerReference): Unit = {
       socialPlayersMap.registerUser(sender.playerID, sender.playerRef)
     }
 
+    /**
+      * Handler for TellAddFriendResponse message.
+      *
+      * @param response the response to send.
+      */
     private def tellAddFriendResponseHandler(response: SocialResponse): Unit = {
       response match {
         case PositiveResponse =>
@@ -139,6 +178,12 @@ object SocialActor {
       unstashAll()
     }
 
+    /**
+      * Handler for AddFriendResponse message.
+      *
+      * @param response the response to send.
+      * @param playerID the message sender's username.
+      */
     private def addFriendResponseHandler(response: SocialResponse, playerID: PlayerID): Unit = response match {
       case PositiveResponse => controller.registerNewFriend(playerID)
         socialPlayersMap.updateFriendList(playerID)
@@ -146,6 +191,12 @@ object SocialActor {
       case _ =>
     }
 
+    /**
+      * Handler for TellInvitePlayerRequest message.
+      *
+      * @param playerID username of the player to contact.
+      * @param role     the role on which the recipient will play.
+      */
     private def tellInvitePlayerRequestMessage(playerID: PlayerID, role: PartyRole): Unit = {
       try {
         socialPlayersMap.getPlayerID(playerID) ! InvitePlayerRequestMessage(currentContext, role)
@@ -154,11 +205,23 @@ object SocialActor {
       }
     }
 
+    /**
+      * Handler for TellInvitePlayerResponse message.
+      *
+      * @param socialResponse the response to send.
+      */
     private def tellInvitePlayerResponseHandler(socialResponse: SocialResponse): Unit = {
       requestHandler.respondToRequest(socialResponse)
       unstashAll()
     }
 
+    /**
+      * Handler for InvitePlayerResponse message.
+      *
+      * @param socialResponse the response to send.
+      * @param myRole         a PartyPlayer object, which contains the player id and the game role specified by the request.
+      * @param partnerRole    the reference to the partner, if present.
+      */
     private def invitePlayerResponseHandler(socialResponse: SocialResponse, myRole: PartyPlayer,
                                             partnerRole: Option[PlayerReference]): Unit = socialResponse match {
       case NegativeResponse =>
@@ -166,6 +229,12 @@ object SocialActor {
         controller.updateParty(socialParty.getAllPlayers.map(r => (r._1, r._2.playerID)))
     }
 
+    /**
+      * Update the internal party.
+      *
+      * @param player  the player, saved as a PartyPlayer, to register inside the party.
+      * @param partner player's partner reference, if present.
+      */
     private def updateParty(player: PartyPlayer, partner: Option[PlayerReference]): Unit = player match {
       case PartnerPlayer(reference) => socialParty.setPlayerInParty(Partner, reference)
       case FoePlayer(reference) =>
@@ -175,12 +244,18 @@ object SocialActor {
         }
     }
 
+    /**
+      * Build a parameter map for start game request based on the current party state.
+      */
     private def buildStartGameRequest(): Unit = {
       val parameterMap: Map[String, String] =
         socialParty.getAllPlayers.map(tuple => (tuple._1.asRestParameter, tuple._2.playerID))
       controller.executeFoundGameCall(parameterMap)
     }
 
+    /**
+      * Update online strangers and online friends lists inside the GUI.
+      */
     private def updatePlayersList(): Unit = {
       controller.updateOnlinePlayerList(socialPlayersMap.getAllOnlineStrangers)
       controller.updateOnlineFriendsList(socialPlayersMap.getAllOnlineFriends)
