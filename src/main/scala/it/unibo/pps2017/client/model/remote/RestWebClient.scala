@@ -43,6 +43,11 @@ sealed trait RestWebClient {
     */
   def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]]): Unit
 
+  /**
+    * Getter for the assigned server context, if present.
+    *
+    * @return a ServerContext object containing the reference server IP and Port.
+    */
   def getCurrentServerContext: ServerContext = assignedServerContext.get
 }
 
@@ -97,13 +102,6 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       */
     private def reportErrorToController(throwable: Throwable): Unit = clientController.notifyError(throwable)
 
-
-    /**
-      * Retrieve the body of an async response as a Future[String], if body is not present, throw NoSuchField exception.
-      */
-    private def getResponseBody(response: HttpResponse[Buffer]): String =
-      response.bodyAsString().getOrElse(throw new NoSuchFieldException("Response body not found"))
-
     /**
       * Deserialize a json string and return a ServerContext.
       *
@@ -140,7 +138,7 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
     * @param paramMap        the parameters inside the request.
     * @param successCallBack the callback to resume when the response is ready.
     * @param context         the server to contact.
-    * @pathParameter parameters passed in the path.
+    * @param pathParameter   parameters passed in the path.
     */
   def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
                 successCallBack: Option[String] => Unit, context: ServerContext, pathParameter: String): Unit = {

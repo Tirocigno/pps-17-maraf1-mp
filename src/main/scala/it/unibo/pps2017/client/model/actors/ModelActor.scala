@@ -23,6 +23,6 @@ trait ModelActor extends Actor {
 }
 
 /**
-  * Trait to be extended by all the messages received by the client actor.
+  * Trait to be extended by all the messages received by the client actors.
   */
 trait ActorMessage

@@ -20,6 +20,11 @@ class ClientMain extends Application {
   }
 }
 
+/**
+  * Class to be used to parse CLI commands, the values declared inside specify name and type of the arguments to parse.
+  *
+  * @param arguments the programs arguments as an array of strings.
+  */
 class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
   val discoveryip = opt[String]()
   val currentip = opt[String]()

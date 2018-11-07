@@ -6,7 +6,7 @@ import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.client.model.actors.ActorMessage
 import it.unibo.pps2017.client.view.social.SocialGUIController
 import it.unibo.pps2017.commons.remote.game.MatchNature
-import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID, SocialMap}
+import it.unibo.pps2017.commons.remote.social.SocialUtils.{FriendList, PlayerID}
 import it.unibo.pps2017.commons.remote.social.{PartyRole, SocialResponse}
 
 /**
@@ -17,8 +17,6 @@ class MockSocialController extends SocialController {
   override var currentActorRef: ActorRef = _
 
   override def notifyCallResultToGUI(message: Option[String]): Unit = {}
-
-  override def setOnlinePlayerList(playerList: SocialMap): Unit = {}
 
   override def notifyErrorToGUI(throwable: Throwable): Unit = {}
 

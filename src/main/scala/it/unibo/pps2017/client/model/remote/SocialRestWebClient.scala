@@ -33,15 +33,30 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
   private def registerAndUnregisterSocialIDCallBack(responseBody: Option[String]): Unit =
     println(responseBody.get)
 
+  /**
+    * CallBack for the GetAllFriends API
+    *
+    * @param responseBody the body of the response.
+    */
   private def getAllFriendsCallBack(responseBody: Option[String]): Unit = {
     val friendList = read[UserFriends](responseBody.get).friends.toList
     socialController.setFriendsList(friendList)
   }
 
+  /**
+    * CallBack for the AddAFriend API
+    *
+    * @param responseBody the body of the response.
+    */
   private def addAFriendCallBack(responseBody: Option[String]): Unit = {
     socialController.notifyCallResultToGUI(responseBody)
   }
 
+  /**
+    * CallBack for the GetUser API
+    *
+    * @param responseBody the body of the response.
+    */
   private def getUserCallBack(responseBody: Option[String]): Unit = {
     val scores = read[User](responseBody.get).score
     socialController.setScoreInsideGUI(scores)

@@ -88,6 +88,12 @@ object GuiStack {
 
     override def stage: Stage = mainStage.get
 
+    /**
+      * Switch scene inside the main stage.
+      *
+      * @param scene the scene to display.
+      * @param stage the GuiStage on which the gui is entering.
+      */
     private def switchScene(scene: Scene, stage: GUIStage): Unit = {
       mainStage.get.setScene(scene)
       stage match {
@@ -96,15 +102,28 @@ object GuiStack {
      }
     }
 
+    /**
+      * Load a new scene.
+      *
+      * @param controller the controller to bind to the created scene.
+      * @param stage      the GUIStage at which the scene will be associated.
+      * @return a scene built and bound to the specified controller.
+      */
     private def loadScene(controller: Controller, stage: GUIStage): Scene = {
       guiLoader.deployGuiStage(controller, stage)
     }
 
+    /**
+      * Set the dimensions for the GameStage
+      */
     private def setGameStage(): Unit = {
       mainStage.get.setResizable(true)
       mainStage.get.centerOnScreen()
     }
 
+    /**
+      * Set the dimensions for every stage, except the GameStage.
+      */
     private def setOtherScene(): Unit = {
       mainStage.get.setFullScreen(false)
       mainStage.get.setResizable(false)

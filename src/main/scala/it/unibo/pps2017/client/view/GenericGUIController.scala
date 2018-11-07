@@ -1,8 +1,10 @@
 package it.unibo.pps2017.client.view
 
-import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.commons.remote.rest.RestUtils.MatchRef
 
+/**
+  * Trait to be extended by every generic gui implementation.
+  */
 trait GenericGUIController extends GUIController {
 
   /**

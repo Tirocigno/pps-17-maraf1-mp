@@ -7,7 +7,7 @@ import it.unibo.pps2017.commons.remote.social.PartyRole.{Leader, Partner}
 import it.unibo.pps2017.commons.remote.social.SocialUtils.PlayerReference
 
 /**
-  * This trait handle the party component of every socialcontroller actor.
+  * This trait handles the player's party.
   */
 trait SocialParty {
 

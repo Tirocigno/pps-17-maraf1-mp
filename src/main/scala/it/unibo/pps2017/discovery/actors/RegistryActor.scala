@@ -10,6 +10,7 @@ import it.unibo.pps2017.discovery.structures.SocialActorsMap
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 
 /**
@@ -23,23 +24,22 @@ class RegistryActor extends Actor {
 
   override def receive: Receive = {
     case AddUserToRegisterMessage(playerID, actorRef) =>
-      println("ATTORE REGISTRATO")
       socialActorsMap.registerUser(playerID, actorRef)
       notifyListUpdate()
     case RemoveUserFromRegisterMessage(playerID) =>
-      println("ATTORE RIMOSSO")
       socialActorsMap.unregisterUser(playerID)
       notifyListUpdate()
     case HeartBeatMessage(_) => {
       context.system.scheduler.scheduleOnce(RegistryActor.BEAT_DELAY second) {
-        println("PUBBLICO SUL CANALE")
         mediator ! Publish(RegistryActor.SOCIAL_CHANNEL, HeartBeatMessage(self))
       }
     }
   }
 
+  /**
+    * Publish the current players list on the channel.
+    */
   private def notifyListUpdate(): Unit = {
-    println("UPDATE PUBBLICATO")
     mediator ! Publish(RegistryActor.SOCIAL_CHANNEL, OnlinePlayerListMessage(socialActorsMap.getCurrentOnlinePlayerMap))
   }
 }

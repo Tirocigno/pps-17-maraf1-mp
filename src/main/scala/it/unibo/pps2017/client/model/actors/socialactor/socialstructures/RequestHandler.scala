@@ -43,8 +43,7 @@ trait RequestHandler {
 object RequestHandler {
 
   def apply(currentPlayerRef: PlayerReference, currentParty: SocialParty, currentPlayerMap: SocialPlayersMap,
-            socialController: SocialController)
-  : RequestHandler =
+            socialController: SocialController): RequestHandler =
     new RequestHandlerImpl(currentPlayerRef, currentParty, currentPlayerMap, socialController)
 
   private class RequestHandlerImpl(val currentPlayerRef: PlayerReference, val currentParty: SocialParty,

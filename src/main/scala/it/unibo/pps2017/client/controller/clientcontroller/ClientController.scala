@@ -19,7 +19,10 @@ import it.unibo.pps2017.server.model.ServerApi._
 
 import scala.collection.JavaConverters._
 
-
+/**
+  * The main controller of all the client, most of the interactions inside the client will call eventually
+  * this controller, so it's provided as a singleton instance.
+  */
 sealed trait ClientController extends Controller {
 
   /**
@@ -32,13 +35,13 @@ sealed trait ClientController extends Controller {
   /**
     * Set the GUI inside the ClientController.
     *
-    * @param gui a GenericGUIController to be set inside the clientcontroller.
+    * @param gui a GenericGUIController or LoginGUIController.
     */
   def setCurrentGUI(gui: GUIController): Unit
 
 
   /**
-    * Start an actorsystem which will join the seed disposed by the discovery.
+    * Start an Actor system which will join the seeds of an Akka cluster instance.
     *
     * @param seedHost IP address of the seeds.
     * @param myIP     IP address of the machine on which actor system is running.
@@ -99,7 +102,7 @@ sealed trait ClientController extends Controller {
   /**
     * Display current played matches.
     *
-    * @param playedMatches a list containing all matchIDs as strings.
+    * @param playedMatches a list containing all current played matches IDs as strings.
     */
   def displayCurrentMatchesList(playedMatches: List[MatchRef]): Unit
 
@@ -109,9 +112,9 @@ sealed trait ClientController extends Controller {
   def fetchRegisteredMatchesList(): Unit
 
   /**
-    * Display the archive of matches.
+    * Display the archive of matches played.
     *
-    * @param playedMatches a list containing all matchIDs as String
+    * @param playedMatches a list containing all registered matchIDs as strings.
     */
   def displayRegisteredMatchesList(playedMatches: List[MatchRef]): Unit
 
@@ -130,9 +133,9 @@ sealed trait ClientController extends Controller {
   def startMatchReplay(matchID: String): Unit
 
   /**
-    * Execute a match replay based on the game taken as input.
+    * Execute a match replay based on the game retrieved from the server.
     *
-    * @param gameToReplay the game to be replayed.
+    * @param gameToReplay the game to replay.
     */
   def handleMatchReplay(gameToReplay: Game): Unit
 
@@ -152,9 +155,9 @@ object ClientController {
   private val staticController = new ClientControllerImpl
 
   /**
-    * Apply is not used in order to mantain the singleton reference outside the object implementation.
+    * Static method to get the singleton controller.
     *
-    * @return the singleton clientController
+    * @return the singleton clientController.
     */
   def getSingletonController: ClientController = staticController
 
@@ -183,14 +186,13 @@ object ClientController {
     }
 
 
-    override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit = {
+    override def startActorSystem(seedHost: IPAddress, myIP: IPAddress): Unit =
       actorSystem = Some(AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(seedHost, "0", myIP))
-    }
 
 
-    override def createRestClient(discoveryIP: String, discoveryPort: Port): Unit = {
+    override def createRestClient(discoveryIP: String, discoveryPort: Port): Unit =
       webClient = Some(GameRestWebClient(ServerContext(discoveryIP, discoveryPort)))
-    }
+
 
     override def sendMatchRequest(matchNature: MatchNature,
                                   paramMap: Option[Map[String, String]]): Unit = paramMap match {
@@ -208,10 +210,8 @@ object ClientController {
 
     override def handleMatchResponse(gameID: String): Unit = {
       gameController.createActor(this.playerName, actorSystem.get)
-
       guiStack.setCurrentScene(GameStage, gameController)
       gameController.joinPlayerToMatch(gameID)
-
       socialController match {
         case Some(controller) => controller.notifyAllPlayersGameID(gameID)
         case None =>
@@ -220,13 +220,7 @@ object ClientController {
 
     override def sendLoginRequest(userName: String, password: String): Unit = {
       unconfirmedUserName = userName
-      launchAutentichationAPI(LoginAPI, userName, password)
-    }
-
-
-    private def launchAutentichationAPI(api: RestAPI, username: String, password: String): Unit = {
-      val map = Map(LoginAPI.password -> password)
-      webClient.get.callRemoteAPI(api, Some(map), username)
+      launchAuthenticationAPI(LoginAPI, userName, password)
     }
 
     override def handleLoginAndRegistrationResponse(message: String): Unit = {
@@ -237,22 +231,10 @@ object ClientController {
     override def fetchCurrentMatchesList(): Unit =
       webClient.get.callRemoteAPI(GetAllMatchesAPI, None)
 
-    private def startMatch(paramMap: Map[String, String], matchNature: MatchNature): Unit = matchNature match {
-      case MatchNature.CasualMatch => {
-        println("MAPPA: " + paramMap)
-        webClient.get.callRemoteAPI(FoundGameRestAPI, Some(paramMap))
-      }
-      case MatchNature.CompetitiveMatch => val map = paramMap +
-        (FoundGameRestAPI.RANKED_PARAMETER -> FoundGameRestAPI.RANKED_VALUE)
-        webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
-    }
-
     override def sendRegisterRequest(userName: String, password: String): Unit = {
       unconfirmedUserName = userName
-      launchAutentichationAPI(AddUserAPI, userName, password)
+      launchAuthenticationAPI(AddUserAPI, userName, password)
     }
-
-
 
     override def startMatchWatching(matchID: String): Unit = {
       guiStack.setCurrentScene(GameStage, gameController)
@@ -293,6 +275,33 @@ object ClientController {
     }
 
     override def startGenericGUI(): Unit = guiStack.setCurrentScene(GenericStage, this)
+
+    /**
+      * Tell the web client to execute a Login or Registration call based on the api parameter.
+      *
+      * @param api      the api to invoke on the server.
+      * @param username username parameter for the api call.
+      * @param password password parameter for the api call.
+      */
+    private def launchAuthenticationAPI(api: RestAPI, username: String, password: String): Unit = {
+      val map = Map(LoginAPI.password -> password)
+      webClient.get.callRemoteAPI(api, Some(map), username)
+    }
+
+    /**
+      * Invoke a FoundGame API, if the matchNature is competitive, then adds the competitive value inside the
+      * parameters Map.
+      *
+      * @param paramMap    the parameters map containing the players identifiers and roles.
+      * @param matchNature the match nature, can be competitive or casual.
+      */
+    private def startMatch(paramMap: Map[String, String], matchNature: MatchNature): Unit = matchNature match {
+      case MatchNature.CasualMatch =>
+        webClient.get.callRemoteAPI(FoundGameRestAPI, Some(paramMap))
+      case MatchNature.CompetitiveMatch => val map = paramMap +
+        (FoundGameRestAPI.RANKED_PARAMETER -> FoundGameRestAPI.RANKED_VALUE)
+        webClient.get.callRemoteAPI(FoundGameRestAPI, Some(map))
+    }
 
     /**
       * Define the operation to do after a successful authentication.
