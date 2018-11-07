@@ -110,19 +110,111 @@
     \section*{\Huge {Capitolo 1}\label{chapter1}}
       \section{Processo di sviluppo}\label{sec:process}
         \subsection {Metodologia di sviluppo}\label{subsec:metodology}
+        Il primo passaggio per poter iniziare a lavorare al progetto d'esame per la materia Paradigmi di Programmazione e Sviluppo è stato quello di selezionare la modalità con cui procedere per sviluppare il progetto stesso. Abbiamo dunque scelto di utilizzare una forma semplificata di metodologia \textbf{Agile Scrum}. Nella versione da noi adottata i quattro membri sono tutti allo stesso livello: abbiamo infatti scelto di rinunciare alla figura dello \textbf{Scrum Manager} dal momento in cui siamo partiti tutti dalla stessa base di conoscenze relative a questa metodologia e abbiamo preferito non sovraccaricare di lavoro un solo membro del team, responsabilizzando ognuno di noi a lavorare al meglio delle proprie possibilità per semplificare il lavoro degli altri. Come abbiamo studiato nel corso, ci siamo resi conto di dover utilizzare un supporto tecnologico per poter gestire efficientemente i singoli sprint. A questo proposito abbiamo scelto \textbf{Trello}, un'applicazione per gestire progetti di qualunque tipologia che ci ha permesso di poter controllare il progresso dei diversi compiti assegnati ad ogni membro del team (una panoramica più specifica dell'utilizzo di questo strumento verrà presentata nel Capitolo 5). Nel corso della prima riunione effettuata dopo aver ricevuto l'approvazione della proposta di progetto, abbiamo stabilito che gli sprint avrebbero avuto cadenza settimanale (nella fattispecie ogni giovedì pomeriggio) e che sarebbero stati cinque (numero medio consigliato per chi adotta la metodologia Agile in un contesto di questo tipo). In generale, nel corso di ogni riunione settimanale, abbiamo valutato quanto fatto nel corso della settimana trascorsa ma soprattutto abbiamo stabilito quali \textit{item} (elementi) del \textit{product backlog} sviluppare in vista dell'incontro della settimana successiva, dopo aver fatto una stima del costo di ciascun item. L'assegnamento degli item è stato fatto di comune accordo, secondo le richieste e le capacità di ciascuno in maniera tale da agevolare chi avesse già conoscenze pregresse per esempio in ambito di database o di comunicazione ad attori. Abbiamo poi previsto la possibilità che alcuni membri del team potessero contattarsi e coordinarsi individualmente, come ad esempio è successo nel caso dell'integrazione della versione core, senza bisogno di dover interpellare tutto il team. Oltre all'incontro settimanale, abbiamo deciso di effettuare \textbf{Daily Scrum} della durata di una decina di minuti, che ci hanno consentito di calarci fino in fondo nella parte di sviluppo Agile ma soprattutto di poter gestire meglio tutti gli item sui quali stavamo lavorando. Così facendo, ci siamo accorti che in alcune situazioni gli item definiti in precedenza avrebbero avuto bisogno di essere ritoccati: il singolo membro del team aveva dunque la possibilità di informare gli altri giornalmente su eventuali modifiche apportate ad uno o più item su cui stava lavorando. Questa scelta si è rivelata essere particolarmente fruttuosa, poiché ogni membro del team si è sentito responsabilizzato e ha potuto effettuare cambiamenti in corso d'opera senza per questo inficiare il lavoro dei propri colleghi. In generale la scelta di adottare questa metodologia di sviluppo ha soddisfatto tutti i componenti del team, che si sono resi conto di quanto il raggiungere settimanalmente un risultato abbia portato un maggior entusiasmo e vitalità per poter affrontare gli incarichi successivi. Oltre a questa motivazione, è importante sottolineare come, in ottica futura, la possibilità di presentare ad un ipotetico cliente il prodotto che viene realizzato di settimana in settimana possa stimolarlo e renderlo più partecipe alla vita del progetto, con i risultati che tenderanno ad essere migliori rispetto ad un approccio di tipo classico.
+        
+        
         \subsection {Strumenti adottati}\label{subsec:tools}
+        Dopo aver optato per la metodologia di sviluppo descritta nel paragrafo precedente, ci siamo trovati di fronte alla scelta dello strumento di \textit{versioning}. Per il nostro progetto abbiamo deciso di utilizzare \textbf{Git} e ci siamo serviti di \textbf{GitHub} per avere un \textit{repository} remoto gratuito. Contrariamente a quanto fatto per progetti precedenti, ci siamo avvicinati all'inesplorato (per noi) mondo di \textbf{GitFlow}, che si è rivelata essere una risorsa preziosissima al fine del raggiungimento dell'obiettivo finale. Per evitare di sviluppare su un branch comune, abbiamo dunque deciso di avvalerci dell'utilizzo di GitFlow, che ha permesso ad ogni membro del team di aprire, ogni volta che se ne fosse presentata l'occasione, una nuova feature sulla quale programmare in totale libertà senza paura di "rovinare" il lavoro degli altri colleghi. Abbiamo dunque deciso di utilizzare tre tipologie principali di branch:
+\begin{itemize}
+\item \textit{master}. In questo branch abbiamo pubblicato solamente le versioni finali del progetto. Con la versione 1.0 abbiamo contrassegnato il termine della versione \textit{core}, mentre con la 2.0 il termine di quella distribuita.
+\item \textit{develop}. Questo branch ha rappresentato il punto di partenza di ogni nuova feature e, al termine di quest'ultima, il canale su cui riversare tutto il lavoro prodotto. 
+\item  \textit{generic feature}. Quest'ultima tipologia in realtà caratterizza tutte le feature create dai membri del team per lavorare ad uno specifico item. In generale abbiamo cercato di rispettare il \textit{topic} della feature andando ad effettuare solamente le modifiche all'item preso in considerazione.
+\end{itemize}
+Per effettuare invece il building del progetto abbiamo deciso di utilizzare \textbf{Gradle}, uno dei principali sistemi di automatizzazione delle build. Grazie ad esso abbiamo semplificato anche l'esecuzione dei test, la gestione delle dipendenze e la creazione dei jar da consegnare alla scadenza del progetto. Per poter sviluppare un progetto solido è necessario utilizzare sistemi di testing che ne verifichino l'integrità dopo ogni modifica. Lo strumento che abbiamo scelto di utilizzare a tal proposito è \textbf{TravisCI} che abbiamo successivamente collegato al repository creato su \textbf{GitHub} dal momento che permette di poter usufruire, in maniera gratuita, di funzionalità di \textit{Continous Integration}. 
+        
+        
+        
         
         \clearpage
         
     \section*{\Huge {\textbf Capitolo 2}\label{chapter2}}
     \section{Requisiti}\label{sec:requirements}
+    Il progetto d'esame \textbf{Maraph1-mp} si è posto come obiettivo quello di creare una versione distribuita e multi-giocatore del classico gioco di carte romagnolo \textbf{"Marafone"}, conosciuto anche come \textit{Marafone}, \textit{Maraffa} o \textit{Beccaccino} a seconda della città di appartenenza. Il gioco consiste in una schermata 2D all'interno della quale sono visibili solamente le carte del player che stiamo impersonando, mentre quelle del compagno (posizionato di fronte a noi) e quelle dei due avversari (posizionati uno a destra ed uno a sinistra rispetto alla nostra posizione) risultano essere coperte. Il gioco procede fino a quando una delle due squadre non risulta essere la vincitrice: a quel punto la schermata di gioco viene chiusa e si torna alla finestra di default, diversa in base al fatto che un player si sia registrato e loggato oppure no.
+    
          \subsection {Requisiti utente}\label{subsec:requirements:business}
+         Per questo progetto l'importanza dell'utente è centrale. Esso interagirà infatti con altri utenti giocando insieme a loro a \textit{Marafone}. 
+         \begin{itemize}
+         \item L'utente potrà scegliere se registrarsi al sistema oppure no
+	 \item Se l'utente si registra:
+	 
+	 \begin{itemize}
+	 \item  Possibilità di interagire con i propri amici attraverso una 	schermata Social
+	 \item  Possibilità di aggiungere al proprio elenco di amici i giocatori che sono online
+	 \item Possibilità di invitare i propri amici per una partita in qualità di compagno o di avversario
+	 \item Possibilità di giocare una partita in modalità competitiva, con aumento/diminuzione del proprio punteggio sulla base dell'esito della partita stessa. 
+	 \item Possibilità di guardare i replay delle partite giocate da se stesso e da tutti gli altri utenti
+	 \item Possibilità di accedere come spettatore alle gare attualmente in corso
+	\end {itemize}
+	
+	\item Se l'utente non si registra:
+	
+	\begin{itemize}
+	\item Non potrà accedere a tutte le funzionalità Social 
+	\item Possibilità di giocare una partita in modalità non competitiva, ovvero senza punteggio
+	\item Possibilità di accedere come spettatore alle gare attualmente in corso
+	\end {itemize}
+	
+	\end {itemize}
+         \clearpage
              \subsection {Requisiti funzionali}\label{subsec:requirements:functional}
+             Dall'analisi del caso di studio sono state individuate le seguenti parti del progetto:
+             
+             \begin {itemize}
+             \item Gioco
+             \item Servizio di Autenticazione
+             \item Servizio delle Stanze di gioco
+             \item Servizio di Spettatore
+             \item Servizio di Replay
+             \item Funzioni social
+             \item Interfaccia di gioco
+             \item Interfaccia Utente 
+             \end {itemize}
+             
             \subsubsection[Gioco]{\large {Regole del gioco}\label{subsub:requirements:game}}
-            \subsubsection[NoAutenticazion]{\large {Servizio di gioco senza autenticazione}\label{subsub:requirements:noauth}}
-            \subsubsection[Autenticazion]{\large {Servizio di gioco con autenticazione}\label{subsub:requirements:auth}}
-            \subsubsection[Stanze di gioco]{\large {Servizio delle stanze di gioco}\label{subsub:requirements:lobby}}
-            \subsubsection[Interfaccia utente]{\large {Interfaccia grafica per l'utente}\label{subsub:requirements:gui}}
+            Prima di iniziare a parlare dei requisiti del gioco, è bene prima analizzare le regole che caratterizzano una partita. 
+            
+            \begin {itemize}
+            \item La partita inizia nel momento in cui sono presenti quattro giocatori all'interno della stessa lobby.
+            \item Ad ogni giocatore saranno distribuite, in maniera totalmente casuale, 10 carte, per un totale di 40 carte in gioco.
+            \item Le carte si suddividono in quattro semi: Bastoni, Spade, Denara e Coppe.
+            \item Il gioco è suddiviso in set e turni. Un set termina quando tutti i giocatori hanno giocato una carta, mentre il turno finisce nel momento in cui tutte e dieci le carte di ogni giocatore sono state giocate.
+             \item Fondamentale il concetto della briscola: si tratta di un seme che viene stabilito all'inizio del turno e supera il valore degli altri semi, sebbene sulla carta valgano di più.
+            \item Ad ogni turno vengono messi in palio 11 punti, 14 in caso di \textit{Maraffa} (ovvero la presenza dell'Asso, del Due e del Tre nella mano del giocatore che deve selezionare la briscola)
+            \item Nel corso del turno iniziale, viene scelta la briscola dal giocatore che troverà, all'interno delle proprie carte, il 4 di Denara. Dai turni successivi la briscola verrà scelta in senso antiorario, quindi dal giocatore alla sinistra dell'ultimo giocatore che ha scelto la briscola.
+            \item Ai giocatori non è concesso parlare se non per comunicare tre possibili comandi: \textbf{Busso} (significa che il compagno deve cercare di giocare la carta più alta del seme giocato per provare a vincere il set e a quello successivo giocare nuovamente una carta dello stesso seme), \textbf{Volo} (significa che il giocatore non ha più carte del seme appena giocato) e \textbf{Striscio} (significa che il giocatore ha rimasto un'altra carta con il seme appena giocato.
+            \item I comandi possono essere comunicati solamente dal primo giocatore di quel set.
+            \item Nel momento in cui viene giocata una carta di un certo seme, gli altri giocatori saranno costretti a rispondere con una carta dello stesso seme. In caso contrario, la scelta della carta da giocare sarà libera.
+            \item L'azione del \textit{tagliare} prevede il fatto che venga giocata una briscola sopra ad una carta di un altro seme: questo nella maggior parte dei casi permette a chi ha tagliato di vincere il set. 
+            \item La carta più potente, a parità di seme, è il Tre, seguito dal Due e dall'Asso. In cascata ci sono poi il Re, il Cavallo e il Fante (considerate \textit{figure}, mentre le carte rimanenti sono considerate \textit {scartini}.
+            \item Tutte le figure valgono 1/3 di punto, ad eccezione dell'Asso che vale 1 punto. Gli scartini valgono 0 punti.
+            \item La partita finisce quando una squadra raggiunge i 41 punti o, in caso di parità a quota 41, quando una delle due squadre supera l'altra. 
+            \end {itemize}
+
+            \subsubsection[Autenticazione]{\large {Servizio di Autenticazione}\label{subsub:requirements:auth}}
+            Il servizio di Autenticazione dovrà:
+            
+            \begin {itemize}
+            \item Permettere la registrazione, inserendo username e password;
+            \item Permettere il login, inserendo username e password.
+            \end {itemize}
+            
+            L'autenticazione darà la possibilità a tutti gli utenti registrati di accedere alle funzionalità Social, come dichiarato in precedenza. 
+            
+            \subsubsection[Stanze di gioco]{\large {Servizio delle Stanze di gioco}\label{subsub:requirements:lobby}}
+            Il servizio delle Lobby sarà accessibile sia agli utenti registrati, che a quelli non registrati, poiché per poter giocare una partita sarà necessaria la creazione di una nuova lobby e la possibilità di entrare all'interno di essa per prendere parte ad una partita. Nello specifico, essa dovrà permettere:
+            
+            \begin {itemize}
+            \item Possibilità di entrata casuale nel momento in cui si decide di giocare una partita, competitiva e non.
+            \item Possibilità di entrata grazie all'invito di un amico (solo funzione Social) nei panni di suo compagno o di nemico.
+            \item Possibilità di abbandono con conseguente sconfitta a tavolino per la propria squadra.
+            \end {itemize}
+            
+            \subsubsection[Servizio di Spettatore]{\large {Servizio di Spettatore}\label{subsub:requirements:viewer}}
+            \subsubsection[Servizio di Replay]{\large {Servizio di Replay}\label{subsub:requirements:replay}}
+             \subsubsection[Funzioni social]{\large {Funzioni social}\label{subsub:requirements:social}}
+             \subsubsection[Interfaccia di gioco]{\large {Interfaccia di gioco}\label{subsub:requirements:guiGame}}
+              \subsubsection[Interfaccia Utente ]{\large {Interfaccia utente}\label{subsub:requirements:genericGui}}
+
         \subsection {Requisiti non funzionali}\label{subsec:requirements:notFunctional}
         \subsection {Requisiti implementativi}\label{subsec:requirements:implementative}
    
