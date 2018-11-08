@@ -5,7 +5,7 @@ import java.lang.Thread.sleep
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.deck.cards.{Card, CardImpl}
 import it.unibo.pps2017.server.controller.LobbyFoundTest._
-import it.unibo.pps2017.server.model.database.RedisGameUtils
+import it.unibo.pps2017.server.model.database.RedisGame
 import it.unibo.pps2017.server.model.{Game, GameSet, Hand, Move}
 import org.scalatest.{FunSuite, Matchers}
 
@@ -59,7 +59,7 @@ class GameBackupImplTest extends FunSuite with Matchers {
     gameBackup.endGame(winners)
 
 
-    RedisGameUtils().getGame("FORTEST", _.onComplete {
+    RedisGame().getGame("FORTEST", _.onComplete {
       case Success(res) => res shouldBe Some(expectedGame)
       case Failure(cause) => println(cause.getMessage);assert(false)
     })

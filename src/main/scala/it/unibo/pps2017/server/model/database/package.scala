@@ -40,22 +40,28 @@ package object database {
   def getLiveKeyPattern: String = "game:*:ingame:*"
 
 
-  def closeConnection(db: RedisClient): Unit = db.quit().onComplete {
-    case Success(res) => if (res) {
-      println("Redis connection closed successfully!")
-      db.stop()
-    } else {
-      println("Error on Redis connection closing!")
+
+  implicit class RedisClientCloser(db: RedisClient) {
+    def closeConnection(): Unit = db.quit().onComplete {
+      case Success(res) => if (res) {
+        println("Redis connection closed successfully!")
+        db.stop()
+      } else {
+        println("Error on Redis connection closing!")
+      }
+      case Failure(cause) => println(s"Unexpected error on Redis connection closing. \nDetails: ${cause.getMessage}!")
     }
-    case Failure(cause) => println(s"Unexpected error on Redis connection closing. \nDetails: ${cause.getMessage}!")
   }
 
-  def closeConnection(db: Jedis): Unit = try{
-    println(s"Redis blocking client closing connection result: ${db.quit()}")
-    db.close()
-  } catch {
-    case cause: Exception => println(s"Error on closing a Redis blocking connection. \n Details: ${cause.getMessage}")
+  implicit class JedisCloser(db: Jedis) {
+    def closeConnection(): Unit = try{
+      println(s"Redis blocking client closing connection result: ${db.quit()}")
+      db.close()
+    } catch {
+      case cause: Exception => println(s"Error on closing a Redis blocking connection. \n Details: ${cause.getMessage}")
+    }
   }
+
 }
 
 

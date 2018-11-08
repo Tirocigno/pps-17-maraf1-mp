@@ -1,7 +1,7 @@
 package it.unibo.pps2017.commons.model.database
 
 import it.unibo.pps2017.core.deck.cards.{Card, Seed}
-import it.unibo.pps2017.server.model.database.RedisGameUtils
+import it.unibo.pps2017.server.model.database.RedisGame
 import it.unibo.pps2017.server.model.{Game, GameSet, Hand, Move}
 
 import scala.collection.mutable
@@ -92,6 +92,6 @@ class GameBackupImpl(override val gameId: String) extends GameBackup {
   override def endGame(winners: Seq[String]): Unit = {
     val game: Game = Game(players, sets, winners)
 
-    RedisGameUtils().saveGame(gameId, game)
+    RedisGame().saveGame(gameId, game)
   }
 }

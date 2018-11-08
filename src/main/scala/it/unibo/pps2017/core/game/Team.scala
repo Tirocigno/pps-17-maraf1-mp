@@ -1,13 +1,11 @@
 
 package it.unibo.pps2017.core.game
 
-import it.unibo.pps2017.client.model.actors.playeractor.ClientGameActor
 import it.unibo.pps2017.server.actor.GameActor._
 import it.unibo.pps2017.server.actor.{FullTeamException, GameActor}
 import it.unibo.pps2017.server.model.Side
 
 import scala.collection.mutable.ListBuffer
-import scala.util.Random
 
 
 sealed trait BaseTeam[A] {
@@ -108,137 +106,15 @@ sealed trait BaseTeam[A] {
   def asSide: Side
 }
 
+
 /**
-  * This class manage a Team. Identified by a name and a list of members.
   *
   * @param teamIndex
-  * Name of the team
   * @param members
-  * Members of the team. Limited at max 2.
+  * @param score
   */
-
-case class Team(override var teamIndex: String = Random.nextInt().toString,
-                private var members: ListBuffer[ClientGameActor] = ListBuffer(),
-                private var score: Int = 0) extends BaseTeam[ClientGameActor] {
-
-
-  /**
-    * Add a player to the team.
-    *
-    * @param newPlayer
-    * The player who join the team.
-    * @throws FullTeamException
-    * If the team has already 2 members.
-    */
-  @throws(classOf[FullTeamException])
-  def addPlayer(newPlayer: ClientGameActor): Unit = {
-    if (members.length >= TEAM_MEMBERS_LIMIT) {
-      throw FullTeamException()
-    }
-
-    members += newPlayer
-  }
-
-  /**
-    * Return the members of the team.
-    *
-    * @return
-    * the members of the team
-    */
-  def getMembers: Seq[ClientGameActor] = members
-
-  /**
-    * Return the team composition with both player's username.
-    *
-    * @return
-    * the team composition with both player's username.
-    */
-  override def asSide: Side = {
-    val app: ListBuffer[String] = ListBuffer()
-    firstMember match {
-      case Some(member) =>
-        app += member.username
-      case None =>
-    }
-
-    secondMember match {
-      case Some(member) =>
-        app += member.username
-      case None =>
-    }
-
-    Side(app)
-  }
-
-  /**
-    * Return the actual number of players in the team.
-    *
-    * @return
-    * the number of players in the team.
-    */
-  def numberOfMembers: Int = members.length
-
-  /**
-    * Return the first player of the team.
-    *
-    * @return
-    * the first player of the team.
-    */
-  def firstMember: Option[ClientGameActor] = members.headOption
-
-  /**
-    * Add set's point to the team score.
-    *
-    * @param score
-    * Set's points.
-    */
-  def addPoints(score: Int): Unit = this.score += score
-
-  /**
-    * Return the current team's score.
-    *
-    * @return
-    * the current team's score.
-    */
-  def getScore: Int = score
-
-
-  /**
-    * Return TRUE if the team has reach two members, FALSE otherwise.
-    *
-    * @return
-    * TRUE if the team has reach two members, FALSE otherwise.
-    */
-  def isFull: Boolean = numberOfMembers == TEAM_MEMBERS_LIMIT
-
-  /**
-    * Return TRUE if the team has almost one member, FALSE otherwise.
-    *
-    * @return
-    * TRUE if the team has almost one member, FALSE otherwise.
-    */
-  def hasMember: Boolean = members.nonEmpty
-
-  /**
-    * Return the second player of the team.
-    *
-    * @return
-    * the second player of the team.
-    */
-  def secondMember: Option[ClientGameActor] = members.lastOption
-
-  /**
-    * Set set's point to the team score.
-    *
-    * @param score
-    * Set's points.
-    */
-  def setPoints(score: Int): Unit = this.score = score
-}
-
-
-case class SimpleTeam(override var teamIndex: String, private var members: ListBuffer[String] = ListBuffer(),
-                      private var score: Int = 0) extends BaseTeam[String] {
+case class Team(override var teamIndex: String, private var members: ListBuffer[String] = ListBuffer(),
+                private var score: Int = 0) extends BaseTeam[String] {
 
   /**
     * Add a player to the team.
@@ -352,7 +228,7 @@ case class SimpleTeam(override var teamIndex: String, private var members: ListB
     * @return
     * TRUE if can contains the team, FALSE otherwise.
     */
-  def canContains(team: SimpleTeam): Boolean = {
+  def canContains(team: Team): Boolean = {
     numberOfMembers + team.numberOfMembers <= GameActor.TEAM_MEMBERS_LIMIT
   }
 

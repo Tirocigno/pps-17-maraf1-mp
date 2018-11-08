@@ -14,7 +14,8 @@ import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
 import it.unibo.pps2017.server.model.GameType.{RANKED, UNRANKED}
 import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model._
-import it.unibo.pps2017.server.model.database.{DatabaseUtils, RedisUtils}
+import it.unibo.pps2017.server.model.database.base.DatabaseInterface
+import it.unibo.pps2017.server.model.database.RedisUtils
 import org.json4s.jackson.Serialization.read
 import org.json4s.jackson.Serialization.write
 
@@ -22,12 +23,8 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 
 object Dispatcher {
-  val applicationJson: String = "application/json"
-  val USER = "user:"
   var HOST: String = "localhost"
   val PORT: Int = 4700
-  var PASSWORD: Option[String] = Some("")
-  val RESULT = "result"
   val TIMEOUT = 1000
 
   private var discoveryUrl: String = "127.0.0.1"
@@ -52,10 +49,10 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
   implicit val akkaSystem: ActorSystem = actorSystem
 
 
-  val userMethods = UserDispatcher()
-  val gameMethods = GameDispatcher()
+  val userMethods: UserDispatcher = UserDispatcher()
+  val gameMethods: GameDispatcher = GameDispatcher()
 
-  val databaseUtils: DatabaseUtils = RedisUtils()
+  val databaseUtils: DatabaseInterface = RedisUtils()
 
   val lobbyManager: ActorRef = akkaSystem.actorOf(Props[LobbyActor])
   val currentIPAndPortParams = Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> PORT)
@@ -163,8 +160,6 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
         vsPartner.map(team2 += _)
 
 
-        println("\n team1 " + team1)
-        println("\n team2 " + team2)
         if (isRanked) {
           lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent, RANKED)
         } else {

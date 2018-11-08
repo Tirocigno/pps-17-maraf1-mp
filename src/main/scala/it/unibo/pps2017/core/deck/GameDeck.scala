@@ -2,7 +2,7 @@
 package it.unibo.pps2017.core.deck
 
 import it.unibo.pps2017.core.deck.cards.Card
-import it.unibo.pps2017.core.game.{BaseTeam, Team}
+import it.unibo.pps2017.core.game.BaseTeam
 
 trait GameDeck {
 
@@ -36,7 +36,7 @@ trait GameDeck {
   /**
     * Register scores of Marafona to specified team.
     *
-     * @param team the team to register Marafona scores to.
+    * @param team the team to register Marafona scores to.
     */
   def registerMarafona(team: BaseTeam[String]): Unit
 }

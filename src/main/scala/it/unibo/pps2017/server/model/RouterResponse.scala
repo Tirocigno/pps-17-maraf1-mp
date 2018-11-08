@@ -62,7 +62,7 @@ case class RouterResponse(routingContext: RoutingContext,
   }
 
 
-  def setOnClose(operation: Option[() => Unit]) = onClose = operation
+  def setOnClose(operation: Option[() => Unit]): Unit = onClose = operation
 
 
   /**

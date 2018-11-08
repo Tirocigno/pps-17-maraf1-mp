@@ -5,22 +5,22 @@ import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.controller.Dispatcher.VERTX
 import it.unibo.pps2017.server.model.database.RedisConnection
-import org.rogach.scallop.ScallopConf
+import org.rogach.scallop.{ScallopConf, ScallopOption}
 
 
 class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
-  val discoveryaddress = opt[String]()
-  val myip = opt[String]()
-  val redishost = opt[String]()
-  val redisport = opt[String]()
-  val redispw = opt[String]()
+  val discoveryaddress: ScallopOption[String] = opt[String]()
+  val myip: ScallopOption[String] = opt[String]()
+  val redishost: ScallopOption[String] = opt[String]()
+  val redisport: ScallopOption[String] = opt[String]()
+  val redispw: ScallopOption[String] = opt[String]()
   verify()
 }
 
 
 object Runner extends App {
 
-  val conf = new Conf(args) // Note: This line also works for "object Main extends App"
+  val conf = new Conf(args)
   var discovery = Dispatcher.DISCOVERY_URL
   var myip = Dispatcher.MY_IP
 

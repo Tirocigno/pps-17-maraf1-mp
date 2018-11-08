@@ -1,14 +1,14 @@
 package it.unibo.pps2017.server.controller
 
 import io.vertx.scala.ext.web.RoutingContext
-import it.unibo.pps2017.server.model.database.RedisGameUtils
+import it.unibo.pps2017.server.model.database.RedisGame
 import it.unibo.pps2017.server.model.{RouterResponse, SavedMatches}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 case class GameDispatcher() {
 
-  val gameDatabaseUtils = RedisGameUtils()
+  val gameDatabaseUtils = RedisGame()
 
   def getGame: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
     val gameId = ctx.request().getParam("gameId")

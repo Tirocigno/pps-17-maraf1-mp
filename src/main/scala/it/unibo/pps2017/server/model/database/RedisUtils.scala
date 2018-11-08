@@ -1,32 +1,16 @@
 package it.unibo.pps2017.server.model.database
 
+import it.unibo.pps2017.server.model.database.base.DatabaseInterface
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-sealed trait DatabaseUtils {
 
-  /**
-    * Retrieve the ranking from the database.
-    *
-    * @param onSuccess
-    * On query success.
-    * @param onFail
-    * error handler.
-    * @param from
-    * starting position.
-    * @param to
-    * ending position.
-    */
-  def getRanking(onSuccess: Seq[(String, Double)] => Unit,
-                 onFail: Throwable => Unit,
-                 from: Option[Long],
-                 to: Option[Long]): Unit
-}
 
 /**
   * This class encapsulate some method for manage generic keys in the database
   */
-case class RedisUtils() extends DatabaseUtils {
+case class RedisUtils() extends DatabaseInterface {
 
   override def getRanking(onSuccess: Seq[(String, Double)] => Unit, onFail: Throwable => Unit, from: Option[Long] = None, to: Option[Long] = None): Unit = {
 
