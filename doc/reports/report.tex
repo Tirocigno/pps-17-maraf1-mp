@@ -80,11 +80,16 @@
 }
 \usepackage[utf8]{inputenc} % serve per avere l'indice di tutti i capitoli all'inizio 
 
+\usepackage[section]{placeins} % serve per posizionare le immagini esattamente dove le inseriamo
+
 %\usepackage[a-1b]{pdfx}
 \usepackage[%
     english,italian,    % definizione delle lingue da usare
     nameinlink          % inserisce i link nei riferimenti
 ]{cleveref}                     % permette di usare riferimenti migliori dei \ref e dei varioref
+
+\usepackage{fancyhdr} % serve per visualizzare nel top della pagina il capitolo corrente e la sezione corrente
+\pagestyle{fancy}
 
 \title{\LARGE{\textbf{Maraph1-mp Project Report}}}
 
@@ -107,6 +112,7 @@
     \clearpage
 	\tableofcontents
 	\clearpage
+	
     \section*{\Huge {Capitolo 1}\label{chapter1}}
       \section{Processo di sviluppo}\label{sec:process}
         \subsection {Metodologia di sviluppo}\label{subsec:metodology}
@@ -116,9 +122,9 @@
         \subsection {Strumenti adottati}\label{subsec:tools}
         Dopo aver optato per la metodologia di sviluppo descritta nel paragrafo precedente, ci siamo trovati di fronte alla scelta dello strumento di \textit{versioning}. Per il nostro progetto abbiamo deciso di utilizzare \textbf{Git} e ci siamo serviti di \textbf{GitHub} per avere un \textit{repository} remoto gratuito. Contrariamente a quanto fatto per progetti precedenti, ci siamo avvicinati all'inesplorato (per noi) mondo di \textbf{GitFlow}, che si è rivelata essere una risorsa preziosissima al fine del raggiungimento dell'obiettivo finale. Per evitare di sviluppare su un branch comune, abbiamo dunque deciso di avvalerci dell'utilizzo di GitFlow, che ha permesso ad ogni membro del team di aprire, ogni volta che se ne fosse presentata l'occasione, una nuova feature sulla quale programmare in totale libertà senza paura di "rovinare" il lavoro degli altri colleghi. Abbiamo dunque deciso di utilizzare tre tipologie principali di branch:
 \begin{itemize}
-\item \textit{master}. In questo branch abbiamo pubblicato solamente le versioni finali del progetto. Con la versione 1.0 abbiamo contrassegnato il termine della versione \textit{core}, mentre con la 2.0 il termine di quella distribuita.
-\item \textit{develop}. Questo branch ha rappresentato il punto di partenza di ogni nuova feature e, al termine di quest'ultima, il canale su cui riversare tutto il lavoro prodotto. 
-\item  \textit{generic feature}. Quest'ultima tipologia in realtà caratterizza tutte le feature create dai membri del team per lavorare ad uno specifico item. In generale abbiamo cercato di rispettare il \textit{topic} della feature andando ad effettuare solamente le modifiche all'item preso in considerazione.
+\item \texttt{master}. In questo branch abbiamo pubblicato solamente le versioni finali del progetto. Con la versione 1.0 abbiamo contrassegnato il termine della versione \textit{core}, mentre con la 2.0 il termine di quella distribuita.
+\item \texttt{develop}. Questo branch ha rappresentato il punto di partenza di ogni nuova feature e, al termine di quest'ultima, il canale su cui riversare tutto il lavoro prodotto. 
+\item  \texttt{generic feature}. Quest'ultima tipologia in realtà caratterizza tutte le feature create dai membri del team per lavorare ad uno specifico item. In generale abbiamo cercato di rispettare il \textit{topic} della feature andando ad effettuare solamente le modifiche all'item preso in considerazione.
 \end{itemize}
 Per effettuare invece il building del progetto abbiamo deciso di utilizzare \textbf{Gradle}, uno dei principali sistemi di automatizzazione delle build. Grazie ad esso abbiamo semplificato anche l'esecuzione dei test, la gestione delle dipendenze e la creazione dei jar da consegnare alla scadenza del progetto. Per poter sviluppare un progetto solido è necessario utilizzare sistemi di testing che ne verifichino l'integrità dopo ogni modifica. Lo strumento che abbiamo scelto di utilizzare a tal proposito è \textbf{TravisCI} che abbiamo successivamente collegato al repository creato su \textbf{GitHub} dal momento che permette di poter usufruire, in maniera gratuita, di funzionalità di \textit{Continous Integration}. 
         
@@ -129,7 +135,7 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
         
     \section*{\Huge {\textbf Capitolo 2}\label{chapter2}}
     \section{Requisiti}\label{sec:requirements}
-    Il progetto d'esame \textbf{Maraph1-mp} si è posto come obiettivo quello di creare una versione distribuita e multi-giocatore del classico gioco di carte romagnolo \textbf{"Marafone"}, conosciuto anche come \textit{Marafone}, \textit{Maraffa} o \textit{Beccaccino} a seconda della città di appartenenza. Il gioco consiste in una schermata 2D all'interno della quale sono visibili solamente le carte del player che stiamo impersonando, mentre quelle del compagno (posizionato di fronte a noi) e quelle dei due avversari (posizionati uno a destra ed uno a sinistra rispetto alla nostra posizione) risultano essere coperte. Il gioco procede fino a quando una delle due squadre non risulta essere la vincitrice: a quel punto la schermata di gioco viene chiusa e si torna alla finestra di default, diversa in base al fatto che un player si sia registrato e loggato oppure no.
+    Il progetto d'esame \textbf{Maraph1-mp} si è posto come obiettivo quello di creare una versione distribuita e multi-giocatore del classico gioco di carte romagnolo \textbf{"Marafone"}, conosciuto anche come \textit{Marafona}, \textit{Maraffa} o \textit{Beccaccino} a seconda della città di appartenenza. Il gioco consiste in una schermata 2D all'interno della quale sono visibili solamente le carte del player che stiamo impersonando, mentre quelle del compagno (posizionato di fronte a noi) e quelle dei due avversari (posizionati uno a destra ed uno a sinistra rispetto alla nostra posizione) risultano essere coperte. Il gioco procede fino a quando una delle due squadre non risulta essere la vincitrice: a quel punto la schermata di gioco viene chiusa e si torna alla finestra di default, diversa sulla base del fatto che un player si sia registrato e loggato oppure no.
     
          \subsection {Requisiti utente}\label{subsec:requirements:business}
          Per questo progetto l'importanza dell'utente è centrale. Esso interagirà infatti con altri utenti giocando insieme a loro a \textit{Marafone}. 
@@ -138,20 +144,20 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
 	 \item Se l'utente si registra:
 	 
 	 \begin{itemize}
-	 \item  Possibilità di interagire con i propri amici attraverso una 	schermata Social
-	 \item  Possibilità di aggiungere al proprio elenco di amici i giocatori che sono online
-	 \item Possibilità di invitare i propri amici per una partita in qualità di compagno o di avversario
+	 \item Possibilità di interagire con i propri amici attraverso una schermata Social.
+	 \item Possibilità di aggiungere al proprio elenco di amici i giocatori che sono online.
+	 \item Possibilità di invitare i propri amici per una partita in qualità di compagno o di avversario.
 	 \item Possibilità di giocare una partita in modalità competitiva, con aumento/diminuzione del proprio punteggio sulla base dell'esito della partita stessa. 
-	 \item Possibilità di guardare i replay delle partite giocate da se stesso e da tutti gli altri utenti
-	 \item Possibilità di accedere come spettatore alle gare attualmente in corso
+	 \item Possibilità di guardare i replay delle partite giocate da se stesso e da tutti gli altri utenti.
+	 \item Possibilità di accedere come spettatore alle gare attualmente in corso.
 	\end {itemize}
 	
 	\item Se l'utente non si registra:
 	
 	\begin{itemize}
-	\item Non potrà accedere a tutte le funzionalità Social 
-	\item Possibilità di giocare una partita in modalità non competitiva, ovvero senza punteggio
-	\item Possibilità di accedere come spettatore alle gare attualmente in corso
+	\item Non potrà accedere a tutte le funzionalità Social.
+	\item Possibilità di giocare una partita in modalità non competitiva, ovvero senza punteggio.
+	\item Possibilità di accedere come spettatore alle gare attualmente in corso.
 	\end {itemize}
 	
 	\end {itemize}
@@ -166,26 +172,25 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
              \item Servizio di Spettatore
              \item Servizio di Replay
              \item Funzioni social
-             \item Interfaccia di gioco
-             \item Interfaccia Utente 
+             \item Interfaccia Utente
              \end {itemize}
              
             \subsubsection[Gioco]{\large {Regole del gioco}\label{subsub:requirements:game}}
-            Prima di iniziare a parlare dei requisiti del gioco, è bene prima analizzare le regole che caratterizzano una partita. 
+            Prima di iniziare a parlare dei requisiti del gioco, è bene analizzare le regole che caratterizzano una partita. 
             
             \begin {itemize}
             \item La partita inizia nel momento in cui sono presenti quattro giocatori all'interno della stessa lobby.
             \item Ad ogni giocatore saranno distribuite, in maniera totalmente casuale, 10 carte, per un totale di 40 carte in gioco.
-            \item Le carte si suddividono in quattro semi: Bastoni, Spade, Denara e Coppe.
+            \item Le carte si suddividono in quattro semi: \textbf{Bastoni}, \textbf{Spade}, \textbf{Denara} e \textbf{Coppe}.
             \item Il gioco è suddiviso in set e turni. Un set termina quando tutti i giocatori hanno giocato una carta, mentre il turno finisce nel momento in cui tutte e dieci le carte di ogni giocatore sono state giocate.
              \item Fondamentale il concetto della briscola: si tratta di un seme che viene stabilito all'inizio del turno e supera il valore degli altri semi, sebbene sulla carta valgano di più.
-            \item Ad ogni turno vengono messi in palio 11 punti, 14 in caso di \textit{Maraffa} (ovvero la presenza dell'Asso, del Due e del Tre nella mano del giocatore che deve selezionare la briscola)
-            \item Nel corso del turno iniziale, viene scelta la briscola dal giocatore che troverà, all'interno delle proprie carte, il 4 di Denara. Dai turni successivi la briscola verrà scelta in senso antiorario, quindi dal giocatore alla sinistra dell'ultimo giocatore che ha scelto la briscola.
-            \item Ai giocatori non è concesso parlare se non per comunicare tre possibili comandi: \textbf{Busso} (significa che il compagno deve cercare di giocare la carta più alta del seme giocato per provare a vincere il set e a quello successivo giocare nuovamente una carta dello stesso seme), \textbf{Volo} (significa che il giocatore non ha più carte del seme appena giocato) e \textbf{Striscio} (significa che il giocatore ha rimasto un'altra carta con il seme appena giocato.
-            \item I comandi possono essere comunicati solamente dal primo giocatore di quel set.
+              \item Nel corso del turno iniziale, viene scelta la briscola dal giocatore che troverà, all'interno delle proprie carte, il 4 di \textbf{Denara}. Dai turni successivi la briscola verrà scelta in senso antiorario, quindi dal giocatore alla sinistra dell'ultimo giocatore che ha scelto la briscola.
+            \item Ad ogni turno vengono messi in palio 11 punti, 14 in caso di \textit{Maraffa} (ovvero la presenza dell'Asso, del Due e del Tre nella mano del giocatore che deve selezionare la briscola).
+             \item Ai giocatori non è concesso parlare se non per comunicare tre possibili comandi: \textbf{Busso} (significa che il compagno deve giocare la carta più alta del seme giocato per provare a vincere il set e in quello successivo giocare nuovamente una carta dello stesso seme), \textbf{Volo} (significa che il giocatore non ha più carte del seme appena giocato) e \textbf{Striscio} (significa che il giocatore ha rimasto un'altra carta con il seme appena giocato).
+            \item I comandi possono essere comunicati solamente dal primo giocatore che inizia uno specifico set.
             \item Nel momento in cui viene giocata una carta di un certo seme, gli altri giocatori saranno costretti a rispondere con una carta dello stesso seme. In caso contrario, la scelta della carta da giocare sarà libera.
             \item L'azione del \textit{tagliare} prevede il fatto che venga giocata una briscola sopra ad una carta di un altro seme: questo nella maggior parte dei casi permette a chi ha tagliato di vincere il set. 
-            \item La carta più potente, a parità di seme, è il Tre, seguito dal Due e dall'Asso. In cascata ci sono poi il Re, il Cavallo e il Fante (considerate \textit{figure}, mentre le carte rimanenti sono considerate \textit {scartini}.
+            \item La carta più potente, a parità di seme, è il \textbf{Tre}, seguito dal \textbf{Due} e dall'\textbf{Asso}. In cascata ci sono poi il \textbf{Re}, il \textbf{Cavallo} e il \textbf{Fante}, che sono considerate \textit{figure}, mentre le carte rimanenti sono considerate \textit {scartini}.
             \item Tutte le figure valgono 1/3 di punto, ad eccezione dell'Asso che vale 1 punto. Gli scartini valgono 0 punti.
             \item La partita finisce quando una squadra raggiunge i 41 punti o, in caso di parità a quota 41, quando una delle due squadre supera l'altra. 
             \end {itemize}
@@ -194,30 +199,83 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
             Il servizio di Autenticazione dovrà:
             
             \begin {itemize}
-            \item Permettere la registrazione, inserendo username e password;
+            \item Permettere la registrazione, inserendo username e password.
             \item Permettere il login, inserendo username e password.
             \end {itemize}
             
             L'autenticazione darà la possibilità a tutti gli utenti registrati di accedere alle funzionalità Social, come dichiarato in precedenza. 
             
-            \subsubsection[Stanze di gioco]{\large {Servizio delle Stanze di gioco}\label{subsub:requirements:lobby}}
-            Il servizio delle Lobby sarà accessibile sia agli utenti registrati, che a quelli non registrati, poiché per poter giocare una partita sarà necessaria la creazione di una nuova lobby e la possibilità di entrare all'interno di essa per prendere parte ad una partita. Nello specifico, essa dovrà permettere:
+            \subsubsection[Stanze di Gioco]{\large {Servizio delle Stanze di gioco}\label{subsub:requirements:lobby}}
+            Il servizio delle Stanze di gioco sarà accessibile sia agli utenti registrati, che a quelli non registrati, poiché per poter giocare una partita sarà necessaria la creazione di una nuova lobby e la possibilità di entrare all'interno di essa per prendere parte ad una partita. Nello specifico, essa dovrà permettere:
             
             \begin {itemize}
             \item Possibilità di entrata casuale nel momento in cui si decide di giocare una partita, competitiva e non.
-            \item Possibilità di entrata grazie all'invito di un amico (solo funzione Social) nei panni di suo compagno o di nemico.
+            \item Possibilità di entrata grazie all'invito di un amico (solo funzione Social) nei panni di suo compagno o di avversario.
             \item Possibilità di abbandono con conseguente sconfitta a tavolino per la propria squadra.
             \end {itemize}
             
             \subsubsection[Servizio di Spettatore]{\large {Servizio di Spettatore}\label{subsub:requirements:viewer}}
+            Questo servizio viene offerto sia ai player loggati che a quelli non loggati. Ogni player avrà dunque la possibilità di assistere, nelle vesti di spettatore, ad uno degli incontri che si stanno disputando in quel preciso momento. Il player non è costretto a seguire la partita fin dall'inizio: sarà possibile infatti, in ogni momento, potersi collegare alla partita per mezzo dell'ID della partita di interesse e prendere parte alla gara in qualunque momento. Lo spettatore potrà vedere solamente le carte di uno dei quattro player, rimanendo all'oscuro di quelle in possesso degli altri tre giocatori.
+            
             \subsubsection[Servizio di Replay]{\large {Servizio di Replay}\label{subsub:requirements:replay}}
-             \subsubsection[Funzioni social]{\large {Funzioni social}\label{subsub:requirements:social}}
-             \subsubsection[Interfaccia di gioco]{\large {Interfaccia di gioco}\label{subsub:requirements:guiGame}}
-              \subsubsection[Interfaccia Utente ]{\large {Interfaccia utente}\label{subsub:requirements:genericGui}}
+            Questo servizio, contrariamente al precedente, viene offerto solamente ai player registrati e loggati. Ogni partita viene registrata e mantenuta in memoria all'interno di un database e sarà resa disponibile a tutti i player registrati. Al player viene dunque offerta la possibilità, selezionando l'ID della partita di interesse, di poter riguardare tutte le giocate della suddetta partita fino all'assegnamento della vittoria ad uno dei due team. Per rendere più veloce e meno stancante il replay, le mosse vengono visualizzate ogni mezzo secondo.
+                        
+             \subsubsection[Funzioni Social]{\large {Funzioni Social}\label{subsub:requirements:social}}
+             Anche questo servizio viene offerto solamente ai player registrati e loggati. Dopo aver effettuato correttamente il login, il player sarà reindirizzato verso la schermata social, che mostrerà i player online e i player aggiunti al proprio elenco di amici. Attraverso questa schermata sarà possibile invitare player online a diventare amici (essi potranno anche rifiutare) e dopo aver fatto ciò si potranno invitare a prendere parte ad una nuova partita sia nei panni di compagni che in quello di avversari. 
+               
+           \clearpage
+           \subsubsection[Interfaccia Utente ]{\large {Interfaccia utente}\label{subsub:requirements:genericGui}}
+           Le schermate a disposizione dell'utente saranno principalmente tre e solamente una di esse varierà sulla base del fatto che l'utente si sia loggato oppure no.
+           \bigbreak
+           \textbf{Autenticazione}
+           \begin {itemize}
+           \item Permettere la registrazione, inserendo username e password.
+           \item Permettere il login, inserendo username e password..
+           \item Permettere di giocare come giocatore anonimo, ovvero senza bisogno di registrazione.
+           \end {itemize}
+           
+           \bigbreak
+           \textbf {Dashboard principale}
+           \bigbreak
+           Questa schermata varierà sulla base del fatto che l'utente si sia loggato oppure no. Se l'utente si è loggato avrà a disposizione, all'interno della dashboard, tutte le funzioni social elencate in precedenza, altrimenti la dashboard conterrà solamente i comandi per poter giocare una partita non competitiva e per visualizzare una gara nei panni dello spettatore.
+           
+           \bigbreak
+           \textbf{Gioco}
+           \bigbreak
+           La schermata di gioco sarà sempre la stessa, sia per le partite giocate (competitive e non) sia per la visualizzazione di una partita in veste di spettatore e sotto forma di replay.
+           \begin {itemize}
+           \item Visualizzare le proprie dieci carte.
+           \item Visualizzare gli username dei player all'interno della partita.
+           \item Visualizzare come coperte le carte del compagno e dei due avversari.
+           \item Visualizzare la briscola del turno attuale.
+           \item Visualizzare il punteggio dei due team aggiornato di turno in turno.
+           \item Visualizzare il giocatore che deve giocare una carta.
+           \item Visualizzare un'animazione col punteggio alla fine del turno e alla fine della partita.
+           \item Visualizzare un'animazione che certifichi la vittoria/sconfitta del team.
+           \item Visualizzare i comandi volo, busso e striscio nel momento in cui vengono dichiarati.
+           \end {itemize}
 
+	\clearpage
         \subsection {Requisiti non funzionali}\label{subsec:requirements:notFunctional}
+        Dal momento in cui abbiamo deciso di realizzare la versione del gioco in maniera distribuita, abbiamo evidenziato diversi aspetti che avremmo dovuto rispettare per poter ottenere una gestione del gioco ottimale. I \textit{requisiti non funzionali} da rispettare sono pertanto i seguenti:
+        
+        \begin{itemize}
+        \item \texttt{Sicurezza}. Il sistema permette di potersi registrare ed effettuare il login solamente se in possesso della password scelta in fase di registrazione.
+        \item 	\texttt{Consistenza}. Il sistema deve riuscire a mantenere lo stato di gioco inalterato indipendentemente da ciò che succede all'interno della rete. Nel nostro caso i problemi principali potrebbero nascere nel momento in cui si verifichino problemi di consistenza tra i diversi client. Essendo, per sua stessa natura, un gioco distribuito, abbiamo dovuto effettuare degli accorgimenti per poter evitare che, in caso eventuali disturbi della comunicazione o problemi legati al singolo client, lo stato di gioco non venisse alterato. Una volta ristabilita la condizione originale, il sistema deve poter continuare a funzionare correttamente. 
+        \item \texttt{Efficienza}. Il sistema deve riuscire a rispondere a tutte le richieste che vengono effettuate senza tralasciarne alcuna. Nel nostro caso, ad esempio, il sistema deve riuscire a gestire più partite in contemporanea senza che queste influiscano negativamente sullo stato del gioco.
+        \item \texttt{Scalabilità}. Il sistema deve riuscire a gestire in maniera ottimale tutto il carico a cui è sottoposto. Non dovrà pertanto diminuire le proprie performance anche in caso di numerose richieste da parte di numerosi client.
+        \end{itemize}
+        
         \subsection {Requisiti implementativi}\label{subsec:requirements:implementative}
-   
+   	Nel corso del primo incontro durante il quale abbiamo stabilito i primi passi che avremmo dovuto muovere, abbiamo anche selezionato tre macro-sezioni che avremmo certamente incluso all'interno del nostro progetto. Queste tre sezioni rappresentano i nostri \textit{requisiti implementativi}.
+	
+	\begin{itemize}
+	\item \texttt{Scala}. Il linguaggio principale con il quale realizzare il nostro progetto. Come vedremo nei paragrafi successivi, oltre a \textbf{Scala} è stato utilizzato anche \textbf{Java}, ma per un sottoinsieme di funzionalità che verranno meglio approfondite in seguito. Abbiamo deciso di utilizzare questo linguaggio poiché il nostro gioco viene sviluppato come progetto d'esame e in quanto tale viene richiesto l’utilizzo di questo linguaggio multi-paradigma.
+	\item \texttt{TDD}. Considerando il fatto di lavorare in un contesto \textbf{Agile}, abbiamo deciso di servirci di un modello di sviluppo test-driven, utilizzando, dove possibile, strumenti di test per poter lavorare in parallelo allo sviluppo del progetto. Così facendo, abbiamo avuto la possibilità di ottenere codice testato prima di andare ad effettuare le normali operazioni di intregrazione per il lavoro dei quattro membri del team. 
+	\item \texttt{Akka}. Per poter modellare al meglio le interazioni tra i diversi componenti del sistema, abbiamo deciso infine di utilizzare il \textit{framework} \textbf{Akka} che ci ha fornito una struttura ad attori. Grazie ad Akka siamo riusciti a gestire al meglio le fasi comunicative e comportamentali dei diversi componenti del sistema.  
+	\item \texttt{Jar}. Come richiesto espressamente nei requisiti d'esame, il client e i servizi necessari per poter far partire il sistema dovranno essere avviabili tramite file \textbf{jar} eseguibili.	
+   \end{itemize}
+
    \clearpage
    
     \section{Design architetturale}\label{sec:design}
@@ -232,8 +290,76 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
     
     \clearpage
     
-    \section{Implementazione}\label{sec:implementation}
+ \section*{\Huge {\textbf Capitolo 5}\label{chapter5}}
+ 
+     \section{Implementazione}\label{sec:implementation}
+
+     Durante tutto il processo di implementazione si è fatto uso di diversi pattern di progettazione. In generale quelli più utilizzati sono stati il \textbf{Factory Method} (sfruttando i Companion Object di Scala, largamente utilizzati in quasi tutto il codice) e il pattern \textbf{Strategy}. Sono poi stati utilizzati anche altri pattern tipici ad esempio del mondo ad attori, ma quelli verranno discussi maggiormente nel dettaglio nel corso dei paragrafi seguenti sulla base dei membri del team che li hanno effettivamente utilizzati.
+     
         \subsection{Nicholas Brasini}\label{subsec:brasini}
+        Per quanto riguarda il progetto \textbf{Maraph-1}, lo studente \textbf{Nicholas Brasini} ha sviluppato le seguenti parti in maniera autonoma:
+        
+        \begin{itemize}
+        \item \textbf{Generale}
+        		\begin {itemize} 
+		\item Configurazione Trello
+     	\end {itemize}
+     
+     	\item \textbf{View}
+		\begin {itemize}
+		\item Creazione dell'interfaccia \texttt{PlayGame}.
+		\item Creazione dell'interfaccia grafica di gioco attraverso la classe \texttt{PlayGameController}.
+		\item Creazione della classe di Utils \texttt{PlayGameViewUtils}. 	
+		\item Caricamento e creazione di tutte le risorse grafiche della schermata di gioco.
+	\end {itemize}
+	
+	\item \textbf{Attori}
+		\begin {itemize}
+		\item Creazione del \texttt{PlayerActorClient}. 
+		\item Creazione del \texttt{ReplayActor}.
+		\item Creazione del \texttt{ViewerActor}.
+		\item Creazione di \texttt{GameController}, il controller dei tre attori sopraindicati.
+		\item Creazione dell'oggetto \texttt{ClientMessages}, il recipiente dei messaggi utilizzati dai tre attori sopraindicati e dal \texttt{GameActor}, realizzato dal collega Jakova.
+		\end{itemize}
+		
+     \end {itemize}
+     
+     \clearpage
+     
+     \subsubsection{Generale}\label{subsub:brasini:general}
+     Per quanto riguarda la parte generale, lo studente Brasini si è occupato della gestione e dell'aggiornamento della dashboard di \textbf{Trello}, uno degli strumenti scelti nella fase iniziale come supporto per l'organizzazione dei diversi item. In particolare lo studente ha studiato la struttura che più si adattava alle necessità del team, realizzando tre schede:
+     
+     \begin{itemize}
+     \item \textbf{Cose da fare}. All'interno di questa sezione venivano aggiunti, nel corso degli incontri settimanali, tutti gli item pattuiti e che sarebbero dovuti essere portati a termine entro la settimana successiva. All'interno di questa sezione era possibile modificare i dettagli dell'item. In particolare si è scelto di assegnare un'etichetta colorata a ciascun membro, per riconoscere più facilmente gli item di appartenenza, oltre ad una descrizione generica e ad una \textit{checklist} che sarebbe stata generata sulla base degli obiettivi del singolo membro. Infine si è scelto di collegare la propria \textit{feature} tramite GitHub in maniera tale da poter visualizzare, all'interno della scheda relativa all'item, gli ultimi \textit{commit} effettuati dagli studenti. In questo modo ci siamo resi conto di quanto fosse utile poter visualizzare in maniera così rapida le modifiche effettuate dagli altri componenti del team nel caso di eventuali integrazioni comuni. 
+    \item \textbf{In esecuzione}. All'interno di questa sezione venivano aggiunti gli item che effettivamente erano in produzione in quell'istante. In questo modo siamo riusciti a mantenere la dashboard ordinata sulla base dei compiti che stavamo attualmente portando avanti.
+    \item \textbf{Fatto}. All'interno dell'ultima sezione venivano inseriti tutti gli item portati a termine. Per una maggior chiarezza, lo studente Brasini ha optato per ordinarli manualmente sulla base delle etichette, per cui era possibile visualizzare in maniera ordinata tutti gli item portati a termine da un certo studente senza bisogno di dover navigare la sezione con difficoltà.
+    	\end{itemize}    
+     
+     	  \begin{figure}[!tbh]
+ 	 \includegraphics[width=\linewidth]{trello_dashboard.png}
+ 	 \caption{Dashboard di Trello.}
+  	\label{fig:trello_dashboard}
+	\end{figure}
+  
+     \clearpage
+     
+     \subsubsection{View}\label{subsub:brasini:view}
+     Per quanto riguarda la gestione della \textbf{View}, lo studente Brasini si è occupato, nel corso delle prime due settimane di lavoro, della realizzazione dell'interfaccia grafica del gioco mediante l'utilizzo di \textbf{JavaFX}. Prima di progettare i singoli componenti all'interno della schermata però, è stata realizzata l'interfaccia \texttt{PlayGame}, implementata successivamente dal controller \texttt{PlayGameController}. Una volta fatto ciò, lo studente ha preso familiarità con lo strumento \textit{SceneBuilder}, attraverso il quale ha realizzato l'effettiva schermata di gioco che verrà poi riutilizzata anche per le modalità di \textbf{Spettatore} e di \textbf{Replay}. Per poter visualizzare correttamente tutte le immagini della schermata, caricata da risorse esterne allo strumento utilizzato, lo studente ha dovuto studiare una modalità di caricamento che permettesse all'applicazione di poter visualizzare correttamente le immagini anche all'interno del file \texttt{.jar}.
+
+	\begin{itemize}
+	\item \textbf{PlayGame}.
+	L'interfaccia è stata definita per poter essere implementata dal \texttt{PlayGameController}. All'interno di questa interfaccia sono stati dichiarati i principali metodi come ad esempio \texttt{getCardsFirstPlayer} e \texttt{showPlayersPlayedCard} e relativa documentazione \textit{Javadoc}. In questo modo si è cercato di mantenere un certo ordine all'interno della classe \texttt{PlayGameController}, che ha implementato tutti i metodi dell'interfaccia.
+	
+	\item \textbf{PlayGameViewUtils}.
+	All'interno di questa classe sono state inserite, sotto forma di costanti, tutte quelle variabili come ad esempio stringhe ed interi utilizzate all'interno della classe \texttt{PlayGameController} e relativi getter statici. In questo modo è stato possibile utilizzare queste variabili (che in un futuro potrebbero anche essere utilizzate da altre classi) all'interno del controller della schermata senza \textit{sporcare} il codice del controller. E' stata mostrata particolare attenzione nei confronti della pulizia del codice, considerando soprattutto l'utilizzo dei \textit{magic number}.
+	
+	\item \textbf{PlayGameController}.
+	 Questa classe è stata, in assoluto, quella che ha richiesto maggior sforzo: da un lato è stato complicato riuscire a progettare una schermata per un'applicazione così dinamica, al cui interno  diversi componenti andavano modificati nel corso di tutta la partita, dall'altro è stato impegnativo riuscire a mantenere il codice pulito per quanto un controller di una \textit{GUI} non possa essere eccessivamente ingegnerizzato. In prima battuta, quello che è stato fatto, è stato implementare l'interfaccia \texttt{PlayGame} e i relativi metodi. A quel punto lo studente ha iniziato a lavorare attraverso lo strumento \textit{SceneBuilder} integrato all'interno dell'IDE \textit{IntelliJ}. In linea di principio, quello che è stato fatto è stato cercare da subito la possibilità di avere una schermata \textit{responsive} e che si potesse adattare alle dimensioni di qualunque schermo. Per poter ottenere questo risultato, si è scelto di avere come base un \texttt{AnchorPane} che, grazie alla sua proprietà che permette di impostare i \textit{constraint} della schermata, consentisse all'utente di poter ridimensionare la finestra a suo piacimento con il riposizionamento di tutti i componenti. Fatto ciò, lo studente ha iniziato ad implementare i componenti per la gestione delle carte: dovendo visualizzare come scoperte solamente le carte del player, si è scelto di ridurre la dimensione di quelle degli avversari e del compagno e di dare maggior risalto alle proprie. Ad ogni carta corrisponde un'\texttt{ImageView} che, se cliccata, scatena l'handler \texttt{clickedCard} che permette di comunicare l'indice della carta cliccata al controller (questi dettagli verranno trattati più approfonditamente in seguito). Ogni giocatore manterrà una lista per tutti i giocatori contenente i riferimenti alle \texttt{ImageView}. Nel momento in cui una carta viene cliccata, essa viene eliminata dalla mano dell'utente che l'ha giocata (e dunque anche dalla relativa lista) e viene posizionata in mezzo al campo, che conterrà dunque quattro ulteriori \texttt{ImageView}, una per ogni giocatore. Inizialmente queste quattro \texttt{ImageView} saranno popolate da \textit{placeholder} che contornano la zona di nero, mentre successivamente saranno a turno il contorno diverrà dorato nel momento in cui quel giocatore dovrà giocare una carta salvo poi essere rimpiazzato dalla stessa carta giocata. Dopo aver gestito e implementato la visualizzazione e gli eventi collegati alle carte, si è deciso di iniziare a lavorare sulla scelta della briscola e sulla possibilità di visualizzare, di turno in turno, la briscola corrente. Per la scelta della briscola sono stati inseriti quattro \texttt{Button} sopra alle carte del player: il click di uno dei bottoni permette la comunicazione della scelta al controller e l'immediata sparizione dei quattro bottoni. Dopo che la briscola è stata selezionata, verrà visualizzato un \texttt{Text} che conterrà la briscola corrente. Fatto ciò, lo studente è passato allo studio di come poter mostrare i diversi comandi all'interno della schermata. Prima di tutto sono stati aggiunti ulteriori tre \texttt{Button} che permettessero di poter selezionare il comando desiderato; successivamente sono state inserite quattro \texttt{ImageView}, una per ogni giocatore, dove verranno mostrate le immagini relative al comando selezionato (ad esempio se il player 1 cliccasse il bottone \textit{Busso}, all'interno della sua schermata verrebbe visualizzata l'immagine di una nuvoletta con all'interno il comando selezionato, mentre nelle schermate degli altri player verrebbe visualizzata la stessa immagine però in corrispondenza del giocatore che ha selezionato il comando). Fatto ciò, lo studente ha inserito delle animazioni per poter visualizzare il punteggio alla fine di ogni turno e due \texttt{Text} nella parte alta della schermata per poter visualizzare il punteggio corrente nel corso della partita, oltre ad una \texttt{ImageView} che visualizzasse, sotto forma di animazione, l'immagine di vittoria/sconfitta alla fine della partita. Infine sono stati aggiunti quattro \texttt{Text} per indicare gli username dei quattro player in partita, ed un \texttt{Text} iniziale che comunichi all'utente che si stanno ancora attendendo giocatori per poter iniziare la partita.
+	\end{itemize}
+     
+     
+     
+     \clearpage
         \subsection{Gjulio Jakova}\label{subsec:jakova}
         \subsection{Federico Naldini}\label{subsec:naldini}
         \subsection{Jacopo Riciputi}\label{subsec:riciputi}
