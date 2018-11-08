@@ -127,10 +127,34 @@
         \subsection {Requisiti implementativi}\label{subsec:requirements:implementative}
    
    \clearpage
-   
+    \section*{\Huge {\textbf Capitolo 3}\label{chapter3}}
     \section{Design architetturale}\label{sec:design}
+        L'architettura del sistema si basa fortemente su un design client-server. 
+        Mentre per la realizzazione dell'applicazione locale è stato adottato il pattern Model-View-Controller, così da permettere una maggior suddivisione dei compiti, soprattuto per quanto riguarda la parte grafica e logica del gioco dalla sezione di interazione con il remoto. 
+        Per il lato server-side invece, dato che le specifiche, oltre che a richiedere una parte statica, di semplice gestione dati, richiedevano anche una parte dinamica (real-time), sono stati adottati due differenti pattern. La gestione dei dati è stata affidata ad un server che mette a disposizione per i client una serie di chiamate \textbf{API REST}, mentre per il real-time la scelta è ricaduta sulla creazione di una sessione di gioco utilizzando il pattern \textbf{Publish-Subscribe}.
+        
+        
+        
         \subsection[Architettura]{Architettura e pattern utilizzati}\label{subsec:architecture}
             \subsubsection{Architettura server-side}\label{subsub:architecture:server}
+            Nonostante l'architettura del server non sia a microservizi, si è preso spunto dalle loro potenzialità per costruire un modello che sia in futuro facilmente scalabile. 
+            \\
+            Per fare ciò è stato inserito tra il client e il backend un \textbf{Service discovery}. 
+            
+            \begin{figure}[h!]
+                \includegraphics[width=\linewidth]{image/ArchitetturaDiscovery.png}
+                \caption{Architettura client-server con Service Discovery}
+            \end{figure}
+
+            Grazie al Discovery è stata data, a livello di modello, la possibilità all'applicazione di aggiungere servizi e di avere anche più server che si occupano dello stesso, dato che, essendo il discovery l'intermediario tra il client e il server viene sfuttato anche come Load Balancer, andando perciò a indirizzare il client verso il servizio con meno carico al momento della chiamata.
+            In questo modo l'applicazione risulta essere altamente scalibile oltre che fornire high availability e una buona tolleranza al fallimento. 
+            \\
+            Una volta ottenuto un instradamento verso uno dei server disponibili entra in gioco un classico servizio ad API REST che si occupa della gestione dell'utente, sia per la parte social che per la ricerca di una partita. 
+            
+            A questo punto l'architettura utilizzata cambia. Le richieste del dominio impongono una sessione di gioco attiva capace di mantenere uno stato e le API REST non risultano la miglior soluzione. 
+            Per la costruzione di un dialogo in real-time fra tutti i componenti di una partita e il server, che gioca nel ruolo di manager di quest'ultima è stato adottato, come anticipato, il pattern Publish-Subscribe. 
+            In questo modo ogni membro della partita in ascolto sul un determinato canale sono capaci di ricevere ed emettere messaggi cosicché alla produzione di un dato da parte di uno dei partecipanti, tutti gli altri siano capaci di recepirlo e di consumarlo per poi eventualmente rispondere tramite una determinata azione.
+            
             \subsubsection{Architettura client-side}\label{subsub:architecture:client}
         \subsection{Tecnologie}\label{subsec:technologies}
         
