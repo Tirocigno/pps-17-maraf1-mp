@@ -12,19 +12,7 @@ object DiscoveryAPI {
   /**
     * Trait of DiscoveryAPI.
     */
-  sealed trait DiscoveryAPI extends RestAPI {
-
-    /**
-      * Convert the RestAPI to a request object to register into a router.
-      *
-      * @param router the router on which request will be registered.
-      * @param handle the handler of the request.
-      * @return a Request object build from the RestAPI.
-      */
-    def asRequest(router: Router, handle:(RoutingContext, RouterResponse) => Unit):Request
-
-  }
-
+  sealed trait DiscoveryAPI extends RestAPI
 
   /**
     * RestAPI to register a new server on RestUtils server.
