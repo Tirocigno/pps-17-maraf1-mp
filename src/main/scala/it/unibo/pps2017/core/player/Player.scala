@@ -1,12 +1,8 @@
 package it.unibo.pps2017.core.player
 
-import java.util.TimerTask
-
 import akka.actor.ActorRef
 import it.unibo.pps2017.core.deck.cards.Card
 import it.unibo.pps2017.core.deck.cards.Seed.Seed
-import it.unibo.pps2017.core.game.Match
-import it.unibo.pps2017.core.player.Player._
 
 
 /**
@@ -57,73 +53,5 @@ trait Player {
     * @return the seed chosen
     */
   def onSetBriscola(): Seed
-
-}
-
-/**
-  * Basic implementation of player.
-  *
-  * @param userName  the username of the player.
-  */
-case class PlayerImpl(override val userName: String, override val playerRef: ActorRef) extends Player {
-
-  var cardList : Set[Card] = Set[Card]()
-  var controller : Option[PlayerManager] = None
-  var cardPlayed : Boolean = false
-  var task : TimerTask = _
-
-  override def equals(obj: Any): Boolean = obj match {
-    case PlayerImpl(username,playerRef) if userName.equals(username) => true
-    case _ => false
-  }
-
-  override def hashCode(): Int = super.hashCode()
-
-  override def setHand(cards: Set[Card]): Unit = {
-    cardList = cards
-    controller match {
-      case Some(con) => con.setHandView(cards)
-      case _ =>
-    }
-  }
-
-  override def getHand(): Set[Card] = cardList
-
-  override def onMyTurn(): Unit = {
-    controller.get.setTurn(this)
-    var tmp = 0
-    val timer = new java.util.Timer()
-    task = new java.util.TimerTask {
-      def run() = {
-        tmp = tmp + 1
-        cardPlayed match {
-          case true => {
-            cardPlayed = false
-            endTask()
-          }
-          case false => {
-            if(tmp == TURN_TIME_SEC) controller.get.getRandCard()
-          }
-        }
-      }
-    }
-
-    timer.schedule(task, TIME_PERIOD, TIME_PERIOD)
-  }
-
-  def endTask(): Unit ={
-    task.cancel()
-  }
-
-  override def onSetBriscola(): Seed = {
-    //gui.getSeedForBriscola()
-    //model.setBriscola()
-    null
-  }
-
-  override def getCardAtIndex(index: Int): Card = {
-    val mySeq = cardList.toSeq
-    mySeq(index)
-  }
 
 }
