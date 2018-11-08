@@ -1,12 +1,12 @@
 package it.unibo.pps2017.server.controller
 
 import io.vertx.scala.ext.web.RoutingContext
-import it.unibo.pps2017.server.model.database.{RedisConnection, RedisUserUtils}
+import it.unibo.pps2017.server.model.database.RedisUser
 import it.unibo.pps2017.server.model.{Message, RouterResponse, User, UserFriends}
 
 case class UserDispatcher() {
 
-  val userDatabaseUtils = RedisUserUtils()
+  val userDatabaseUtils = RedisUser()
 
   def addUser: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
     val username = getUsernameOrResponseError(ctx, res)
@@ -138,9 +138,6 @@ case class UserDispatcher() {
 
 
   def removeFriend: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
-    val db = RedisConnection().getDatabaseConnection
-    res.setOnClose(Some(closeDatabaseConnection(db)))
-
     val username = getUsernameOrResponseError(ctx, res)
 
     val params: Map[String, String] = ctx.request().formAttributes()

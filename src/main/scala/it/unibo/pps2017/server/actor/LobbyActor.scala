@@ -9,7 +9,7 @@ import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model.GameType.{GameType, RANKED, UNRANKED}
 import it.unibo.pps2017.server.model.LobbyStatusResponse.{FULL, OK, REVERSE}
 import it.unibo.pps2017.server.model._
-import it.unibo.pps2017.server.model.database.{RedisGameUtils, RedisUserUtils}
+import it.unibo.pps2017.server.model.database.{RedisGame, RedisUser}
 import org.json4s.jackson.Serialization.read
 
 import scala.collection.mutable.ListBuffer
@@ -38,7 +38,6 @@ class LobbyActor extends Actor {
       } else {
         None
       }
-
 
       gameType match {
         case UNRANKED =>
@@ -147,7 +146,6 @@ class LobbyActor extends Actor {
         case RANKED => rankedLobbys += newLobby
       }
 
-      onGameFound(newLobby.id)
 
       newLobby
     }
@@ -161,15 +159,16 @@ class LobbyActor extends Actor {
       case None =>
     }
 
-
+    notifyGameFound(lobby, onGameFound, gameType)
   }
 
 
   private def createActorAndNotifyTheDiscovery(game: Lobby, gameType: GameType): Unit = {
     context.system.scheduler.scheduleOnce(5 seconds) {
 
-      RedisGameUtils().signNewGame(game.id, game.team1.asSide, game.team2.asSide, gameType)
-      println(s"Context -> $context / game -> $game")
+      RedisGame().signNewGame(game.id, game.team1.asSide, game.team2.asSide, gameType)
+
+
       context.system.actorOf(Props(GameActor(game.id, game.team1, game.team2, (winners: Side) => {
         PostRequest(Dispatcher.DISCOVERY_URL, RemoveMatchAPI.path, {
           case Some(res) => try {
@@ -199,7 +198,7 @@ class LobbyActor extends Actor {
 
         if (gameType == RANKED) {
           winners.members foreach {
-            RedisUserUtils().incrementScore(_, result => {
+            RedisUser().incrementScore(_, result => {
               println("Score increment result -> " + result)
             }, cause => {
               println(s"Error on score increment. \nDetails: ${cause.getMessage}")
@@ -207,7 +206,7 @@ class LobbyActor extends Actor {
           }
           if (equalsSide(winners, game.team1.asSide)) {
             game.team2.getMembers foreach {
-              RedisUserUtils().decrementScore(_, result => {
+              RedisUser().decrementScore(_, result => {
                 println("Score increment result -> " + result)
               }, cause => {
                 println(s"Error on score increment. \nDetails: ${cause.getMessage}")
@@ -215,7 +214,7 @@ class LobbyActor extends Actor {
             }
           } else {
             game.team1.getMembers foreach {
-              RedisUserUtils().incrementScore(_, result => {
+              RedisUser().incrementScore(_, result => {
                 println("Score increment result -> " + result)
               }, cause => {
                 println(s"Error on score increment. \nDetails: ${cause.getMessage}")
@@ -226,7 +225,7 @@ class LobbyActor extends Actor {
 
         }
 
-        RedisGameUtils().setGameEnd(game.id, gameType)
+        RedisGame().setGameEnd(game.id, gameType)
       })))
 
 
