@@ -73,7 +73,9 @@ class RedisGame extends GameDatabaseInterface {
       db.hmset(getInGameKey(gameId, gameType), map.toMap).onComplete {
         case Success(res) =>
           if (res) {
-            db.expire(getInGameKey(gameId, gameType), GAME_TIME_TO_LIVE)
+            Query(db => {
+              db.expire(getInGameKey(gameId, gameType), GAME_TIME_TO_LIVE)
+            })
           }
         case Failure(_) =>
       }
