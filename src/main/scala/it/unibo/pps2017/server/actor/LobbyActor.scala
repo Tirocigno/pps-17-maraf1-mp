@@ -3,7 +3,7 @@ package it.unibo.pps2017.server.actor
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
-import it.unibo.pps2017.core.game.SimpleTeam
+import it.unibo.pps2017.core.game.Team
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{StandardParameters, _}
 import it.unibo.pps2017.server.controller.Dispatcher
 import it.unibo.pps2017.server.model.GameType.{GameType, RANKED, UNRANKED}
@@ -31,10 +31,10 @@ class LobbyActor extends Actor {
       * This message trigger the request of a lobby.
       */
     case TriggerSearch(team1, team2, gameFoundEvent, gameType) =>
-      val firstTeam: SimpleTeam = SimpleTeam("", team1)
+      val firstTeam: Team = Team("", team1)
 
-      val secondTeam: Option[SimpleTeam] = if (team2.nonEmpty) {
-        Some(SimpleTeam("", team2))
+      val secondTeam: Option[Team] = if (team2.nonEmpty) {
+        Some(Team("", team2))
       } else {
         None
       }
@@ -91,7 +91,7 @@ class LobbyActor extends Actor {
 
 
   private def nextLobby(lobby: Lobby,
-                        team1: SimpleTeam, team2: Option[SimpleTeam],
+                        team1: Team, team2: Option[Team],
                         onGameFound: String => Unit, gameType: GameType): Unit = {
     try {
       gameType match {
@@ -133,7 +133,7 @@ class LobbyActor extends Actor {
     * @param onGameFound
     * Event.
     */
-  private def createLobbyAndNotify(team: SimpleTeam, opponents: Option[SimpleTeam], onGameFound: String => Unit, gameType: GameType): Unit = {
+  private def createLobbyAndNotify(team: Team, opponents: Option[Team], onGameFound: String => Unit, gameType: GameType): Unit = {
     def createLobby(onGameFound: String => Unit, gameType: GameType): Lobby = {
       val newLobby: Lobby = gameType match {
         case UNRANKED =>

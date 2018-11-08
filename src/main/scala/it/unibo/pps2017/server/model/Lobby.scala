@@ -1,7 +1,7 @@
 
 package it.unibo.pps2017.server.model
 
-import it.unibo.pps2017.core.game.SimpleTeam
+import it.unibo.pps2017.core.game.Team
 import it.unibo.pps2017.server.actor.{FullTeamException, GameActor}
 import it.unibo.pps2017.server.model.LobbyStatusResponse.{FULL, LobbyStatusResponse, OK, REVERSE}
 
@@ -19,14 +19,14 @@ sealed trait Lobby {
     *
     * @return
     */
-  def team1: SimpleTeam
+  def team1: Team
 
   /**
     * Second team
     *
     * @return
     */
-  def team2: SimpleTeam
+  def team2: Team
 
   /**
     * Return TRUE if there are 4 players in the lobby,
@@ -59,7 +59,7 @@ sealed trait Lobby {
     * If the lobby can't contain a new team.
     */
   @throws(classOf[FullLobbyException])
-  def addTeam(team: SimpleTeam, teamIndex: Int)
+  def addTeam(team: Team, teamIndex: Int)
 
 
   /**
@@ -75,13 +75,13 @@ sealed trait Lobby {
     * REVERSE -> can contains the teams but with reversed position.
     * FULL -> can't contains teams.
     */
-  def canContains(team: SimpleTeam, opponents: Option[SimpleTeam]): LobbyStatusResponse
+  def canContains(team: Team, opponents: Option[Team]): LobbyStatusResponse
 
 }
 
 case class LobbyImpl(onFullLobby: Lobby => Unit,
-                     team1: SimpleTeam = SimpleTeam("Team1"),
-                     team2: SimpleTeam = SimpleTeam("Team2")) extends Lobby {
+                     team1: Team = Team("Team1"),
+                     team2: Team = Team("Team2")) extends Lobby {
 
   val id = System.currentTimeMillis().toString
   println("New lobby on ID -> " + id)
@@ -117,7 +117,7 @@ case class LobbyImpl(onFullLobby: Lobby => Unit,
     * @throws it.unibo.pps2017.server.model.FullLobbyException
     * If the lobby can't contain a new team.
     */
-  override def addTeam(team: SimpleTeam, teamIndex: Int): Unit = {
+  override def addTeam(team: Team, teamIndex: Int): Unit = {
 
     if (teamIndex == Lobby.CASUAL_ADD) {
       if (team1.canContains(team)) {
@@ -169,7 +169,7 @@ case class LobbyImpl(onFullLobby: Lobby => Unit,
     * REVERSE -> can contains the teams but with reversed position.
     * FULL -> can't contains teams.
     */
-  override def canContains(team: SimpleTeam, opponentsTeam: Option[SimpleTeam] = None): LobbyStatusResponse = {
+  override def canContains(team: Team, opponentsTeam: Option[Team] = None): LobbyStatusResponse = {
     var status: LobbyStatusResponse = OK
     opponentsTeam match {
       case Some(opponents) =>
