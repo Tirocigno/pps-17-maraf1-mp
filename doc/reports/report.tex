@@ -199,7 +199,26 @@
   Per quanto riguarda le funzionalità di controller e gui, esse sono state realizzate all'interno di core in un primo momento, ma sono poi state integrate nei moduli più adeguati al loro utilizzo.
 
 \subsection {Discovery}\label{subsec:details:discovery}
+All'interno del \texttt{package discovery} si è realizzato il servizio di discovery, seguendo i requisiti e le specifiche definite in fase di progettazione dell'architettura distribuita.\\
+In quanto elemento unico e comune a tutta l'architettura, il discovery server svolge le funzioni di un registro centralizzato, consultabile e aggiornabile da ogni altro componente del sistema, tale registro deve mantenere quindi i riferimenti ai server online, il numero di partite al momento disputate all'interno del sistema, un loro identificativo e il server su cui sono eseguite, inoltre tiene traccia dei giocatori online che hanno effettuato il login, fornendo la possibilità agli altri giocatori di contattarli.
+Mostrato nella figura 4.2, è possibile vedere il diagramma delle classi relativo al \texttt{package discovery}
 
+\begin{figure}
+  \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{discoveryArchitecture}
+   \caption{diagramma delle classi relativo alla struttura del discovery}
+\end{figure}
+
+Elemento chiave per l'intero package è sicuramente \texttt{DiscoveryServer}, classe che realizza l'implementazione di un server web ,estendendo le classi \texttt{Verticle} della libreria \textit{Vertx}, e delle \textit{Rest API} necessarie per contattarlo.
+Menzione particolare meritano le \textit{Rest API}, sviluppate come \texttt{case objects} estendenti un \texttt{trait} chiamato \texttt{RestAPI}, presente nel \texttt{package commons}. Il contratto definito da tale \texttt{trait} vincola ogni oggetto a implementare tre metodi:
+\begin{itemize}
+  \item{\texttt{path:\/}} definisce il path necessario per richiamare la \textit{Rest API} all'interno del server su cui viene esposta.
+
+  \item{\texttt{httpMethod:\/}} specifica il methdo http con cui deve essere effettuata la chiamata.
+
+  \item{\texttt{asRequest:\/}} crea un oggetto della classe \texttt{Request} a partire dalla \textit{Rest API}, tale classe consente di specificare tramite uno \texttt{strategy method} le operazioni da eseguire quando viene ricevuta una richiesta corrispondente all'API in questione.
+\end{itemize}
+
+Questa progettazione delle API consente un aggiunta dinamica e facile di nuove API a quelle già presenti, per aggiungere una nuova api non occorre fare altro che definire un oggetto estendente il trait \texttt{DiscoveryAPI} e un handler per la richiesta generata da tale API all'interno del metodo \texttt{deployAPI}  
 
 
     \clearpage
