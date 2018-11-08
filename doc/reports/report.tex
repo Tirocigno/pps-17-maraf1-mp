@@ -177,7 +177,7 @@
   \subsection {Core}\label{subsec:details:core}
   Punto di partenza per il desing del sistema è stata la descrizione delle funzionalità e componenti necessarie allo svolgimento di una partita di Marafone, come mostrato dal relativo diagramma delle classi nella figura 4.1.
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{initialArchitecture}
    \caption{diagramma delle classi relativo allo svolgimento di una partita}
 \end{figure}
@@ -203,11 +203,16 @@ All'interno del \texttt{package discovery} si è realizzato il servizio di disco
 In quanto elemento unico e comune a tutta l'architettura, il discovery server svolge le funzioni di un registro centralizzato, consultabile e aggiornabile da ogni altro componente del sistema, tale registro deve mantenere quindi i riferimenti ai server online, il numero di partite al momento disputate all'interno del sistema, un loro identificativo e il server su cui sono eseguite, inoltre tiene traccia dei giocatori online che hanno effettuato il login, fornendo la possibilità agli altri giocatori di contattarli.
 Mostrato nella figura 4.2, è possibile vedere il diagramma delle classi relativo al \texttt{package discovery}
 
-\begin{figure}
+ \begin{figure}[htbp]
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{discoveryArchitecture}
    \caption{diagramma delle classi relativo alla struttura del discovery}
-\end{figure}
+  \end{figure}
 
+Tale diagramma presenta una classe al centro \texttt{DiscoveryServer} e tre classi in relazione di composizione con essa.
+La prima tra queste è \texttt{MatchesSet}, classe che mette a disposizione una semplice struttura per gestire all'interno del discovery l'insieme delle partite giocate in tempo reale, salvandone l'identificatore.\\
+Successivamente \texttt{RegistryActor} realizza un attore che gestisce un oggetto di classe \texttt{SocialActorsMap}, questo attore comunica con tutti i \texttt{SocialActor} presenti all'interno del sistema mediante il protocollo \textit{Publish-Subscribe} messo a disposizione dalla libreria \textit{Akka cluster}, ricevendo richieste di registrazione e rimozione di utenti e pubblicando una versione aggiornata della lista degli utenti online sul canale.//
+In secondo luogo è presente \texttt{SocialActorsMap}: tale classe incarna una struttura praticamente analoga a \texttt{MatchesSet}, con l'unica differenza di gestire il riferimento ai giocatori online invece che alle partite.\\
+Infine \texttt{ServerMap} gestisce l'elenco dei server disponibili, tenendo conto anche del numero di partite disputato sopra di esse.\\
 Elemento chiave per l'intero package è sicuramente \texttt{DiscoveryServer}, classe che realizza l'implementazione di un server web ,estendendo le classi \texttt{Verticle} della libreria \textit{Vertx}, e delle \textit{Rest API} necessarie per contattarlo.
 Menzione particolare meritano le \textit{Rest API}, sviluppate come \texttt{case objects} estendenti un \texttt{trait} chiamato \texttt{RestAPI}, presente nel \texttt{package commons}. Il contratto definito da tale \texttt{trait} vincola ogni oggetto a implementare tre metodi:
 \begin{itemize}
@@ -218,7 +223,79 @@ Menzione particolare meritano le \textit{Rest API}, sviluppate come \texttt{case
   \item{\texttt{asRequest:\/}} crea un oggetto della classe \texttt{Request} a partire dalla \textit{Rest API}, tale classe consente di specificare tramite uno \texttt{strategy method} le operazioni da eseguire quando viene ricevuta una richiesta corrispondente all'API in questione.
 \end{itemize}
 
-Questa progettazione delle API consente un aggiunta dinamica e facile di nuove API a quelle già presenti, per aggiungere una nuova api non occorre fare altro che definire un oggetto estendente il trait \texttt{DiscoveryAPI} e un handler per la richiesta generata da tale API all'interno del metodo \texttt{deployAPI}  
+Questa progettazione delle API consente un aggiunta dinamica e facile di nuove API a quelle già presenti, per aggiungere una nuova api non occorre fare altro che definire un oggetto estendente il trait \texttt{DiscoveryAPI} e un handler per la richiesta generata da tale API all'interno del metodo \texttt{deployAPI}
+Le API attualmente presenti su discovery sono le seguenti.
+
+\begin{itemize}
+  \item{\texttt{RegisterServer:\/}} registra un server all'interno del discovery.
+
+  \item{\texttt{GetServer:\/}} API chiamata da client, restituisce il server su cui al momento, sono attive meno partite, implementando così una basilare forma di \textit{load balance} all'interno del sistema.
+
+  \item{\texttt{RegisterMatch:\/}} API chiamata da un server, registra l'id di una nuova partita sul discovery e aggiorna il contatore delle partite in corso relative al singolo server.
+
+  \item{\texttt{RemoveMatch:\/}} API chiamata da un server, notifica al discovery la fine di una partita, rimuovendo il suo id dal discovery e aggiornando il contatore relativo al server.
+
+  \item{\texttt{RegisterSocialID:\/}} API chiamta da un client dopo la fase di autenticazione, notifica a \texttt{RegistryActor} la presenza di un nuovo subscriber da contattare.
+\end{itemize}
+
+Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di mettere in esecuzione i \textit{seed nodes} necessari per \textit{Akka cluster}, si è scelto infatti di posizionare i \textit{seed nodes}, ovvero due \texttt{ActorSystem} che fungono da \textit{entry points} all'interno del sistema cluster, sopra lo stesso host in cui viene messo in esecuzione il server, così da accentuare ulteriormente il carattere centralizzato del discovery server.\\
+ A tal proposito è necessario citare il metodo \texttt{startDiscoveryCluster}, che dato l'indirizzo ip della macchina su cui viene messo in esecuzione il discovery server, costruisce due \texttt{ActorSystem} sulle porte 2551 e 2552 che creano la struttura di cluster al cui interno si andranno a inserire gli \textit{ActorSystem} in esecuzione sui vari client e server.
+
+ \subsection {Server}\label{subsec:details:server}
+ Questo è il modulo contenente tutto il codice necessario a mettere in esecuzione un server backend. Le funzionalità esposte da questo server sono di creazione e gestione di varie partite, competitive o meno, di registrazione e autenticazione di utenti, di salvataggio e recupero di partite terminate.Oltre a queste operazioni che rispondono direttamente a una richiesta di un utente, sono presenti anche tutta una serie di procedure di comunicazione con il discovery server, in modo da mantenere sempre lo stato di quest'ultimo aggiornato con lo stato effetivo del sistema.
+ Ogni server è pensato per essere indipendente da gli altri server, delegando le politiche di selezione e divisione del lavoro al discovery Server:
+ E' infatti importante notare che ogni client non contatta uno specifico server al momento dell'avvio, ma contatta il discovery server, il quale provvederà a assegnargli uno tra i server con minor numero di partite al momento disputate; questa scelta ci è parsa ragionevole in quanto il numero di partite al momento effettuate poteva fornire un primo, per quanto instabile, indice di carico computazionale del singolo server, di conseguenza andare a selezionare di volta in volta un server diverso per ogni client che si univa al sistema poteva essere un semplice, seppur rozzo, meccanismo di \textit{load balance} all'intero del sistema.\\
+ La figura 4.3 riassume efficacemente i passaggi che portano all'esecuzione di una chiamata REST all'interno di un server da parte di un client.\\
+
+ \begin{figure}[htbp]
+   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{restApiCall}
+    \caption{diagramma di sequenza relativo all'esecuzione di una chiamata rest}
+ \end{figure}
+
+ Queste modalità comunicative sono utilizzate per tutte le interazioni tra client e server, fatta eccezione per le comunicazioni durante la partita, in tale frangente si è scelto di affidarsi alla comunicazione real time tra attori tramite messaggi end to end e il protocollo \textit{publish subscribe} messo a disposizione da \textit{Akka cluster}.
+ Principale e più importante funzionalità del server è la creazione, gestione, distuzione delle varie istanze delle partite in gioco:
+ alla chiamata di una specifica \textit{Rest API} chiamata \texttt{FoundGameAPI} viene avviato il processo di ricerca di una nuova partita; per prima cosa vengono estrapolati dall'interno della richiesta il nome utente del giocatore che ha inviato la richiesta e eventuali nomi di avversari/compagni, tali dati vengono poi spediti a un attore, \texttt{LobbyActor} con il compito di mantenere la lista delle lobby, ovvero delle partite di gioco con numero di giocatori insufficenti a iniziare una nuova partita, nel caso tra le lobby ve ne sia una che può ospitare tutti i giocatori della richiesta, allora essi sono aggiunti a tale lobby, altrimenti viene creata una nuova lobby, determinata la lobby, all'utente viene infine notificato l'identificatore della lobby in cui è stato inserito. \\
+ Nel momento in cui una lobby raggiunge il numero massimo di giocatori viene dato il via a una nuova partita:in primo luogo il server notifica al discovery l'incremento del numero di partite in esecuzione, successivamente viene creato un attore di classe \texttt{GameActor} a cui vengono passati gli identificatori dei quattro giocatori che prenderanno parte alla partita; tale attore ha il compito di gestire lato server la partita, andando a fornire a ogni giocatore le sue carte, applicando le regole per la gestione della briscola, delle mani, del punteggio e così via.\\
+ Come affermato sopra, le comunicazioni durante la partita avvengono tramite scambio di messaggi tra il \texttt{GameActor} e gli attori dei quattro giocatori, in particolare \texttt{GameActor} pubblica messaggi su un canale a cui gli altri quattro attori sono iscritti, mentre riceve messaggi spediti dal singolo attore.
+ Al momento della fine di una partita, il server si occupa di registrarla su un database remoto, di aggiornare il discovery e rimuovere la lobby dalla propria lista interna.\\
+ Descritte le modalità di gestione delle partite, tutti gli altri servizi presenti sul database sono di ricerca e/o aggiunta di nuovi dati a un database backend, tramite un meccanismo a \textit{Rest API}, di seguito è riportato l'elenco delle principali \textit{Rest API} sviluppate all'interno del server:
+ \begin{itemize}
+   \item{\texttt{FoundGame:\/}} comincia la ricerca di una partita secondo le modalità sopra descritte, la richiesta di questa API può contenere al suo interno da uno a quattro username e un flag che specifica se si andrà a giocare una partita competitiva o meno.
+
+   \item{\texttt{AddUser:\/}} registra un nuovo utente sul database backend con le credenziali specificate nella richiesta.
+
+   \item{\texttt{LoginUser:\/}} controlla se le credenziali fornite da un utente durante il login corrispondono a quelle salvate all'interno del database.
+
+   \item{\texttt{GetUser:\/}} recupera dal database i dati relativi a un utente,tra cui il punteggio attuale dell'utente.
+
+   \item{\texttt{AddFriend:\/}} aggiunge alla lista degli amici dell'utente che effettua la richiesta un nuovo amico.
+
+    \item{\texttt{GameRest:\/}} recupera dal database una partita registrata.
+
+    \item{\texttt{GetFriends:\/}} recupera dal database la lista degli amici dell'utente che effettua la richiesta.
+ \end{itemize}
+
+ Ognuna di queste API fa riferimento a un oggetto della classe \texttt{RedisUserUtils} che si occupa di generare, gestire e recuperare il risultato delle queries necessarie allo svolgimento delle operazioni richieste.
+
+  \subsection {Client}\label{subsec:details:client}
+  Tra tutti i \texttt{packages} del progetto, sicuramente \texttt{Client} risulta quello più complesso e articolato.Nonostante discovery e server catturino una buona parte della complessità dei requisiti del sistema, una parte altrettanto grande, se non maggiore è delegata a questo modulo.\\
+  \texttt{Client} si pone il difficile compito di offrire all'utente fruitore del gioco tutte le funzionalità da lui attese gratificandolo con una valida \textit{User experience}, mascherando il più possibile la complessità dovuta all'itegrazione e supporto con le altre componenti del sistema.
+
+  \begin{figure}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{clientArchitecture}
+     \caption{diagramma delle classi relativo al package client}
+  \end{figure}
+
+  La struttura del \texttt{package} segue quella del classico modello di progettazione \textit{MVC}, occorre però precisare che dentro model sono contenute principalemente le classi necessarie alla comunicazione remota con server e discovery, la parte di modello effettivo del sistema gestito all'interno del client è minimale, come previsto dall'architettura client server.
+
+
+
+
+
+
+
+
+
 
 
     \clearpage
