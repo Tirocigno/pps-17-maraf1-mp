@@ -19,22 +19,23 @@ object ReplayActor {
   val CARD_FORMAT: String = ".png"
   val START_DELAY: Int = 5000
   val INTERVAL_TIME: Int = 500
+  val START_SCORE: Int = 0
+  val NEXT_VALUE: Int = 1
   case class SendHeartbeat()
-
 }
 
-class ReplayActor(override val controller: GameController, player: String, game: Game) extends ClientGameActor {
+class ReplayActor(override val controller: GameController,playerId: String,game: Game) extends ClientGameActor {
 
   import system.dispatcher
 
-  var user: String = player
+  var user: String = playerId
   val system: ActorSystem = akka.actor.ActorSystem("Akka", ConfigFactory.load("redisConf"))
   var gameCounter: ReplayActorStatus = PRE_SET
   var cardsListPlayer = new ListBuffer[String]()
   var playersList = new ListBuffer[String]()
   var briscolaChosen: Seed = _
-  var team1Score: Int = 0
-  var team2Score: Int = 0
+  var team1Score: Int = START_SCORE
+  var team2Score: Int = START_SCORE
   var currentSet: GameSet = _
   var currentHand: Hand = _
   var currentMove: Move = _
@@ -97,11 +98,11 @@ class ReplayActor(override val controller: GameController, player: String, game:
     val actualCard = CARD_PATH + currentMove.card + CARD_FORMAT
     controller.updateGUI(PlayedCard(actualCard, currentMove.player))
     try {
-      currentMove = currentHand.moves(currentHand.moves.indexOf(currentMove) + 1)
+      currentMove = currentHand.moves(currentHand.moves.indexOf(currentMove) + NEXT_VALUE)
     } catch {
       case _: Exception => try {
         gameCounter = TURN_SET
-        currentHand = currentSet.hands(currentSet.hands.indexOf(currentHand) + 1)
+        currentHand = currentSet.hands(currentSet.hands.indexOf(currentHand) + NEXT_VALUE)
         currentMove = currentHand.moves.head
       } catch {
         case _: Exception => gameCounter = END_SET
@@ -112,7 +113,7 @@ class ReplayActor(override val controller: GameController, player: String, game:
 
   private def computeEndSet(): Unit = {
     try {
-      currentSet = game.turns(game.turns.indexOf(currentSet) + 1)
+      currentSet = game.turns(game.turns.indexOf(currentSet) + NEXT_VALUE)
       if (team1Score > team2Score)
         controller.updateGUI(ComputeGameScore(playersList.head, playersList.head, playersList.head,
           team1Score, team2Score, endMatch = false))
