@@ -12,12 +12,16 @@ import it.unibo.pps2017.client.view.game.GameGUIController
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
 import it.unibo.pps2017.server.model.Game
+import it.unibo.pps2017.client.controller.actors.playeractor.GameController.UNKNOWN_ERROR
 
 import scala.collection.JavaConverters._
 
+object GameController {
+  val UNKNOWN_ERROR: String = "Unknown message received"
+}
+
 class GameController(val clientControllerRef: ClientController) extends MatchController {
 
-  val UNKNOWN_ERROR: String = "Unknown message received"
   var playGameController: PlayGameController = _
   val clientController: ClientController = clientControllerRef
   var currentActorRef: ActorRef = _
@@ -43,7 +47,7 @@ class GameController(val clientControllerRef: ClientController) extends MatchCon
     *
     */
   def createReplayActor(actorId: String, actorSystem: ActorSystem, game: Game): Unit = {
-    actorSystem.actorOf(Props(new ReplayActor(this, actorId, game)))
+    actorSystem.actorOf(Props(new ReplayActor(controller = this, playerId = actorId, game = game)))
   }
 
   /**
@@ -53,7 +57,7 @@ class GameController(val clientControllerRef: ClientController) extends MatchCon
     * @param actorSystem System.
     */
   def createViewerActor(actorId: String, actorSystem: ActorSystem): Unit = {
-    currentActorRef = actorSystem.actorOf(Props(new ViewerActor(this, actorId)))
+    currentActorRef = actorSystem.actorOf(Props(new ViewerActor(controller = this, playerId = actorId)))
   }
 
   /**
