@@ -210,6 +210,8 @@
 	  indipendente e non necessita di un servlet container, permettendo perciò un deploy più immediato.
         \clearpage
         
+	 \subsubsection{Cornhicon} 
+	  TODO
     \section{Design di dettaglio}\label{sec:design:details}
     
     \clearpage
@@ -219,8 +221,70 @@
         \subsection{Gjulio Jakova}\label{subsec:jakova}
         \subsection{Federico Naldini}\label{subsec:naldini}
         \subsection{Jacopo Riciputi}\label{subsec:riciputi}
-        
-        \clearpage
+	  Lo studente Jacopo Riciputi si è dedicato per la maggior parte del progetto nello sviluppo del servizio di server remoto e gestione dei dati e, in minor parte, di una prima implementazione delle regole di gioco. 
+	  \\
+	  Nel dettaglio: 
+	    \begin{itemize}
+	     \item Configurazione di TravisCI;
+	     \item Generazione dei Jar;
+	     \item Definizione delle regole di gioco;
+	     \item Backend;
+	     \item Client per richieste HTTP;
+	     \item Ricerca di una partita;
+	     \item Gestione dei dati
+	    \end{itemize}
+	    
+	
+	\subsubsection{Configurazione di TravisCI}
+	  La configurazione di Travis è risulta fin da subito molto semplice, in quanto il servizio è stato utilizzato con l'unico scopo di effettuare i test ad ogni push sul repository.
+	 
+	\subsubsection{Generazione dei Jar} 
+	  Per la generazione dei Jar ci si è affidati al plugin \textbf{shadow} che tramite il task sahdow jar
+	  offre la possibilità di generare \textit{fatJar} completi e pronti all'esecuzione semplicemente definendo preventivamente qualche variabile. \\
+	  È nata qualche difficoltà nel momento in cui si aveva la necessità di generare tre jar differenti, uno per ogni main presente nel progetto. 
+	  Per fare ciò sono stati definiti all'interno del file \textit{build.gradle} tre task, uno per main, all'interno dei quali viene gestito \textbf{ShadowJar} 
+	  al quale per task viene definito un classificatore da associare al jar da creare, la \textit{main class} 
+	  e vengono ereditate le dipendenze dal \textit{shadow jar} principale.
+	  
+	\subsubsection{Definizione delle regole di gioco}
+	  Lo scopo iniziale del primo sprint era quello di ottenere una modalità base di gioco nel quale fossere definite le basiche funzionalità aspettate, senza prendere in considerazione l'aspetto distribuito.
+	  \\
+	  Durante questa sezione mi sono occupato delle sviluppo di una prima versione di quello che poi successivamente è diventato il GameActor, gestore dell'intera partita. 
+	  Per fare ciò sono partito subito dalla definizione di un semplice trait che però definisse gli aspetti principali il gioco doveva rispettare. 
+	  Il trait in questione è \textbf{Match}. Una volta definito questo trait, nonostante la sua semplicità, il suo sviluppo a portato di conseguenza alla definizione di tutti gli aspetti di gioco ad esso legati. 
+	  Prima di ogni cosa era importante definire bene chi prendeva parte alla partita, nonostante non se ne conoscesse ancora bene la forma. \\
+	  Per questo motivo nasce il trait generico \textbf{BaseTeam} che definisce tutti gli aspetti che un team che prendere parte al gioco deve rispettare ma non ne limita la forma, per questo la genericità.
+	  Una volta definito come fossero gestiti i team e di conseguenza i giocatori che prendevano parte alla partita occorreva iniziare a definire gli aspetti di gioco.\\
+	  Per fare ciò ho implementato la classe GameCycle, questa classe non fa altro che implementare al suo interno una struttura data simile ad una cyclic queue, inizialmente, infatti, mi ero orientato su quest'ultima, ma, non avendo trovato nulla che mi soddisfacesse del tutto si è optate per la costruzione di una classe capace di gestire la situazione creatasi all'interno del progetto. 
+	  La classe infatti viene definita fornendole due team e su di essa vi costruisce un una lista di giocatori alternati in base alla suddivisione dei team. Questa lista diventarà poi la base per la gestione dei turni durante la partita. 
+	  \\
+	  Definiti anche questi aspetti, insieme alle parti sviluppate da Federico Naldini, il quale si è occupato della definizione e gestione del Deck e delle carte, avevo a disposizione tutti gli elementi per completare le regole del gioco. 
+	  A questo punto si è semplicemente trattato di definire bene degli stati interni e i metodi per la loro gestione. 
+	  \\
+
+	  
+	\subsubsection{Backend}
+	  La parte server è stata costruita sopra al framework Vert.x. Questa libreria è stata prediletta sopra altre per la sua semplicità, soprattutto di deploy, ma risulta, rispetto ad altre, leggermente acerba e da essa non riuscivamo a ottenere essattamente tutto ciò che desideravamo. 
+	  \\
+	  Per un lato server ben ingegnerizzato e facilmente scalabile si è incappati quindi nella necessità di inglobare gli elementi offerti da Vert.x in classi più ad alto livello, che permettessero al programmatore di evitare il contattatto tutte le volte con gli aspetti base della libreria. 
+	  In questo senso si è intervenuti principalmente tramite le classi \textbf{Router}, \textbf{RouterResponse} e \textbf{Dispatcher}.
+	  
+	  La classe \textbf{Router} funge da \textbf{Adapter} della classica gestione degli handler in Vert.x.\\
+	  All'interno di essa viene definito il trait Request il quale si occupa di inglobare aspetti di Vert.x per la gestione delle richieste così da poter rendere generica la definizione di una richiesta.
+	  Ad estendere questo trait vi sono le \textit{case class}, implementate basandosi sul pattern \textbf{strategy}, \textbf{GET} e \textbf{POST}, queste non fanno altro che definire internamente il metodo HTTP al quale risponderanno e prendere in ingresso il \textbf{Vert.x.Router} sul quale il server è in ascolto, il \textit{path} sul quale la richiesta dovrà essere disponibile e un \textit{handler}, nel quale la richiesta, dopo essere stata gestita dovrà rispondere al chiamante.
+	  La funzione che andrà a gestire la richiesta avrà disponibile, come parametro, due elementi, un \textit{RoutingContext}, classe definita da Vert.x, che rende disponibili all'\textbf{handler} tutti i dati inerenti alla richiesta e un \textbf{RouterResponse}.
+	  Quest'ultima è la seconda delle tre classi create per l'ottimizzazione dell struttura creata. 
+	  \\
+	  \textbf{RouterResponse} funge da \textit{wrapper} della classe \textit{RoutingContext} fornendo all'\textit{handler} metodi semplici per rispondere alla richiesta. Offre infatti il metodo \textit{sendResponse()}, il quale, dato in ingresso un JsonResponse, si occupa di serializzare il parametro in una stringa JSON e di inviarla al \textit{client}. 
+	  \\
+	  A livello di progettazione inoltre è stato definito che venissero considerate come positive solamente le risposte con il codice 200 come status nell'\textit{header}, perciò la semplice chiamata di questo metodo risponderà con questo codice, diversamente, chiamando precedentemente \textit{setError} si può definire un differente codice oppure tramite la \textit{setGenericError} si produrrà una risposta con lo status d'errore di default 409.
+	  Come precedentemente indicato per completare la richiesta è necessario fornire alla richiesta un \textbf{JsonRouter}. Questo trait non fa altro che definire un tipo di classe che ha lo scopo di essere serializzata e deserializzata tramite la libreria \textbf{json4p} in stringhe JSON.
+	  Infine, a fungere da collante tra queste parti di modello vi è il \textbf{Dispatcher}, al suo interno infatti vengono associati alle richieste gestite dal server i rispettivi \textbf{handler}, per poi terminare con il \textit{deploy} del backend.
+      
+	\subsubsection{Client per richieste HTTP}
+	  Il client HTTP costruito sulla libreria \textbf{Vert.x Web-client} si struttura similarmente alla classe Router. Definisce infatti un trait che stabilisce tutti gli elementi necessari per portare a termine una richiesta. 
+	  Ad implementare il trait vi sono le classi GetRequest e PostRequest. Queste differiscono non solo nel metodo HTTP della chiamata ma anche nella gestione dei parametri, infatti, entrambi prendono in ingresso una mappa di parametri, ma mentre la prima li serializza all'interno dell'url, le chiamate post effettuano l'invio dei parametri come \textit{form-body}.
+      \clearpage
         
     \section{Retrospettiva}\label{sec:retrospective}
 
