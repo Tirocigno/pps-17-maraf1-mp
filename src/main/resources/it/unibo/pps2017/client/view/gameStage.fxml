@@ -226,7 +226,7 @@
                          <Font name="Charter Bold" size="16.0" />
                      </font>
                   </Label>
-                   <Text fx:id="cardNotOk" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Non puoi giocare questa carta" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8">
+                   <Text fx:id="cardNotOk" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="You don't play this card" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8">
                      <font>
                          <Font name="Tamil Sangam MN Bold" size="25.0" />
                      </font>
