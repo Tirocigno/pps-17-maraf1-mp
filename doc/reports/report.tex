@@ -129,13 +129,16 @@
    \clearpage
     \section*{\Huge {\textbf Capitolo 3}\label{chapter3}}
     \section{Design architetturale}\label{sec:design}
-        L'architettura del sistema si basa fortemente su un design client-server. 
-        Mentre per la realizzazione dell'applicazione locale è stato adottato il pattern Model-View-Controller, così da permettere una maggior suddivisione dei compiti, soprattuto per quanto riguarda la parte grafica e logica del gioco dalla sezione di interazione con il remoto. 
-        Per il lato server-side invece, dato che le specifiche, oltre che a richiedere una parte statica, di semplice gestione dati, richiedevano anche una parte dinamica (real-time), sono stati adottati due differenti pattern. La gestione dei dati è stata affidata ad un server che mette a disposizione per i client una serie di chiamate \textbf{API REST}, mentre per il real-time la scelta è ricaduta sulla creazione di una sessione di gioco utilizzando il pattern \textbf{Publish-Subscribe}.
-        
-        
+       
         
         \subsection[Architettura]{Architettura e pattern utilizzati}\label{subsec:architecture}
+         L'architettura del sistema si basa fortemente su un design client-server. 
+        Mentre per la realizzazione dell'applicazione locale è stato adottato il pattern Model-View-Controller, così da permettere una maggior suddivisione dei compiti, soprattuto per quanto riguarda la parte grafica e logica del gioco dalla sezione di interazione con il remoto. 
+        Per il lato server-side invece, dato che le specifiche, oltre che a richiedere una parte statica, di semplice gestione dati, richiedevano anche una parte dinamica (real-time), sono stati adottati due differenti pattern. 
+        \\
+        La gestione dei dati è stata affidata ad un server che mette a disposizione per i client una serie di chiamate \textbf{API REST}, mentre per il real-time la scelta è ricaduta sulla creazione di una sessione di gioco utilizzando il pattern \textbf{Publish-Subscribe}.
+        
+        
             \subsubsection{Architettura server-side}\label{subsub:architecture:server}
             Nonostante l'architettura del server non sia a microservizi, si è preso spunto dalle loro potenzialità per costruire un modello che sia in futuro facilmente scalabile. 
             \\
@@ -143,21 +146,68 @@
             
             \begin{figure}[h!]
                 \includegraphics[width=\linewidth]{image/ArchitetturaDiscovery.png}
-                \caption{Architettura client-server con Service Discovery}
+                \caption{Architettura client-server con Service Discovery. Allo start up il server si iscriver sul discovery e si rende disponibile, a questo punto il discovery lo considererà come componente attivo e vi indirizzerà i client.}
             \end{figure}
 
-            Grazie al Discovery è stata data, a livello di modello, la possibilità all'applicazione di aggiungere servizi e di avere anche più server che si occupano dello stesso, dato che, essendo il discovery l'intermediario tra il client e il server viene sfuttato anche come Load Balancer, andando perciò a indirizzare il client verso il servizio con meno carico al momento della chiamata.
+            Grazie al Discovery è stata data, a livello di modello, la possibilità all'applicazione di aggiungere servizi e di avere anche più server che si occupano dello stesso dato che, essendo il discovery l'intermediario tra il client e il server funge anche da Load Balancer, andando perciò a indirizzare il client verso il servizio con meno carico al momento della chiamata.
             In questo modo l'applicazione risulta essere altamente scalibile oltre che fornire high availability e una buona tolleranza al fallimento. 
             \\
             Una volta ottenuto un instradamento verso uno dei server disponibili entra in gioco un classico servizio ad API REST che si occupa della gestione dell'utente, sia per la parte social che per la ricerca di una partita. 
             
             A questo punto l'architettura utilizzata cambia. Le richieste del dominio impongono una sessione di gioco attiva capace di mantenere uno stato e le API REST non risultano la miglior soluzione. 
             Per la costruzione di un dialogo in real-time fra tutti i componenti di una partita e il server, che gioca nel ruolo di manager di quest'ultima è stato adottato, come anticipato, il pattern Publish-Subscribe. 
-            In questo modo ogni membro della partita in ascolto sul un determinato canale sono capaci di ricevere ed emettere messaggi cosicché alla produzione di un dato da parte di uno dei partecipanti, tutti gli altri siano capaci di recepirlo e di consumarlo per poi eventualmente rispondere tramite una determinata azione.
+            In questo modo ogni membro della partita in ascolto su di un determinato canale sono capaci di ricevere ed emettere messaggi cosicchè, alla produzione di un dato da parte di uno dei partecipanti, tutti gli altri siano capaci di recepirlo e consumarlo per poi eventualmente rispondere tramite una determinata azione.
+            
+            \begin{figure}[h!]
+                \includegraphics[scale=0.6]{image/PubSubActorDiagram.png}
+                \caption{Attori attivi all'interno di un topic del Publish-Subscribe. Il questo caso il topic è inerente ad una partita.}
+            \end{figure}
             
             \subsubsection{Architettura client-side}\label{subsub:architecture:client}
+            Lato client come indicato è stato addottato il pattern MVC. Data la struttura del progretto questa architettura ha permesso uno sviluppo ben distinto delle parti.
+            \\
+            L'utente infatti, come è possibile vedere dalla figura \ref{fig:UserUseCaseDiagram}, viene indirizzato verso pià funzionalità:
+            \begin{itemize}
+             \item Interfaccia di login o registrazione;
+             \item Interfaccia social;
+             \item Schermata di gioco.
+            \end{itemize}
+            Sfruttando i vantaggi del il pattern \textbf{Model-View-Controller} sono stati anche identificati degli attori per la gestione delle parti, così da avere un dialogo tra parte grafica e controller reattiva. 
+            La parte di modello invece offre le funzionalità necessarie per gestire al meglio le chiamate al backend per la parte social oltre che per la gestione delle partite vere e proprie.
+            
+            
+	     \begin{figure}[!h]
+                \includegraphics[scale=0.7]{image/UserUseCaseDiagram.png}
+                \label{fig:UserUseCaseDiagram}
+                \caption{Diagramma dei casi d'uso per le due differenti tipologie d'utente.}
+            \end{figure}
+            
+            
+
+
         \subsection{Tecnologie}\label{subsec:technologies}
-        
+        Diseguito l'elenco delle tecnologie più rilevanti utilizzate per l'implementazione del progetto.
+	  \subsubsection{JavaFX}\label{subsub:tecnologie:javafx}
+	    Libreria grafica tra le più importanti nel mondo Java, se non la più importante. 
+	    \\
+	    La scelta è ricaduta su di essa in quanto ritenuta più facilmente integrabile con l'idea implementativa. 
+	    La dinamicità con il quale è possibile definire file FMXL e la netta suddivisione tra view e controller l'hanno resa per il nostro progetto un'ottima alternativa a Swing.
+	    La sezione di JavaFX rappresenta anche l'unica parte scritta in Java, in quanto il framework è stato considerato più maturo rispetto alle librerie disponibili in Scala.
+	    
+	 \subsubsection{Akka}\label{subsub:tecnologie:akka}
+	   Sia lato client che lato server è stato utilizzato il framework Akka per la gestione degli attori. 
+	   Le capacità di questa libreria di astrarre aspetti complicati di computazione hanno permesso lo sviluppo di un applicazione reattiva su entrambe le parti con il minimo sforzo. 
+	   
+	 
+	 \subsubsection{Akka Cluster}\label{subsub:tecnologie:akkacluster}
+	   La realizzazione di un dialogo dinamico tra i client e il server ci ha guidati verso il pattern \textbf{Publish-Subscribe}, per questo motivo la nostra scelta è ricaduta su Akka Cluster. 
+	   \\
+	   Essendo ben definita un'architettura client-server si è optato per seguire la strada inglobarla all'interno di un cluster cosicchè lo scambio di messaggi, tra il client e il server, non avvenga in modalità peer-to-peer.
+	   \textbf{Akka Cluster} va inoltre ad aggiungere un'ulteriore scalabilità e affidabilità del sistema dato che, per sua natura, gestisce l'entrata dei nodi nel cluster e i loro ruoli, oltre che a monitorarne le prestazioni e l'eventuale caduta di essi. 
+	 \subsubsection{Vert.x}\label{subsub:tecnologie:vert.x}
+	  Libreria utilizzata per la gestione del server remoto. Il servizio REST è interamente costruito su Vert.x e lato cliente le stesse chiamate alle API si appoggiano alla parte client della libreria.
+	  Tra gli altri si è optato per Vert.x, oltre che per la sua struttura che si basa sugli eventi asincroni all'interno di un event-loop, per la sua semplicità di deploy. A differenza di altri web server più conosciuti all'interno del mondo Java o Scala come Java EE o Spring, Vert.x è totalmente
+	  indipendente e non necessita di un servlet container, permettendo perciò un deploy più immediato.
         \clearpage
         
     \section{Design di dettaglio}\label{sec:design:details}
