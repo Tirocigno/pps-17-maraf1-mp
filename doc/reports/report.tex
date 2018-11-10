@@ -39,6 +39,7 @@
 \usepackage{setspace}           % serve a fornire comandi di interlinea standard
 \usepackage{xcolor}             % serve per la gestione dei colori nel testo
 \usepackage{graphicx}           % serve per includere immagini e grafici
+\usepackage{float}
 \setcounter{figure}{0}
 \renewcommand{\thefigure}{\arabic{section}.\arabic{figure}} % serve a cambiare la didascalia dell'immagine basandosi sulla sezione in cui è chiamata
 
@@ -109,6 +110,7 @@
     \clearpage
 	\tableofcontents
 	\clearpage
+	\setcounter{figure}{0}
     \section*{\Huge {Capitolo 1}\label{chapter1}}
       \section{Processo di sviluppo}\label{sec:process}
         \subsection {Metodologia di sviluppo}\label{subsec:metodology}
@@ -116,6 +118,7 @@
 
         \clearpage
 
+	\setcounter{figure}{0}
     \section*{\Huge {\textbf Capitolo 2}\label{chapter2}}
     \section{Requisiti}\label{sec:requirements}
          \subsection {Requisiti utente}\label{subsec:requirements:business}
@@ -130,6 +133,7 @@
 
    \clearpage
 
+    \setcounter{figure}{0}
     \section{Design architetturale}\label{sec:design}
         \subsection[Architettura]{Architettura e pattern utilizzati}\label{subsec:architecture}
             \subsubsection{Architettura server-side}\label{subsub:architecture:server}
@@ -177,7 +181,7 @@
   \subsection {Core}\label{subsec:details:core}
   Punto di partenza per il design del sistema è stata la descrizione delle funzionalità e componenti necessarie allo svolgimento di una partita di Marafone, come mostrato dal relativo diagramma delle classi nella figura 4.1.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{initialArchitecture}
    \caption{diagramma delle classi relativo allo svolgimento di una partita}
 \end{figure}
@@ -203,7 +207,7 @@ All'interno del \texttt{package discovery} si è realizzato il servizio di disco
 In quanto elemento unico e comune a tutta l'architettura, il discovery server svolge le funzioni di un registro centralizzato, consultabile e aggiornabile da ogni altro componente del sistema, tale registro deve mantenere quindi i riferimenti ai server online, il numero di partite al momento disputate all'interno del sistema, un loro identificativo e il server su cui sono eseguite, inoltre tiene traccia dei giocatori online che hanno effettuato il login, fornendo la possibilità agli altri utenti registrati nel sistema di contattarli.
 Mostrato nella figura 4.2, è possibile vedere il diagramma delle classi relativo al \texttt{package discovery}
 
- \begin{figure}[htbp]
+ \begin{figure}[H]
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{discoveryArchitecture}
    \caption{diagramma delle classi relativo alla struttura del discovery}
   \end{figure}
@@ -247,7 +251,7 @@ Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di me
  E' infatti importante notare che ogni client non contatta uno specifico host al momento dell'avvio, ma invia una richiesta al discovery server, il quale provvederà a assegnargli uno tra i server con minor numero di partite al momento disputate; questa scelta ci è parsa ragionevole in quanto il numero di partite al momento effettuate poteva fornire un primo, per quanto instabile, indice di carico computazionale del singolo server, di conseguenza andare a selezionare di volta in volta un server diverso per ogni client che si univa al sistema poteva essere un semplice, seppur rozzo, meccanismo di \textit{load balance} all'intero del sistema.\\
  La figura 4.3 riassume efficacemente i passaggi che portano all'esecuzione di una chiamata REST all'interno di un server da parte di un client.\\
 
- \begin{figure}[htbp]
+ \begin{figure}[H]
    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{restAPICall}
     \caption{diagramma di sequenza relativo all'esecuzione di una chiamata REST da parte di un client}
  \end{figure}
@@ -281,7 +285,7 @@ Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di me
   Tra tutti i \texttt{packages} del progetto, sicuramente \texttt{Client} risulta quello più complesso e articolato.Nonostante discovery e server catturino una buona parte della complessità dei requisiti del sistema, una parte altrettanto grande, se non maggiore è delegata a questo modulo.\\
   \texttt{Client} si pone il difficile compito di offrire all'utente fruitore del gioco tutte le funzionalità da lui attese gratificandolo con una valida \textit{User experience} e mascherando il più possibile la complessità dovuta all'integrazione e supporto alle altre componenti del sistema.
 
-  \begin{figure}
+  \begin{figure}[H]
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{clientArchitecture}
      \caption{diagramma delle classi relativo al package client}
   \end{figure}
@@ -297,6 +301,7 @@ In caso di Login/Registrazione invece \texttt{ClientController} creerà un ogget
   
 \clearpage
 
+	\setcounter{figure}{0}
     \section{Implementazione}\label{sec:implementation}
         \subsection{Nicholas Brasini}\label{subsec:brasini}
         \subsection{Gjulio Jakova}\label{subsec:jakova}
@@ -305,9 +310,7 @@ All'interno del progetto Maraph1-mp, mi sono occupato delle seguenti parti:
 \begin{itemize}
 	\item{\textbf{Generale}}
 	 \begin{itemize}
-	 	\item Creazione e configurazione di progetto e repository.
 	 	\item Configurazione di Gradle.
-	 	\item Configurazione di ScalaStyle.
 	 	\item Configurazione di Scoverage.
 	 	\item Configurazione del parser CLI.
 	 \end{itemize}
@@ -335,6 +338,52 @@ All'interno del progetto Maraph1-mp, mi sono occupato delle seguenti parti:
 \end{itemize}
 
 \end{itemize}
+
+\subsubsection{\textbf{Generale}}
+Soprattutto nel primo sprint, mi sono occupato della configurazione generale del progetto, andando a definire quali sarebbero stati i principali strumenti utilizzati a supporto della progettazione.
+Abbiamo scelto di utilizzare \textit{Git} come tecnologia di controllo versione, appoggiandoci a un repository remoto su \textit{Github}, è venuta naturale di conseguenza la scelta nell' utilizzare \textit{GitFlow} come modello di flusso di sviluppo, grazie anche alla presenza di valide estensioni per i principali IDE.
+Per quanto riguarda poi la configurazione di \textit{Gradle}, essa è stata portata avanti in maniera iterativa durante tutto lo svolgimento del progetto, le uniche difficoltà incontrate sono state relative alla configurazione del plugin \textit{SCoverage}, che è risultato particolarmente ostico da far eseguire direttamente dai tasks messi a disposizione da \textit{Gradle}
+Come libreria principale di testing, è stata configurata \textit{Scalatest}: questa scelta è dovuta a una maggiore familiarità con le modalità di test messe a disposizione da tale suit, ho portato però avanti anche sperimentazioni con un altra libreria di testing, ovvero \textit{ScalaCheck}, tuttavia nonostante le grandi potenzialità di tale suit, l'integrazione col plugin SCoverage risultava complessa e non banale, di conseguenza abbiamo scelto di scartare la libreria.
+Infine mi sono occupato della ricerca e configurazione di una libreria per il parsing dei comandi \textit{command line interface}, necessari per la configurazione dei vari server e clients, scegliendo infine \href{https://github.com/scallop/scallop}{\textit{Scallop}}, libreria realizzata dall'utente \href{https://github.com/Rogach}{Rogach}.\\
+L'utilizzo di \textit{Scallop} è molto semplice, basta solamente definire una classe estendente \texttt{ScallopConf} e dichiarare al suo interno un numero di variabili uguale a quello dei parametri che interessa parsare da linea di comando, specificando per ciascuna di esse il tipo di dato che deve essere parsato; fatto ciò, è sufficiente istanziare un oggetto di tale classe e richiamare i metodi aventi lo stesso nome dei parametri a cui si desidera accedere, da linea di comando invece gli argomenti vanno passati seguendo lo schema "--nomevariabile valore" se si desidera inserire il parametro, non specificando nulla se lo si vuole lasciare vuoto.\\
+La libreria consente un grande insieme di ulteriori configurazioni e possibilità, ma il nostro utilizzo si è limitato solamente alle procedure sopradescritte.
+
+\subsubsection{\textbf{Core}}
+All'interno del package core, ho progettato e realizzato la parte che riguardava il mazzo di gioco e il calcolo dei punteggi.
+La scelta di racchiudere due concetti apparentemente diversi all'interno della stessa vista del modello non è casuale: il mio lavoro, contenuto all'interno del package \texttt{deck}, aveva come scopo quello di creare tutte le strutture e entità necessarie alla gestione della singola carta, avente quindi un numero, seme e punteggio, come previsto dalle regole del gioco.
+All'intero della figura 5.4 è riportato il diagramma delle classi di dettaglio del package \texttt{deck}:
+ \begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{deckArchitecture}
+	\caption{Architettura di dettaglio del package \texttt{deck}}
+\end{figure}
+All'interno di questo diagramma, gli elementi portanti sono:
+\begin{itemize}
+	
+	\item{\textbf{GameDeck}}: interfaccia per esporre all'esterno del package una struttura compatta che offre tutte le funzionalità sviluppate all'interno di \texttt{deck}. Questa interfaccia mette a disposizione un mazzo di 40 carte mescolabile, divisibile in quattro liste da 10 carte ciascuna, inoltre permette di registrare il punteggio per ciascuna presa effettuata e di mantenere aggiornati i punteggi dei due team in partita.
+	
+	\item{\textbf{ComposedDeck}}: implementa l'interfaccia \texttt{GameDeck}, tramite il pattern \texttt{Composite}, combinando un oggetto di classe \texttt{SimpleDeck} con uno di classe \texttt{ScoreCounter}
+	
+	\item{\textbf{SimpleDeck}}: mantiene una sequenza di quaranta carte di cui può variare l'ordine o andare a suddividere in quattro liste da 10 carte ciascuna, ovvero le mani dei giocatori.
+	
+	\item{\textbf{ScoreCounter}}: classe necessaria al mantenimento in memoria dei punteggi dei due team che stanno giocando la partita. Si appoggia a una tupla binaria composta da oggetti di classe 
+	interna chiamata \texttt{ScoreTracker} a cui viene delegato il calcolo del punteggio guadagnato dal singolo team. Al fine di rispettare al massimo il principio \textit{DRY} ogni interazione tra la tupla di \texttt{ScoreTracker} e \texttt{ScoreCounter} avviene tramite un metodo privato interno chiamato \texttt{matchTeam}, a cui vengono passati il team su cui si deve attribuire una presa o un aumento di punteggio e una \texttt{Strategy} che specifica le operazioni da eseguire a seconda dell'evento da registrare: così la registrazione di una presa, l'attribuzione dei tre punti extra derivati da un eventuale Marafona e l'assegnamento del punto attribuito al team che ha effettuato l'ultima presa del set sono gestite in maniera agile e non ripetuta.
+	
+	\item{\textbf{Card}}: modella il concetto di carta di gioco, definendo un seme e un valore.
+	Sono inoltre specificati due metodi booleani, \texttt{>} e \texttt{<} che confrontano il valore tra due carte secondo le regole previste dal gioco del Marafone.
+	
+	\item{\textbf{Seed}}: un insieme statico di oggetti che rappresentano i quattro semi possibili per ogni carta di gioco, realizzato con una \textit{sealed trait}  e quattro \textit{case objects} che la estendono.
+	 
+	A mio dire, questa parte tra tutte quelle realizzate da me, è sicuramente la migliore dal punto di vista della \textit{code quality}: tutte le classi realizzate infatti sono state progettate tenendo seguendo al meglio i principi di desing \textit{SOLID}, producendo quindi un codice il più possibile compatto, documentato e di facile lettura.\\
+	Inoltre questo \texttt{package} risulta avere una coverage veramente ottima, grazie a un vasto insieme di test progettati appositamente per raggiungere questo risultato. 
+	
+	\begin{figure}[H]
+		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{deckCoverage}
+		\caption{coverage del package \texttt{deck}}
+	\end{figure}
+	
+
+\end{itemize}
+
 
         \subsection{Jacopo Riciputi}\label{subsec:riciputi}
 
