@@ -50,6 +50,44 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   val socialActorsMap: SocialActorsMap = SocialActorsMap()
   var actorRef: ActorRef = _
 
+  override def start(): Unit = developAPI()
+
+  override def developAPI(): Unit = {
+    val router = Router.router(vertx)
+    DiscoveryAPI.values.map({
+      case api@GetServerAPI => api.asRequest(router, getServerAPIHandler)
+      case api@RegisterServerAPI => api.asRequest(router,
+        registerServerAPIHandler)
+      case api@IncreaseServerMatchesAPI => api.asRequest(router,
+        increaseServerMatchesAPIHandler)
+      case api@DecreaseServerMatchesAPI => api.asRequest(router,
+        decreaseServerMatchesAPIHandler)
+      case api@GetAllMatchesAPI => api.asRequest(router,
+        getMatchesSetAPIHandler)
+      case api@RegisterMatchAPI => api.asRequest(router,
+        registerMatchAPIHandler)
+      case api@RemoveMatchAPI => api.asRequest(router,
+        removeMatchAPIHandler)
+      case api@RegisterSocialIDAPI => api.asRequest(router,
+        registerSocialIDAPI)
+      case api@_ => api.asRequest(router, mockHandler)
+    })
+
+    val options = HttpServerOptions()
+    options.setCompressionSupported(true)
+      .setIdleTimeout(timeout)
+
+    vertx.createHttpServer(options)
+      .requestHandler(router.accept _).listen(port)
+  }
+
+
+  override def startAkkaCluster(ipAddress: String): Unit = {
+    AkkaClusterUtils.startSeedCluster(ipAddress)
+    val system = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(ipAddress, "0", ipAddress)
+    actorRef = system.actorOf(Props(new RegistryActor()))
+  }
+
   /**
     * Handler for the GetServerAPI
     */
@@ -136,13 +174,6 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
     setMessageAndRespond(response, REGISTRATION_START_MESSAGE)
   }
 
-  override def startAkkaCluster(ipAddress: String): Unit = {
-    AkkaClusterUtils.startSeedCluster(ipAddress)
-    val system = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(ipAddress, "0", ipAddress)
-    actorRef = system.actorOf(Props(new RegistryActor()))
-  }
-
-
   /**
     * Private method to send an OK response with a message.
     *
@@ -171,36 +202,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private def mockHandler: (RoutingContext, RouterResponse) => Unit = (_, res) =>
     res.sendResponse(Message("RestAPI CALLED"))
 
-  override def start(): Unit = developAPI()
 
-  override def developAPI(): Unit = {
-    val router = Router.router(vertx)
-    DiscoveryAPI.values.map({
-      case api@GetServerAPI => api.asRequest(router, getServerAPIHandler)
-      case api@RegisterServerAPI => api.asRequest(router,
-        registerServerAPIHandler)
-      case api@IncreaseServerMatchesAPI => api.asRequest(router,
-        increaseServerMatchesAPIHandler)
-      case api@DecreaseServerMatchesAPI => api.asRequest(router,
-        decreaseServerMatchesAPIHandler)
-      case api@GetAllMatchesAPI => api.asRequest(router,
-        getMatchesSetAPIHandler)
-      case api@RegisterMatchAPI => api.asRequest(router,
-        registerMatchAPIHandler)
-      case api@RemoveMatchAPI => api.asRequest(router,
-        removeMatchAPIHandler)
-      case api@RegisterSocialIDAPI => api.asRequest(router,
-        registerSocialIDAPI)
-      case api@_ => api.asRequest(router, mockHandler)
-    })
-
-    val options = HttpServerOptions()
-    options.setCompressionSupported(true)
-      .setIdleTimeout(timeout)
-
-    vertx.createHttpServer(options)
-      .requestHandler(router.accept _).listen(port)
-  }
 
 }
 }
