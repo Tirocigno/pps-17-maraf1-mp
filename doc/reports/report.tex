@@ -437,6 +437,78 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
      
      \clearpage
         \subsection{Gjulio Jakova}\label{subsec:jakova}
+
+ Per quanto riguarda il progetto \textbf{Maraph-1}, lo studente \textbf{Gjulio Jakova} ha sviluppato le seguenti parti in maniera autonoma:
+        
+        \begin{itemize}
+        \item \textbf{Core}
+        		\begin {itemize} 
+		\item 	Controller e implementazione di \texttt{Player}(Model) in una prima versione non-distribuita del gioco.
+     	\end {itemize}
+     
+     	\item \textbf{Server}
+		\begin {itemize}
+		\item Creazione attore \texttt{GameActor} per la gestione di tutte le partite.
+		\item Adattamento del pattern \texttt{Distributed Publish-Subscribe} nel Cluster e gestione dello stashing dei messaggi nel \texttt{GameActor} e \texttt{PlayerClientActor}.
+	\end {itemize}
+	
+	\item \textbf{View}
+		\begin {itemize}
+		\item Implementazione della schermata iniziale di autenticazione (login e registrazione).
+		\item Implementazione della schermata dell’utente loggato.
+		\item Implementazione della schermata dell’utente non-loggato.
+		\item Caricamento di tutte le risorse grafiche per le tre schermate precedenti.
+		\item Aggiunta di stile ai componenti di ciascuna schermata.
+		\end{itemize}
+		
+     \end {itemize}
+
+ \subsubsection{Core}\label{subsub:jakova:core}
+    Nel primo sprint dove l’obiettivo principale era la realizzazione di una prima versione non-distribuita del gioco con tutte le regole di Marafone seguendo il pattern\texttt{ MVC}, lo studente Jakova si è occupato del Controller e dell’implementazione del \texttt{Player} nel Model. Nel Controller il compito era gestire gli eventi che arrivavano dalla View come la carta scelta, la scelta della briscola, i comandi scelti dai giocatori (busso, striscio o volo) eseguendo delle operazioni che potevano interessare al Model. Lo stesso discorso anche dall’altro lato, dove il Model forniva dei dati da comunicare alla View per esempio: la distribuzione delle carte, i turni, il vincitore della mano ecc. 
+
+ \subsubsection{Server}\label{subsub:jakova:server}
+A partire dal secondo sprint, dove l’obiettivo era che il sistema avesse un’architettura distribuita, lo student si è occupato della creazione dell’attore \texttt{GameActor}. L’attore \texttt{GameActor} viene creato appena dentro la lobby ci sono i quattro giocatori, e permette di gestire più partite in contemporanea, ovvero ogni partita sarà gestita da un singolo GameActor. Valutando bene quale poteva essere la scelta giusta per la comunicazione real-time server-client (\texttt{GameActor} – \texttt{PlayerClientActor}) si è deciso di utilizzare gli strumenti che \textbf{Akka Cluster} metteva a disposizione. Questa scelta è stata fatta anche per il fatto che il toolkit \textbf{Akka} lo conoscevamo già. L’altro motivo era anche per il fatto che il clustering porta la trasparenza della posizione al livello successivo. L'attore potrebbe esistere localmente o in remoto e potrebbe risiedere ovunque nel cluster; il nostro codice non deve preoccuparsi di questo. Invece per lo scambio di messaggi tra gli attori è stato deciso di utilizzare il design pattern \textbf{Publish/Subscribe} che ci forniva un approccio di notifica/comunicazione asincrona fra i diversi attori. Il funzionamento del pattern \textbf{Publish/Subscribe} è semplice: mittenti e destinatari di messaggi dialogano attraverso un \textit{topic}(canale), al quale bisogna iscriversi per poter ricevere i messaggi. Il mittente di un messaggio (detto \textit{publisher}) non deve essere consapevole dell'identità dei destinatari (detti \textit{subscriber}); esso si limita a "pubblicare" il proprio messaggio nel topic. Nel caso di Akka quello che fa da tramite viene chiamato \textit{mediator}. Un subscriber è libero di “abbonarsi” alla ricezione di messaggi aventi certe caratteristiche. Questo schema implica che ai publisher non sia noto quanti e quali siano i subscriber e viceversa. Questo può contribuire alla scalabilità del sistema. Nel nostro caso questo pattern è stato molto utile poiché avevamo un \texttt{GameActor}(responsabile della partita) che aveva il ruolo di publisher e altri attori come \texttt{PlayerClientActor}(responsabile di un singolo giocatore), \texttt{ViewerActor}(responsabile del giocatore spettatore) che avevano il ruolo di subscriber e che si mettevano in ascolto sul canale, aspettandosi tipi di messaggi diversi, in attesa che il \texttt{GameActor} comunicasse qualcosa. Il pattern ci ha permesso che il \texttt{GameActor} non mandasse ogni volta un messaggio a ciascun giocatore, quindi in totale quattro messaggi ogni volta, ma soltanto un messaggio che tutti i giocatori che erano in ascolto sul topic lo ricevessero. Un altro problema negli attori era la sequenza precisa dei messaggi che doveva ricevere, ossia quando l'attore è in attesa di qualcosa da completare prima di elaborare il prossimo messaggio. In Akka, lo \textit{stashing} dei messaggi consente a un attore di bufferizzare temporaneamente tutti o alcuni messaggi che non possono o non devono essere gestiti utilizzando il comportamento corrente dell'attore. Nel nostro caso per fare sì che tutti i giocatori (attore e view corrispettivo) siano allo stesso passo, abbiamo introdotto un altro tipo di messaggio di conferma (\texttt{Ack}) in modo che il \texttt{GameActor} non possa andare avanti senza aver ricevuto la conferma che tutti i giocatori hanno ricevuto il messaggio e che nessun messaggio sia perso. 
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.7\textwidth]{actorsMsgSeq.png}
+   \caption{Un esempio della sequenza di scambio dei messaggi}
+\end{figure}
+
+Sempre nel \texttt{GameActor} viene gestita la creazione un messaggio di \textit{recap}, contenente una serie di strutture dati, che servirà al \texttt{ViewerActor} per essere aggiornato con le mosse fatte prima che lui cominci a guardare la partita. Lo studente ha fatto uso del pattern \texttt{Strategy} nei metodi \textit{impliciti} (per esempio nel metodo che restituisce alla view i path di tutte le carte da poter visualizzare), di \texttt{PartialFunction} (nella receive dei messaggi). Sono state utilizzate anche funzionalità avanzate di Scala, come la \textit{for comprehension}, \textit{postfix notation}(nell'invio dei messaggi) ed il \textit{pattern matching} per rendere il codice il più semplice e leggibile possibile.
+
+ \subsubsection{View}\label{subsub:jakova:view}
+    La view è stata realizzata utilizzando la libreria grafica \textit{JavaFX}, dove le diverse schermate sono state definite attraverso l’utilizzo dei file \textbf{.fxml} (linguaggio XML-based) che fornisce la struttura per costruire un'interfaccia utente separata dalla logica dell'applicazione del nostro codice. Ho realizzato la schermata di autenticazione dove login e registrazione si trovano all’interno di un unico \textit{Scene}, che è composta da semplici componenti di input, label e bottoni. In base alle risposte restituite dalle \textit{REST API} vengono mostrate alert di informazione (in caso di successo) e alert di errore (in caso di fallimento). 
+
+Per quanto riguarda la gestione della logica di controllo della schermata, è stata definita la classe \texttt{RegistrationLoginController} in modo che la logica di controllo sia separata dall’implementazione della view stessa. All’interno di questa classe sono stati definiti tutti i comportamenti che si devono applicare al verificarsi di determinati eventi. 
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.65\textwidth]{login.png}
+   \caption{Schermata iniziale}
+\end{figure}
+
+Poi lo studente ha realizzato anche le due schermate dell’utente loggato e non-loggato. Un utente loggato può giocare in modo \textit{competitivo} (con effetto sulla classifica) e \textit{non-competitivo} (nessun effetto sulla classifica), guardare una partita già finita (replay della partita), guardare una partita da spettatore, visualizzare la lista degli amici ed altri giocatori online, inviare una richiesta di amicizia, invitare un amico a giocare come partner o come avversario. Invece un utente non-loggato può soltanto giocare in modo non-competitivo e guardare una partita da spettatore. 
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.8\textwidth]{generic.png}
+   \caption{Schermata dell'utente non-loggato }
+\end{figure}
+
+Componenti principali della scena sono bottoni, listView e comboBox che inizialmente non sono tutti visibili. In base a determinate situazioni certi componenti si abilitano o disabilitano in modo da evitare di avere più schermate. 
+L’invio dell’amicizia o dell’invito per giocare scatena nella GUI dell’utente invitato un alert di conferma. In base alla risposta l’invitante vedrà apparire nella sua GUI una label con risposta che scompare dopo 5 secondi (con una chiamata asincrona per non bloccare la GUI).
+
+Anche qui la logica di controllo delle schermate è definita nelle classi \texttt{GenericGUIController} e \texttt{SocialGUIController} che gestiscono tutti i vari comportamenti che si devono applicare al verificarsi di determinati eventi. Entrambe le classi implementano l’interfaccia \texttt{BasicPlayerOptions} contenente le operazioni in comune che hanno i diversi tipi di utenti.
+
+Lo studente si è occupato anche di aggiungere lo stile a tutti i componenti delle varie schermate realizzate, in modo da avere un’interfaccia grafica attraente, semplice da usare e molto intuitiva grazie anche ai colori associati ai componenti (bottone e comboBox stesso colore). Questo è stato realizzato grazie a \textit{JavaFX} che permette di aggiungere lo stile \textit{CSS} a tutti i componenti.
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.8\textwidth]{social.png}
+   \caption{Schermata dell'utente loggato }
+\end{figure}
+
         \subsection{Federico Naldini}\label{subsec:naldini}
         \subsection{Jacopo Riciputi}\label{subsec:riciputi}
         
@@ -458,6 +530,64 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
         
         \clearpage
         
+ \section*{\Huge {\textbf Capitolo 6}\label{chapter6}}
     \section{Retrospettiva}\label{sec:retrospective}
+\subsection{Andamento degli sprint}
+A progetto concluso possiamo per certo dire di essere abbastanza soddisfatti con l’andamento del progetto in generale. Siamo partiti inizialmente un po’ lenti per vari motivi però questo non ci ha penalizzati per concludere con successo il tutto, anzi ci ha spinto successivamente di dare di più. 
+Avendo adottato un approccio Agile simil Scrum  ci ha facilitato molto il lavoro in team, permettendoci di avere dei risultati immediati e costante miglioramento del prodotto in periodi brevi. Tale approccio permette di essere sempre in contatto diretto e immediato con tutti gli altri componenti del team, conoscere il loro comportamento e le loro idee, invece di limitarsi ad immaginare quali saranno le loro necessità future. In totale sono stati svolti 5 sprint. Gli sprint backlog dettagliati sono reperibili qui.
+
+\subsubsection{Sprint 1}
+I punti principali di primo sprint erano:
+ \begin {itemize}
+  \item Analisi del problema
+  \item Formalizzazione dei requisiti
+  \item Creazione repository su github
+  \item Configurazione Gradle e GitFlow
+  \item Creazione board su Trello
+  \item Integrazione Travis CI
+  \item Poter giocare a Marafone con tutte le regole in una prima versione non-distribuita.
+\end {itemize}
+
+\subsubsection{Sprint 2 e 3}
+Nel secondo e terzo sprint gli obiettivi erano i seguenti:
+ \begin {itemize}
+  \item Avere un sistema con un'architettura distribuita, in modo che gli utenti possano giocare in remoto
+  \item Trovare una stanza random per poter giocare con giocatori casuali
+  \item Aggiungere un paio di regole non gestite nel primo sprint
+\end {itemize} 
+
+\subsubsection{Sprint 4}
+Nel quarto sprint invece ci siamo focalizzati nei seguenti punti:
+ \begin {itemize}
+  \item Integrazione totale del sotto-progetto Core
+  \item Avere una schermata di autenticazione per cui poter registrarsi e loggarsi
+  \item Avere la possibilità di aggiungere un giocatore come amico
+  \item Avere la possibilità di giocare con un amico
+\end {itemize} 
+
+\subsubsection{Sprint 5}
+Nell’ultimo sprint siamo riusciti ad aggiungere altre features utili per il gioco come: 
+ \begin {itemize}
+  \item Avere una schermata per l’utente loggato ed un’altra per il guest
+  \item Avere la possibilità di guardare una partita già finita(replay)
+  \item Avere la possibilità di unirsi a una partita come spettatore
+  \item Tutti i giocatori che giocano una partita competitiva avere punteggio in più o in meno in base al risultato finale della partita
+  \item Integrazione finale
+\end {itemize} 
+
+Una volta finito ciò ci siamo occupati del refactoring del codice e stesura della relazione.
+\bigskip
+\subsection{Commenti finali}
+
+A progetto concluso possiamo dire che siamo riusciti a completare tutti i requisiti posti all’inizio del progetto. La feature opzionale, ossia lo sviluppo di una semplice IA per permettere le partite in single-player, non siamo riusciti a fare soltanto per motivi di tempo. 
+La coverage generale dei test risulta un po’ bassa poiché mancano i test inerenti alla View. La parte restante invece è abbastanza coperta garantendo che la logica del gioco venga rispettata.
+
+Durante lo sviluppo del progetto, grazie anche a Trello, riuscivamo a capire l’andamento dei lavori. Il lavoro in team è andato abbastanza bene. Ognuno dei componenti del team era libero di scegliere un task a piacimento, però in generale non ci siamo limitati a scegliere soltanto cose che già conoscevamo ma ogni sprint imparavamo cose nuove. 
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.8\textwidth]{trello.png}
+   \caption{Screen della board di Trello a fine progetto }
+\end{figure}
 
 \end{document}
