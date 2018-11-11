@@ -11,6 +11,8 @@ Elaborato di progetto per l'esame di PPS, anno 2017-18
  * Gjulio Jakova: [gjulio.jakova@studio.unibo.it](mailto:gjulio.jakova@studio.unibo.it)
  
  ## Guida all'utilizzo
+ Le singole funzionalità del sistema sono avviabili da Gradle rispettivamente dai tasks runClient, runServer
+ e runDiscovery, a cui gli argomenti cli possono essere passati tramite il flag --args='--argumentName=argumentValue'.
  Per lanciare i tre jar, può essere specificata o meno una configurazione da CLI.
  Di default, il discovery è configurato per essere in esecuzione su 127.0.0.1:2000, i vari server su 127.0.0.1:4700
  mentre i client ricercano nodi di Akka Cluster e discovery all'indirizzo 127.0.0.1.
