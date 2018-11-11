@@ -778,7 +778,7 @@ All'interno del progetto Maraph1-mp, mi sono occupato delle seguenti parti:
 
 \end{itemize}
 
-\subsubsection{\textbf{Generale}}
+\subsubsection{Generale}
 Soprattutto nel primo sprint, mi sono occupato della configurazione generale del progetto, andando a definire quali sarebbero stati i principali strumenti utilizzati a supporto della progettazione.
 Abbiamo scelto di utilizzare \textit{Git} come tecnologia di controllo versione, appoggiandoci a un repository remoto su \textit{Github}, di conseguenza è venuta naturale la scelta nell' utilizzare \textit{GitFlow} come modello di flusso di sviluppo, grazie anche alla presenza di valide estensioni per i principali IDE.
 Per quanto riguarda poi la configurazione di \textit{Gradle}, essa è stata portata avanti in maniera iterativa durante tutto lo svolgimento del progetto, le uniche difficoltà incontrate sono state relative alla configurazione del plugin \textit{SCoverage}, che è risultato particolarmente ostico da far eseguire direttamente dai tasks messi a disposizione da \textit{Gradle}
@@ -787,7 +787,7 @@ Infine mi sono occupato della ricerca e configurazione di una libreria per il pa
 L'utilizzo di \textit{Scallop} è molto semplice, basta solamente definire una classe estendente \texttt{ScallopConf} e dichiarare al suo interno un numero di variabili uguale a quello dei parametri che interessa parsare da linea di comando, specificando per ciascuna di esse il tipo di dato che deve essere parsato; fatto ciò, è sufficiente istanziare un oggetto di tale classe e richiamare i metodi aventi lo stesso nome dei parametri a cui si desidera accedere, da linea di comando invece gli argomenti vanno passati seguendo lo schema "--nomevariabile valore" se si desidera inserire il parametro, non specificando nulla se lo si vuole lasciare vuoto.\\
 La libreria consente un grande insieme di ulteriori configurazioni e possibilità, ma il nostro utilizzo si è limitato solamente alle procedure sopradescritte.
 
-\subsubsection{\textbf{Core}}
+\subsubsection{Core}
 All'interno del package core, ho progettato e realizzato la parte che riguardava il mazzo di gioco e il calcolo dei punteggi.
 La scelta di racchiudere due concetti apparentemente diversi all'interno della stessa vista del modello non è casuale: il mio lavoro, contenuto all'interno del package \texttt{deck}, aveva come scopo quello di creare tutte le strutture e entità necessarie alla gestione della singola carta, avente quindi un numero, seme e punteggio, come previsto dalle regole del gioco.
 All'intero della figura 5.10 è riportato il diagramma delle classi del package \texttt{deck}:
@@ -823,7 +823,7 @@ All'interno di questo diagramma, gli elementi portanti sono:
 
 \end{itemize}
 
-\subsubsection{\textbf{Discovery}}
+\subsubsection{Discovery}
 Il processo di analisi e definizione delle funzionalità e interazioni del discovery server è stato portato avanti insieme allo studente Riciputi, per quanto riguarda però il design di dettaglio e l'implementazione me ne sono occupato io nella loro totalità.
 Assieme allo studente Riciputi abbiamo definito il ruolo del discovery come punto centrale del sistema, assegnandogli la funzione di registro centralizzato per l'elenco di server, partite e giocatori online, abbiamo inoltre pensato al basilare algoritmo di \textit{load balance} descritto nel paragrafo 4.4, ben consci dei limiti della nostra soluzione.\\
 Passando poi ai dettagli di natura più implementativa, la maggior parte della complessità del discovery viene gestita a livello delle classi \texttt{DiscoveryServer} e \texttt{RegistryActor}, le altre tre strutture presenti nel package, \texttt{MatcheSet}, \texttt{SocialActorsMap} e\texttt{ServerMap} sono semplici wrapper per collezioni del linguaggio \textit{Scala} atte a mantenere traccia rispettivamente dell'elenco delle partite in esecuzione, la lista dei giocatori online e l'insieme dei server registrati nel sistema.
@@ -833,7 +833,7 @@ Il paradigma di comunicazione implementato è ancora una volta \textit{Publish S
 Unico nodo critico sta nel recuperare l'\texttt{ActorRef} del \texttt{RegistryActor} da parte dei \texttt{SocialActor} in esecuzione sui client: per facilitare questa operazione \texttt{DiscoveryServer} mette a disposizione una risorsa \textit{REST} che scatena l'invio di un messaggio di heartbeat a \texttt{RegistryActor} che provvede a notificare sul canale un messaggio contenente la propria \texttt{ActorRef} per permettere ai nuovi iscritti al canale di contattarlo direttamente.\\
 Per quanto riguarda la parte di testing, sono stati sviluppati un discreto numero di test, nonostante per le funzionalità più avanzate come il testing delle risorse \texttt{REST} io sia ricorso a soluzioni grezze, il codice risulta con buoni valori di coverage all'interno delle proprie classi.
 
-\subsubsection{\textbf{Client}}
+\subsubsection{Client}}
 Ultimo modulo di cui sono occupato è stato client, all'interno di questo package mi sono preso il compito di realizzare le controparti alle strutture di comunicazione esposte all'interno del discovery e dei vari server del sistema, inoltre ho progettato la struttura di controllo centralizzato a tutto il sistema, ovvero \texttt{ClientController}; soprattutto però ho realizzato l'intera parte social del sistema, parte che ha richiesto la maggior parte del mio sforzo, infine ho creato uno strumento di caricamento e scambio delle varie schermate all'interno della GUI.\\
 L'integrazione tra le risorse REST presenti sui diversi server e il singolo client non presentava una particolare complessità, le strutture offerte dalla libreria \textit{Vertx}, riadattate nel codice dello studente Riciputi, consentivano già un'implemetazione ben incapsulata e di qualità, tuttavia rimaneva presente un problema: per la maggior parte delle chiamate REST infatti serviva l'assegnamento di un server da contattare, fornito dal discovery, quindi per mantenere la trasparenza di tale problema alle strutture soprastanti occorreva in qualche modo riuscire a nascondere una chiamata al discovery per recuperare ottenere un server da1 contattare, la natura asincrona di questa chiamata complicava ulteriormente la già difficile situazione.\\
 Per venire a capo di questo problema, mi sono appoggiato alle potenzialità della programmazione funzionale: il punto di partenza è stata la separazione in diversi metodi dei vari passaggi necessari alla comunicazione con una risorsa remota, in particolare ho aggiunto un metodo di controllo dove se il server di comunicazione risulta presente, lo si contatta direttamente, altrimenti si esegue una chiamata al discovery andando a recuperare un server da contattare, nell'handler di questa richiesta ho poi specificato l'API da chiamare sul server una volta che la risposta è arrivata e i parametri da utilizzare in questa richiesta.
