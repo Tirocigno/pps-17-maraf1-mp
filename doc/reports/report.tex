@@ -395,6 +395,70 @@ Unico nodo critico sta nel recuperare l'\texttt{ActorRef} del \texttt{RegistryAc
 Per quanto riguarda la parte di testing, sono stati sviluppati un discreto numero di test, nonostante per le funzionalità più avanzate come il testing delle risorse \texttt{REST} io sia ricorso a soluzioni grezze, il codice risulta con buoni valori di coverage all'interno delle proprie classi.
 
 \subsubsection{\textbf{Client}}
+Ultimo modulo di cui sono occupato è stato client, all'interno di questo package mi sono preso il compito di realizzare le controparti alle strutture di comunicazione esposte all'interno del discovery e dei vari server del sistema, inoltre ho progettato la struttura di controllo centralizzato a tutto il sistema, ovvero \texttt{ClientController}; soprattutto però ho realizzato l'intera parte social del sistema, parte che ha richiesto la maggior parte del mio sforzo, infine ho creato uno strumento di caricamento e scambio delle varie schermate all'interno della GUI.\\
+L'integrazione tra le risorse REST presenti sui diversi server e il singolo client non presentava una particolare complessità, le strutture offerte dalla libreria \textit{Vertx}, riadattate nel codice dello studente Riciputi, consentivano già un'implemetazione ben incapsulata e di qualità, tuttavia rimaneva presente un problema: per la maggior parte delle chiamate REST infatti serviva l'assegnamento di un server da contattare, fornito dal discovery, quindi per mantenere la trasparenza di tale problema alle strutture soprastanti occorreva in qualche modo riuscire a nascondere una chiamata al discovery per recuperare ottenere un server da1 contattare, la natura asincrona di questa chiamata complicava ulteriormente la già difficile situazione.\\
+Per venire a capo di questo problema, mi sono appoggiato alle potenzialità della programmazione funzionale: il punto di partenza è stata la separazione in diversi metodi dei vari passaggi necessari alla comunicazione con una risorsa remota, in particolare ho aggiunto un metodo di controllo dove se il server di comunicazione risulta presente, lo si contatta direttamente, altrimenti si esegue una chiamata al discovery andando a recuperare un server da contattare, nell'handler di questa richiesta ho poi specificato l'API da chiamare sul server una volta che la risposta è arrivata e i parametri da utilizzare in questa richiesta.
+Procedendo con lo sviluppo del sistema, ho notato che questa struttura poteva essere applicata ogni qualvolta si richiamasse un API da parte di un client e siccome erano presenti due punti ben precisi in cui serviva chiamare due gruppi di API differenti tra loro, ho deciso di applicare il pattern di progettazione \textit{template method} al fine di ottenere un codice di maggiore qualità.\\
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{RestWebClient}
+	\caption{Struttura di astrazione dei restClient all'interno del package \texttt{Client}}
+\end{figure}
+
+Ho creato così, come mostrato in figura 5.5, una classe astratta che specificava come \texttt{template method} un metodo dove all'interno di un \texttt{case match} venivano specificate le varie API possibili e gli handler alle loro risposte.
+\texttt{GeneralRestClient} e \texttt{SocialRestClient} implementano questo metodo astratto andando a specificare le API possibili e i loro handler, senza nessuna ulteriore implementazione da realizzare.
+Altra struttura decisamente utile all'interno del client è composta dalle classi \texttt{GuiLoader} e \texttt{GuiStack}, la cui ultima implementata come \textit{Singleton} all'interno del sistema, tali classi consentono, mediante una mappa di \texttt{scene} della libreria \textit{JavaFX} il caricamento dinamico e il cambio di schermata in maniera totalmente trasparente all'interno di ogni punto del sistema, basta semplicemente richiamare il metodo \texttt{setCurrentStage} a cui viene passato un oggetto statico in base alla scena da caricare e un oggetto controller a cui collegare quella scena, se necessita di essere creata.\\
+Come detto sopra, sicuramente la parte social è stata la più impegnativa da realizzare: nonostante la maggior parte delle strutture necessarie fossero già state definite, su alcuni punti, come il gioco cooperativo, le idee erano decisamente meno chiare.\\
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialArchitecture}
+	\caption{Diagramma delle classi della parte Social}
+\end{figure}
+
+In figura è possibile notare lo schema di base MVC già abbondantemente descritto nella sezione 4.5, mentre \texttt{RestWebClient} viene realizzato in una semplice implementazione sopradescritta, la parte di SocialActor merita un approfondimento a parte.
+\texttt{SocialActor} costituisce infatti l'elemento principale del modello, a cui \texttt{SocialController} fa riferimento sia per aggiornare lo stato intero, sia per inviare messaggi e comunicazioni, tali interazioni possono essere di due nature specifiche ovvero:
+\begin{itemize}
+	\item Aggiunta di un amico: L'aggiunta di un amico prevede che al giocatore da aggiungere come amico venga inviato una richiesta, se la risposta è positiva, viene lanciata una chiamata REST al server per aggiungere il nuovo amico.
+	\item Invito di un amico a una formazione: La situazione in questo caso è decisamente più complicata: non c'è da gestire solamente la risposta, ma anche tutta una serie di situazioni in cui non è possibile mandare la richiesta, perché il giocatore richiedente/invitato potrebbe già trovarsi all'interno di un'altra formazione con un ruolo che lo inabilita all'accettazione di tale richiesta, il giocatore che accetta un invito deve inoltre essere impedito nell'accettarne ulteriori e nel compiere operazioni di ogni natura, delegando così il proprio controllo al mittente dell'invito, che assume il ruolo di leader del party. 
+\end{itemize}
+Per gestire al meglio questa complessità, ho pensato di fornire a \texttt{SocialActor} un insieme di utili strutture aggiuntive.
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialActor}
+	\caption{Diagramma delle strutture di supporto a SocialActor}
+\end{figure}
+
+\begin{itemize}
+	\item{\texttt{Party:}} mantiene il riferimento a tutti i giocatori presenti all'interno del party del giocatore, incluso lui stesso, e il ruolo. Viene consultato durante le richieste di aggiunta all'interno di un party altrui e durante l'avvio di una nuova partita.
+	
+	\item{\texttt{OnlinePlayersMap}} estende, utilizzando una tecnica simile al pattern di progettazione \texttt{Decorator}, la struttura già dichiarata all'interno del discovery, andando a aggiungere una lista di username per gli amici e la possibilità di ottenere la lista degli amici online partendo da quella dei giocatori e degli amici
+	
+	\item{\texttt{RequestHandler:}} Gestisce la ricezione delle richieste e la generazione delle varie risposte, andando a processare una richiesta alla volta. Nasconde a SocialActor la complessità derivata dal mantenere in memoria una richiesta, dalla produzione di una risposta basata sia su un comando inviato dalla GUI sia dal contesto della richiesta stessa. 
+	
+\end{itemize}
+
+La presenza di queste strutture aggiuntive consentono una notevole semplificazione all'interno della classe \texttt{SocialActor}.
+Per quanto riguarda infine l'interazione tra la parte social e la parte generale di client, ho seguito il principio DRY: \texttt{SocialController} infatti delega a \texttt{ClientController} le funzionalità comuni, con la sola eccezione di effettuare un passaggio in più per quanto riguarda la ricerca e creazione di una nuova partita: dovendo infatti gestire i membri nel party del giocatore, viene effettuata una chiamata a \texttt{SocialActor} che provvede a generare una mappa contenente gli username dei giocatori affiancati dai ruoli con cui entreranno in partita.
+Al momento della ricezione dell'id partita, \texttt{ClientController} provvederà a notificarlo a \texttt{SocialController}, che  sua volta manderà un messaggio a \texttt{SocialActor} con l'ordine di notificare a tutti i membri del party che una partita è iniziata. I vari attori dei componenti del party riceveranno l'id della partita mediante tale messaggio e notificheranno il proprio \texttt{ClientController} che una nuova partita è iniziata.
+Alla terminazione della partita in questione, il party viene sciolto.
+Le figure 5.6 e 5.7 rappresentano le interazioni appena descritte.  
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialStartGame}
+	\caption{Avvio di una partita da parte del leader di un party}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialRecieveGame}
+	\caption{Ricezione della notifica dell'id di una partita da parte dei membri di un party}
+\end{figure}
+
+
+
+ 
+
+ 
+
 
         \subsection{Jacopo Riciputi}\label{subsec:riciputi}
 
