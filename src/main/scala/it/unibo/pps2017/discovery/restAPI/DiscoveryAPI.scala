@@ -12,19 +12,7 @@ object DiscoveryAPI {
   /**
     * Trait of DiscoveryAPI.
     */
-  sealed trait DiscoveryAPI extends RestAPI {
-
-    /**
-      * Convert the RestAPI to a request object to register into a router.
-      *
-      * @param router the router on which request will be registered.
-      * @param handle the handler of the request.
-      * @return a Request object build from the RestAPI.
-      */
-    def asRequest(router: Router, handle:(RoutingContext, RouterResponse) => Unit):Request
-
-  }
-
+  sealed trait DiscoveryAPI extends RestAPI
 
   /**
     * RestAPI to register a new server on RestUtils server.
@@ -167,37 +155,6 @@ object DiscoveryAPI {
     override def errorMessage: String = "ERROR ON PLAYER REGISTRATION"
   }
 
-  /**
-    * RestAPI for unregistering a new socialcontroller actor on the server.
-    */
-  case object UnregisterSocialIDAPI extends DiscoveryAPI with APIWithMessages {
-
-    val SOCIAL_ID = "playerid"
-
-    override def httpMethod: HttpMethod = HttpMethod.POST
-
-    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
-      POST(router, path, handle)
-
-    override def path: String = "/unregistersocialidapi"
-
-    override def okMessage: String = "PLAYER UNREGISTERED SUCCESSFULLY"
-
-    override def errorMessage: String = "ERROR ON PLAYER REMOVING"
-  }
-
-  /**
-    * RestAPI to get all online players list.
-    */
-  case object GetAllOnlinePlayersAPI extends DiscoveryAPI {
-
-    override def httpMethod: HttpMethod = HttpMethod.GET
-
-    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
-      GET(router, path, handle)
-
-    override def path: String = "/getallonlineplayerapi"
-  }
 
   /**
     * values method, analog to java's enumeration's values() method.
@@ -206,7 +163,7 @@ object DiscoveryAPI {
     */
   def values: Set[DiscoveryAPI] = Set(GetServerAPI, RegisterServerAPI,
     IncreaseServerMatchesAPI, DecreaseServerMatchesAPI, RegisterMatchAPI,
-    RemoveMatchAPI, GetAllMatchesAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI, GetAllOnlinePlayersAPI)
+    RemoveMatchAPI, GetAllMatchesAPI, RegisterSocialIDAPI)
 
   /**
     * Standard connection parameters used by every API.
