@@ -1,9 +1,7 @@
 
 package it.unibo.pps2017.client.model.remote
 
-import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
-import io.vertx.scala.ext.web.client.HttpResponse
 import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.commons.remote.rest.API.RestAPI
@@ -12,11 +10,10 @@ import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.model.{GetRequest, PostRequest, ServerContextEncoder}
 import org.json4s.jackson.Serialization.read
 
-import scala.concurrent.Future
 import scala.language.postfixOps
 
 /**
-  * This module is responsable for sending remote calls via rest apis and
+  * This module is responsible for sending remote calls via rest apis and
   * handle their responses.
   */
 sealed trait RestWebClient {
@@ -26,7 +23,7 @@ sealed trait RestWebClient {
   var assignedServerContext: Option[ServerContext] = None
 
   /**
-    * Start a Rest RestAPI call with a parameters .
+    * Start a RestAPI call with a parameter to pass inside url.
     *
     * @param apiToCall     the RestAPI to call.
     * @param parameterPath path of RestAPI to invoke.
@@ -35,10 +32,9 @@ sealed trait RestWebClient {
   def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]], parameterPath: String): Unit
 
   /**
-    * Start a Rest RestAPI call without a parameters .
+    * Start a RestAPI call without a parameter to pass inside url.
     *
     * @param apiToCall     the RestAPI to call.
-    * @param parameterPath path of RestAPI to invoke.
     * @param paramMap      parameters map.
     */
   def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]]): Unit
@@ -51,10 +47,6 @@ sealed trait RestWebClient {
   def getCurrentServerContext: ServerContext = assignedServerContext.get
 }
 
-object RestWebClient {
-
-  type AsyncResponse = Future[HttpResponse[Buffer]]
-}
 
 abstract class AbstractRestWebClient(override val discoveryServerContext: ServerContext) extends RestWebClient {
 
