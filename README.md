@@ -26,6 +26,10 @@ Elaborato di progetto per l'esame di PPS, anno 2017-18
   * --currentip: specifica l'indirizzo di rete dell'host su cui verrà messo in esecuzione il client.
   
   *Server*
-  ????????
+  * --discoveryaddress:  specifica l'indirizzo di rete su cui è in esecuzione il discovery.
+  * --myip:  specifica l'indirizzo di rete su cui è in esecuzione il server.
+  * --redishost:  specifica l'host su cui è in esecuzione il server di Redis
+  * --redisport:  specifica la porta su cui è in esecuzione il server di Redis 
+  * --redispw:  specifica la password per accedere al server di Redis
  
  
