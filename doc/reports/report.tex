@@ -282,6 +282,7 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
    \end{itemize}
 
    \clearpage
+   \setcounter{figure}{0}
     \section*{\Huge {\textbf Capitolo 3}\label{chapter3}}
     \section{Design architetturale}\label{sec:design}
 
@@ -363,6 +364,9 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
 	  Tra gli altri si è optato per Vert.x, oltre che per la sua struttura basata sugli eventi asincroni all'interno di un event-loop, per la sua semplicità di deploy. A differenza di altri web server più conosciuti all'interno del mondo Java o Scala come Java EE o Spring, Vert.x è totalmente
 	  indipendente e non necessita di un servlet container, permettendo perciò un deploy ancora più immediato.
         \clearpage
+        \setcounter{figure}{0}
+        
+\section*{\Huge {\textbf Capitolo 4}\label{chapter4}}        
     \section{Design di dettaglio}\label{sec:design:details}
      	In questa sezione saranno presentate le scelte effettuate a livello di design nel dettaglio. In primo luogo si tratterà dell'organizzazione generale del codice in packages e dei \textit{design patterns} applicati più frequentemente, successivamente saranno analizzati nel particolare le principali funzionalità e classi di ogni modulo del sistema.
 
@@ -520,6 +524,7 @@ Per effettuare invece il building del progetto abbiamo deciso di utilizzare \tex
      In caso di Login/Registrazione invece \texttt{ClientController} creerà un oggetto di classe \texttt{SocialController} e il corrispondente \texttt{SocialActor}, tale attore durante la creazione andrà a contattare il registro remoto su discovery per ottenere la lista di giocatori online, nel frattempo il controller recupererà la lista di tutti gli amici registrati tramite una chiamata REST al server assegnato. Un utente registrato avrà accesso a una schermata contenente diverse funzionalità: oltre a quelle già citate per l'utente anonimo, che verranno delegate da \texttt{SocialController} a \texttt{ClientController}, il giocatore registrato potrà contattare i giocatori online e i propri amici tramite uno scambio di messaggi tra i relativi \texttt{SocialActors}, grazie a tali interazioni sarà possibile aggiungere nuovi amici e formare team di gioco per le partite; sarà inoltre a disposizione una modalità di ricerca e riproduzione delle partite registrate, tale funzionalità viene resa possibile grazie a una combinazione di chiamate REST e delegazioni a \texttt{ClientController}, che provvede a settare il proprio \texttt{MatchController} come entità responsabile alla riproduzione della partita.
 
     \clearpage
+    \setcounter{figure}{0}
 
  \section*{\Huge {\textbf Capitolo 5}\label{chapter5}}
 
@@ -785,7 +790,7 @@ La libreria consente un grande insieme di ulteriori configurazioni e possibilit�
 \subsubsection{\textbf{Core}}
 All'interno del package core, ho progettato e realizzato la parte che riguardava il mazzo di gioco e il calcolo dei punteggi.
 La scelta di racchiudere due concetti apparentemente diversi all'interno della stessa vista del modello non è casuale: il mio lavoro, contenuto all'interno del package \texttt{deck}, aveva come scopo quello di creare tutte le strutture e entità necessarie alla gestione della singola carta, avente quindi un numero, seme e punteggio, come previsto dalle regole del gioco.
-All'intero della figura 5.4 è riportato il diagramma delle classi del package \texttt{deck}:
+All'intero della figura 5.10 è riportato il diagramma delle classi del package \texttt{deck}:
  \begin{figure}[H]
 	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{deckArchitecture}
 	\caption{Architettura di dettaglio del package \texttt{deck}}
@@ -839,7 +844,7 @@ Procedendo con lo sviluppo del sistema, ho notato che questa struttura poteva es
 	\caption{Struttura di astrazione dei restClient all'interno del package \texttt{Client}}
 \end{figure}
 
-Ho creato così, come mostrato in figura 5.5, una classe astratta che specificava come \texttt{template method} un metodo dove all'interno di un \texttt{case match} venivano specificate le varie API possibili e gli handler alle loro risposte.
+Ho creato così, come mostrato in figura 5.11, una classe astratta che specificava come \texttt{template method} un metodo dove all'interno di un \texttt{case match} venivano specificate le varie API possibili e gli handler alle loro risposte.
 \texttt{GeneralRestClient} e \texttt{SocialRestClient} implementano questo metodo astratto andando a specificare le API possibili e i loro handler, senza nessuna ulteriore implementazione da realizzare.
 Altra struttura decisamente utile all'interno del client è composta dalle classi \texttt{GuiLoader} e \texttt{GuiStack}, la cui ultima implementata come \textit{Singleton} all'interno del sistema, tali classi consentono, mediante una mappa di \texttt{scene} della libreria \textit{JavaFX} il caricamento dinamico e il cambio di schermata in maniera totalmente trasparente all'interno di ogni punto del sistema, basta semplicemente richiamare il metodo \texttt{setCurrentStage} a cui viene passato un oggetto statico in base alla scena da caricare e un oggetto controller a cui collegare quella scena, se necessita di essere creata.\\
 Come detto sopra, sicuramente la parte social è stata la più impegnativa da realizzare: nonostante la maggior parte delle strutture necessarie fossero già state definite, su alcuni punti, come il gioco cooperativo, le idee erano decisamente meno chiare.\\
@@ -875,7 +880,7 @@ La presenza di queste strutture aggiuntive consentono una notevole semplificazio
 Per quanto riguarda infine l'interazione tra la parte social e la parte generale di client, ho seguito il principio DRY: \texttt{SocialController} infatti delega a \texttt{ClientController} le funzionalità comuni, con la sola eccezione di effettuare un passaggio in più per quanto riguarda la ricerca e creazione di una nuova partita: dovendo infatti gestire i membri nel party del giocatore, viene effettuata una chiamata a \texttt{SocialActor} che provvede a generare una mappa contenente gli username dei giocatori affiancati dai ruoli con cui entreranno in partita.
 Al momento della ricezione dell'id partita, \texttt{ClientController} provvederà a notificarlo a \texttt{SocialController}, che  sua volta manderà un messaggio a \texttt{SocialActor} con l'ordine di notificare a tutti i membri del party che una partita è iniziata. I vari attori dei componenti del party riceveranno l'id della partita mediante tale messaggio e notificheranno il proprio \texttt{ClientController} che una nuova partita è iniziata.
 Alla terminazione della partita in questione, il party viene sciolto.
-Le figure 5.6 e 5.7 rappresentano le interazioni appena descritte.
+Le figure 5.13 e 5.14 rappresentano le interazioni appena descritte.
 
 \begin{figure}[H]
 	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialStartGame}
