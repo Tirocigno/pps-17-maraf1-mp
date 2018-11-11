@@ -227,3 +227,20 @@ task clientJar(type: ShadowJar) {
     manifest.attributes 'Main-Class': 'it.unibo.pps2017.client.ClientMain'
     from(shadowJar.from())
 }
+
+task(runClient, dependsOn: 'classes', type: JavaExec) {
+    main = 'it.unibo.pps2017.client.ClientMain'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+
+task(runServer, dependsOn: 'classes', type: JavaExec) {
+    main = 'it.unibo.pps2017.server.Runner'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+
+task(runDiscovery, dependsOn: 'classes', type: JavaExec) {
+    main = 'it.unibo.pps2017.discovery.DiscoveryMain'
+    classpath = sourceSets.main.runtimeClasspath
+}
