@@ -144,39 +144,39 @@
 
     \section{Design di dettaglio}\label{sec:details}
 
-	In questa sezione saranno presentate le scelte effettuate a livello di design nel dettagio. In primo luogo si tratterà dell'organizzazione generale del codice in \texttt{packages} e dei \textit{design patterns} applicati più frequentemente, successivamente saranno analizzati nel particolare le principali funzionalità e classi di ogni modulo del sistema.
+	In questa sezione saranno presentate le scelte effettuate a livello di design nel dettaglio. In primo luogo si tratterà dell'organizzazione generale del codice in packages e dei \textit{design patterns} applicati più frequentemente, successivamente saranno analizzati nel particolare le principali funzionalità e classi di ogni modulo del sistema.
 
     \subsection {Organizzazione del codice}\label{subsec:details:codestructure}
-    La struttura del progetto si presenta divisa in cinque \texttt{packages} principali, tre di questi corrispondono perfettamente ai componenti portanti dell'architettura distribuita del sistema, i restanti due sono stati pensati come unità di supporto alle strutture principali.
+    La struttura del progetto si presenta divisa in cinque packages principali, tre di questi corrispondono perfettamente ai componenti portanti dell'architettura distribuita del sistema, i restanti due sono stati pensati come unità di supporto alle strutture principali.
 
     \begin{itemize}
-    \item{\texttt{client:}} All'interno del \texttt{package} client viene modellata l'interazione tra un utente fruitore del gioco e
-    l'architettura remota del sistema, sono presenti quindi tutte le classi necessarie alla realizzazione dell'interfaccia grafica, al supporto delle funzionalità lato client di gioco, ricerca e aggiunta di un amico, replay e visualizzazione in tempo reale di una partita.
+    \item{\texttt{client:}} All'interno del package client viene modellata l'interazione tra un utente fruitore del gioco e
+    l'architettura remota del sistema, sono presenti quindi tutte le classi necessarie alla realizzazione dell'interfaccia grafica, al supporto delle funzionalità lato client di gioco come ad esempio ricerca e aggiunta di un amico, replay e visualizzazione in tempo reale di una partita.
 
 
     \item{\textbf{\texttt{discovery:}}}
-      Questo \texttt{package} contiene tutti i sorgenti relativi all'implementazione del \textit{discovery server},
-      componente centralizzato che espone un servizio di pagine gialle, mantenendo traccia di tutti i \textit{server} attivi
+      Questo package contiene tutti i sorgenti relativi all'implementazione del \textit{discovery server},
+      componente centralizzato che espone un servizio di pagine gialle, mantenendo traccia di tutti i server attivi
       all'interno del sistema, nonché di tutte le partite che stanno venendo disputate e dei giocatori online.
 
     \item{\texttt{server:}}
-      Il \texttt{package} server comprende i file necessari alla realizzazione un server backend per gestire le partite,
+      Il package server comprende i file necessari alla realizzazione un server backend per gestire le partite,
       il login e la registrazione degli utenti, il salvataggio in remoto dei punteggi e delle partite.
 
     \item{\texttt{commons:}}
-      Uno dei due \texttt{packages} di supporto: contiene un insieme di classi e oggetti di \textit{utilities} comuni agli altri \texttt{packages} del sistema.
+      Uno dei due packages di supporto: contiene un insieme di classi e oggetti di \textit{utilities} comuni agli altri packages del sistema.
 
     \item{\texttt{core:}}
-      Il secondo \texttt{package} che non corrisponde direttamente a un elemento dell'architettura distribuita: contiene il cuore del sistema, ovvero l'implementazione delle regole e logiche di gioco di Marafone; nonostante potesse essere inserito all'interno di uno degli altri \texttt{packages}, si è scelto di mantenerlo separato, in quanto contenente un'insieme di classi ed oggetti ad alto valore per il sistema.
+      Il secondo package che non corrisponde direttamente a un elemento dell'architettura distribuita: contiene il cuore del sistema, ovvero l'implementazione delle regole e logiche del gioco Marafone; nonostante potesse essere inserito all'interno di uno degli altri packages, si è scelto di mantenerlo separato, in quanto contenente un'insieme di classi ed oggetti ad alto valore per il sistema.
 
   \end{itemize}
 
   \subsection {Pattern di progettazione generali}\label{subsec:details:generaldesingpattern}
   Durante l'intero processo di sviluppo e integrazione sono stati impiegati diversi \textit{desing patterns}, tra questi alcuni si sono prestati meglio di altri a un applicazione costante e ripetuta all'interno di varie strutture.\\
   Il primo e più utilizzato tra tutti i \textit{patterns} è stato sicuramente il \texttt{Factory Method}: avendo infatti deciso di utilizzare
-  il linguaggio di Programmazione \textit{Scala} come principale linguaggio impiegato all'interno del progetto, è venuto abbastanza naturale adattare il processo di definizione dei metodi di una classe UML alla generazione di un \texttt{trait} e di realizzare la sua implementazione con una classe privata dichiarata all'interno del \texttt{Companion Object} di tale trait, mettendo a disposizione il metodo \texttt{apply()} di tale oggetto come \texttt{Factory Method} per le istanze della classe.
+  il linguaggio di Programmazione Scala come principale linguaggio impiegato all'interno del progetto, è venuto abbastanza naturale adattare il processo di definizione dei metodi di una classe UML alla generazione di un \texttt{trait} e di realizzare la sua implementazione con una classe privata dichiarata all'interno del \texttt{Companion Object} di tale trait, mettendo a disposizione il metodo \texttt{apply()} di questo oggetto come \texttt{Factory Method} per le istanze della classe.
   Un altro pattern decisamente impiegato è stato \texttt{Strategy}, grazie all'approccio orientato al paradigma funzionale di \textit{Scala}, è venuto molto naturale definire classi e strutture che isolassero alcuni algoritmi necessari per il loro funzionamento e permettessero di definirli dinamicamente.
-  Infine è utile citare, sebbene non ricada strettamente in all'interno di una specifica categoria di \textit{design patterns}, la scelta di progettazione effettuata nel realizzare insiemi di oggetti statici: invece di utilizzare una struttura basata sulle enumerazioni, si è deciso di sfruttare i costrutti messi a disposizione dal linguaggio scala, ottenendo una soluzione composta da un \texttt{trait} che definisse il contratto da rispettare e una serie di \texttt{case objects} estendenti il \texttt{trait} in questione.
+  Infine è utile citare, sebbene non ricada strettamente in all'interno di una specifica categoria di \textit{design patterns}, la scelta di progettazione effettuata nel realizzare insiemi di oggetti statici: invece di utilizzare una struttura basata sulle enumerazioni, si è deciso di sfruttare i costrutti messi a disposizione dal linguaggio Scala, ottenendo una soluzione composta da un \texttt{trait} che definisse il contratto da rispettare e una serie di \texttt{case objects} estendenti il \texttt{trait} in questione.
 
   \subsection {Core}\label{subsec:details:core}
   Punto di partenza per il design del sistema è stata la descrizione delle funzionalità e componenti necessarie allo svolgimento di una partita di Marafone, come mostrato dal relativo diagramma delle classi nella figura 4.1.
@@ -188,7 +188,7 @@
 
  E' importante sottolineare che tale diagramma rappresenta una visione di alto livello del sistema dal punto di vista esclusivamente della modellazione di una partita, non catturando in nessun modo caratteristiche legate ad altri domini quali la separazione del sistema secondo un modello distribuito, tuttavia posto che alcuni elementi sarebbero stati realizzati mettendo in gioco scelte di design piuttosto complesse, il modello fornito dallo schema risultava nel complesso abbastanza solido.
  Come è possibile notare, lo schema si struttura seguendo il pattern di progettazione \textit{MVC}, dove i componenti soggetti a una maggiore complessità risultano sicuramente controller e view, mentre model risulta più solido e definito.
- Di conseguenza si è scelto di catturare all'interno del \texttt{package core} la componente di modello della partita, identificandone i principali componenti:
+ Di conseguenza si è scelto di catturare all'interno del package \texttt{core} la componente di modello della partita, identificandone i principali componenti:
 
 \begin{itemize}
   \item{\texttt{mazzo di gioco:}} all'interno del package \texttt{deck} sono presenti tutte le strutture e funzionalità necessarie alla gestione del mazzo di gioco, come ad esempio la divisione delle carte nelle mani dei giocatori e il mescolamento delle stesse all'interno del mazzo; viene definita inoltre la struttura necessaria per la registrazione e calcolo del punteggio durante la partita.
@@ -214,11 +214,11 @@ Mostrato nella figura 4.2, è possibile vedere il diagramma delle classi relativ
 
 Tale diagramma presenta una classe al centro \texttt{DiscoveryServer} e tre classi in relazione di associazione con essa.
 La prima tra queste è \texttt{MatchesSet}, classe che mette a disposizione una semplice struttura per gestire all'interno del discovery l'insieme delle partite giocate in tempo reale, salvandone l'identificatore.\\
-Successivamente \texttt{RegistryActor} realizza un wrapper tra \texttt{DiscoveryServer e SocialActorsMap}, tale attore si occupa di esporre un punto di comunicazione per l'aggiornamento di un registro condiviso contenente tutti gli identificatori dei giocatori registrati al momento online.\\ \texttt{RegistryActor} comunica con tutti i \texttt{SocialActor} in esecuzione sui vari client presenti all'interno del sistema mediante il protocollo \textit{Publish-Subscribe} messo a disposizione dalla libreria \textit{Akka cluster}, ricevendo richieste di registrazione e rimozione di utenti e pubblicando una versione aggiornata del registro sul canale ad ogni aggiornamento.\\
-In secondo luogo è presente \texttt{SocialActorsMap}: tale classe incarna una struttura praticamente analoga a \texttt{MatchesSet}, con l'unica differenza di gestire il riferimento ai giocatori online invece che alle partite.\\
+Successivamente \texttt{RegistryActor} realizza un wrapper tra \texttt{DiscoveryServer e SocialActorsMap}, tale attore si occupa di esporre un punto di comunicazione per l'aggiornamento di un registro condiviso contenente tutti gli identificatori dei giocatori registrati al momento online.\\ \texttt{RegistryActor} comunica con tutti i \texttt{SocialActor} in esecuzione sui vari client presenti all'interno del sistema mediante il protocollo \textit{Publish-Subscribe} messo a disposizione dalla libreria \textit{Akka cluster}, ricevendo richieste di registrazione e rimozione di utenti e pubblicando una versione aggiornata del registro su canale dedicato ad ogni aggiornamento.\\
+In secondo luogo è presente \texttt{SocialActorsMap}: tale classe realizza una struttura praticamente analoga a \texttt{MatchesSet}, con l'unica differenza di gestire il riferimento ai giocatori online invece che alle partite.\\
 Infine \texttt{ServerMap} gestisce l'elenco dei server disponibili, tenendo conto anche del numero di partite disputato sopra di esse.\\
-Elemento chiave per l'intero \texttt{package} è sicuramente \texttt{DiscoveryServer}, classe che realizza l'implementazione di un server web ,estendendo la classe \texttt{Verticle} della libreria \textit{Vertx}, e delle \textit{REST API} necessarie per contattarlo.
-Menzione particolare meritano le \textit{REST API}, sviluppate come \texttt{case objects} estendenti un \texttt{trait} chiamato \texttt{RestAPI}, presente nel \texttt{package commons}. Il contratto definito da tale \texttt{trait} vincola ogni oggetto a implementare tre metodi fondamentali per il funzionamento di ogni api:
+Elemento chiave per l'intero package è sicuramente \texttt{DiscoveryServer}, classe che realizza l'implementazione di un server web ,estendendo la classe \texttt{Verticle} della libreria \textit{Vertx}, e delle \textit{REST API} necessarie per contattarlo.
+Menzione particolare meritano le \textit{REST API}, sviluppate come \texttt{case objects} estendenti un \texttt{trait} chiamato \texttt{RestAPI}, presente nel package \texttt{commons}. Il contratto definito da tale \texttt{trait} vincola ogni oggetto a implementare tre metodi fondamentali per il funzionamento di ogni api:
 \begin{itemize}
   \item{\texttt{path:}} definisce il path necessario per richiamare la \textit{REST API} all'interno del server su cui viene esposta.
 
@@ -228,7 +228,7 @@ Menzione particolare meritano le \textit{REST API}, sviluppate come \texttt{case
 \end{itemize}
 
 Questa progettazione delle \textit{REST API} consente un aggiunta dinamica e facile di nuove API a quelle già presenti, per aggiungere una nuova API al discovery server non occorre fare altro che definire un oggetto estendente il trait \texttt{DiscoveryAPI} e un handler per la richiesta generata da tale API all'interno del metodo \texttt{deployAPI()}
-Le API attualmente presenti su discovery sono le seguenti:
+Le principali API presenti su discovery sono le seguenti:
 
 \begin{itemize}
   \item{\texttt{RegisterServer:}} registra un server all'interno del discovery.
@@ -242,11 +242,11 @@ Le API attualmente presenti su discovery sono le seguenti:
   \item{\texttt{RegisterSocialID:}} API chiamata da un client dopo la fase di autenticazione, notifica a \texttt{RegistryActor} la presenza di un nuovo subscriber da contattare.
 \end{itemize}
 
-Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di mettere in esecuzione i \textit{seed nodes} necessari per \textit{Akka cluster}, si è scelto infatti di posizionare i \textit{seed nodes}, ovvero due \texttt{ActorSystem} che fungono da \textit{entry points} all'interno del sistema cluster, sopra lo stesso host in cui viene messo in esecuzione il server, così da accentuare ulteriormente il carattere centralizzato del discovery server.\\
+Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di mettere in esecuzione i \textit{seed nodes} necessari per \textit{Akka Cluster}, si è scelto infatti di posizionare i \textit{seed nodes}, ovvero due \texttt{ActorSystem} che fungono da \textit{entry points} all'interno del sistema cluster, sopra lo stesso host in cui viene messo in esecuzione il server, così da accentuare ulteriormente il carattere centralizzato del discovery server.\\
  Tali \texttt{ActorSystem} vengono generati tramite il metodo di \texttt{DiscoveryServer} \texttt{startDiscoveryCluster()}, che dato l'indirizzo ip della macchina su cui viene messo in esecuzione il discovery server, costruisce due \texttt{ActorSystem} sulle porte 2551 e 2552 che creano la struttura di cluster al cui interno si andranno a inserire gli \textit{ActorSystem} in esecuzione sui vari client e server.
 
  \subsection {Server}\label{subsec:details:server}
- Questo è il modulo contenente tutto il codice necessario a mettere in esecuzione un server backend. Le funzionalità esposte da questo struttura sono creazione e gestione di varie partite, competitive o meno, registrazione e autenticazione di utenti, salvataggio e recupero di partite terminate.Oltre a queste operazioni che rispondono direttamente a una richiesta di un utente, sono presenti anche tutta una serie di procedure per la comunicazione con il discovery server, in modo da mantenere aggiornato sempre lo stato di quest'ultimo con lo stato effettivo del sistema.\\
+ Questo è il modulo contenente tutto il codice necessario a mettere in esecuzione un server backend. Le funzionalità esposte da questo struttura sono creazione e gestione di varie partite, competitive o meno, registrazione e autenticazione di utenti, salvataggio e recupero di partite terminate.Oltre a queste operazioni che rispondono direttamente a una richiesta di un utente, sono presenti anche tutta una serie di procedure per la comunicazione con il discovery server, in modo da mantenere aggiornato lo stato di quest'ultimo con lo stato effettivo del sistema.\\
  Ogni server è pensato per essere indipendente dagli altri, delegando le politiche di selezione e divisione del lavoro al discovery Server:
  E' infatti importante notare che ogni client non contatta uno specifico host al momento dell'avvio, ma invia una richiesta al discovery server, il quale provvederà a assegnargli uno tra i server con minor numero di partite al momento disputate; questa scelta ci è parsa ragionevole in quanto il numero di partite al momento effettuate poteva fornire un primo, per quanto instabile, indice di carico computazionale del singolo server, di conseguenza andare a selezionare di volta in volta un server diverso per ogni client che si univa al sistema poteva essere un semplice, seppur rozzo, meccanismo di \textit{load balance} all'intero del sistema.\\
  La figura 4.3 riassume efficacemente i passaggi che portano all'esecuzione di una chiamata REST all'interno di un server da parte di un client.\\
@@ -256,13 +256,13 @@ Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di me
     \caption{diagramma di sequenza relativo all'esecuzione di una chiamata REST da parte di un client}
  \end{figure}
 
- Queste modalità comunicative sono utilizzate per tutte le interazioni tra client e server, fatta eccezione per le comunicazioni durante la partita, in tale frangente abbiamo scelto di affidarci alla comunicazione real time tra attori tramite messaggi end to end e il protocollo \textit{publish subscribe} messo a disposizione da \textit{Akka cluster}.
+ Queste modalità comunicative sono utilizzate per tutte le interazioni tra client e server, fatta eccezione per le comunicazioni durante la partita, in tale frangente abbiamo scelto di affidarci alla comunicazione real time tra attori tramite messaggi end to end e il protocollo \textit{publish subscribe} messo a disposizione da \textit{Akka Cluster}.
  Principale e più importante funzionalità del server è la creazione, gestione, distruzione delle varie istanze di partite in gioco:
- alla chiamata di una specifica \textit{REST API}, chiamata \texttt{FoundGameAPI}, viene avviato il processo di ricerca per una nuova partita; per prima cosa vengono estrapolati dall'interno della richiesta REST il nome utente del giocatore che l'ha inviata e eventuali nomi di avversari/compagni, tali dati vengono poi spediti a un attore, \texttt{LobbyActor} con il compito di gestire la lista delle lobby, ovvero delle partite di gioco con numero di giocatori insufficienti a iniziare una nuova partita; \texttt{LobbyActor} esegue una ricerca tra le proprie lobby e  nel caso tra queste ve ne sia una che può ospitare tutti i giocatori estratti dalla richiesta, allora essi sono aggiunti a tale lobby, altrimenti viene creata una nuova lobby; terminata questa operazione, all'utente viene notificato l'identificatore della lobby in cui è stato inserito come risposta REST alla sua richiesta. \\
+ alla chiamata di una specifica \textit{REST API}, chiamata \texttt{FoundGameAPI}, viene avviato il processo di ricerca per una nuova partita; per prima cosa vengono estrapolati dall'interno della richiesta REST il nome utente del giocatore che l'ha inviata e eventuali nomi di avversari/compagni, tali dati vengono poi spediti a un attore, \texttt{LobbyActor} con il compito di gestire la lista delle lobby, ovvero delle partite di gioco con numero di giocatori insufficienti a iniziare una nuova partita; \texttt{LobbyActor} esegue una ricerca tra le proprie lobby e  nel caso tra queste ve ne sia una che può ospitare tutti i giocatori estratti dalla richiesta, allora essi sono aggiunti a tale lobby, se nessuna tra le lobby presenti nel sistema contiene abbastanza posti, \texttt{LobbyActor} provvede a crearne una nuova; terminata questa operazione, all'utente viene notificato l'identificatore della lobby in cui è stato inserito come risposta REST alla sua richiesta. \\
  Nel momento in cui una lobby raggiunge il numero massimo di giocatori viene dato il via a una nuova partita:in primo luogo il server notifica al discovery l'incremento del numero di partite in esecuzione, successivamente viene creato un attore di classe \texttt{GameActor} a cui vengono passati gli identificatori dei quattro giocatori che prenderanno parte alla partita, tale attore ha il compito di gestire lato server la partita, andando a fornire per ogni giocatore le sue carte, applicando le regole per la selezione della briscola, delle prese di gioco, del punteggio e così via.\\
- Come affermato sopra, le comunicazioni durante la partita avvengono tramite scambio di messaggi tra il \texttt{GameActor} e gli attori dei quattro giocatori, in particolare \texttt{GameActor} pubblica messaggi su un canale a cui gli altri quattro attori sono iscritti, mentre riceve messaggi spediti dal singolo attore.
+ Come affermato sopra, le comunicazioni durante la partita avvengono tramite scambio di messaggi tra il \texttt{GameActor} e gli attori dei quattro giocatori, in particolare \texttt{GameActor} pubblica messaggi su un canale, avente come identificatore l'id della partita, a cui gli altri quattro attori sono iscritti, mentre riceve messaggi spediti dal singolo attore.
  Al momento della fine di una partita, il server si occupa di registrarla su un database remoto, di aggiornare il discovery e cancellare la lobby dalla propria lista interna.\\
- Descritte le modalità di gestione delle partite, tutti gli altri servizi presenti sul database sono di ricerca e/o aggiunta di nuovi dati a un database backend, tramite un meccanismo a \textit{REST API}, di seguito è riportato l'elenco delle principali \textit{API} sviluppate all'interno del server:
+ Descritte le modalità di gestione delle partite, tutti gli altri servizi presenti sul server sono di ricerca e/o aggiunta di nuovi dati a un database backend, tramite un meccanismo a \textit{REST API}, di seguito è riportato l'elenco delle principali \textit{API} sviluppate all'interno del server:
  \begin{itemize}
    \item{\texttt{FoundGame:}} comincia la ricerca di una partita secondo le modalità sopra descritte, la richiesta di questa API può contenere al suo interno da uno a quattro username e un flag che specifica se si richiede di giocare una partita competitiva o meno.
 
@@ -270,7 +270,7 @@ Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di me
 
    \item{\texttt{LoginUser:}} controlla se le credenziali fornite da un utente durante il login corrispondono a quelle salvate all'interno del database.
 
-   \item{\texttt{GetUser:}} recupera dal database i dati relativi a un utente,tra cui il punteggio attuale dell'utente.
+   \item{\texttt{GetUser:}} recupera dal database i dati relativi a un utente,tra cui il punteggio attuale.
 
    \item{\texttt{AddFriend:}} aggiunge alla lista degli amici dell'utente che effettua la richiesta un nuovo amico.
 
@@ -290,13 +290,13 @@ Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di me
      \caption{diagramma delle classi relativo al package client}
   \end{figure}
 
-La figura 4.4 mostra appieno la complessità presente all'interno di client, sebbene il diagramma rimanga comunque una vista di alto livello sul sistema, il numero delle classi e relazioni in gioco e sicuramente superiore a qualunque altro componente del sistema.
+La figura 4.4 mostra appieno la complessità presente all'interno di client: sebbene il diagramma rimanga comunque una vista di alto livello sul sistema, il numero delle classi e relazioni in gioco e sicuramente superiore a qualunque altro componente del sistema.
 Come è possibile evincere da tale figura, l'architettura di questo modulo è stata pensata basandosi sul classico modello di progettazione MVC, riadattato per essere il più possibile scalato all'interno dell'organizzazione del modulo: tale pattern non è applicato solamente alla macro struttura dello schema, ma si ripete all'interno dei vari spaccati del diagramma.
 Nella parte alta dello schema viene rappresentato il centro di tutta la struttura, identificato dalle classi \texttt{GUI, ClientController} e \texttt{RestWebClient}, questo nucleo funge da nodo centrale per le comunicazioni e interazioni che avvengono all'interno del client, inoltre realizza le funzionalità di registrazione, autenticazione e di accesso come utente anonimo.\\
 Per quanto concerne le funzionalità di partita e social dell'applicativo, abbiamo pensato di definire due sottomoduli, entrambi collegati al nucleo della struttura, che condividevano la stessa architettura di fondo, composta da un componente grafico, un attore estendente l'interfaccia \texttt{ModelActor} come modello capace di comunicazione remota e un oggetto della classe \texttt{ActorController} per fungere da mediatore tra le altre due entità: per quanto riguarda il lato social, \texttt{SocialGUI}, \texttt{SocialController} e \texttt{SocialActor} sono le classi di riferimento, mentre per la gestione della partita, sia essa giocata, seguita come spettatore oppure riprodotta \texttt{MatchGUI}, \texttt{MatchController} e \texttt{MatchActor} incarnano la struttura sopra descritta.\\
 Rimane da analizzare solamente \texttt{RestWebClient}, questa classe si occupa dell'esecuzione delle chiamate REST, possiede due diverse implementazioni che permettono di chiamare API differenti tra loro.
 Terminata l'analisi statica delle classi di modello, verranno ora descritti il comportamento generale e le interazioni principali delle entità presenti nel modulo client:\\ 
-All'avvio dell'applicativo, viene aperta una finestra di login collegata a un'istanza di \texttt{ClientController}, da questa schermata l'utente potrà accedere se dispone già di un account, registrarsi oppure continuare senza effettuare nessun operazione di autenticazione, in quest'ultimo caso il controllo rimarrà all'oggetto \texttt{ClientController}, altrimenti passerà a un oggetto \texttt{SocialController}. Nel caso in cui l'utente scelga di continuare senza registrarsi, sarà possibile, tramite appositi pulsanti, richiedere di giocare una partita o di prendervi parte come spettatore: in entrambi i casi il controller istanzierà un nuovo attore di classe \texttt{MatchActor}, tramite l'oggetto \texttt{MatchController} al suo interno, a cui verrà passato l'identificatore della partita a cui prendere parte/ seguire, successivamente \texttt{MatchController} andrà a eseguire il caricamento della nuova finestra di gioco.
+All'avvio dell'applicativo, viene aperta una finestra di login collegata a un'istanza di \texttt{ClientController}, da questa schermata l'utente potrà accedere se dispone già di un account, registrarsi oppure continuare senza effettuare nessun operazione di autenticazione, in quest'ultimo caso il controllo rimarrà all'oggetto \texttt{ClientController}, altrimenti passerà a un oggetto \texttt{SocialController}. Nel caso in cui l'utente scelga di continuare senza registrarsi, sarà possibile, tramite appositi pulsanti, richiedere di giocare una partita o di prendervi parte come spettatore: in entrambi i casi il controller istanzierà un nuovo attore di classe \texttt{MatchActor}, tramite l'oggetto \texttt{MatchController} al suo interno, a cui verrà passato l'identificatore della partita a cui prendere parte/ seguire, successivamente \texttt{MatchController} andrà a eseguire il caricamento sulla GUI della nuova finestra di gioco.
 In caso di Login/Registrazione invece \texttt{ClientController} creerà un oggetto di classe \texttt{SocialController} e il corrispondente \texttt{SocialActor}, tale attore durante la creazione andrà a contattare il registro remoto su discovery per ottenere la lista di giocatori online, nel frattempo il controller recupererà la lista di tutti gli amici registrati tramite una chiamata REST al server assegnato. Un utente registrato avrà accesso a una schermata contenente diverse funzionalità: oltre a quelle già citate per l'utente anonimo, che verranno delegate da \texttt{SocialController} a \texttt{ClientController}, il giocatore registrato potrà contattare i giocatori online e i propri amici tramite uno scambio di messaggi tra i relativi \texttt{SocialActors}, grazie a tali interazioni sarà possibile aggiungere nuovi amici e formare team di gioco per le partite; sarà inoltre a disposizione una modalità di ricerca e riproduzione delle partite registrate, tale funzionalità viene resa possibile grazie a una combinazione di chiamate REST e delegazioni a \texttt{ClientController}, che provvede a settare il proprio \texttt{MatchController} come entità responsabile alla riproduzione della partita.    
   
 \clearpage
@@ -332,7 +332,6 @@ All'interno del progetto Maraph1-mp, mi sono occupato delle seguenti parti:
 \begin{itemize}
 	\item Design di dettaglio dell'architettura client.
 	\item Creazione e implementazione di \texttt{RestWebClient}
-	\item Creazione e implementazione di \texttt{Generic Controller}
 	\item Design, creazione e implementazione degli aspetti legati alle funzionalità social.
 	\item Gestione della creazione e scambio di schermate all'interno della GUI.
 \end{itemize}
@@ -344,14 +343,14 @@ Soprattutto nel primo sprint, mi sono occupato della configurazione generale del
 Abbiamo scelto di utilizzare \textit{Git} come tecnologia di controllo versione, appoggiandoci a un repository remoto su \textit{Github}, di conseguenza è venuta naturale la scelta nell' utilizzare \textit{GitFlow} come modello di flusso di sviluppo, grazie anche alla presenza di valide estensioni per i principali IDE.
 Per quanto riguarda poi la configurazione di \textit{Gradle}, essa è stata portata avanti in maniera iterativa durante tutto lo svolgimento del progetto, le uniche difficoltà incontrate sono state relative alla configurazione del plugin \textit{SCoverage}, che è risultato particolarmente ostico da far eseguire direttamente dai tasks messi a disposizione da \textit{Gradle}
 Come libreria principale di testing, è stata configurata \textit{Scalatest}: questa scelta è dovuta a una maggiore familiarità con le modalità di test messe a disposizione da tale suit, ho portato però avanti anche sperimentazioni con un altra libreria di testing, ovvero \textit{ScalaCheck}, tuttavia nonostante le grandi potenzialità di tale suit, l'integrazione col plugin SCoverage risultava complessa e non banale, di conseguenza abbiamo scelto di scartare la libreria.
-Infine mi sono occupato della ricerca e configurazione di una libreria per il parsing dei comandi \textit{command line interface}, necessari per la configurazione dei vari server e clients, scegliendo infine \href{https://github.com/scallop/scallop}{\textit{Scallop}}, libreria realizzata dall'utente \href{https://github.com/Rogach}{Rogach}.\\
+Infine mi sono occupato della ricerca e configurazione di una libreria per il parsing dei comandi \textit{command line interface}, necessari per la configurazione dei vari server e client, scegliendo infine \href{https://github.com/scallop/scallop}{\textit{Scallop}}, libreria realizzata dall'utente \href{https://github.com/Rogach}{Rogach}.\\
 L'utilizzo di \textit{Scallop} è molto semplice, basta solamente definire una classe estendente \texttt{ScallopConf} e dichiarare al suo interno un numero di variabili uguale a quello dei parametri che interessa parsare da linea di comando, specificando per ciascuna di esse il tipo di dato che deve essere parsato; fatto ciò, è sufficiente istanziare un oggetto di tale classe e richiamare i metodi aventi lo stesso nome dei parametri a cui si desidera accedere, da linea di comando invece gli argomenti vanno passati seguendo lo schema "--nomevariabile valore" se si desidera inserire il parametro, non specificando nulla se lo si vuole lasciare vuoto.\\
 La libreria consente un grande insieme di ulteriori configurazioni e possibilità, ma il nostro utilizzo si è limitato solamente alle procedure sopradescritte.
 
 \subsubsection{\textbf{Core}}
 All'interno del package core, ho progettato e realizzato la parte che riguardava il mazzo di gioco e il calcolo dei punteggi.
 La scelta di racchiudere due concetti apparentemente diversi all'interno della stessa vista del modello non è casuale: il mio lavoro, contenuto all'interno del package \texttt{deck}, aveva come scopo quello di creare tutte le strutture e entità necessarie alla gestione della singola carta, avente quindi un numero, seme e punteggio, come previsto dalle regole del gioco.
-All'intero della figura 5.4 è riportato il diagramma delle classi di dettaglio del package \texttt{deck}:
+All'intero della figura 5.4 è riportato il diagramma delle classi del package \texttt{deck}:
  \begin{figure}[H]
 	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{deckArchitecture}
 	\caption{Architettura di dettaglio del package \texttt{deck}}
@@ -373,8 +372,8 @@ All'interno di questo diagramma, gli elementi portanti sono:
 	
 	\item{\textbf{Seed}}: un insieme statico di oggetti che rappresentano i quattro semi possibili per ogni carta di gioco, realizzato con una \textit{sealed trait}  e quattro \textit{case objects} che la estendono.
 	 
-	A mio dire, questa parte tra tutte quelle realizzate da me, è sicuramente la migliore dal punto di vista della \textit{code quality}: tutte le classi realizzate infatti sono state progettate tenendo seguendo al meglio i principi di desing \textit{SOLID}, producendo quindi un codice il più possibile compatto, documentato e di facile lettura.\\
-	Inoltre questo \texttt{package} risulta avere una coverage veramente ottima, grazie a un vasto insieme di test progettati appositamente per raggiungere questo risultato. 
+	A mio dire, questa parte tra tutte quelle realizzate da me, è sicuramente la migliore dal punto di vista della \textit{code quality}: tutte le classi realizzate infatti sono state progettate seguendo al meglio i principi di design \textit{SOLID}, producendo quindi un codice il più possibile compatto, documentato e di facile lettura.\\
+	Inoltre questo package risulta avere una coverage veramente ottima, grazie a un vasto insieme di test progettati appositamente per raggiungere questo risultato. 
 	
 	\begin{figure}[H]
 		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{deckCoverage}
