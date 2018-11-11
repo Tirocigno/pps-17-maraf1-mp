@@ -3,6 +3,7 @@ package it.unibo.pps2017.server.controller
 
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+import io.vertx.core.http.HttpHeaders
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.HttpServerOptions
@@ -10,25 +11,35 @@ import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{RegisterServerAPI, StandardParameters}
 import it.unibo.pps2017.server.actor.{LobbyActor, TriggerSearch}
 import it.unibo.pps2017.server.controller.Dispatcher.{PORT, TIMEOUT}
+import it.unibo.pps2017.server.model.GameType.{RANKED, UNRANKED}
 import it.unibo.pps2017.server.model.ServerApi._
 import it.unibo.pps2017.server.model._
-import org.json4s._
+import it.unibo.pps2017.server.model.database.base.DatabaseInterface
+import it.unibo.pps2017.server.model.database.RedisUtils
 import org.json4s.jackson.Serialization.read
+import org.json4s.jackson.Serialization.write
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 
 object Dispatcher {
-  val applicationJson: String = "application/json"
-  val USER = "user:"
   var HOST: String = "localhost"
   val PORT: Int = 4700
-  var PASSWORD: Option[String] = Some("")
-  val RESULT = "result"
   val TIMEOUT = 1000
-  val DISCOVERY_URL: String = "127.0.0.1"
+
+  private var discoveryUrl: String = "127.0.0.1"
+  private var myIp: String = "127.0.0.1"
+
+  def setDiscovery(value: String): Unit = discoveryUrl = value
+
   val DISCOVERY_PORT: Int = 2000
-  val MY_IP: String = "127.0.0.1"
+
+  def DISCOVERY_URL: String = discoveryUrl
+
+  def setMyIp(value: String): Unit = myIp = value
+
+  def MY_IP: String = myIp
+
   val VERTX = Vertx.vertx()
 }
 
@@ -36,10 +47,12 @@ object Dispatcher {
 case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
   implicit val akkaSystem: ActorSystem = actorSystem
-  implicit val formats: DefaultFormats.type = DefaultFormats
 
 
-  val userMethods = UserDispatcher()
+  val userMethods: UserDispatcher = UserDispatcher()
+  val gameMethods: GameDispatcher = GameDispatcher()
+
+  val databaseUtils: DatabaseInterface = RedisUtils()
 
   val lobbyManager: ActorRef = akkaSystem.actorOf(Props[LobbyActor])
   val currentIPAndPortParams = Map(StandardParameters.IP_KEY -> Dispatcher.MY_IP, StandardParameters.PORT_KEY -> PORT)
@@ -52,14 +65,18 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     ServerApi.values.map({
       case api@HelloRestAPI => api.asRequest(router, hello)
       case api@ErrorRestAPI => api.asRequest(router, responseError)
-      case api@GameRestAPI => api.asRequest(router, getGame)
+      case api@GameRestAPI => api.asRequest(router, gameMethods.getGame)
       case api@FoundGameRestAPI => api.asRequest(router, foundGame)
       case api@AddUserAPI => api.asRequest(router, userMethods.addUser)
       case api@GetUserAPI => api.asRequest(router, userMethods.getUser)
+      case api@LoginAPI => api.asRequest(router, userMethods.login)
       case api@RemoveUserAPI => api.asRequest(router, userMethods.deleteUser)
       case api@AddFriendAPI => api.asRequest(router, userMethods.addFriend)
       case api@GetFriendsAPI => api.asRequest(router, userMethods.getFriends)
       case api@RemoveFriendAPI => api.asRequest(router, userMethods.removeFriend)
+      case api@GetLiveMatchAPI => api.asRequest(router, gameMethods.getLiveGames)
+      case api@GetRankingAPI => api.asRequest(router, getRanking)
+      case api@GetSavedMatchAPI => api.asRequest(router, gameMethods.getSavedMatches)
       case api@_ => api.asRequest(router, (_, res) => res.setGenericError(Some("RestAPI not founded.")).sendResponse(Error()))
     })
 
@@ -73,6 +90,13 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
 
     if (System.getenv("PORT") != null) port = System.getenv("PORT").toInt
 
+    router.route().handler(ctx => {
+      val err = Error(Some(s"Error 404 not found"))
+
+      ctx.response().setStatusCode(404)
+      ctx.response().putHeader(HttpHeaders.CONTENT_TYPE.toString, "application/json; charset=utf-8")
+      ctx.response().end(write(err))
+    })
 
     vertx.createHttpServer(options)
       .requestHandler(router.accept _).listen(port)
@@ -92,6 +116,8 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
         println("Error on the discovery registration! \nDetails: " + cause.getMessage)
       }, Some(currentIPAndPortParams), Some(Dispatcher.DISCOVERY_PORT))
     }
+
+
   }
 
   /**
@@ -99,28 +125,6 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     */
   private val hello: (RoutingContext, RouterResponse) => Unit = (_, res) => {
     res.sendResponse(Message("Hello to everyone"))
-  }
-
-  /**
-    * Respond to GET /game/:gameId
-    * TODO / Pending
-    */
-  private val getGame: (RoutingContext, RouterResponse) => Unit = (routingContext, res) => {
-    val gameId = routingContext.request().getParam("gameId")
-
-
-    gameId match {
-      case Some(game) =>
-        val team1: Side = Side(Seq("player1", "player2"))
-        val team2: Side = Side(Seq("player3", "player4"))
-        val gameSet: GameSet = GameSet(Seq("Card1", "Card2"),
-          Seq("Card3", "Card5"),
-          Seq("Card6", "Card7"),
-          Seq("Card8", "Card9"), Seq("PLAY CARD", "SET BRISCOLA"))
-        val gameHistory: GameHistory = GameHistory(game, Seq(team1, team2), gameSet)
-        res.sendResponse(gameHistory)
-      case None => res.sendResponse(Error(Some("you write nothing")))
-    }
   }
 
 
@@ -131,11 +135,13 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
   private val foundGame: (RoutingContext, RouterResponse) => Unit = (routingContext, res) => {
     val params = routingContext.request().formAttributes()
 
-    val player = params.get("me")
-    val friend = params.get("partner")
+    val player = params.get(FoundGameRestAPI.meParamKey)
+    val friend = params.get(FoundGameRestAPI.partnerParam)
 
-    val vs = params.get("vs")
-    val vsPartner = params.get("vspartner")
+    val vs = params.get(FoundGameRestAPI.vsParam)
+    val vsPartner = params.get(FoundGameRestAPI.vsPartnerParam)
+
+    val isRanked: Boolean = params.get("ranked").getOrElse("").equals("true")
 
     val gameFoundEvent: String => Unit = gameId => {
       res.sendResponse(GameFound(gameId))
@@ -145,7 +151,6 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
     val team1: ListBuffer[String] = ListBuffer()
     val team2: ListBuffer[String] = ListBuffer()
 
-
     player match {
       case Some(id) =>
         team1 += id
@@ -154,14 +159,47 @@ case class Dispatcher(actorSystem: ActorSystem) extends ScalaVerticle {
         vs.map(team2 += _)
         vsPartner.map(team2 += _)
 
-        lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent)
+
+        if (isRanked) {
+          lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent, RANKED)
+        } else {
+          lobbyManager ! TriggerSearch(team1, team2, gameFoundEvent, UNRANKED)
+        }
       case None =>
-        res.setGenericError(Some("Id player not specified in the request")).sendResponse(Error())
+        errorHandler(res, "Id player not specified in the request")
     }
   }
 
+
   /**
-    * Respond with a generic error message
+    * Get Ranking.
+    */
+  private val getRanking: (RoutingContext, RouterResponse) => Unit = (ctx, res) => {
+    val from: Option[Long] = try {
+      ctx.queryParams().get(GetRankingAPI.fromKey).map(_.toLong)
+    } catch {
+      case _: Exception => None
+    }
+
+    val to: Option[Long] = try {
+      ctx.queryParams().get(GetRankingAPI.toKey).map(_.toLong)
+    } catch {
+      case _: Exception => None
+    }
+
+    databaseUtils.getRanking(elements => {
+      val result: ListBuffer[RankElement] = ListBuffer()
+
+      elements.foreach(e => result += RankElement(e._1, e._2.toLong))
+
+      res.sendResponse(Ranking(result))
+    }, cause => {
+      errorHandler(res, s"Error on retrieve the ranking. \nDetails: ${cause.getMessage}")
+    }, from, to)
+  }
+
+  /**
+    * Respond with a generic error message.
     *
     */
   private val responseError: (RoutingContext, RouterResponse) => Unit = (_, res) => {

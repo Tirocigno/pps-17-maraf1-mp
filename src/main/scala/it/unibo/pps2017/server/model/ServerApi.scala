@@ -17,10 +17,14 @@ object ServerApi {
     FoundGameRestAPI,
     AddUserAPI,
     GetUserAPI,
+    LoginAPI,
     RemoveUserAPI,
     AddFriendAPI,
     GetFriendsAPI,
-    RemoveFriendAPI)
+    RemoveFriendAPI,
+    GetLiveMatchAPI,
+    GetSavedMatchAPI,
+    GetRankingAPI)
 
   /**
     * RestAPI for searching
@@ -34,6 +38,12 @@ object ServerApi {
     val vsParam = "vs"
 
     val vsPartnerParam = "vsPartner"
+
+    val RANKED_PARAMETER = "ranked"
+
+    val RANKED_VALUE = "true"
+
+    val rankedKey = "ranked"
 
     override def path: String = "/foundGame"
 
@@ -76,6 +86,8 @@ object ServerApi {
 
     override def path: String = "/game/:gameId"
 
+    def parameterPath: String = ":gameId"
+
     override def httpMethod: HttpMethod = HttpMethod.GET
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
@@ -84,6 +96,8 @@ object ServerApi {
 
   case object AddUserAPI extends RestAPI {
     override def path: String = "/user/addUser/:username"
+
+    def parameterPath: String = ":username"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -94,10 +108,25 @@ object ServerApi {
   case object GetUserAPI extends RestAPI {
     override def path: String = "/user/:username"
 
+    def parameterPath: String = ":username"
+
     override def httpMethod: HttpMethod = HttpMethod.GET
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       GET(router, path, handle)
+  }
+
+  case object LoginAPI extends RestAPI {
+    val password: String = "password"
+
+    override def path: String = "/user/login/:username"
+
+    def parameterPath: String = ":username"
+
+    override def httpMethod: HttpMethod = HttpMethod.POST
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      POST(router, path, handle)
   }
 
   case object RemoveUserAPI extends RestAPI {
@@ -114,6 +143,8 @@ object ServerApi {
     val friendUsername: String = "friend"
 
     override def path: String = "/user/addFriend/:username"
+
+    def parameterPath: String = ":username"
 
     override def httpMethod: HttpMethod = HttpMethod.POST
 
@@ -137,9 +168,47 @@ object ServerApi {
 
     override def path: String = "/user/getFriends/:username"
 
+    def parameterPath: String = ":username"
+
     override def httpMethod: HttpMethod = HttpMethod.GET
 
     override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
       GET(router, path, handle)
   }
+
+
+  case object GetLiveMatchAPI extends RestAPI {
+
+    override def path: String = "/matches/live"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
+
+  case object GetSavedMatchAPI extends RestAPI {
+
+    override def path: String = "/matches/stored"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
+  case object GetRankingAPI extends RestAPI {
+
+    val fromKey: String = "from"
+    val toKey: String = "to"
+
+    override def path: String = "/ranking"
+
+    override def httpMethod: HttpMethod = HttpMethod.GET
+
+    override def asRequest(router: Router, handle: (RoutingContext, RouterResponse) => Unit): Request =
+      GET(router, path, handle)
+  }
+
 }

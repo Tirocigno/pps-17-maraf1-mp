@@ -1,30 +1,63 @@
 
 package it.unibo.pps2017.client.controller.actors.playeractor
 
-import akka.actor.{ActorRef, ActorSystem, Props}
-import it.unibo.pps2017.client.controller.MatchController
+import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.client.model.actors.ActorMessage
+import it.unibo.pps2017.client.model.actors.passiveactors.{ReplayActor, ViewerActor}
 import it.unibo.pps2017.client.model.actors.playeractor.ClientMessages._
 import it.unibo.pps2017.client.model.actors.playeractor.PlayerActorClient
+import it.unibo.pps2017.client.view.GuiStack
+import it.unibo.pps2017.client.view.game.GameGUIController
 import it.unibo.pps2017.core.deck.cards.Seed.{Club, Coin, Cup, Sword}
 import it.unibo.pps2017.core.gui.PlayGameController
+import it.unibo.pps2017.server.model.Game
+import it.unibo.pps2017.client.controller.actors.playeractor.GameController.UNKNOWN_ERROR
 
 import scala.collection.JavaConverters._
 
-class GameController extends MatchController {
+object GameController {
+  val UNKNOWN_ERROR: String = "Unknown message received"
+}
+
+class GameController(val clientControllerRef: ClientController) extends MatchController {
 
   var playGameController: PlayGameController = _
+  val clientController: ClientController = clientControllerRef
   var currentActorRef: ActorRef = _
   var myTurn: Boolean = false
   var amIWinner: Boolean = false
 
   /**
-    * Method to send to PlayerActorClient the clicked command from actual player.
+    * Method to create a new PlayerActorClient.
     *
-    * @param command Clicked command from actual player.
+    * @param actorId     Id of PlayerActorClient.
+    * @param actorSystem System.
     */
-  def setCommandFromPlayer(command: String): Unit = {
-    currentActorRef ! ClickedCommandActualPlayer(command)
+  override def createActor(actorId: String, actorSystem: ActorSystem): Unit = {
+    currentActorRef = actorSystem.actorOf(Props(new PlayerActorClient(this, actorId)))
+  }
+
+  /**
+    * Method to create a new ReplayActor.
+    *
+    * @param actorId     Id of ReplayActor.
+    * @param actorSystem System.
+    * @param game        Game from database to review.
+    *
+    */
+  def createReplayActor(actorId: String, actorSystem: ActorSystem, game: Game): Unit = {
+    actorSystem.actorOf(Props(new ReplayActor(controller = this, playerId = actorId, game = game)))
+  }
+
+  /**
+    * Method to create a new ViewerActor.
+    *
+    * @param actorId     Id of ViewerActor.
+    * @param actorSystem System.
+    */
+  def createViewerActor(actorId: String, actorSystem: ActorSystem): Unit = {
+    currentActorRef = actorSystem.actorOf(Props(new ViewerActor(controller = this, playerId = actorId)))
   }
 
   /**
@@ -35,6 +68,39 @@ class GameController extends MatchController {
     */
   def getOrThrow(actorRef: Option[ActorRef]): ActorRef =
     actorRef.getOrElse(throw new NoSuchElementException(noActorFoundMessage))
+
+  /**
+    * Method called from actor (Player, Viewer or Replay) to update GUI.
+    *
+    * @param message Type of message from actor.
+    */
+  override def updateGUI(message: ActorMessage): Unit = message match {
+    case PlayersRef(playersList) => sendPlayersList(playersList.toList)
+    case DistributedCard(cards, _) => sendCardsFirstPlayer(cards)
+    case SelectBriscola(_) => selectBriscola()
+    case NotifyBriscolaChosen(seed) => sendBriscolaChosen(briscola = seed.asString)
+    case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
+    case NotifyCommandChosen(command, player) => sendCommand(player, command)
+    case PlayedCard(card, player) => showPlayersPlayedCard(card, player)
+    case Turn(player, endPartialTurn, isFirstPlayer, isReplay)
+    => setCurrentPlayer(player, endPartialTurn, isFirstPlayer, isReplay)
+    case ComputeGameScore(player, winner1, winner2, score1, score2, endMatch)
+    => cleanFieldEndTotalTurn(player, winner1, winner2, score1, score2, endMatch)
+    case _ => playGameController.notifyError(new Throwable(UNKNOWN_ERROR))
+  }
+
+  override def setCurrentGui(gui: GameGUIController): Unit = {
+    playGameController = gui.asInstanceOf[PlayGameController]
+  }
+
+  /**
+    * Method to send to PlayerActorClient the clicked command from actual player.
+    *
+    * @param command Clicked command from actual player.
+    */
+  def setCommandFromPlayer(command: String): Unit = {
+    currentActorRef ! ClickedCommandActualPlayer(command)
+  }
 
   /**
     * Method to send to PlayerActorClient to inform it of played card.
@@ -60,26 +126,11 @@ class GameController extends MatchController {
     * @param id Match's id.
     */
   def joinPlayerToMatch(id: String): Unit = {
+    GuiStack().stage.setOnCloseRequest(_ => {
+      this.closedPlayGameView()
+      System.exit(0)
+    })
     currentActorRef ! IdChannelPublishSubscribe(id)
-  }
-
-  /**
-    * Method to create a new PlayerActorClient.
-    *
-    * @param actorId     Id of PlayerActorClient.
-    * @param actorSystem System.
-    */
-  override def createActor(actorId: String, actorSystem: ActorSystem): Unit = {
-    currentActorRef = actorSystem.actorOf(Props(new PlayerActorClient(this, actorId)))
-  }
-
-  /**
-    * Method to know if is the turn of actual player.
-    *
-    * @return myTurn
-    */
-  def isMyTurn: Boolean = {
-    myTurn
   }
 
   /**
@@ -102,34 +153,6 @@ class GameController extends MatchController {
     case Coin.asString => currentActorRef ! BriscolaChosen(Coin)
     case Club.asString => currentActorRef ! BriscolaChosen(Club)
     case _ => new IllegalArgumentException()
-  }
-
-  /**
-    * Method to know if the current player is the winner.
-    *
-    * @return getWinner Boolean variable.
-    */
-  def getWinner: Boolean = {
-    this.amIWinner
-  }
-
-  /**
-    * Method called from PlayerActorClient to update GUI.
-    *
-    * @param message Type of message from PlayerActorClient.
-    */
-  override def updateGUI(message: ActorMessage): Unit = message match {
-    case PlayersRef(playersList) => sendPlayersList(playersList.toList)
-    case DistributedCard(cards, _) => sendCardsFirstPlayer(cards)
-    case SelectBriscola(_) => selectBriscola()
-    case NotifyBriscolaChosen(seed) => sendBriscolaChosen(briscola = seed.asString)
-    case CardOk(correctClickedCard, _) => setCardOK(correctClickedCard)
-    case NotifyCommandChosen(command, player) => sendCommand(player, command)
-    case PlayedCard(card, player) => showOtherPlayersPlayedCard(card, player)
-    case Turn(player, endPartialTurn, isFirstPlayer) => setCurrentPlayer(player, endPartialTurn, isFirstPlayer)
-    case ComputePartialGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndTotalTurn(user, winner1, winner2, score1, score2)
-    case ComputeFinalGameScore(user, winner1, winner2, score1, score2) => cleanFieldEndMatch(user, winner1, winner2, score1, score2)
-    case _ =>
   }
 
   /**
@@ -166,74 +189,37 @@ class GameController extends MatchController {
     * @param path   Played card's path.
     * @param player Player who played card.
     */
-  def showOtherPlayersPlayedCard(path: String, player: String): Unit = {
-    playGameController.showOtherPlayersPlayedCard(player, path)
+  def showPlayersPlayedCard(path: String, player: String): Unit = {
+    playGameController.showPlayersPlayedCard(player, path)
   }
 
   /**
     * Method to verify if player is a winner of this turn or not.
     *
-    * @param user    Current player.
-    * @param winner1 First of two winners of this turn.
-    * @param winner2 Second of two winners of this turn.
-    * @param score1  Aggregated score of first team.
-    * @param score2  Aggregated score of second team.
+    * @param user     Current player.
+    * @param winner1  First of two winners of this turn/match.
+    * @param winner2  Second of two winners of this turn/match.
+    * @param score1   Aggregated score of first team.
+    * @param score2   Aggregated score of second team.
+    * @param endMatch True if match is ended, false otherwise.
     */
-  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
+  def cleanFieldEndTotalTurn(user: String, winner1: String, winner2: String,
+                             score1: Int, score2: Int, endMatch: Boolean): Unit = {
 
-    if (score1 == score2) {
-      playGameController.cleanFieldEndTotalTurn(score1, score2, false)
-    } else {
+    if (score1 == score2)
+      playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+    else {
       if (user.equals(winner1) | user.equals(winner2)) {
         if (score1 > score2)
-          playGameController.cleanFieldEndTotalTurn(score1, score2, false)
-        else playGameController.cleanFieldEndTotalTurn(score2, score1, false)
+          playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
+        else playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
+        this.setWinner(endMatch)
       } else {
-        if (score1 > score2) playGameController.cleanFieldEndTotalTurn(score2, score1, false)
-        else playGameController.cleanFieldEndTotalTurn(score1, score2, false)
+        if (score1 > score2)
+          playGameController cleanFieldEndTotalTurn(score2, score1, endMatch)
+        else playGameController cleanFieldEndTotalTurn(score1, score2, endMatch)
       }
     }
-
-  }
-
-  /**
-    * Method to verify if player is a winner of match.
-    *
-    * @param user    Current player.
-    * @param winner1 First of two winners of match.
-    * @param winner2 Second of two winners of match.
-    * @param score1  Final score of first team.
-    * @param score2  Final score of second team.
-    */
-  def cleanFieldEndMatch(user: String, winner1: String, winner2: String, score1: Int, score2: Int): Unit = {
-
-    if (user.equals(winner1) | user.equals(winner2)) {
-      if (score1 > score2) {
-        playGameController.cleanFieldEndTotalTurn(score1, score2, true)
-        this.setWinner(true)
-      } else {
-        playGameController.cleanFieldEndTotalTurn(score2, score1, true)
-        this.setWinner(true)
-      }
-    } else {
-      if (score1 > score2) {
-        playGameController.cleanFieldEndTotalTurn(score2, score1, true)
-        this.setWinner(false)
-      }
-      else {
-        playGameController.cleanFieldEndTotalTurn(score1, score2, true)
-        this.setWinner(false)
-      }
-    }
-  }
-
-  /**
-    * Method to set variable amIWinner.
-    *
-    * @param winner Boolean variable.
-    */
-  def setWinner(winner: Boolean): Unit = {
-    this.amIWinner = winner
   }
 
   /**
@@ -242,9 +228,10 @@ class GameController extends MatchController {
     * @param player             Player that will be plays a card.
     * @param partialTurnIsEnded Boolean to know if turn is ended.
     * @param isFirstPlayer      Boolean to know if the player is the first of the turn (for show or hide commands)
+    * @param isReplay           Boolean to know if the actor is a ReplayActor
     */
-  def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean): Unit = {
-    playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer)
+  def setCurrentPlayer(player: String, partialTurnIsEnded: Boolean, isFirstPlayer: Boolean, isReplay: Boolean): Unit = {
+    playGameController.setCurrentPlayer(player, partialTurnIsEnded, isFirstPlayer, isReplay)
   }
 
   /**
@@ -259,16 +246,59 @@ class GameController extends MatchController {
     *
     * @param cardOK Boolean to know if clicked card is ok or not.
     */
-  def setCardOK(cardOK: Boolean): Unit =
+  def setCardOK(cardOK: Boolean): Unit = {
     if (cardOK) playGameController.showPlayedCardOk() else playGameController.showPlayedCardError()
+  }
 
   /**
     * Method to send to GUI four players of the match.
     *
-    * @param playersList layers' list of match.
+    * @param playersList Players' list of match.
     */
   def sendPlayersList(playersList: List[String]): Unit = {
     playGameController.setPlayersList(playersList.asJava)
+  }
+
+  /**
+    * Method to stop actor and communicated it at controller.
+    */
+  def endedMatch(): Unit = {
+    clientController.notifyGameFinished()
+    if (currentActorRef != null) currentActorRef ! PoisonPill
+  }
+
+  /**
+    * Method to notify actor that view was closed.
+    */
+  def closedPlayGameView(): Unit = {
+    currentActorRef ! NotifyClosedPlayGameView()
+  }
+
+  /**
+    * Method to set variable amIWinner.
+    *
+    * @param winner Boolean variable.
+    */
+  def setWinner(winner: Boolean): Unit = {
+    this.amIWinner = winner
+  }
+
+  /**
+    * Method to know if the current player is the winner.
+    *
+    * @return getWinner Boolean variable.
+    */
+  def getWinner: Boolean = {
+    this.amIWinner
+  }
+
+  /**
+    * Method to know if is the turn of actual player.
+    *
+    * @return myTurn
+    */
+  def isMyTurn: Boolean = {
+    myTurn
   }
 
 }

@@ -1,12 +1,13 @@
 
 package it.unibo.pps2017.commons.remote.rest
 
-import akka.actor.ActorRef
 import it.unibo.pps2017.server.model.ServerContextEncoder
 import org.json4s.DefaultFormats
-import org.json4s.jackson.Serialization.write
+
+import scala.language.implicitConversions
 
 object RestUtils {
+
 
   type IPAddress = String
 
@@ -28,6 +29,12 @@ object RestUtils {
     */
   implicit val formats: DefaultFormats.type = DefaultFormats
 
+  /**
+    * Class to encapsulate a pair of an ip address and a port.
+    *
+    * @param ipAddress the ip address of a server
+    * @param port      the port of a server.
+    */
   case class ServerContext(ipAddress: IPAddress, port: Port)
 
   /**
@@ -39,6 +46,5 @@ object RestUtils {
   implicit def serverContextDecoderConversion(serverContext: ServerContextEncoder): ServerContext =
     ServerContext(serverContext.ipAddress, serverContext.port)
 
-  def serializeActorRef(actorRef: ActorRef): String = write(actorRef)
 
 }

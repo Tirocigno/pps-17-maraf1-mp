@@ -1,6 +1,6 @@
 package it.unibo.pps2017.core.deck
 
-import it.unibo.pps2017.core.game.SimpleTeam
+import it.unibo.pps2017.core.game.Team
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -12,8 +12,8 @@ class ComposedDeckTest extends FunSuite {
   val SCORES_SUM: Int = 11
   val MARAFONA_SCORES: Int = 3
 
-  val team1 = SimpleTeam("Team1")
-  val team2 = SimpleTeam("Team2")
+  val team1 = Team("Team1")
+  val team2 = Team("Team2")
 
   /**
     * Simulate a single marafone match.

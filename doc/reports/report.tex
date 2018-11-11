@@ -1,0 +1,1100 @@
+%% TeXworks instructions:
+% !TeX root = ./report.tex
+% !TEX encoding = UTF-8 Unicode
+%% !TEX program = arara
+%% !TEX TS-program = arara
+% !TeX spellcheck = it-IT
+
+% arara: pdflatex: { synctex: yes, action: batchmode, options: "-halt-on-error -file-line-error-style" }
+% arara: pdflatex: { synctex: yes, action: nonstopmode, options: "-halt-on-error -file-line-error-style" }
+
+%% Generate a report.xmpdata file with title and authors for PDF/A-compliant format %%
+\begin{filecontents*}{\jobname.xmpdata}
+    \Title{Maraph1-mp Project Report}
+    \Author{Nicholas Brasini\sep Gjulio Jakova\sep Federico Naldini\sep Jacopo Riciputi}
+\end{filecontents*}
+
+\documentclass[%
+    a4paper,            % specifica il formato A4 (default: letter)
+    10pt,               % specifica la dimensione del carattere a 10
+    oneside,            % serve per impaginare per stampa solo fronte
+    notitlepage         % mette il titolo in una pagina separata (solo per article)
+]{article}
+
+\usepackage{a4wide}             % consente di avere più spazio nell'A4
+
+%% ORDINE IMPORTANTE INIZIO %%%%%%%%%%%%
+\usepackage[T1]{fontenc}        % serve per impostare la codifica di output del font
+\usepackage{textcomp}           % serve per fornire supporto ai Text Companion fonts
+\usepackage[utf8]{inputenc}     % serve per impostare la codifica di input del font
+\usepackage[
+    english,            % utilizza l'inglese come lingua secondaria
+    italian             % utilizza l'italiano come lingua primaria
+]{babel}                        % serve per scrivere Indice, Capitolo, etc in Italiano
+
+\usepackage{lmodern}            % carica una variante Latin Modern prodotto dal GUST
+%% ORDINE IMPORTANTE FINE %%%%%%%%%%%%%%
+
+\usepackage{indentfirst}        % serve per avere l'indentazione nel primo paragrafo
+\usepackage{setspace}           % serve a fornire comandi di interlinea standard
+\usepackage{xcolor}             % serve per la gestione dei colori nel testo
+\usepackage{graphicx}           % serve per includere immagini e grafici
+\usepackage{float}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}} % serve a cambiare la didascalia dell'immagine basandosi sulla sezione in cui è chiamata
+
+\graphicspath{{./images/}}
+
+\usepackage[%
+    strict,             % rende tutti gli warning degli errori
+    autostyle,          % imposta lo stile in base al linguaggio specificato in babel
+    english=american,   % imposta lo stile per l'inglese
+    italian=guillemets  % imposta lo stile per l'italiano
+]{csquotes}                     % serve a impostare lo stile delle virgolette
+
+\usepackage{multirow}           % aggiunge la possibilità di raggruppare celle su più righe nelle tabelle
+
+\onehalfspacing%                % Imposta interlinea a 1,5 ed equivale a \linespread{1,5}
+
+\setcounter{secnumdepth}{4}     % Numera fino alla sottosezione nel corpo del testo
+\setcounter{tocdepth}{4}        % Numera fino alla sotto-sottosezione nell'indice
+
+\usepackage[%
+    depth=3,            % equivale a bookmarksdepth di hyperref
+    open=false,         % equivale a bookmarksopen di hyperref
+    numbered=true       % equivale a bookmarksnumbered di hyperref
+]{bookmark}                     % Gestisce i segnalibri meglio di hyperref
+\usepackage{hyperref}           % Gestisce tutte le cose ipertestuali del pdf
+\hypersetup{%
+    pdfpagemode={UseNone},
+    hidelinks,          % nasconde i collegamenti (non vengono quadrettati)
+    hypertexnames=false,
+    linktoc=all,        % inserisce i link nell'indice
+    unicode=true,       % only Latin characters in Acrobat’s bookmarks
+    pdftoolbar=false,   % show Acrobat’s toolbar?
+    pdfmenubar=false,   % show Acrobat’s menu?
+    plainpages=false,
+    breaklinks,
+    pdfstartview={Fit},
+    pdfauthor={Nicholas Brasini, Gjulio Jakova, Federico Naldini, Jacopo Riciputi},
+    pdfcreator={Nicholas Brasini, Gjulio Jakova, Federico Naldini, Jacopo Riciputi},
+    pdftitle={Maraph1-mp Project Report},
+    pdflang={it}
+}
+\usepackage[utf8]{inputenc} % serve per avere l'indice di tutti i capitoli all'inizio
+
+\usepackage[section]{placeins} % serve per posizionare le immagini esattamente dove le inseriamo
+
+%\usepackage[a-1b]{pdfx}
+\usepackage[%
+    english,italian,    % definizione delle lingue da usare
+    nameinlink          % inserisce i link nei riferimenti
+]{cleveref}                     % permette di usare riferimenti migliori dei \ref e dei varioref
+
+\usepackage{fancyhdr} % serve per visualizzare nel top della pagina il capitolo corrente e la sezione corrente
+\pagestyle{fancy}
+
+\title{\LARGE{\textbf{Maraph1-mp Project Report}}}
+
+\author{%
+    Nicholas~Brasini\\%
+    Gjulio~Jakova\\%
+    Federico~Naldini\\%
+    Jacopo~Riciputi
+}
+
+\date{%
+    \small{Paradigmi di Programmazione e Sviluppo}\\%
+    \small{Anni accademici 2017--2018 e 2018--2019}
+}
+
+
+\begin{document}
+	
+    \maketitle
+    \clearpage
+	\tableofcontents
+	\clearpage
+	\setcounter{figure}{0}
+    \section*{\Huge {Capitolo 1}\label{chapter1}}
+      \section{Processo di sviluppo}\label{sec:process}
+        \subsection {Metodologia di sviluppo}\label{subsec:metodology}
+        Il primo passaggio per poter iniziare a lavorare al progetto d'esame per la materia Paradigmi di Programmazione e Sviluppo è stato quello di selezionare la modalità con cui procedere per sviluppare il progetto stesso. Abbiamo dunque scelto di utilizzare una forma semplificata di metodologia \textbf{Agile Scrum}. Nella versione da noi adottata i quattro membri sono tutti allo stesso livello: abbiamo infatti scelto di rinunciare alla figura dello \textbf{Scrum Manager} dal momento in cui siamo partiti tutti dalla stessa base di conoscenze relative a questa metodologia e abbiamo preferito non sovraccaricare di lavoro un solo membro del team, responsabilizzando ognuno di noi a lavorare al meglio delle proprie possibilità per semplificare il lavoro degli altri. Come abbiamo studiato nel corso, ci siamo resi conto di dover utilizzare un supporto tecnologico per poter gestire efficientemente i singoli sprint. A questo proposito abbiamo scelto \textbf{Trello}, un'applicazione per gestire progetti di qualunque tipologia che ci ha permesso di poter controllare il progresso dei diversi compiti assegnati ad ogni membro del team (una panoramica più specifica dell'utilizzo di questo strumento verrà presentata all'interno del Capitolo 5). Nel corso della prima riunione effettuata dopo aver ricevuto l'approvazione della proposta di progetto, abbiamo stabilito che gli sprint avrebbero avuto cadenza settimanale (nella fattispecie ogni giovedì pomeriggio) e che sarebbero stati cinque (numero medio consigliato per chi adotta la metodologia Agile in un contesto di questo tipo). In generale, nel corso di ogni riunione settimanale, abbiamo valutato quanto fatto nel corso della settimana trascorsa ma soprattutto abbiamo stabilito quali \textit{item} (elementi) del \textit{product backlog} sviluppare in vista dell'incontro della settimana successiva, dopo aver fatto una stima del costo di ciascun item. L'assegnamento degli item è stato fatto di comune accordo, secondo le richieste e le capacità di ciascuno in maniera tale da agevolare chi avesse già conoscenze pregresse per esempio in ambito di database o di comunicazione ad attori. Abbiamo poi previsto la possibilità che alcuni membri del team potessero contattarsi e coordinarsi individualmente, come ad esempio è successo nel caso dell'integrazione della versione core, senza bisogno di dover interpellare tutto il team. Oltre all'incontro settimanale, abbiamo deciso di effettuare \textbf{Daily Scrum} della durata di una decina di minuti, che ci hanno consentito di calarci fino in fondo nella parte di sviluppo Agile ma soprattutto di poter gestire meglio tutti gli item sui quali stavamo lavorando. Così facendo, ci siamo accorti che in alcune situazioni gli item definiti in precedenza avrebbero avuto bisogno di essere ritoccati: il singolo membro del team aveva dunque la possibilità di informare gli altri giornalmente su eventuali modifiche apportate ad uno o più item su cui stava lavorando. Questa scelta si è rivelata essere particolarmente fruttuosa, poiché ogni membro del team si è sentito responsabilizzato e ha potuto effettuare cambiamenti in corso d'opera senza per questo inficiare il lavoro dei propri colleghi. In generale la scelta di adottare questa metodologia di sviluppo ha soddisfatto tutti i componenti del team, che si sono resi conto di quanto il raggiungere settimanalmente un risultato abbia portato un maggior entusiasmo e vitalità per poter affrontare gli incarichi successivi. Oltre a questa motivazione, è importante sottolineare come, in ottica futura, la possibilità di presentare ad un ipotetico cliente il prodotto che viene realizzato di settimana in settimana possa stimolarlo e renderlo più partecipe alla vita del progetto, con i risultati che tenderanno ad essere migliori rispetto ad un approccio di tipo classico.
+
+
+        \subsection {Strumenti adottati}\label{subsec:tools}
+Dopo aver optato per la metodologia di sviluppo descritta nel paragrafo precedente, ci siamo trovati di fronte alla scelta dello strumento di \textit{versioning}. Per il nostro progetto abbiamo deciso di utilizzare \textbf{Git} e ci siamo serviti di \textbf{GitHub} per avere un \textit{repository} remoto gratuito. Contrariamente a quanto fatto per progetti precedenti, ci siamo avvicinati all'inesplorato (per noi) mondo di \textbf{GitFlow}, che si è rivelata essere una risorsa preziosissima per il raggiungimento dell'obiettivo finale. Per evitare di sviluppare su un branch comune, abbiamo dunque deciso di avvalerci dell'utilizzo di GitFlow, che ha permesso ad ogni membro del team di aprire, ogni volta che se ne fosse presentata l'occasione, una nuova feature sulla quale programmare in totale libertà senza paura di "rovinare" il lavoro degli altri colleghi. Abbiamo dunque deciso di utilizzare tre tipologie principali di branch:
+\begin{itemize}
+\item \texttt{master}. In questo branch abbiamo pubblicato solamente le versioni finali del progetto. Con la versione 1.0 abbiamo contrassegnato il termine della versione \textit{core}, mentre con la 2.0 il termine di quella distribuita.
+\item \texttt{develop}. Questo branch ha rappresentato il punto di partenza di ogni nuova feature e, al termine di quest'ultima, il canale su cui riversare tutto il lavoro prodotto.
+\item  \texttt{generic feature}. Quest'ultima tipologia in realtà caratterizza tutte le feature create dai membri del team per lavorare ad uno specifico item. In generale abbiamo cercato di rispettare il \textit{topic} della feature andando ad effettuare solamente le modifiche all'item preso in considerazione.
+\end{itemize}
+Per effettuare invece il building del progetto abbiamo deciso di utilizzare \textbf{Gradle}, uno dei principali sistemi di automatizzazione delle build. Grazie ad esso abbiamo semplificato anche l'esecuzione dei test, la gestione delle dipendenze e la creazione dei jar da consegnare alla scadenza del progetto. Per poter sviluppare un progetto solido è necessario utilizzare sistemi di testing che ne verifichino l'integrità dopo ogni modifica. Lo strumento che abbiamo scelto di utilizzare a tal proposito è \textbf{TravisCI} che abbiamo successivamente collegato al repository creato su \textbf{GitHub} dal momento che permette di poter usufruire, in maniera gratuita, di funzionalità di \textit{Continous Integration}.
+
+
+
+
+        \clearpage
+
+	\setcounter{figure}{0}
+    \section*{\Huge {\textbf Capitolo 2}\label{chapter2}}
+    \section{Requisiti}\label{sec:requirements}
+    Il progetto d'esame \textbf{Maraph1-mp} si è posto come obiettivo quello di creare una versione distribuita e multi-giocatore del classico gioco di carte romagnolo \textbf{"Marafone"}, conosciuto anche come \textit{Marafona}, \textit{Maraffa} o \textit{Beccaccino} a seconda della città di appartenenza. Il gioco consiste in una schermata 2D all'interno della quale sono visibili solamente le carte del player che stiamo impersonando, mentre quelle del compagno (posizionato di fronte a noi) e quelle dei due avversari (posizionati uno a destra ed uno a sinistra rispetto alla nostra posizione) risultano essere coperte. Il gioco procede fino a quando una delle due squadrex risulta essere la vincitrice: a quel punto la schermata di gioco viene chiusa e si torna alla finestra di default, diversa sulla base del fatto che un player si sia registrato e loggato oppure no.
+
+         \subsection {Requisiti utente}\label{subsec:requirements:business}
+         Per questo progetto l'importanza dell'utente è centrale. Esso interagirà infatti con altri utenti giocando insieme a loro a \textit{Marafone}.
+         \begin{itemize}
+         \item L'utente potrà scegliere se registrarsi al sistema oppure no
+	 \item Se l'utente si registra:
+
+	 \begin{itemize}
+	 \item Possibilità di interagire con i propri amici attraverso una schermata Social.
+	 \item Possibilità di aggiungere al proprio elenco di amici i giocatori che sono online.
+	 \item Possibilità di invitare i propri amici per una partita in qualità di compagno o di avversario.
+	 \item Possibilità di giocare una partita in modalità competitiva, con aumento/diminuzione del proprio punteggio sulla base dell'esito della partita stessa.
+	 \item Possibilità di guardare i replay delle partite giocate da se stesso e da tutti gli altri utenti.
+	 \item Possibilità di accedere come spettatore alle gare attualmente in corso.
+	\end {itemize}
+
+	\item Se l'utente non si registra:
+
+	\begin{itemize}
+	\item Non potrà accedere a tutte le funzionalità Social.
+	\item Unica modalità di gioco quella non competitiva, ovvero senza punteggio.
+	\item Possibilità di accedere come spettatore alle gare attualmente in corso.
+	\end {itemize}
+
+	\end {itemize}
+         \clearpage
+             \subsection {Requisiti funzionali}\label{subsec:requirements:functional}
+             Dall'analisi del caso di studio sono state individuate le seguenti parti del progetto:
+
+             \begin {itemize}
+             \item Gioco
+             \item Servizio di Autenticazione
+             \item Servizio delle Stanze di gioco
+             \item Servizio di Spettatore
+             \item Servizio di Replay
+             \item Funzioni Social
+             \item Interfaccia Utente
+             \end {itemize}
+
+            \subsubsection[Gioco]{\large {Regole del gioco}\label{subsub:requirements:game}}
+            Prima di iniziare a parlare dei requisiti del gioco, è bene analizzare le regole che caratterizzano una partita.
+
+            \begin {itemize}
+            \item La partita inizia nel momento in cui sono presenti quattro giocatori all'interno della stessa lobby.
+            \item Ad ogni giocatore saranno distribuite, in maniera totalmente casuale, 10 carte, per un totale di 40 carte in gioco.
+            \item Le carte si suddividono in quattro semi: \textbf{Bastoni}, \textbf{Spade}, \textbf{Denara} e \textbf{Coppe}.
+            \item Il gioco è suddiviso in set e turni. Un set termina quando tutti i giocatori hanno giocato una carta, mentre il turno finisce nel momento in cui tutte e dieci le carte di ogni giocatore sono state giocate.
+             \item Fondamentale il concetto della briscola: si tratta di un seme che viene stabilito all'inizio del turno e supera il valore degli altri semi, sebbene sulla carta valgano di più.
+              \item Nel corso del turno iniziale, viene scelta la briscola dal giocatore che troverà, all'interno delle proprie carte, il 4 di \textbf{Denara}. Dai turni successivi la briscola verrà scelta in senso antiorario, quindi dal giocatore alla sinistra dell'ultimo giocatore che ha scelto la briscola.
+            \item Ad ogni turno vengono messi in palio 11 punti, 14 in caso di \textit{Maraffa} (ovvero la presenza dell'Asso, del Due e del Tre dello stesse seme nella mano del giocatore che deve selezionare la briscola).
+             \item Ai giocatori non è concesso parlare se non attraverso tre possibili comandi: \textbf{Busso} (significa che il compagno deve giocare la carta più alta del seme giocato per provare a vincere il set e in quello successivo giocare nuovamente una carta dello stesso seme), \textbf{Volo} (significa che il giocatore non ha più carte del seme appena giocato) e \textbf{Striscio} (significa che il giocatore ha rimasto un'altra carta del seme appena giocato).
+            \item I comandi possono essere comunicati solamente dal primo giocatore che inizia uno specifico set.
+            \item Nel momento in cui viene giocata una carta di un certo seme, gli altri giocatori saranno costretti a rispondere con una carta dello stesso seme. Nel caso in cui il giocatore avesse terminato le carte di quello specifico seme, la scelta della carta da giocare sarà libera.
+            \item L'azione del \textit{tagliare} prevede il fatto che venga giocata una briscola sopra ad una carta di un altro seme: questo nella maggior parte dei casi permette a chi ha tagliato di vincere il set.
+            \item La carta più potente, a parità di seme, è il \textbf{Tre}, seguito dal \textbf{Due} e dall'\textbf{Asso}. In cascata ci sono poi il \textbf{Re}, il \textbf{Cavallo} e il \textbf{Fante}, che sono considerate \textit{figure}, mentre le carte rimanenti sono considerate \textit {scartini}.
+            \item Tutte le figure valgono 1/3 di punto, ad eccezione dell'Asso che vale 1 punto. Gli scartini valgono 0 punti.
+            \item La partita finisce quando una squadra raggiunge i 41 punti o, in caso di parità a quota 41, quando una delle due squadre supera l'altra al termine del turno successivo.
+            \end {itemize}
+
+            \subsubsection[Autenticazione]{\large {Servizio di Autenticazione}\label{subsub:requirements:auth}}
+            Il servizio di Autenticazione dovrà:
+
+            \begin {itemize}
+            \item Permettere la registrazione, inserendo username e password.
+            \item Permettere il login, inserendo username e password.
+            \end {itemize}
+
+            L'autenticazione darà la possibilità a tutti gli utenti registrati di accedere alle funzionalità Social, come dichiarato in precedenza.
+
+            \subsubsection[Stanze di Gioco]{\large {Servizio delle Stanze di gioco}\label{subsub:requirements:lobby}}
+            Il servizio delle Stanze di gioco sarà accessibile sia agli utenti registrati, che a quelli non registrati, poiché per poter giocare una partita sarà necessaria la creazione di una nuova lobby e la possibilità di entrare all'interno di essa per prendere parte ad una partita. Nello specifico, essa dovrà permettere:
+
+            \begin {itemize}
+            \item Possibilità di entrata casuale nel momento in cui si decide di giocare una partita, competitiva e non.
+            \item Possibilità di entrata grazie all'invito di un amico (solo funzione Social) nei panni di suo compagno o di avversario.
+            \item Possibilità di abbandono con conseguente sconfitta a tavolino per la propria squadra.
+            \end {itemize}
+
+            \subsubsection[Servizio di Spettatore]{\large {Servizio di Spettatore}\label{subsub:requirements:viewer}}
+            Questo servizio viene offerto sia ai player loggati che a quelli non loggati. Ogni player avrà dunque la possibilità di assistere, nelle vesti di spettatore, ad uno degli incontri che si stanno disputando in quel preciso momento. Il player non è costretto a seguire la partita fin dall'inizio: sarà possibile infatti, in ogni momento, potersi collegare alla partita per mezzo dell'ID della partita di interesse e prendere parte alla gara in qualunque momento. Lo spettatore potrà vedere solamente le carte di uno dei quattro player, rimanendo all'oscuro di quelle in possesso degli altri tre giocatori.
+
+            \subsubsection[Servizio di Replay]{\large {Servizio di Replay}\label{subsub:requirements:replay}}
+            Questo servizio, contrariamente al precedente, viene offerto solamente ai player registrati e loggati. Ogni partita viene registrata e mantenuta in memoria all'interno di un database e sarà resa disponibile a tutti i player registrati. Al player viene dunque offerta la possibilità, selezionando l'ID della partita di interesse, di poter riguardare tutte le giocate della suddetta partita fino all'assegnamento della vittoria ad uno dei due team. Per rendere più veloce e meno stancante il replay, le mosse vengono visualizzate ogni mezzo secondo.
+
+             \subsubsection[Funzioni Social]{\large {Funzioni Social}\label{subsub:requirements:social}}
+             Anche questo servizio viene offerto solamente ai player registrati e loggati. Dopo aver effettuato correttamente il login, il player sarà reindirizzato verso la schermata social, che mostrerà i player online e i player aggiunti al proprio elenco di amici. Attraverso questa schermata sarà possibile invitare player online a diventare amici (essi potranno anche rifiutare) e dopo aver fatto ciò si potranno invitare a prendere parte ad una nuova partita sia nei panni di compagni che in quello di avversari.
+
+           \clearpage
+           \subsubsection[Interfaccia Utente ]{\large {Interfaccia utente}\label{subsub:requirements:genericGui}}
+           Le schermate a disposizione dell'utente saranno principalmente tre e solamente una di esse varierà sulla base del fatto che l'utente si sia loggato oppure no.
+           \bigbreak
+           \textbf{Autenticazione}
+           \begin {itemize}
+           \item Permette la registrazione, inserendo username e password.
+           \item Permette il login, inserendo username e password..
+           \item Permette di giocare come giocatore anonimo, ovvero senza bisogno di registrazione.
+           \end {itemize}
+
+           \bigbreak
+           \textbf {Dashboard principale}
+           \bigbreak
+           Questa schermata varierà sulla base del fatto che l'utente si sia loggato oppure no. Se l'utente si è loggato avrà a disposizione, all'interno della dashboard, tutte le funzioni social elencate in precedenza, altrimenti la dashboard conterrà solamente i comandi per poter giocare una partita non competitiva e per visualizzare una gara nei panni dello spettatore.
+
+           \bigbreak
+           \textbf{Gioco}
+           \bigbreak
+           La schermata di gioco sarà sempre la stessa, sia per le partite giocate (competitive e non) sia per la visualizzazione di una partita in veste di spettatore e sotto forma di replay e permetterà di:
+           \begin {itemize}
+           \item Visualizzare le proprie dieci carte.
+           \item Visualizzare gli username dei player all'interno della partita.
+           \item Visualizzare come coperte le carte del compagno e dei due avversari.
+           \item Visualizzare la briscola del turno attuale.
+           \item Visualizzare il punteggio dei due team aggiornato di turno in turno.
+           \item Visualizzare il giocatore che deve giocare una carta.
+           \item Visualizzare le carte giocate nel set corrente in mezzo al campo.
+           \item Visualizzare un'animazione col punteggio alla fine del turno e alla fine della partita.
+           \item Visualizzare un'animazione che certifichi la vittoria/sconfitta del team.
+           \item Visualizzare i comandi volo, busso e striscio nel momento in cui vengono dichiarati.
+           \end {itemize}
+
+	\clearpage
+        \subsection {Requisiti non funzionali}\label{subsec:requirements:notFunctional}
+        Dal momento in cui abbiamo deciso di realizzare la versione del gioco in maniera distribuita, abbiamo evidenziato diversi aspetti che avremmo dovuto rispettare per poter ottenere una gestione del gioco ottimale. I \textit{requisiti non funzionali} da rispettare sono pertanto i seguenti:
+
+        \begin{itemize}
+        \item \textbf{Sicurezza}. Il sistema permette di potersi registrare ed effettuare il login solamente se in possesso della password scelta in fase di registrazione.
+        \item 	\textbf{Consistenza}. Il sistema deve riuscire a mantenere lo stato di gioco inalterato indipendentemente da ciò che succede all'interno della rete. Nel nostro caso i problemi principali potrebbero nascere nel momento in cui si verifichino problemi di inconsistenza tra i diversi client. Essendo, per sua stessa natura, un gioco distribuito, abbiamo dovuto effettuare degli accorgimenti per poter evitare che, in caso eventuali disturbi della comunicazione o problemi legati al singolo client, lo stato di gioco non venisse alterato. Una volta ristabilita la condizione originale, il sistema deve poter continuare a funzionare correttamente.
+        \item \textbf{Efficienza}. Il sistema deve riuscire a rispondere a tutte le richieste che vengono effettuate senza tralasciarne alcuna. Nel nostro caso, ad esempio, il sistema deve riuscire a gestire più partite in contemporanea senza che queste influiscano negativamente sullo stato del gioco.
+        \item \textbf{Scalabilità}. Il sistema deve riuscire a gestire in maniera ottimale tutto il carico a cui è sottoposto. Non dovrà pertanto diminuire le proprie performance anche in caso di numerose richieste da parte di numerosi client.
+        \end{itemize}
+
+        \subsection {Requisiti implementativi}\label{subsec:requirements:implementative}
+   	Nel corso del primo incontro, durante il quale abbiamo stabilito i primi passi che avremmo dovuto muovere, abbiamo anche selezionato quattro macro-sezioni che avremmo certamente incluso all'interno del nostro progetto. Queste quattro sezioni rappresentano i nostri \textit{requisiti implementativi}.
+
+	\begin{itemize}
+	\item \textbf{Scala}. Si tratta del linguaggio principale con il quale realizzare il nostro progetto. Come vedremo nei paragrafi successivi, oltre a \textbf{Scala} è stato utilizzato anche \textbf{Java}, ma per un sottoinsieme di funzionalità che verranno meglio approfondite in seguito. Abbiamo deciso di utilizzare questo linguaggio poiché il nostro gioco viene sviluppato come progetto d'esame e in quanto tale viene richiesto l’utilizzo di questo linguaggio multi-paradigma.
+	\item \textbf{TDD}. Considerando il fatto di lavorare in un contesto \textbf{Agile}, abbiamo deciso di servirci di un modello di sviluppo test-driven, utilizzando, dove possibile, strumenti di test per poter lavorare in parallelo allo sviluppo del progetto. Così facendo, abbiamo avuto la possibilità di ottenere codice testato prima di andare ad effettuare le normali operazioni di intregrazione per il lavoro dei quattro membri del team.
+	\item \textbf{Akka}. Per poter modellare al meglio le interazioni tra i diversi componenti del sistema, abbiamo deciso infine di utilizzare il \textit{framework} \textbf{Akka} che ci ha fornito una struttura ad attori. Grazie ad Akka siamo riusciti a gestire al meglio le fasi comunicative e comportamentali dei diversi componenti del sistema.
+	\item \textbf{Jar}. Come richiesto espressamente nei requisiti d'esame, il client e i servizi necessari per poter far partire il sistema dovranno essere avviabili tramite file \textbf{jar} eseguibili, pertanto abbiamo predisposto \textbf{Gradle} alla generazione automatica dei diversi file .jar necessari.
+   \end{itemize}
+
+   \clearpage
+   \setcounter{figure}{0}
+    \section*{\Huge {\textbf Capitolo 3}\label{chapter3}}
+    \section{Design architetturale}\label{sec:design}
+
+
+        \subsection[Architettura]{Architettura e pattern utilizzati}\label{subsec:architecture}
+         L'architettura del sistema va a basarsi fortemente su un design \textbf{client-server}, all'interno del progetto entrano perciò in gioco due entità fortmente distinte. \\ Per la realizzazione dell'applicazione locale è stato adottato il pattern Model-View-Controller, così da permettere una maggior suddivisione dei compiti, soprattutto per quanto riguarda la parte grafica e logica del gioco dalla sezione d'interazione con il remoto.  \\
+        Per il lato server-side invece, dato che le specifiche oltre che a richiedere una parte statica di semplice gestione dati, richiedevano anche una modalità dinamica (real-time), sono stati adottati due differenti pattern.
+        \\
+        La gestione dei dati è stata affidata a un server che mette a disposizione per i client una serie di chiamate \textbf{API REST}, mentre, per il real-time, la scelta è ricaduta sulla creazione di una sessione di gioco utilizzando il pattern \textbf{Publish-Subscribe}.
+
+
+            \subsubsection{Architettura server-side}\label{subsub:architecture:server}
+            L'architettura server-side prende spunto, nonostante non la implementi nelle sue piene caratteristiche, da un approccio orientato ai microservizi, così da costruire un modello che sia in un futuro facilmente scalabile. \\
+
+            Per fare ciò è stato inserito tra il client e il backend un \textbf{Service discovery}.
+
+            \begin{figure}[h!]
+                \includegraphics[scale=0.6]{images/ArchitetturaDiscovery.png}
+                \caption{Architettura client-server con Service Discovery. Allo start up il server si iscrive sul discovery e viene considerato tra gli endpoint disponibili. A questo punto il discovery lo reputa un componente attivo e vi indirizzerà i client.}
+            \end{figure}
+
+            Grazie all'apposizione di un \textit{Service Discovery} tra gli \textit{endpoint} è stata data, a livello di modello, la possibilità all'applicazione di aggiungere servizi e di avere anche più server che si occupano dello stesso, dato che, essendo il \textit{discovery} l'intermediario tra il client e il backend svolge inoltre il ruolo di \textit{Load Balancer}, andando perciò a indirizzare il client verso il servizio con meno carico al momento della chiamata.
+            In questo modo l'applicazione risulta, oltre che essere fortemente scalabile, fornire anche \textit{high availability} e una buona tolleranza al fallimento.
+            \\
+            Una volta ottenuto un instradamento verso uno dei server disponibili entra in gioco un classico servizio ad API REST che si occupa della gestione dell'utente, sia per la parte social che per la ricerca di una partita.
+
+            A questo punto l'architettura utilizzata cambia. Le richieste del dominio impongono una sessione di gioco attiva capace di mantenere uno stato e le API REST non risultano la miglior soluzione. \\
+            Per la costruzione di un dialogo in real-time fra tutti i componenti di una partita e il server, che gioca nel ruolo di manager di quest'ultima è stato adottato, come anticipato, il pattern \textbf{Publish-Subscribe}.
+            In questo modo ogni membro della partita in ascolto su di un determinato canale sono capaci di ricevere ed emettere messaggi cosicché, alla produzione di un dato da parte di uno dei partecipanti, tutti gli altri siano pronti a recepirlo e consumarlo per poi eventualmente rispondere tramite una determinata azione.
+
+            \begin{figure}[h!]
+                \includegraphics[scale=0.6]{images/PubSubActorDiagram.png}
+                \caption{Attori attivi all'interno di un topic del Publish-Subscribe. Il questo caso il topic rappresenta una partita.}
+            \end{figure}
+
+            \subsubsection{Architettura client-side}\label{subsub:architecture:client}
+            Lato client come indicato è stato adottato il pattern MVC. Data la struttura del progetto questa architettura ha permesso uno sviluppo ben distinto delle parti.
+            \\
+            L'utente infatti, come è possibile vedere dalla figura \ref{fig:UserUseCaseDiagram}, viene indirizzato verso più funzionalità:
+            \begin{itemize}
+             \item Interfaccia di login o registrazione;
+             \item Interfaccia social;
+             \item Schermata di gioco.
+            \end{itemize}
+            Sfruttando i vantaggi del pattern \textbf{Model-View-Controller} sono stati anche identificati degli attori per la gestione delle parti, così da ottenere una migliore reattività della parte grafica.
+            La parte di modello invece offre le funzionalità necessarie per gestire al meglio le chiamate al backend per la funzionalità social oltre che per la gestione delle partite vere e proprie.
+
+
+	     \begin{figure}[!h]
+                \includegraphics[scale=0.7]{images/UserUseCaseDiagram.png}
+                \label{fig:UserUseCaseDiagram}
+                \caption{Diagramma dei casi d'uso per le due differenti tipologie d'utente.}
+            \end{figure}
+
+
+
+
+        \subsection{Tecnologie}\label{subsec:technologies}
+        Di seguito l'elenco delle tecnologie più rilevanti utilizzate per l'implementazione del progetto.
+	  \subsubsection{JavaFX}\label{subsub:tecnologie:javafx}
+	    Libreria grafica tra le più importanti nel mondo Java, se non la maggiormente importante.
+	    \\
+	    La scelta è ricaduta su di essa in quanto ritenuta più facilmente integrabile con l'idea implementativa.
+	    La dinamicità con il quale è possibile definire file FMXL e la netta suddivisione tra view e controller l'hanno resa per il nostro progetto un'ottima alternativa a Swing. \\
+	    La sezione di JavaFX rappresenta anche l'unica parte scritta in Java, in quanto il framework è stato considerato più maturo rispetto alle librerie disponibili in Scala.
+
+	 \subsubsection{Akka}\label{subsub:tecnologie:akka}
+	   Sia lato client che per l'aspetto server è stato utilizzato il framework Akka per la gestione degli attori.
+	   Le capacità di questa libreria di astrarre aspetti complicati di computazione hanno permesso lo sviluppo di un applicazione reattiva su entrambe le parti con il minimo sforzo.
+
+
+	 \subsubsection{Akka Cluster}\label{subsub:tecnologie:akkacluster}
+	   La realizzazione di un dialogo dinamico tra i client e il server ci ha guidati verso il pattern \textbf{Publish-Subscribe}, per questo motivo la nostra scelta è ricaduta su Akka Cluster.
+	   \\
+	   Essendo ben definita un'architettura client-server si è optato per seguire la strada di inglobarla all'interno di un cluster, cosicchè lo scambio di messaggi, tra il client e il server, non avvenga in modalità peer-to-peer.
+	   \textbf{Akka Cluster} va inoltre ad aggiungere un'ulteriore scalabilità e affidabilità del sistema dato che, per sua natura, gestisce l'entrata dei nodi nel cluster e i loro ruoli, oltre che a monitorarne le prestazioni e l'eventuale caduta di essi.
+	 \subsubsection{Vert.x}\label{subsub:tecnologie:vert.x}
+	  Libreria utilizzata per la gestione del server remoto. Il servizio REST è interamente costruito su Vert.x e lato cliente le stesse chiamate alle API si appoggiano alla parte client della libreria.
+	  Tra gli altri si è optato per Vert.x, oltre che per la sua struttura basata sugli eventi asincroni all'interno di un event-loop, per la sua semplicità di deploy. A differenza di altri web server più conosciuti all'interno del mondo Java o Scala come Java EE o Spring, Vert.x è totalmente
+	  indipendente e non necessita di un servlet container, permettendo perciò un deploy ancora più immediato.
+        \clearpage
+        \setcounter{figure}{0}
+        
+\section*{\Huge {\textbf Capitolo 4}\label{chapter4}}        
+    \section{Design di dettaglio}\label{sec:design:details}
+     	In questa sezione saranno presentate le scelte effettuate a livello di design nel dettaglio. In primo luogo si tratterà dell'organizzazione generale del codice in packages e dei \textit{design patterns} applicati più frequentemente, successivamente saranno analizzati nel particolare le principali funzionalità e classi di ogni modulo del sistema.
+
+         \subsection {Organizzazione del codice}\label{subsec:details:codestructure}
+         La struttura del progetto si presenta divisa in cinque packages principali, tre di questi corrispondono perfettamente ai componenti portanti dell'architettura distribuita del sistema, i restanti due sono stati pensati come unità di supporto alle strutture principali.
+
+         \begin{itemize}
+         \item{\texttt{client:}} All'interno del package client viene modellata l'interazione tra un utente fruitore del gioco e
+         l'architettura remota del sistema, sono presenti quindi tutte le classi necessarie alla realizzazione dell'interfaccia grafica, al supporto delle funzionalità lato client di gioco come ad esempio ricerca e aggiunta di un amico, replay e visualizzazione in tempo reale di una partita.
+
+
+         \item{\textbf{\texttt{discovery:}}}
+           Questo package contiene tutti i sorgenti relativi all'implementazione del \textit{discovery server},
+           componente centralizzato che espone un servizio di pagine gialle, mantenendo traccia di tutti i server attivi
+           all'interno del sistema, nonché di tutte le partite che stanno venendo disputate e dei giocatori online.
+
+         \item{\texttt{server:}}
+           Il package server comprende i file necessari alla realizzazione un server backend per gestire le partite,
+           il login e la registrazione degli utenti, il salvataggio in remoto dei punteggi e delle partite.
+
+         \item{\texttt{commons:}}
+           Uno dei due packages di supporto: contiene un insieme di classi e oggetti di \textit{utilities} comuni agli altri packages del sistema.
+
+         \item{\texttt{core:}}
+           Il secondo package che non corrisponde direttamente a un elemento dell'architettura distribuita: contiene il cuore del sistema, ovvero l'implementazione delle regole e logiche del gioco Marafone; nonostante potesse essere inserito all'interno di uno degli altri packages, si è scelto di mantenerlo separato, in quanto contenente un'insieme di classi ed oggetti ad alto valore per il sistema.
+
+       \end{itemize}
+
+       \subsection {Pattern di progettazione generali}\label{subsec:details:generaldesingpattern}
+       Durante l'intero processo di sviluppo e integrazione sono stati impiegati diversi \textit{desing patterns}, tra questi alcuni si sono prestati meglio di altri a un applicazione costante e ripetuta all'interno di varie strutture.\\
+       Il primo e più utilizzato tra tutti i \textit{patterns} è stato sicuramente il \texttt{Factory Method}: avendo infatti deciso di utilizzare
+       il linguaggio di Programmazione Scala come principale linguaggio impiegato all'interno del progetto, è venuto abbastanza naturale adattare il processo di definizione dei metodi di una classe UML alla generazione di un \texttt{trait} e di realizzare la sua implementazione con una classe privata dichiarata all'interno del \texttt{Companion Object} di tale trait, mettendo a disposizione il metodo \texttt{apply()} di questo oggetto come \texttt{Factory Method} per le istanze della classe.
+       Un altro pattern decisamente impiegato è stato \texttt{Strategy}, grazie all'approccio orientato al paradigma funzionale di \textit{Scala}, è venuto molto naturale definire classi e strutture che isolassero alcuni algoritmi necessari per il loro funzionamento e permettessero di definirli dinamicamente.
+       Infine è utile citare, sebbene non ricada strettamente in all'interno di una specifica categoria di \textit{design patterns}, la scelta di progettazione effettuata nel realizzare insiemi di oggetti statici: invece di utilizzare una struttura basata sulle enumerazioni, si è deciso di sfruttare i costrutti messi a disposizione dal linguaggio Scala, ottenendo una soluzione composta da un \texttt{trait} che definisse il contratto da rispettare e una serie di \texttt{case objects} estendenti il \texttt{trait} in questione.
+
+       \subsection {Core}\label{subsec:details:core}
+       Punto di partenza per il design del sistema è stata la descrizione delle funzionalità e componenti necessarie allo svolgimento di una partita di Marafone, come mostrato dal relativo diagramma delle classi nella figura 4.1.
+
+     \begin{figure}[H]
+       \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{initialArchitecture}
+        \caption{diagramma delle classi relativo allo svolgimento di una partita}
+     \end{figure}
+
+      E' importante sottolineare che tale diagramma rappresenta una visione di alto livello del sistema dal punto di vista esclusivamente della modellazione di una partita, non catturando in nessun modo caratteristiche legate ad altri domini quali la separazione del sistema secondo un modello distribuito, tuttavia posto che alcuni elementi sarebbero stati realizzati mettendo in gioco scelte di design piuttosto complesse, il modello fornito dallo schema risultava nel complesso abbastanza solido.
+      Come è possibile notare, lo schema si struttura seguendo il pattern di progettazione \textit{MVC}, dove i componenti soggetti a una maggiore complessità risultano sicuramente controller e view, mentre model risulta più solido e definito.
+      Di conseguenza si è scelto di catturare all'interno del package \texttt{core} la componente di modello della partita, identificandone i principali componenti:
+
+     \begin{itemize}
+       \item{\texttt{mazzo di gioco:}} all'interno del package \texttt{deck} sono presenti tutte le strutture e funzionalità necessarie alla gestione del mazzo di gioco, come ad esempio la divisione delle carte nelle mani dei giocatori e il mescolamento delle stesse all'interno del mazzo; viene definita inoltre la struttura necessaria per la registrazione e calcolo del punteggio durante la partita.
+
+
+       \item{\texttt{ciclo di gioco:}} il package \texttt{game} contiene l'insieme delle regole e procedure che regolano una partita tra quattro giocatori, definendo inoltre i concetti di set, team e match.
+
+       \item{\texttt{giocatore:}} definisce il concetto di giocatore e le operazioni possibili da parte di quest'ultimo.
+
+     \end{itemize}
+
+       Per quanto riguarda le funzionalità di controller e gui, esse sono state realizzate all'interno di core in un primo momento, ma sono poi state integrate in altri moduli.
+
+     \subsection {Discovery}\label{subsec:details:discovery}
+     All'interno del \texttt{package discovery} si è realizzato il servizio di discovery, seguendo i requisiti e le specifiche definite in fase di progettazione dell'architettura distribuita.\\
+     In quanto elemento unico e comune a tutta l'architettura, il discovery server svolge le funzioni di un registro centralizzato, consultabile e aggiornabile da ogni altro componente del sistema, tale registro deve mantenere quindi i riferimenti ai server online, il numero di partite al momento disputate all'interno del sistema, un loro identificativo e il server su cui sono eseguite, inoltre tiene traccia dei giocatori online che hanno effettuato il login, fornendo la possibilità agli altri utenti registrati nel sistema di contattarli.
+     Mostrato nella figura 4.2, è possibile vedere il diagramma delle classi relativo al \texttt{package discovery}
+
+      \begin{figure}[H]
+       \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{discoveryArchitecture}
+        \caption{diagramma delle classi relativo alla struttura del discovery}
+       \end{figure}
+
+     Tale diagramma presenta una classe al centro \texttt{DiscoveryServer} e tre classi in relazione di associazione con essa.
+     La prima tra queste è \texttt{MatchesSet}, classe che mette a disposizione una semplice struttura per gestire all'interno del discovery l'insieme delle partite giocate in tempo reale, salvandone l'identificatore.\\
+     Successivamente \texttt{RegistryActor} realizza un wrapper tra \texttt{DiscoveryServer e SocialActorsMap}, tale attore si occupa di esporre un punto di comunicazione per l'aggiornamento di un registro condiviso contenente tutti gli identificatori dei giocatori registrati al momento online.\\ \texttt{RegistryActor} comunica con tutti i \texttt{SocialActor} in esecuzione sui vari client presenti all'interno del sistema mediante il protocollo \textit{Publish-Subscribe} messo a disposizione dalla libreria \textit{Akka cluster}, ricevendo richieste di registrazione e rimozione di utenti e pubblicando una versione aggiornata del registro su canale dedicato ad ogni aggiornamento.\\
+     In secondo luogo è presente \texttt{SocialActorsMap}: tale classe realizza una struttura praticamente analoga a \texttt{MatchesSet}, con l'unica differenza di gestire il riferimento ai giocatori online invece che alle partite.\\
+     Infine \texttt{ServerMap} gestisce l'elenco dei server disponibili, tenendo conto anche del numero di partite disputato sopra di esse.\\
+     Elemento chiave per l'intero package è sicuramente \texttt{DiscoveryServer}, classe che realizza l'implementazione di un server web ,estendendo la classe \texttt{Verticle} della libreria \textit{Vertx}, e delle \textit{REST API} necessarie per contattarlo.
+     Menzione particolare meritano le \textit{REST API}, sviluppate come \texttt{case objects} estendenti un \texttt{trait} chiamato \texttt{RestAPI}, presente nel package \texttt{commons}. Il contratto definito da tale \texttt{trait} vincola ogni oggetto a implementare tre metodi fondamentali per il funzionamento di ogni api:
+     \begin{itemize}
+       \item{\texttt{path:}} definisce il path necessario per richiamare la \textit{REST API} all'interno del server su cui viene esposta.
+
+       \item{\texttt{httpMethod:}} specifica la richiesta http con cui deve essere effettuata la chiamata alla \textit{REST API}.
+
+       \item{\texttt{asRequest:}} crea un oggetto della classe \texttt{Request} a partire dalla \textit{REST API}, tale classe consente di specificare tramite uno \texttt{strategy method} le operazioni da eseguire quando viene ricevuta una richiesta corrispondente all'API in questione.
+     \end{itemize}
+
+     Questa progettazione delle \textit{REST API} consente un aggiunta dinamica e facile di nuove API a quelle già presenti, per aggiungere una nuova API al discovery server non occorre fare altro che definire un oggetto estendente il trait \texttt{DiscoveryAPI} e un handler per la richiesta generata da tale API all'interno del metodo \texttt{deployAPI()}
+     Le principali API presenti su discovery sono le seguenti:
+
+     \begin{itemize}
+       \item{\texttt{RegisterServer:}} registra un server all'interno del discovery.
+
+       \item{\texttt{GetServer:}} API chiamata da client, restituisce il server su cui al momento, sono attive meno partite, implementando così una basilare forma di \textit{load balance} all'interno del sistema.
+
+       \item{\texttt{RegisterMatch:}} API chiamata da un server, registra l'id di una nuova partita sul discovery e aggiorna il contatore delle partite in corso relative al singolo server.
+
+       \item{\texttt{RemoveMatch:}} API chiamata da un server, notifica al discovery la fine di una partita, rimuovendo il suo id dal discovery e aggiornando il contatore relativo al server.
+
+       \item{\texttt{RegisterSocialID:}} API chiamata da un client dopo la fase di autenticazione, notifica a \texttt{RegistryActor} la presenza di un nuovo subscriber da contattare.
+     \end{itemize}
+
+     Oltre all'esposizione delle seguenti API, il discovery ha anche il compito di mettere in esecuzione i \textit{seed nodes} necessari per \textit{Akka Cluster}, si è scelto infatti di posizionare i \textit{seed nodes}, ovvero due \texttt{ActorSystem} che fungono da \textit{entry points} all'interno del sistema cluster, sopra lo stesso host in cui viene messo in esecuzione il server, così da accentuare ulteriormente il carattere centralizzato del discovery server.\\
+      Tali \texttt{ActorSystem} vengono generati tramite il metodo di \texttt{DiscoveryServer} \texttt{startDiscoveryCluster()}, che dato l'indirizzo ip della macchina su cui viene messo in esecuzione il discovery server, costruisce due \texttt{ActorSystem} sulle porte 2551 e 2552 che creano la struttura di cluster al cui interno si andranno a inserire gli \textit{ActorSystem} in esecuzione sui vari client e server.
+
+      \subsection {Server}\label{subsec:details:server}
+      Questo è il modulo contenente tutto il codice necessario a mettere in esecuzione un server backend. Le funzionalità esposte da questo struttura sono creazione e gestione di varie partite, competitive o meno, registrazione e autenticazione di utenti, salvataggio e recupero di partite terminate.Oltre a queste operazioni che rispondono direttamente a una richiesta di un utente, sono presenti anche tutta una serie di procedure per la comunicazione con il discovery server, in modo da mantenere aggiornato lo stato di quest'ultimo con lo stato effettivo del sistema.\\
+      Ogni server è pensato per essere indipendente dagli altri, delegando le politiche di selezione e divisione del lavoro al discovery Server:
+      E' infatti importante notare che ogni client non contatta uno specifico host al momento dell'avvio, ma invia una richiesta al discovery server, il quale provvederà a assegnargli uno tra i server con minor numero di partite al momento disputate; questa scelta ci è parsa ragionevole in quanto il numero di partite al momento effettuate poteva fornire un primo, per quanto instabile, indice di carico computazionale del singolo server, di conseguenza andare a selezionare di volta in volta un server diverso per ogni client che si univa al sistema poteva essere un semplice, seppur rozzo, meccanismo di \textit{load balance} all'intero del sistema.\\
+      La figura 4.3 riassume efficacemente i passaggi che portano all'esecuzione di una chiamata REST all'interno di un server da parte di un client.\\
+
+      \begin{figure}[H]
+        \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{restAPICall}
+         \caption{diagramma di sequenza relativo all'esecuzione di una chiamata REST da parte di un client}
+      \end{figure}
+
+      Queste modalità comunicative sono utilizzate per tutte le interazioni tra client e server, fatta eccezione per le comunicazioni durante la partita, in tale frangente abbiamo scelto di affidarci alla comunicazione real time tra attori tramite messaggi end to end e il protocollo \textit{publish subscribe} messo a disposizione da \textit{Akka Cluster}.
+      Principale e più importante funzionalità del server è la creazione, gestione, distruzione delle varie istanze di partite in gioco:
+      alla chiamata di una specifica \textit{REST API}, chiamata \texttt{FoundGameAPI}, viene avviato il processo di ricerca per una nuova partita; per prima cosa vengono estrapolati dall'interno della richiesta REST il nome utente del giocatore che l'ha inviata e eventuali nomi di avversari/compagni, tali dati vengono poi spediti a un attore, \texttt{LobbyActor} con il compito di gestire la lista delle lobby, ovvero delle partite di gioco con numero di giocatori insufficienti a iniziare una nuova partita; \texttt{LobbyActor} esegue una ricerca tra le proprie lobby e  nel caso tra queste ve ne sia una che può ospitare tutti i giocatori estratti dalla richiesta, allora essi sono aggiunti a tale lobby, se nessuna tra le lobby presenti nel sistema contiene abbastanza posti, \texttt{LobbyActor} provvede a crearne una nuova; terminata questa operazione, all'utente viene notificato l'identificatore della lobby in cui è stato inserito come risposta REST alla sua richiesta. \\
+      Nel momento in cui una lobby raggiunge il numero massimo di giocatori viene dato il via a una nuova partita:in primo luogo il server notifica al discovery l'incremento del numero di partite in esecuzione, successivamente viene creato un attore di classe \texttt{GameActor} a cui vengono passati gli identificatori dei quattro giocatori che prenderanno parte alla partita, tale attore ha il compito di gestire lato server la partita, andando a fornire per ogni giocatore le sue carte, applicando le regole per la selezione della briscola, delle prese di gioco, del punteggio e così via.\\
+      Come affermato sopra, le comunicazioni durante la partita avvengono tramite scambio di messaggi tra il \texttt{GameActor} e gli attori dei quattro giocatori, in particolare \texttt{GameActor} pubblica messaggi su un canale, avente come identificatore l'id della partita, a cui gli altri quattro attori sono iscritti, mentre riceve messaggi spediti dal singolo attore.
+      Al momento della fine di una partita, il server si occupa di registrarla su un database remoto, di aggiornare il discovery e cancellare la lobby dalla propria lista interna.\\
+      Descritte le modalità di gestione delle partite, tutti gli altri servizi presenti sul server sono di ricerca e/o aggiunta di nuovi dati a un database backend, tramite un meccanismo a \textit{REST API}, di seguito è riportato l'elenco delle principali \textit{API} sviluppate all'interno del server:
+      \begin{itemize}
+        \item{\texttt{FoundGame:}} comincia la ricerca di una partita secondo le modalità sopra descritte, la richiesta di questa API può contenere al suo interno da uno a quattro username e un flag che specifica se si richiede di giocare una partita competitiva o meno.
+
+        \item{\texttt{AddUser:}} registra un nuovo utente sul database backend con le credenziali specificate nella richiesta.
+
+        \item{\texttt{LoginUser:}} controlla se le credenziali fornite da un utente durante il login corrispondono a quelle salvate all'interno del database.
+
+        \item{\texttt{GetUser:}} recupera dal database i dati relativi a un utente,tra cui il punteggio attuale.
+
+        \item{\texttt{AddFriend:}} aggiunge alla lista degli amici dell'utente che effettua la richiesta un nuovo amico.
+
+         \item{\texttt{GameRest:}} recupera dal database una partita registrata.
+
+         \item{\texttt{GetFriends:}} recupera dal database la lista degli amici dell'utente che effettua la richiesta.
+      \end{itemize}
+
+      Ognuna di queste API fa riferimento a un oggetto della classe \texttt{RedisUserUtils} che si occupa di generare, gestire e recuperare il risultato delle queries necessarie allo svolgimento delle operazioni richieste.
+
+       \subsection {Client}\label{subsec:details:client}
+       Tra tutti i \texttt{packages} del progetto, sicuramente \texttt{Client} risulta quello più complesso e articolato.Nonostante discovery e server catturino una buona parte della complessità dei requisiti del sistema, una parte altrettanto grande, se non maggiore è delegata a questo modulo.\\
+       \texttt{Client} si pone il difficile compito di offrire all'utente fruitore del gioco tutte le funzionalità da lui attese gratificandolo con una valida \textit{User experience} e mascherando il più possibile la complessità dovuta all'integrazione e supporto alle altre componenti del sistema.
+
+       \begin{figure}[H]
+         \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{clientArchitecture}
+          \caption{diagramma delle classi relativo al package client}
+       \end{figure}
+
+     La figura 4.4 mostra appieno la complessità presente all'interno di client: sebbene il diagramma rimanga comunque una vista di alto livello sul sistema, il numero delle classi e relazioni in gioco e sicuramente superiore a qualunque altro componente del sistema.
+     Come è possibile evincere da tale figura, l'architettura di questo modulo è stata pensata basandosi sul classico modello di progettazione MVC, riadattato per essere il più possibile scalato all'interno dell'organizzazione del modulo: tale pattern non è applicato solamente alla macro struttura dello schema, ma si ripete all'interno dei vari spaccati del diagramma.
+     Nella parte alta dello schema viene rappresentato il centro di tutta la struttura, identificato dalle classi \texttt{GUI, ClientController} e \texttt{RestWebClient}, questo nucleo funge da nodo centrale per le comunicazioni e interazioni che avvengono all'interno del client, inoltre realizza le funzionalità di registrazione, autenticazione e di accesso come utente anonimo.\\
+     Per quanto concerne le funzionalità di partita e social dell'applicativo, abbiamo pensato di definire due sottomoduli, entrambi collegati al nucleo della struttura, che condividevano la stessa architettura di fondo, composta da un componente grafico, un attore estendente l'interfaccia \texttt{ModelActor} come modello capace di comunicazione remota e un oggetto della classe \texttt{ActorController} per fungere da mediatore tra le altre due entità: per quanto riguarda il lato social, \texttt{SocialGUI}, \texttt{SocialController} e \texttt{SocialActor} sono le classi di riferimento, mentre per la gestione della partita, sia essa giocata, seguita come spettatore oppure riprodotta \texttt{MatchGUI}, \texttt{MatchController} e \texttt{MatchActor} incarnano la struttura sopra descritta.\\
+     Rimane da analizzare solamente \texttt{RestWebClient}, questa classe si occupa dell'esecuzione delle chiamate REST, possiede due diverse implementazioni che permettono di chiamare API differenti tra loro.
+     Terminata l'analisi statica delle classi di modello, verranno ora descritti il comportamento generale e le interazioni principali delle entità presenti nel modulo client:\\
+     All'avvio dell'applicativo, viene aperta una finestra di login collegata a un'istanza di \texttt{ClientController}, da questa schermata l'utente potrà accedere se dispone già di un account, registrarsi oppure continuare senza effettuare nessun operazione di autenticazione, in quest'ultimo caso il controllo rimarrà all'oggetto \texttt{ClientController}, altrimenti passerà a un oggetto \texttt{SocialController}. Nel caso in cui l'utente scelga di continuare senza registrarsi, sarà possibile, tramite appositi pulsanti, richiedere di giocare una partita o di prendervi parte come spettatore: in entrambi i casi il controller istanzierà un nuovo attore di classe \texttt{MatchActor}, tramite l'oggetto \texttt{MatchController} al suo interno, a cui verrà passato l'identificatore della partita a cui prendere parte/ seguire, successivamente \texttt{MatchController} andrà a eseguire il caricamento sulla GUI della nuova finestra di gioco.
+     In caso di Login/Registrazione invece \texttt{ClientController} creerà un oggetto di classe \texttt{SocialController} e il corrispondente \texttt{SocialActor}, tale attore durante la creazione andrà a contattare il registro remoto su discovery per ottenere la lista di giocatori online, nel frattempo il controller recupererà la lista di tutti gli amici registrati tramite una chiamata REST al server assegnato. Un utente registrato avrà accesso a una schermata contenente diverse funzionalità: oltre a quelle già citate per l'utente anonimo, che verranno delegate da \texttt{SocialController} a \texttt{ClientController}, il giocatore registrato potrà contattare i giocatori online e i propri amici tramite uno scambio di messaggi tra i relativi \texttt{SocialActors}, grazie a tali interazioni sarà possibile aggiungere nuovi amici e formare team di gioco per le partite; sarà inoltre a disposizione una modalità di ricerca e riproduzione delle partite registrate, tale funzionalità viene resa possibile grazie a una combinazione di chiamate REST e delegazioni a \texttt{ClientController}, che provvede a settare il proprio \texttt{MatchController} come entità responsabile alla riproduzione della partita.
+
+    \clearpage
+    \setcounter{figure}{0}
+
+ \section*{\Huge {\textbf Capitolo 5}\label{chapter5}}
+
+     \section{Implementazione}\label{sec:implementation}
+
+     Durante tutto il processo di implementazione si è fatto uso di diversi pattern di progettazione. In generale quelli più utilizzati sono stati il \textbf{Factory Method} (sfruttando i Companion Object di Scala, largamente utilizzati in quasi tutto il codice) e il pattern \textbf{Strategy}. Sono poi stati utilizzati anche altri pattern tipici ad esempio del mondo ad attori, ma quelli verranno discussi maggiormente nel dettaglio nel corso dei paragrafi seguenti sulla base dei membri del team che li hanno effettivamente utilizzati.
+
+        \subsection{Nicholas Brasini}\label{subsec:brasini}
+        Per quanto riguarda il progetto \textbf{Maraph-1}, lo studente \textbf{Nicholas Brasini} ha sviluppato le seguenti parti in maniera autonoma:
+
+        \begin{itemize}
+        \item \textbf{Generale}
+        		\begin {itemize}
+		\item Configurazione Trello.
+     	\end {itemize}
+
+     	\item \textbf{View}
+		\begin {itemize}
+		\item Creazione dell'interfaccia \texttt{PlayGame}.
+		\item Creazione dell'interfaccia grafica di gioco attraverso la classe \texttt{PlayGameController}.
+		\item Creazione della classe di Utils \texttt{PlayGameViewUtils}.
+		\item Caricamento e creazione di tutte le risorse grafiche della schermata di gioco.
+	\end {itemize}
+
+	\item \textbf{Attori}
+		\begin {itemize}
+		\item Creazione del \texttt{PlayerActorClient}.
+		\item Creazione del \texttt{ReplayActor}.
+		\item Creazione del \texttt{ViewerActor}.
+		\item Creazione di \texttt{GameController}, il controller dei tre attori sopraindicati.
+		\item Creazione dell'oggetto \texttt{ClientMessages}, il recipiente dei messaggi utilizzati dai tre attori sopraindicati e dal \texttt{GameActor}, realizzato dal collega Jakova.
+		\end{itemize}
+
+     \end {itemize}
+
+     \clearpage
+
+     \subsubsection{Generale}\label{subsub:brasini:general}
+     Per quanto riguarda la parte generale, lo studente Brasini si è occupato della gestione e dell'aggiornamento della dashboard di \textbf{Trello}, uno degli strumenti scelti nella fase iniziale come supporto per l'organizzazione dei diversi item. In particolare lo studente ha studiato la struttura che più si adattava alle necessità del team, realizzando tre schede:
+
+     \begin{itemize}
+     \item \textbf{Cose da fare}. All'interno di questa sezione venivano aggiunti, nel corso degli incontri settimanali, tutti gli item pattuiti e che sarebbero dovuti essere portati a termine entro la settimana successiva. All'interno di questa sezione era possibile modificare i dettagli dell'item. In particolare si è scelto di assegnare un'etichetta colorata a ciascun membro, per riconoscere più facilmente gli item di appartenenza, oltre ad una descrizione generica e ad una \textit{checklist} che sarebbe stata generata sulla base degli obiettivi del singolo membro. Infine si è scelto di collegare la propria \textit{feature} tramite GitHub in maniera tale da poter visualizzare, all'interno della scheda relativa all'item, gli ultimi \textit{commit} effettuati dagli studenti. In questo modo ci siamo resi conto di quanto fosse utile poter visualizzare in maniera così rapida le modifiche effettuate dagli altri componenti del team nel caso di eventuali integrazioni comuni.
+    \item \textbf{In esecuzione}. All'interno di questa sezione venivano aggiunti gli item che effettivamente erano in produzione in quell'istante. In questo modo siamo riusciti a mantenere la dashboard ordinata sulla base dei compiti che stavamo attualmente portando avanti.
+    \item \textbf{Fatto}. All'interno dell'ultima sezione venivano inseriti tutti gli item portati a termine. Per una maggior chiarezza, lo studente Brasini ha optato per ordinarli manualmente sulla base delle etichette, per cui era possibile visualizzare in maniera ordinata tutti gli item portati a termine da un certo studente senza bisogno di dover navigare la sezione con difficoltà.
+    	\end{itemize}
+
+     	  \begin{figure}[!tbh]
+ 	 \includegraphics[width=\linewidth]{trello_dashboard.png}
+ 	 \caption{Dashboard di Trello.}
+  	\label{fig:trello_dashboard}
+	\end{figure}
+
+     \clearpage
+
+     \subsubsection{View}\label{subsub:brasini:view}
+     Per quanto riguarda la gestione della \textbf{View}, lo studente Brasini si è occupato, nel corso delle prime due settimane di lavoro, della realizzazione dell'interfaccia grafica del gioco mediante l'utilizzo di \textbf{JavaFX}. Prima di progettare i singoli componenti all'interno della schermata però, è stata realizzata l'interfaccia \texttt{PlayGame}, implementata successivamente dal controller \texttt{PlayGameController}, che si è rivelata molto utile per poter aiutare lo studente Jakova nelle sue mansioni da Controller all'interno della suddivisione MVC. Una volta fatto ciò, lo studente ha preso familiarità con lo strumento \textit{SceneBuilder}, attraverso il quale ha realizzato l'effettiva schermata di gioco che verrà poi riutilizzata anche per le modalità di \textbf{Spettatore} e di \textbf{Replay}. Per poter visualizzare correttamente tutte le immagini della schermata, caricata da risorse esterne allo strumento utilizzato, lo studente ha dovuto studiare una modalità di caricamento che permettesse all'applicazione di poter visualizzare correttamente le immagini anche all'interno del file \texttt{.jar}. Al termine della realizzazione dell'interfaccia, lo studente si è servito dell'aiuto del plugin \textit{CheckStyle} per rimuovere tutti i \textit{warning} segnalati all'interno del codice.
+
+	\begin{itemize}
+	\item \texttt{PlayGame}.
+	L'interfaccia è stata definita per poter essere implementata dal \\ \texttt{PlayGameController}. All'interno di questa interfaccia sono stati dichiarati i principali metodi come ad esempio \texttt{getCardsFirstPlayer} e \texttt{showPlayersPlayedCard} e relativa documentazione \textit{Javadoc}. In questo modo si è cercato di mantenere un certo ordine all'interno della classe \texttt{PlayGameController}, che ha implementato tutti i metodi dell'interfaccia.
+
+	\item \texttt{PlayGameViewUtils}.
+	All'interno di questa classe sono state inserite, sotto forma di costanti, tutte quelle variabili come ad esempio stringhe ed interi utilizzate all'interno della classe \texttt{PlayGameController} e relativi getter statici. In questo modo è stato possibile utilizzare queste variabili (che in un futuro potrebbero anche essere utilizzate da altre classi) all'interno del controller della schermata senza \textit{sporcare} il codice del controller. E' stata mostrata particolare attenzione nei confronti della pulizia del codice, considerando soprattutto l'utilizzo dei \textit{magic number}.
+
+	\item \texttt{PlayGameController}.
+	 Questa classe è stata, in assoluto, quella che ha richiesto maggior sforzo: da un lato è stato complicato riuscire a progettare una schermata per un'applicazione così dinamica, al cui interno  diversi componenti andavano modificati nel corso di tutta la partita, dall'altro è stato impegnativo riuscire a mantenere il codice pulito per quanto un controller di una \textit{GUI} non possa essere eccessivamente ingegnerizzato. In prima battuta, quello che è stato fatto, è stato implementare l'interfaccia \texttt{PlayGame} e i relativi metodi. A quel punto lo studente ha iniziato a lavorare attraverso lo strumento \textit{SceneBuilder} integrato all'interno dell'IDE \textit{IntelliJ}. In linea di principio, quello che è stato fatto è stato cercare da subito la possibilità di avere una schermata \textit{responsive} e che si potesse adattare alle dimensioni di qualunque schermo. Per poter ottenere questo risultato, si è scelto di avere come base un \texttt{AnchorPane} che, grazie alla sua proprietà che permette di impostare i \textit{constraint} della schermata, consentisse all'utente di poter ridimensionare la finestra a suo piacimento con il riposizionamento di tutti i componenti. Fatto ciò, lo studente ha iniziato ad implementare i componenti per la gestione delle carte: dovendo visualizzare come scoperte solamente le carte del player, si è scelto di ridurre la dimensione di quelle degli avversari e del compagno e di dare maggior risalto alle proprie. Ad ogni carta corrisponde un'\texttt{ImageView} che, se cliccata, scatena l'handler \texttt{clickedCard} che permette di comunicare l'indice della carta cliccata al controller (questi dettagli verranno trattati più approfonditamente in seguito). Ogni giocatore manterrà una lista per tutti i giocatori contenente i riferimenti alle \texttt{ImageView}. Nel momento in cui una carta viene cliccata, essa viene eliminata dalla mano dell'utente che l'ha giocata (e dunque anche dalla relativa lista) e viene posizionata in mezzo al campo, che conterrà dunque quattro ulteriori \texttt{ImageView}, una per ogni giocatore (vedi Figura 3). Inizialmente queste quattro \texttt{ImageView} saranno popolate da \textit{placeholder} che contornano la zona di nero, mentre successivamente a turno diverrà dorato nel momento in cui il relativo giocatore dovrà giocare una carta salvo poi essere rimpiazzato dalla stessa carta giocata. Dopo aver gestito e implementato la visualizzazione e gli eventi collegati alle carte, si è deciso di iniziare a lavorare sulla scelta della briscola e sulla possibilità di visualizzare, di turno in turno, la briscola corrente. Per la scelta della briscola sono stati inseriti quattro \texttt{Button} sopra alle carte del player: il click di uno dei bottoni permette la comunicazione della scelta al controller e l'immediata scomparsa dei quattro bottoni (vedi Figura 2). Dopo che la briscola è stata selezionata, verrà visualizzato un \texttt{Text} che conterrà la briscola corrente. Fatto ciò, lo studente è passato allo studio di come poter mostrare i diversi comandi all'interno della schermata. Prima di tutto sono stati aggiunti ulteriori tre \texttt{Button} che permettessero di poter selezionare il comando desiderato; successivamente sono state inserite quattro \texttt{ImageView}, una per ogni giocatore, dove verranno mostrate le immagini relative al comando selezionato (ad esempio se il player 1 cliccasse il bottone \textit{Busso}, all'interno della sua schermata verrebbe visualizzata l'immagine di una nuvoletta con all'interno il comando selezionato, mentre nelle schermate degli altri player verrebbe visualizzata la stessa immagine però in corrispondenza del giocatore che ha selezionato il comando). Fatto ciò, lo studente ha inserito delle animazioni per poter visualizzare il punteggio alla fine di ogni turno e due \texttt{Text} nella parte alta della schermata per poter visualizzare il punteggio corrente nel corso della partita, oltre ad una \texttt{ImageView} che visualizzasse, sotto forma di animazione, l'immagine di vittoria/sconfitta alla fine della partita. Infine sono stati aggiunti quattro \texttt{Text} per indicare gli username dei quattro player in partita, ed un \texttt{Text} iniziale che comunichi all'utente che si stanno ancora attendendo giocatori per poter iniziare la partita.
+
+	\clearpage
+
+	\begin{figure}[h!]
+  	\centering
+   	 \includegraphics[width=0.8\textwidth]{playGameView1.png}
+    	\caption{Scelta della briscola}
+   	 \includegraphics[width=0.8\textwidth]{playGameView2.png}
+ 	 \caption{Partita iniziata}
+	\end{figure}
+
+	\end{itemize}
+
+     \clearpage
+
+
+      \subsubsection{Attori}\label{subsub:brasini:actors}
+     Dopo aver terminato la parte relativa alla View, lo studente Brasini, assieme al collega Jakova, si è occupato dell'integrazione totale della versione \textit{core} del gioco (di questo se ne discuterà nei paragrafi successivi relativi al lavoro svolto in cooperazione). A questo punto il team ha iniziato a lavorare alla seconda macro-fase del progetto: dopo la versione \textit{core}, il team ha iniziato ad affrontare il problema della distribuzione. Nella fattispecie, l'incarico principale assegnato a Brasini è stato quello di dover realizzare il \texttt{PlayerActorClient}, ovvero l'attore che avrebbe dovuto gestire la comunicazione con la schermata di gioco e il \texttt{GameActor}, attore realizzato dal collega Jakova che aveva come compito quello di comunicare ai quattro \texttt{PlayerActorClient} in gioco la distribuzione delle carte, il turno e tutte le altre informazioni relative alla partita. Per poter creare quest'attore, Brasini si è consultato con Jakova per un \textit{planning} piuttosto impegnativo, all'interno del quale hanno stabilito tutti i messaggi che sarebbero stati scambiati tra \texttt{PlayerActorClient} e \texttt{GameActor}. Il risultato di questa discussione ha dato vita all'oggetto \texttt{ClientMessages}. Oltre a questo, i due membri del team hanno stabilito anche di fare un uso intensivo del pattern \texttt{Publish-Subscribe} per la comunicazione tra gli attori, ma anche questa tematica sarà rinviata alla sezione in cui si discuteranno le parti sviluppate in comune. Dopo un'iniziale fase di studio, lo studente Brasini ha deciso di voler sfruttare una variante del pattern \texttt{Mediator} per poter mettere in comunicazione la GUI e l'attore: a tal proposito è stata realizzata la classe \texttt{GameController} con l'obiettivo di rendere più trasparente e pulita la comunicazione tra queste due entità. Una volta terminato il \texttt{PlayerActorClient}, lo studente Brasini ha iniziato a lavorare ad altri due attori fondamentali all'interno dell'economia del gioco. Si tratta del \texttt{ViewerActor} e del \texttt{ReplayActor}, gli ultimi due compiti che hanno impegnato lo studente prima della revisione finale delle proprie implementazioni. Come si evince dal codice, quello che è stato fatto è stato applicare il principio \textit{DRY} e il \textit{KISS}: lo studente è riuscito a riutilizzare lo stesso \texttt{GameController} sviluppato per il \texttt{PlayerActorClient} anche per gli altri due attori, a fronte di qualche piccola revisione che però non ha decisamente avuto alcun impatto pesante sulla prosecuzione del lavoro.
+
+     \begin{itemize}
+     \item \texttt{ClientMessages}.
+     Quest'oggetto è il risultato della totalità di messaggi che vengono utilizzati dal \texttt{GameActor}, dal \texttt{PlayerActorClient}, dal \texttt{ViewerActor} e dal \texttt{ReplayActor}. Inizialmente lo studente aveva inserito all'interno del \textit{Companion Object} tutte le possibili \textit{case class} di messaggi, dal momento in cui risulta essere una \textit{best practice} nell'ambito dell'utilizzo del framework Akka. Successivamente però, essendosi reso conto che questi messaggi sarebbero dovuti essere condivisi tra più attori, si è scelto di inserirli all'interno dell'oggetto \texttt{ClientMessages}. Ogni messaggio è stato pensato per una funzionalità ben precisa e concetti che potenzialmente sarebbero potuti essere inseriti all'interno dello stesso messaggio sono comunque stati suddivisi in più messaggi per poter mantenere il codice quanto più chiaro possibile. Ogni messaggio è rappresentato all'interno di una \textit{case class} ed estende il più generico \texttt{ActorMessage}.
+
+     \item \texttt{PlayerActorClient}.
+     Dopo la complessità affrontata per realizzare la GUI, è questo l'attore che ha probabilmente richiesto il maggior numero di ore prima di poter essere completato. Esso rappresenta il giocatore stesso che decide di affrontare una partita. Nel momento in cui il player decide di giocare ed apre dunque la schermata relativa ad un incontro, verrà creato di conseguenza il relativo \texttt{PlayerActorClient}, che prenderà in ingresso due parametri: il primo è l'oggetto \texttt{GameController} che servirà per comunicare i messaggi alla GUI, mentre il secondo rappresenta l'username scelto dal player. Il \texttt{PlayerActorClient} estende il \textit{trait} \texttt{ClientGameActor} e implementa la funzionalità \texttt{Stash}. Se il giocatore non si è registrato, verrà creato di default un numero random che verrà utilizzato come username del giocatore stesso. All'esterno del \texttt{PlayerActorClient} è stato realizzato un \textit{Companion Object} che contiene tre variabili intere che vengono utilizzate come costanti. Per poter ingegnerizzare al meglio questo attore, lo studente Brasini all'interno del metodo \texttt{receive}, tipico di tutti gli attori, ha inserito tutti i possibili \texttt{case} relativi ai messaggi che sarebbero potuti giungere all'attore. A questo proposito ha preferito creare dei piccoli metodi privati \textit{ad hoc} richiamati all'interno dello specifico \texttt{case} che svolgessero la reale computazione per non appesantire troppo il metodo \texttt{receive} e per mantenere più ordinato e comprensibile il codice. Come constatato in apertura del paragrafo relativo agli attori, Brasini ha fatto un uso intensivo del pattern \texttt{Publish-Subscribe} per poter dialogare in maniera nettamente più efficiente con il \texttt{GameActor}. Nel momento in cui viene istanziata la lobby infatti, l'attore riceverà un messaggio di tipo \texttt{IdChannelPublishSubscribe} che avrà come parametro l'ID della partita, che automaticamente diventerà anche l'ID del topic al quale iscriversi per poter ricevere tutte le comunicazioni dal \texttt{GameActor}. In questo modo Jakova e Brasini hanno notevolmente ridotto la complessità relativa all'invio del messaggio da parte del \texttt{GameActor} e lasciato il controllo di quali messaggi prendere in considerazione ai diversi \texttt{PlayerActorClient} sulla base del destinatario del messaggio. Una delle feature del \texttt{PlayerActorClient} era quella di, una volta ricevuto il messaggio di tipo \texttt{PlayersRef} all'interno del quale era contenuta la lista dei quattro giocatori della partita, riuscire a riordinare la lista inserendo se stesso come primo elemento e successivamente gli altri tre giocatori senza però perdere il riferimento all'ordine con il quale la lista era stata ricevuta, altrimenti sarebbero stati sbagliati gli assegnamenti del compagno e degli avversari all'interno della schermata di gioco. Per fare ciò Brasini si è avvalso dell'utilizzo del \textit{for comprehension}, zucchero sintattico per poter andare ad analizzare tutti gli elementi presenti all'interno della lista. Oltre a questo, lo studente ha fatto uso intensivo della \textit{postfix notation} dove concesso dal checker di IntelliJ, soprattutto per quanto riguarda l'invio di messaggi e la concatenazione di liste. A questo proposito si sono utilizzati con profitto anche gli \textit{impliciti} relativi ai mittenti dei messaggi di Akka, evitando ridondanti espressioni e codice superfluo ripetuto. Nel momento in cui la partita dovesse terminare, l'attore molto semplicemente invierebbe a se stesso un \texttt{PoisonPill} che in maniera del tutto trasparente gli permetterà di potersi uccidere. Nel caso in cui un player decidesse di chiudere la schermata durante una partita o nel caso in cui dovesse saltare la connessione, il risultato sarebbe la notifica di un messaggio di tipo \texttt{notifyClosedGame} nei confronti del \texttt{GameActor} che automaticamente assegnerà la vittoria al team avversario.
+
+     \item \texttt{GameController}.
+    Si tratta di una classe che inizialmente non era stata prevista. Essa permette di poter far dialogare in maniera del tutto trasparente il \texttt{PlayerActorClient} (ma come vedremo in seguito anche gli altri due attori) con il \texttt{PlayGameController} che gestisce la schermata di gioco. Questa soluzione prevede dunque l'utilizzo del pattern \texttt{Mediator} in una versione rivisitata, dal momento che quella originale prevederebbe l'utilizzo di due oggetti (che rappresentano le due entità che devono comunicare) all'interno del controller ma essendo inseriti nel contesto degli attori, non si è potuto realizzare per ovvi motivi un oggetto di tipo \texttt{PlayerActorClient}. La classe \texttt{GameController} viene creata nel momento in cui il player decide di giocare una partita, prende in ingresso il riferimento al \texttt{ClientController} per poter dialogare con il \texttt{PlayerActorClient} ed estende il trait \texttt{MatchController}, che a sua volta estende il trait \texttt{ActorController} il quale fornisce i due metodi che dovranno essere implementati: \texttt{createActor} e \texttt{updateGUI}. In particolare quest'ultimo metodo si è rivelato essere fondamentale dal punto di vista dell'ingegnerizzazione della classe: tutti i messaggi ricevuti dal \texttt{PlayerActorClient} infatti verranno inseriti all'interno della chiamata a questo metodo, il quale attraverso i \texttt{case} riuscirà a smistarli all'interno dei piccoli metodi privati presenti nella classe. Questa scelta è stata operata per una duplice motivazione: in primis in questo modo il codice risulta nettamente più chiaro ed ordinato, ed in secondo luogo non sarà complicato in un ipotetico futuro andare ad inserire ulteriori messaggi in invio/ricezione e relativi metodi implementativi. In sintesi questa classe permette la comunicazione tra il \texttt{PlayerActorClient} e il \texttt{PlayGameController}, senza che questi vengano mai a contatto diretto mantenendo trasparenza all'interno della comunicazione stessa (vedi Figura 4).
+
+    \begin{figure}[!tbh]
+    \centering
+ 	 \includegraphics[width=\linewidth]{patternMediatorGameController.png}
+ 	 \caption{Comunicazione tra le tre entità.}
+  	\label{fig:pattern_mediator}
+	\end{figure}
+
+     \clearpage
+
+     \item \texttt{ViewerActor}.
+     Giunti a questo punto, lo studente aveva già realizzato il \texttt{PlayerActorClient} e il \texttt{GameController}, senza sapere che avrebbe poi sviluppato il \texttt{ViewerActor}. Una delle sorprese più piacevoli è stata quella, dopo aver studiato per diverse ore una possibile implementazione efficiente dell'attore, di non dover creare un ulteriore \texttt{Controller} ma di poter riutilizzare il \texttt{GameController} analizzato nel paragrafo precedente. Da un lato questa soluzione si è tradotta in un minor carico di lavoro per lo studente, dall'altra ha sottolineato la bontà della costruzione del \texttt{GameController} e il suo conseguente riutilizzo. Il \texttt{ViewerActor} ha come scopo quello di gestire un player, che potrà essere loggato oppure no, che decide di prendere parte ad una partita in veste di spettatore. Verrà dunque creato nel momento in cui il player deciderà quale partita seguire (identificata da un ID) e verrà costruito passandogli un oggetto di tipo \texttt{GameController} e il suo username. Per questioni di semplicità, il giocatore non avrà la possibilità di scegliere quale player "impersonare", bensì gli verrà assegnato il primo della lista che riceverà dal \texttt{GameActor}. Esattamente come successo al \texttt{PlayerActorClient}, anche a questo attore verrà comunicato, attraverso un messaggio di tipo \texttt{IdChannelPublishSubscribe}, l'ID del canale al quale iscriversi, cosicché attraverso il pattern \texttt{Publish-Subscribe} possa seguire ogni mossa dei giocatori impegnati nella partita e notificarla al proprio \texttt{GameController}. Il vero problema di questo attore, che lo differenzia rispetto ad un player classico, è il seguente: esso può decidere di visualizzare una partita che è già cominciata, per cui al contrario dei \texttt{PlayerActorClient} dovrà poter inserirsi all'interno della stessa partita ricevendo un messaggio che vada ad effettuare un \textit{recap} della situazione attuale, come ad esempio le carte rimaste in mano ai giocatori, il punteggio e la briscola corrente. Per risolvere questo problema, lo studente ha deciso di costruire un nuovo tipo di messaggio, il \texttt{RecapActualSituation}, che comunicasse all'attore la situazione della partita. Fino a quando l'attore non avesse ricevuto quel tipo di messaggio, non avrebbe potuto comunicare alcuna informazione al proprio \texttt{GameController} sebbene fosse in ascolto sul canale della gara. Per poter risolvere questa situazione con una soluzione brillante, Brasini ha deciso di servirsi del costrutto \texttt{become}, che permette all'attore di rimanere in attesa di uno specifico messaggio e, solamente una volta ricevuto, poter procedere e prendere in considerazione anche altre tipologie di messaggi (vedi Figura 5). Così come successo con il \texttt{PlayerActorClient}, anche in questo caso lo studente ha preferito separare l'implementazione (inserita all'interno di specifici micro-metodi) dalla ricezione dei messaggi all'interno della \texttt{receive} dell'attore per mantenere più ordinato, pulito e comprensibile il codice.
+
+
+         \begin{figure}[!tbh]
+    \centering
+ 	 \includegraphics[width=\linewidth]{sequenceDiagramViewerActor.png}
+ 	 \caption{Sequence diagram del ViewerActor}
+  	\label{fig:viewer_actor}
+	\end{figure}
+
+
+	\clearpage
+
+
+     \item \texttt{ReplayActor}.
+     L'ultimo impegno implementativo per lo studente è stato quello del \\ \texttt{ReplayActor}. La costruzione dell'attore è stata abbastanza simile a quella dei due precedenti attori, ma in questo caso si è dovuto risolvere il problema di come visualizzare il replay. Le possibilità ipotizzate erano due: o inserire all'interno della schermata un bottone che, ogni volta premuto, avrebbe mandato avanti il gioco di una mossa, oppure utilizzare uno \textit{scheduler} interno predefinito che esortasse l'attore a inviare, ogni tot millisecondi, il messaggio relativo alla mossa eseguita al \texttt{GameController} che l'avrebbe poi notificata al \texttt{PlayGameController}. Alla fine lo studente ha optato per la seconda possibilità dopo aver studiato e imparato ad implementare lo scheduler interno di \textbf{Akka}: esso richiede di impostare il momento in cui partire, il messaggio da inviare all'attore e l'intervallo di tempo ogni cui questo messaggio deve essere inviato. In fase di costruzione l'attore prendeva in ingresso l'oggetto \texttt{GameController}, il proprio username e l'oggetto di tipo \texttt{Game}, il vero contenitore di tutte le mosse della partita salvata su database. L'unico messaggio che l'attore era predisposto a ricevere era un messaggio di tipo \texttt{SendHeartbeat}, inserito come case class all'interno del \textit{Companion Object} dell'attore insieme ad altre costanti utilizzate in seguito. Questo tipo di messaggio, abbinato ad un \textit{pattern matching} su una variabile di tipo \texttt{ReplayActorStatus} inizializzata a \texttt{PRE\_SET}, permetteva di capire quale dei metodi dell'attore andare a richiamare. Ancora una volta, per avere una maggior chiarezza e un codice più pulito possibile, si è scelto di realizzare un oggetto \texttt{ReplayActorStatus} al cui interno sono stati definiti dei \textit{case object} che rappresentassero lo stato del contatore. I possibili stati erano:
+
+     \begin {itemize}
+
+     \item \texttt{PRE\_SET}. Questo stato rappresentava lo stato iniziale in cui l'attore doveva ricadere per poter iniziare il replay della partita. All'interno della \texttt{receive}, se il \texttt{gameCounter} fosse risultato essere uguale a questo stato, sarebbe stato chiamato il metodo \texttt{computePreSet} (e così anche per gli stati successivi che richiameranno i relativi metodi). All'interno di questo metodo si sarebbe andato ad analizzare l'oggetto di tipo \texttt{Game} passato come parametro all'attore e si sarebbe ricavata la lista dei quattro giocatori della partita, inviata poi al \texttt{GameController} secondo le modalità analizzate in precedenza. Fatto ciò, si sarebbe impostato il contatore allo stato successivo.
+
+     \item \texttt{START\_SET}. Questo stato è quello che rappresenta la fase successiva dello stato \texttt{PRE\_SET}. In virtù di questo stato verranno recuperati i punteggi del turno di entrambi i team, la briscola corrente e tutte le carte in mano al player che questo attore impersona. In quest'ultimo passaggio si è resa necessaria la creazione del path della carta per poter inviare al \texttt{GameController} una lista dei path delle carte in mano al primo player, così da essere pronte per essere caricate all'interno della schermata di gioco. Nel metodo relativo a questo messaggio, il \texttt{computeStartSet}, verranno dunque inviati al \texttt{GameController} la briscola, le carte del primo giocatore e i due punteggi del turno. Fatto ciò, verrà incrementato il contatore che passerà allo stato successivo e infine verranno incrementate anche le variabili relative alle mani e ai turni, cosicché al turno successivo si potrà procedere con l'acquisizione delle nuove giocate.
+
+   \item \texttt{TURN\_SET}. Questo stato rappresenta la fase successiva dello stato precedente. In questo caso verrà invocato il metodo \texttt{computeTurnSet} al cui interno verrà inviato al \texttt{GameController} il messaggio relativo a quale giocatore dovrà giocare la prossima carta. Fatto questo, si imposterà lo stato a quello successivo.
+
+     \item \texttt{MIDDLE\_SET}. In virtù di questo stato verrà invocato il metodo \texttt{computeMiddleSet}, che avrà come compito quello di recuperare la carta giocata da un giocatore, convertirla in path ed inviarla al \texttt{GameController}. Fatto ciò, si cercherà di incrementare la mossa successiva: se questa risultasse essere vuota, allora si imposterà il contatore allo stato \texttt{TURN\_SET} per poter procedere con il nuovo set; se anche questa operazione non fosse portata a termine, significherebbe che sono già state giocate le quaranta carte di quel turno e allora si imposterebbe il contatore allo stato \texttt{END\_SET}.
+
+     \item \texttt{END\_SET}. Si verrà a contatto con questo stato ogni qualvolta verranno giocate quarantra carte. Verrà chiamato il metodo \texttt{computeEndSet} che tenterà di incrementare la variabile relativa al turno per passare al successivo. Se questa operazione verrà portata a termine, allora significa che la partita non è ancora finita, si invierà un messaggio con i due punteggi al \texttt{GameController} e si imposterà il contatore a \texttt{START\_SET} per cominciare il nuovo turno. In caso contrario, significa che la partita è terminata, per cui si invierà un messaggio al \texttt{GameController} segnalando il team vincitore della partita. In questo caso verrà impostato il contatore a \texttt{END\_GAME}.
+
+     \item \texttt{END\_GAME}. Si tratta dell'ultimo stato disponibile, che rappresenta la fine della partita. Nel momento in cui verrà invocato il relativo metodo \texttt{computeEndGame}, quello che farà l'attore sarà semplicemente inviarsi un messaggio di tipo \texttt{PoisonPill} per uccidersi. A quel punto la schermata del Replay verrà chiusa e si tornerà alla precedente.
+
+
+          \end{itemize}
+
+
+     \end{itemize}
+
+
+
+
+     \clearpage
+        \subsection{Gjulio Jakova}\label{subsec:jakova}
+
+ Per quanto riguarda il progetto \textbf{Maraph-1}, lo studente \textbf{Gjulio Jakova} ha sviluppato le seguenti parti in maniera autonoma:
+
+        \begin{itemize}
+        \item \textbf{Core}
+        		\begin {itemize}
+		\item 	Controller e implementazione di \texttt{Player}(Model) in una prima versione non-distribuita del gioco.
+     	\end {itemize}
+
+     	\item \textbf{Server}
+		\begin {itemize}
+		\item Creazione attore \texttt{GameActor} per la gestione di tutte le partite.
+		\item Adattamento del pattern \texttt{Distributed Publish-Subscribe} nel Cluster e gestione dello stashing dei messaggi nel \texttt{GameActor} e \texttt{PlayerClientActor}.
+	\end {itemize}
+
+	\item \textbf{View}
+		\begin {itemize}
+		\item Implementazione della schermata iniziale di autenticazione (login e registrazione).
+		\item Implementazione della schermata dell’utente loggato.
+		\item Implementazione della schermata dell’utente non-loggato.
+		\item Caricamento di tutte le risorse grafiche per le tre schermate precedenti.
+		\item Aggiunta di stile ai componenti di ciascuna schermata.
+		\end{itemize}
+
+     \end {itemize}
+
+ \subsubsection{Core}\label{subsub:jakova:core}
+    Nel primo sprint dove l’obiettivo principale era la realizzazione di una prima versione non-distribuita del gioco con tutte le regole di Marafone seguendo il pattern\texttt{ MVC}, lo studente Jakova si è occupato del Controller e dell’implementazione del \texttt{Player} nel Model. Nel Controller il compito era gestire gli eventi che arrivavano dalla View come la carta scelta, la scelta della briscola, i comandi scelti dai giocatori (busso, striscio o volo) eseguendo delle operazioni che potevano interessare al Model. Lo stesso discorso anche dall’altro lato, dove il Model forniva dei dati da comunicare alla View, come ad esempio la distribuzione delle carte, i turni, il vincitore della mano ecc.
+
+ \subsubsection{Server}\label{subsub:jakova:server}
+A partire dal secondo sprint, dove l’obiettivo era che il sistema avesse un’architettura distribuita, lo studente si è occupato della creazione dell’attore \texttt{GameActor}. L’attore \texttt{GameActor} viene creato appena dentro la lobby ci sono i quattro giocatori, e permette di gestire più partite in contemporanea, ovvero ogni partita sarà gestita da un singolo GameActor. Valutando bene quale poteva essere la scelta giusta per la comunicazione real-time server-client (\texttt{GameActor} – \texttt{PlayerClientActor}) si è deciso di utilizzare gli strumenti che \textbf{Akka Cluster} metteva a disposizione. Questa scelta è stata fatta anche per il fatto che il toolkit \textbf{Akka} lo conoscevamo già. L’altro motivo era anche per il fatto che il clustering porta la trasparenza della posizione al livello successivo. L'attore potrebbe esistere localmente o in remoto e potrebbe risiedere ovunque nel cluster; il nostro codice non deve preoccuparsi di questo. Invece per lo scambio di messaggi tra gli attori è stato deciso di utilizzare il design pattern \textbf{Publish/Subscribe} che ci forniva un approccio di notifica/comunicazione asincrona fra i diversi attori. Il funzionamento del pattern \textbf{Publish/Subscribe} è semplice: mittenti e destinatari di messaggi dialogano attraverso un \textit{topic}(canale), al quale bisogna iscriversi per poter ricevere i messaggi. Il mittente di un messaggio (detto \textit{publisher}) non deve essere consapevole dell'identità dei destinatari (detti \textit{subscriber}); esso si limita a "pubblicare" il proprio messaggio nel topic. Nel caso di Akka quello che fa da tramite viene chiamato \textit{mediator}. Un subscriber è libero di “abbonarsi” alla ricezione di messaggi aventi certe caratteristiche. Questo schema implica che ai publisher non sia noto quanti e quali siano i subscriber e viceversa. Questo può contribuire alla scalabilità del sistema. Nel nostro caso questo pattern è stato molto utile poiché avevamo un \texttt{GameActor}(responsabile della partita) che aveva il ruolo di publisher e altri attori come \texttt{PlayerClientActor}(responsabile di un singolo giocatore), \texttt{ViewerActor}(responsabile del giocatore spettatore) che avevano il ruolo di subscriber e che si mettevano in ascolto sul canale, aspettandosi tipi di messaggi diversi, in attesa che il \texttt{GameActor} comunicasse qualcosa. Il pattern ha fatto sì che il \texttt{GameActor} non mandasse ogni volta un messaggio a ciascun giocatore, quindi in totale quattro messaggi ogni volta, ma soltanto un messaggio che tutti i giocatori che erano in ascolto sul topic avrebbero ricevuto. Un altro problema negli attori era la sequenza precisa dei messaggi che doveva ricevere, ossia quando l'attore è in attesa di qualcosa da completare prima di elaborare il prossimo messaggio. In Akka, lo \textit{stashing} dei messaggi consente a un attore di bufferizzare temporaneamente tutti o alcuni messaggi che non possono o non devono essere gestiti utilizzando il comportamento corrente dell'attore. Nel nostro caso per fare sì che tutti i giocatori (attore e view corrispettivo) fossero allo stesso passo, abbiamo introdotto un altro tipo di messaggio di conferma (\texttt{Ack}) in modo che il \texttt{GameActor} non potesse andare avanti senza aver ricevuto la conferma di avvenuta ricezione da parte di tutti i giocatori, la qual cosa avrebbe implicato che nessun messaggio fosse andato perso.
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.7\textwidth]{actorsMsgSeq.png}
+   \caption{Un esempio della sequenza di scambio dei messaggi}
+\end{figure}
+
+Sempre nel \texttt{GameActor} viene gestita la creazione di un messaggio di \textit{recap}, contenente una serie di strutture dati, che servirà al \texttt{ViewerActor} per essere aggiornato con le mosse fatte prima che lui cominci a guardare la partita. Lo studente ha fatto uso del pattern \texttt{Strategy} nei metodi \textit{impliciti} (per esempio nel metodo che restituisce alla view i path di tutte le carte da poter visualizzare), di \texttt{PartialFunction} (nella receive dei messaggi). Sono state utilizzate anche funzionalità avanzate di Scala, come la \textit{for comprehension}, \textit{postfix notation}(nell'invio dei messaggi) ed il \textit{pattern matching} per rendere il codice il più semplice e leggibile possibile.
+
+ \subsubsection{View}\label{subsub:jakova:view}
+    La view è stata realizzata utilizzando la libreria grafica \textit{JavaFX}, dove le diverse schermate sono state definite attraverso l’utilizzo dei file \textbf{.fxml} (linguaggio XML-based) che forniscono la struttura per costruire un'interfaccia utente separata dalla logica dell'applicazione del nostro codice. Lo studente ha realizzata la schermata di autenticazione dove login e registrazione si trovano all’interno di un unico \textit{Scene}, che è composta da semplici componenti di input, label e bottoni. In base alle risposte restituite dalle \textit{REST API} vengono mostrate alert di informazione (in caso di successo) e alert di errore (in caso di fallimento).
+
+Per quanto riguarda la gestione della logica di controllo della schermata, è stata definita la classe \texttt{RegistrationLoginController} in modo che la logica di controllo sia separata dall’implementazione della view stessa. All’interno di questa classe sono stati definiti tutti i comportamenti che si devono applicare al verificarsi di determinati eventi.
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.65\textwidth]{login.png}
+   \caption{Schermata iniziale}
+\end{figure}
+
+Poi lo studente ha realizzato anche le due schermate dell’utente loggato e non-loggato. Un utente loggato può giocare in modo \textit{competitivo} (con effetto sulla classifica) e \textit{non-competitivo} (nessun effetto sulla classifica), guardare una partita già finita (replay della partita), guardare una partita da spettatore, visualizzare la lista degli amici ed altri giocatori online, inviare una richiesta di amicizia, invitare un amico a giocare come partner o come avversario. Invece un utente non-loggato può soltanto giocare in modo non-competitivo e guardare una partita da spettatore.
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.8\textwidth]{generic.png}
+   \caption{Schermata dell'utente non-loggato }
+\end{figure}
+
+Componenti principali della scena sono bottoni, listView e comboBox che inizialmente non sono tutti visibili. In base a determinate situazioni certi componenti si abilitano o disabilitano in modo da evitare di avere più schermate.
+L’invio dell’amicizia o dell’invito per giocare scatena nella GUI dell’utente invitato un alert di conferma. In base alla risposta l’invitante vedrà apparire nella sua GUI una label con risposta che scompare dopo 5 secondi (con una chiamata asincrona per non bloccare la GUI).
+
+Anche qui la logica di controllo delle schermate è definita nelle classi \texttt{GenericGUIController} e \texttt{SocialGUIController} che gestiscono tutti i vari comportamenti che si devono applicare al verificarsi di determinati eventi. Entrambe le classi implementano l’interfaccia \texttt{BasicPlayerOptions} contenente le operazioni in comune che hanno i diversi tipi di utenti.
+
+Lo studente si è occupato anche di aggiungere lo stile a tutti i componenti delle varie schermate realizzate, in modo da avere un’interfaccia grafica attraente, semplice da usare e molto intuitiva grazie anche ai colori associati ai componenti (bottone e comboBox stesso colore). Questo è stato realizzato grazie a \textit{JavaFX} che permette di aggiungere lo stile \textit{CSS} a tutti i componenti.
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.8\textwidth]{social.png}
+   \caption{Schermata dell'utente loggato }
+\end{figure}
+
+        \subsection{Federico Naldini}\label{subsec:naldini}
+
+All'interno del progetto Maraph1-mp, mi sono occupato delle seguenti parti:
+\begin{itemize}
+	\item{\textbf{Generale}}
+	 \begin{itemize}
+	 	\item Configurazione di Gradle.
+	 	\item Configurazione di Scoverage.
+	 	\item Configurazione del parser CLI.
+	 \end{itemize}
+
+\item{\textbf{Core}}
+\begin{itemize}
+	\item Design e implementazione delle carte.
+	\item Definizione del concetto di mazzo.
+\end{itemize}
+
+\item{\textbf{Discovery}}
+\begin{itemize}
+	\item Design di dettaglio del discovery server.
+	\item Definizione e sviluppo della classe \texttt{DiscoveryServer}
+	\item Creazione delle strutture di supporto.
+\end{itemize}
+
+\item{\textbf{Client}}
+\begin{itemize}
+	\item Design di dettaglio dell'architettura client.
+	\item Creazione e implementazione di \texttt{RestWebClient}
+	\item Design, creazione e implementazione degli aspetti legati alle funzionalità social.
+	\item Gestione della creazione e scambio di schermate all'interno della GUI.
+\end{itemize}
+
+\end{itemize}
+
+\subsubsection{Generale}
+Soprattutto nel primo sprint, mi sono occupato della configurazione generale del progetto, andando a definire quali sarebbero stati i principali strumenti utilizzati a supporto della progettazione.
+Abbiamo scelto di utilizzare \textit{Git} come tecnologia di controllo versione, appoggiandoci a un repository remoto su \textit{Github}, di conseguenza è venuta naturale la scelta nell' utilizzare \textit{GitFlow} come modello di flusso di sviluppo, grazie anche alla presenza di valide estensioni per i principali IDE.
+Per quanto riguarda poi la configurazione di \textit{Gradle}, essa è stata portata avanti in maniera iterativa durante tutto lo svolgimento del progetto, le uniche difficoltà incontrate sono state relative alla configurazione del plugin \textit{SCoverage}, che è risultato particolarmente ostico da far eseguire direttamente dai tasks messi a disposizione da \textit{Gradle}
+Come libreria principale di testing, è stata configurata \textit{Scalatest}: questa scelta è dovuta a una maggiore familiarità con le modalità di test messe a disposizione da tale suit, ho portato però avanti anche sperimentazioni con un altra libreria di testing, ovvero \textit{ScalaCheck}, tuttavia nonostante le grandi potenzialità di tale suit, l'integrazione col plugin SCoverage risultava complessa e non banale, di conseguenza abbiamo scelto di scartare la libreria.
+Infine mi sono occupato della ricerca e configurazione di una libreria per il parsing dei comandi \textit{command line interface}, necessari per la configurazione dei vari server e client, scegliendo infine \href{https://github.com/scallop/scallop}{\textit{Scallop}}, libreria realizzata dall'utente \href{https://github.com/Rogach}{Rogach}.\\
+L'utilizzo di \textit{Scallop} è molto semplice, basta solamente definire una classe estendente \texttt{ScallopConf} e dichiarare al suo interno un numero di variabili uguale a quello dei parametri che interessa parsare da linea di comando, specificando per ciascuna di esse il tipo di dato che deve essere parsato; fatto ciò, è sufficiente istanziare un oggetto di tale classe e richiamare i metodi aventi lo stesso nome dei parametri a cui si desidera accedere, da linea di comando invece gli argomenti vanno passati seguendo lo schema "--nomevariabile valore" se si desidera inserire il parametro, non specificando nulla se lo si vuole lasciare vuoto.\\
+La libreria consente un grande insieme di ulteriori configurazioni e possibilità, ma il nostro utilizzo si è limitato solamente alle procedure sopradescritte.
+
+\subsubsection{Core}
+All'interno del package core, ho progettato e realizzato la parte che riguardava il mazzo di gioco e il calcolo dei punteggi.
+La scelta di racchiudere due concetti apparentemente diversi all'interno della stessa vista del modello non è casuale: il mio lavoro, contenuto all'interno del package \texttt{deck}, aveva come scopo quello di creare tutte le strutture e entità necessarie alla gestione della singola carta, avente quindi un numero, seme e punteggio, come previsto dalle regole del gioco.
+All'intero della figura 5.10 è riportato il diagramma delle classi del package \texttt{deck}:
+ \begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{deckArchitecture}
+	\caption{Architettura di dettaglio del package \texttt{deck}}
+\end{figure}
+All'interno di questo diagramma, gli elementi portanti sono:
+\begin{itemize}
+
+	\item{\textbf{GameDeck}}: interfaccia per esporre all'esterno del package una struttura compatta che offre tutte le funzionalità sviluppate all'interno di \texttt{deck}. Questa interfaccia mette a disposizione un mazzo di 40 carte mescolabile, divisibile in quattro liste da 10 carte ciascuna, inoltre permette di registrare il punteggio per ciascuna presa effettuata e di mantenere aggiornati i punteggi dei due team in partita.
+
+	\item{\textbf{ComposedDeck}}: implementa l'interfaccia \texttt{GameDeck}, tramite il pattern \texttt{Composite}, combinando un oggetto di classe \texttt{SimpleDeck} con uno di classe \texttt{ScoreCounter}
+
+	\item{\textbf{SimpleDeck}}: mantiene una sequenza di quaranta carte di cui può variare l'ordine o andare a suddividere in quattro liste da 10 carte ciascuna, ovvero le mani dei giocatori.
+
+	\item{\textbf{ScoreCounter}}: classe necessaria al mantenimento in memoria dei punteggi dei due team che stanno giocando la partita. Si appoggia a una tupla binaria composta da oggetti di classe
+	interna chiamata \texttt{ScoreTracker} a cui viene delegato il calcolo del punteggio guadagnato dal singolo team. Al fine di rispettare al massimo il principio \textit{DRY} ogni interazione tra la tupla di \texttt{ScoreTracker} e \texttt{ScoreCounter} avviene tramite un metodo privato interno chiamato \texttt{matchTeam}, a cui vengono passati il team su cui si deve attribuire una presa o un aumento di punteggio e una \texttt{Strategy} che specifica le operazioni da eseguire a seconda dell'evento da registrare: così la registrazione di una presa, l'attribuzione dei tre punti extra derivati da un eventuale Marafona e l'assegnamento del punto attribuito al team che ha effettuato l'ultima presa del set sono gestite in maniera agile e non ripetuta.
+
+	\item{\textbf{Card}}: modella il concetto di carta di gioco, definendo un seme e un valore.
+	Sono inoltre specificati due metodi booleani, \texttt{>} e \texttt{<} che confrontano il valore tra due carte secondo le regole previste dal gioco del Marafone.
+
+	\item{\textbf{Seed}}: un insieme statico di oggetti che rappresentano i quattro semi possibili per ogni carta di gioco, realizzato con una \textit{sealed trait}  e quattro \textit{case objects} che la estendono.
+
+	A mio dire, questa parte tra tutte quelle realizzate da me, è sicuramente la migliore dal punto di vista della \textit{code quality}: tutte le classi realizzate infatti sono state progettate seguendo al meglio i principi di design \textit{SOLID}, producendo quindi un codice il più possibile compatto, documentato e di facile lettura.\\
+	Inoltre questo package risulta avere una coverage veramente ottima, grazie a un vasto insieme di test progettati appositamente per raggiungere questo risultato.
+
+	\begin{figure}[H]
+		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{deckCoverage}
+		\caption{coverage del package \texttt{deck}}
+	\end{figure}
+
+
+\end{itemize}
+
+\subsubsection{Discovery}
+Il processo di analisi e definizione delle funzionalità e interazioni del discovery server è stato portato avanti insieme allo studente Riciputi, per quanto riguarda però il design di dettaglio e l'implementazione me ne sono occupato io nella loro totalità.
+Assieme allo studente Riciputi abbiamo definito il ruolo del discovery come punto centrale del sistema, assegnandogli la funzione di registro centralizzato per l'elenco di server, partite e giocatori online, abbiamo inoltre pensato al basilare algoritmo di \textit{load balance} descritto nel paragrafo 4.4, ben consci dei limiti della nostra soluzione.\\
+Passando poi ai dettagli di natura più implementativa, la maggior parte della complessità del discovery viene gestita a livello delle classi \texttt{DiscoveryServer} e \texttt{RegistryActor}, le altre tre strutture presenti nel package, \texttt{MatcheSet}, \texttt{SocialActorsMap} e\texttt{ServerMap} sono semplici wrapper per collezioni del linguaggio \textit{Scala} atte a mantenere traccia rispettivamente dell'elenco delle partite in esecuzione, la lista dei giocatori online e l'insieme dei server registrati nel sistema.
+\texttt{DiscoveryServer} e \texttt{RegistryActor} sono strutturate in maniera tale da combinare assieme elementi di buon design con efficacia nello svolgere i loro compiti: la prima non fa altro che sviluppare e esporre l'insieme delle risorse REST necessaria al funzionamento del discovery; tutto ciò avviene tramite il metodo \texttt{deployAPI}, dove per ogni \textit{REST API} dichiarata all'interno dell'oggetto \texttt{DiscoveryAPI} viene definita, tramite un apposito metodo handler, la procedura da gestire in seguito alla ricezione di tale richiesta, la maggior parte delle \texttt{API} esposte non fanno altro che andare a alterare le strutture riguardanti i server e le partite in esecuzione.
+Per quanto riguarda la lista dii giocatori online, ho scelto di procedere con un paradigma di comunicazione differente rispetto alle \textit{REST API}, trovandomi sempre io a sviluppare il lato client di questa funzionalità, come descriverò successivamente, ho ritenuto più opportuno evolvere la iniziale modalità di comunicazione, basata su \texttt{REST API} asincrone, in un canale \textit{Real Time} gestito da attori. Tale scelta è stata presa sulla base di voler garantire una migliore user experience agli utenti del sistema, permettendogli di visualizzare gli aggiornamenti della lista in tempo reale, dall'altro l'impatto che avrebbe avuto questo cambio nel paradigma di comunicazione sarebbe stato davvero minimale, visto che si trattava di convertire delle chiamate a risorse \textit{REST} in scambi di messaggi tra attori.\\
+Il paradigma di comunicazione implementato è ancora una volta \textit{Publish Subscribe} gestito da \textit{Akka Cluster}, \texttt{RegsitryActor} riceve messaggi di aggiunta e rimozione di attori da parte dei vari \texttt{SocialActor} in esecuzione sui vari client, a ogni aggiornamento della lista interna, viene inviato un messaggio sul canale contente l'aggiornamento, i \texttt{SocialActor} online e registrati sul topic del canale lo registreranno e elaboreranno.\\
+Unico nodo critico sta nel recuperare l'\texttt{ActorRef} del \texttt{RegistryActor} da parte dei \texttt{SocialActor} in esecuzione sui client: per facilitare questa operazione \texttt{DiscoveryServer} mette a disposizione una risorsa \textit{REST} che scatena l'invio di un messaggio di heartbeat a \texttt{RegistryActor} che provvede a notificare sul canale un messaggio contenente la propria \texttt{ActorRef} per permettere ai nuovi iscritti al canale di contattarlo direttamente.\\
+Per quanto riguarda la parte di testing, sono stati sviluppati un discreto numero di test, nonostante per le funzionalità più avanzate come il testing delle risorse \texttt{REST} io sia ricorso a soluzioni grezze, il codice risulta con buoni valori di coverage all'interno delle proprie classi.
+
+\subsubsection{Client}}
+Ultimo modulo di cui sono occupato è stato client, all'interno di questo package mi sono preso il compito di realizzare le controparti alle strutture di comunicazione esposte all'interno del discovery e dei vari server del sistema, inoltre ho progettato la struttura di controllo centralizzato a tutto il sistema, ovvero \texttt{ClientController}; soprattutto però ho realizzato l'intera parte social del sistema, parte che ha richiesto la maggior parte del mio sforzo, infine ho creato uno strumento di caricamento e scambio delle varie schermate all'interno della GUI.\\
+L'integrazione tra le risorse REST presenti sui diversi server e il singolo client non presentava una particolare complessità, le strutture offerte dalla libreria \textit{Vertx}, riadattate nel codice dello studente Riciputi, consentivano già un'implemetazione ben incapsulata e di qualità, tuttavia rimaneva presente un problema: per la maggior parte delle chiamate REST infatti serviva l'assegnamento di un server da contattare, fornito dal discovery, quindi per mantenere la trasparenza di tale problema alle strutture soprastanti occorreva in qualche modo riuscire a nascondere una chiamata al discovery per recuperare ottenere un server da1 contattare, la natura asincrona di questa chiamata complicava ulteriormente la già difficile situazione.\\
+Per venire a capo di questo problema, mi sono appoggiato alle potenzialità della programmazione funzionale: il punto di partenza è stata la separazione in diversi metodi dei vari passaggi necessari alla comunicazione con una risorsa remota, in particolare ho aggiunto un metodo di controllo dove se il server di comunicazione risulta presente, lo si contatta direttamente, altrimenti si esegue una chiamata al discovery andando a recuperare un server da contattare, nell'handler di questa richiesta ho poi specificato l'API da chiamare sul server una volta che la risposta è arrivata e i parametri da utilizzare in questa richiesta.
+Procedendo con lo sviluppo del sistema, ho notato che questa struttura poteva essere applicata ogni qualvolta si richiamasse un API da parte di un client e siccome erano presenti due punti ben precisi in cui serviva chiamare due gruppi di API differenti tra loro, ho deciso di applicare il pattern di progettazione \textit{template method} al fine di ottenere un codice di maggiore qualità.\\
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{RestWebClient}
+	\caption{Struttura di astrazione dei restClient all'interno del package \texttt{Client}}
+\end{figure}
+
+Ho creato così, come mostrato in figura 5.11, una classe astratta che specificava come \texttt{template method} un metodo dove all'interno di un \texttt{case match} venivano specificate le varie API possibili e gli handler alle loro risposte.
+\texttt{GeneralRestClient} e \texttt{SocialRestClient} implementano questo metodo astratto andando a specificare le API possibili e i loro handler, senza nessuna ulteriore implementazione da realizzare.
+Altra struttura decisamente utile all'interno del client è composta dalle classi \texttt{GuiLoader} e \texttt{GuiStack}, la cui ultima implementata come \textit{Singleton} all'interno del sistema, tali classi consentono, mediante una mappa di \texttt{scene} della libreria \textit{JavaFX} il caricamento dinamico e il cambio di schermata in maniera totalmente trasparente all'interno di ogni punto del sistema, basta semplicemente richiamare il metodo \texttt{setCurrentStage} a cui viene passato un oggetto statico in base alla scena da caricare e un oggetto controller a cui collegare quella scena, se necessita di essere creata.\\
+Come detto sopra, sicuramente la parte social è stata la più impegnativa da realizzare: nonostante la maggior parte delle strutture necessarie fossero già state definite, su alcuni punti, come il gioco cooperativo, le idee erano decisamente meno chiare.\\
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialArchitecture}
+	\caption{Diagramma delle classi della parte Social}
+\end{figure}
+
+In figura è possibile notare lo schema di base MVC già abbondantemente descritto nella sezione 4.5, mentre \texttt{RestWebClient} viene realizzato in una semplice implementazione sopradescritta, la parte di SocialActor merita un approfondimento a parte.
+\texttt{SocialActor} costituisce infatti l'elemento principale del modello, a cui \texttt{SocialController} fa riferimento sia per aggiornare lo stato intero, sia per inviare messaggi e comunicazioni, tali interazioni possono essere di due nature specifiche ovvero:
+\begin{itemize}
+	\item Aggiunta di un amico: L'aggiunta di un amico prevede che al giocatore da aggiungere come amico venga inviato una richiesta, se la risposta è positiva, viene lanciata una chiamata REST al server per aggiungere il nuovo amico.
+	\item Invito di un amico a una formazione: La situazione in questo caso è decisamente più complicata: non c'è da gestire solamente la risposta, ma anche tutta una serie di situazioni in cui non è possibile mandare la richiesta, perché il giocatore richiedente/invitato potrebbe già trovarsi all'interno di un'altra formazione con un ruolo che lo inabilita all'accettazione di tale richiesta, il giocatore che accetta un invito deve inoltre essere impedito nell'accettarne ulteriori e nel compiere operazioni di ogni natura, delegando così il proprio controllo al mittente dell'invito, che assume il ruolo di leader del party.
+\end{itemize}
+Per gestire al meglio questa complessità, ho pensato di fornire a \texttt{SocialActor} un insieme di utili strutture aggiuntive.
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialActor}
+	\caption{Diagramma delle strutture di supporto a SocialActor}
+\end{figure}
+
+\begin{itemize}
+	\item{\texttt{Party:}} mantiene il riferimento a tutti i giocatori presenti all'interno del party del giocatore, incluso lui stesso, e il ruolo. Viene consultato durante le richieste di aggiunta all'interno di un party altrui e durante l'avvio di una nuova partita.
+
+	\item{\texttt{OnlinePlayersMap}} estende, utilizzando una tecnica simile al pattern di progettazione \texttt{Decorator}, la struttura già dichiarata all'interno del discovery, andando a aggiungere una lista di username per gli amici e la possibilità di ottenere la lista degli amici online partendo da quella dei giocatori e degli amici
+
+	\item{\texttt{RequestHandler:}} Gestisce la ricezione delle richieste e la generazione delle varie risposte, andando a processare una richiesta alla volta. Nasconde a SocialActor la complessità derivata dal mantenere in memoria una richiesta, dalla produzione di una risposta basata sia su un comando inviato dalla GUI sia dal contesto della richiesta stessa.
+
+\end{itemize}
+
+La presenza di queste strutture aggiuntive consentono una notevole semplificazione all'interno della classe \texttt{SocialActor}.
+Per quanto riguarda infine l'interazione tra la parte social e la parte generale di client, ho seguito il principio DRY: \texttt{SocialController} infatti delega a \texttt{ClientController} le funzionalità comuni, con la sola eccezione di effettuare un passaggio in più per quanto riguarda la ricerca e creazione di una nuova partita: dovendo infatti gestire i membri nel party del giocatore, viene effettuata una chiamata a \texttt{SocialActor} che provvede a generare una mappa contenente gli username dei giocatori affiancati dai ruoli con cui entreranno in partita.
+Al momento della ricezione dell'id partita, \texttt{ClientController} provvederà a notificarlo a \texttt{SocialController}, che  sua volta manderà un messaggio a \texttt{SocialActor} con l'ordine di notificare a tutti i membri del party che una partita è iniziata. I vari attori dei componenti del party riceveranno l'id della partita mediante tale messaggio e notificheranno il proprio \texttt{ClientController} che una nuova partita è iniziata.
+Alla terminazione della partita in questione, il party viene sciolto.
+Le figure 5.13 e 5.14 rappresentano le interazioni appena descritte.
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialStartGame}
+	\caption{Avvio di una partita da parte del leader di un party}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{socialRecieveGame}
+	\caption{Ricezione della notifica dell'id di una partita da parte dei membri di un party}
+\end{figure}
+
+
+
+
+
+
+
+
+        \subsection{Jacopo Riciputi}\label{subsec:riciputi}
+	   Per quanto riguarda il progetto \textbf{Maraph-1}, lo studente \textbf{Jacopo Riciputi} ha sviluppato le seguenti parti in maniera autonoma:
+
+        \begin{itemize}
+        \item \textbf{Generale}
+                \begin {itemize}
+		\item Configurazione di TravisCI;
+		\item Generazione dei Jar;
+
+     	\end {itemize}
+         \item \textbf{Core}
+                \begin {itemize}
+		 \item Definizione delle regole di gioco;
+
+     	\end {itemize}
+        \item \textbf{Server}
+                \begin {itemize}
+		  \item Backend;
+	     \item Client per richieste HTTP;
+	     \item Ricerca di una partita;
+	     \item Gestione dei dati.
+
+     	\end {itemize}
+
+	\end {itemize}
+
+	\subsubsection{Configurazione di TravisCI}
+	  La configurazione di Travis è risulta fin da subito molto semplice, in quanto il servizio è stato utilizzato con l'unico scopo di effettuare i test a ogni push sul repository.
+
+	\subsubsection{Generazione dei Jar}
+	  Per la generazione dei Jar ci si è affidati al plugin \textbf{shadow}. Esso tramite il task \textit{shadowJar}
+	  offre la possibilità di generare \textit{fatJar} completi e pronti all'esecuzione semplicemente definendo preventivamente qualche variabile. \\
+	  È apparsa qualche difficoltà nel momento in cui si aveva la necessità di generare tre \textit{jar} differenti, uno per ogni \textit{main} presente nel progetto.
+	  Per fare ciò sono stati definiti all'interno del file \textit{build.gradle} tre task, uno per \textit{main}, nei quali viene gestito il tipo \textbf{ShadowJar},
+	  al quale, per configurazione, definisco un classificatore da associare al jar da creare, la \textit{main class}
+	  e vengono ereditate le dipendenze dal \textit{shadowJar} principale.
+
+	\subsubsection{Definizione delle regole di gioco}
+	  Lo scopo iniziale del primo sprint era quello di ottenere una modalità base di gioco nel quale fossero definite le basiche funzionalità di una partita, senza prendere in considerazione l'aspetto distribuito.
+	  \\
+	  Durante questa sezione mi sono occupato delle sviluppo di una prima versione di quello che poi successivamente è diventato il GameActor, gestore dell'intera partita.
+	  Per fare ciò sono partito subito dalla definizione di un semplice trait che però definisse gli aspetti principali il gioco doveva rispettare.
+	  Il trait in questione è \texttt{Match}.\\
+	  Una volta definito, nonostante la sua semplicità, il suo sviluppo ha portato di conseguenza alla definizione di tutti gli aspetti di gioco a esso legati.
+	  Prima di ogni cosa risultava importante definire bene gli interlocutori all'interno della partita, nonostante non se ne conoscesse ancora la sua esatta forma. \\
+	  Per questo motivo nasce il trait generico \texttt{BaseTeam}. Esso definisce tutti gli aspetti che un team che prende parte al gioco deve rispettare ma non ne limita la forma, per questo la genericità. \\
+	  Una volta definito come fossero gestiti i team e di conseguenza i giocatori che prendevano parte alla partita occorreva iniziare a definire gli aspetti di gioco.\\
+	  Per fare ciò ho implementato la classe \texttt{GameCycle}, questo file non fa altro che definire al suo interno una struttura data simile a una \textit{cyclic queue}. Inizialmente, infatti, mi ero orientato su quest'ultima, ma, non avendo trovato nulla che mi soddisfacesse del tutto si è optato per la costruzione di una classe capace di gestire la situazione creatasi all'interno del progetto.
+	  La classe infatti viene definita fornendole due team e su di essi vi costruisce un una lista di giocatori alternati in base alla suddivisione dei team. Questa lista diventerà poi la base per la gestione dei turni durante la partita.
+	  \\
+	  Definiti anche questi aspetti, insieme alle parti sviluppate da Federico Naldini, il quale si è occupato della definizione e gestione del Deck e delle carte, avevo a disposizione tutti gli elementi per completare le regole del gioco.
+	  A questo punto si è semplicemente trattato di definire bene degli stati interni e i metodi per la loro gestione oltre che delineare le regole del gioco.
+            \begin{figure}[!h]
+                \includegraphics[scale=0.5]{images/MatchStateChar.png}
+                \label{fig:MatchStateChar}
+                \caption{Diagramma degli stati che analizza i vari stadi di una partita}
+            \end{figure}
+	  \\
+	  \subsubsection{Backend}
+	  La parte server è stata costruita sopra al framework Vert.x. Questa libreria è stata prediletta sopra altre per la sua semplicità, soprattutto di deploy. Rispetto ad altre risultava però leggermente acerba e da essa non riuscivamo a ottenere esattamente tutto ciò che desideravamo.
+	  \\
+	  Per un lato server ben ingegnerizzato e facilmente scalabile si è incappati quindi nella necessità d'inglobare gli elementi offerti da Vert.x in classi più ad alto livello, che permettessero al programmatore di evitare il contatto tutte le volte con gli aspetti base della libreria.
+	  In questo senso si è intervenuti principalmente tramite le classi \texttt{Router}, \texttt{RouterResponse} e \texttt{Dispatcher}.
+
+	  Il file \texttt{Router} funge da \textbf{Adapter} della classica gestione degli handler in Vert.x.\\\
+	  All'interno di esso viene definito il trait \textbf{Request} il quale si occupa d'inglobare aspetti di Vert.x per la gestione delle richieste così da poter rendere generica la definizione di una richiesta.
+	  A estendere questo trait vi sono le \textit{case class}, implementate basandosi sul pattern \textbf{strategy}, \texttt{GET} e \texttt{POST}. Queste non fanno altro che definire internamente il metodo HTTP al quale risponderanno e prendere in ingresso il \textbf{Vert.x.Router} sul quale il server è in ascolto, il \textit{path} sul quale la richiesta sarà resa disponibile e un \textit{handler}, nel quale, la richiesta, dopo essere stata gestita dovrà rispondere al chiamante. \\
+	  La funzione che andrà a gestire la richiesta avrà disponibile, come parametro, due elementi, un \texttt{RoutingContext}, classe definita da Vert.x, che mette a disposizione all'\textbf{handler} tutti i dati inerenti alla richiesta e un \texttt{RouterResponse}.
+	  Quest'ultima è la seconda delle tre classi create per l'ottimizzazione dell struttura creata.
+	  \\
+	  \texttt{RouterResponse} funge da \textit{wrapper} della classe \texttt{RoutingContext} fornendo all'\textit{handler} metodi semplici per rispondere alla richiesta. Definisce infatti il metodo \texttt{sendResponse()}, il quale, dato in ingresso un JsonResponse, si occupa di serializzare il parametro in una stringa JSON e d'inviarla al \textit{client}.
+	  \\
+	  A livello di progettazione inoltre è stato definito che venissero considerate come positive solamente le risposte con il codice 200 come status nell'\textit{header}. La semplice chiamata di questo metodo risponderà inserendo questo codice nel messaggio, diversamente, chiamando precedentemente \texttt{setError} si può definire un differente codice oppure tramite la \texttt{setGenericError} si produrrà una risposta con lo status d'errore di default 409.
+	  Come precedentemente indicato, per completare la richiesta è necessario fornirle un \texttt{JsonResponse}. Questo trait non fa altro che definire un tipo di classe che ha lo scopo di essere serializzata e deserializzata tramite la libreria \texttt{json4p} in stringhe JSON. \\
+	  A fungere, infine, da collante tra queste parti di modello vi è il \texttt{Dispatcher}, al suo interno infatti vengono associati alle richieste gestite dal server i rispettivi \textbf{handler}, per poi terminare con il \textit{deploy} del backend.
+
+	\subsubsection{Client per richieste HTTP}
+	  Il client HTTP costruito sulla libreria \texttt{Vert.x Web-client} si struttura similarmente alla classe Router. Definisce infatti un trait che stabilisce tutti gli elementi necessari per portare a termine una richiesta.
+	  A implementare il trait vi sono le classi GetRequest e PostRequest. Queste differiscono non solo nel metodo HTTP della chiamata ma anche nella gestione dei parametri. Entrambe, infatti, prendono in ingresso una mappa di parametri, ma, mentre la prima li serializza all'interno dell'url, le chiamate post effettuano l'invio dei parametri come \texttt{form-body}.\\
+	  A completare la classe vi sono i due \textbf{handler}, \texttt{onSuccess} oppure \texttt{onFail}. Il primo verrà richiamato solamente nel caso in cui la chiamata ha esito positivo e il suo \textit{status code} è 200. \\
+	  Il secondo invece, per esclusione, viene notificato in ogni caso d'errore, sia che la chiamata lanci un'eccezione sia che la chiamata venga effettuata ma ottenga una risposta con un codice di errore. In questo caso viene fornita all'\textit{handler} un'eccezione creata appositamente con il messaggio d'errore ottenuto dalla risposta.
+
+        \subsubsection{Ricerca di una partita}
+          Il server mettette a disposizione dei client un'apposita API REST per la ricerca di una partita. L'API accetta come parametri fino a quattro giocatori e restituisce al chiamante l'id della partita a cui è stato assegnato.
+          \\
+          Una volta ricevuta la richiesta, il server, risveglia un apposito attore, il \texttt{LobbyActor} che ha il compito specifico di, in base al tipo di partita, classificata o meno, ricercare una lobby disponibile per i giocatori nella richiesta. Al suo interno il \texttt{LobbyActor} ricerca ricorsivamente una lobby che rispetti i team definiti dalla richiesta, nel caso in cui questa non esista, ne genera una, alla quale associa i componenti delle squadre. Dopo di che, in entrambi i casi risponde inserendo l'id della partita nel corpo del messaggio ed esegue un controllo. Il controllo in questione verifica se la lobby risulta essere composta da quattro giocatori. Se il controllo ha esito positivo crea un nuovo \texttt{GameActor},
+        
+        \subsubsection{Gestione dei dati}
+          A supporto della parte server del progetto era necessario inserire un database per il salvataggio dei dati dell'utente, le relazioni social, e le partite.
+          \\
+          La scelta è ricaduta su \textbf{Redis}, database \textit{in-memory} particolarmente performante, anche se, si è optato per questa soluzione data la semplicità con il quale è possibile modellare i dati al suo interno.
+          \\
+          La progettazione di questa sezione è stata però pensata per essere indipendente dal database scelto. È possibile infatti trovate tre trait generici: \texttt{DatabaseInterface}, \texttt{GameDatabaseInterface}, \texttt{UserDatabaseInterface} i quali definisco i metodi che il \textit{DAO} deve fornire ma non ne specifica alcuna caratteristica. Questo semplificherebbe un eventuale futuro cambiamento del motore di database. \\
+          In questa parte di sviluppo dell'accesso ai dati è stata sfruttata, ancora più che nelle altre mie parti del progetto, la programmazione funzionale nell'ottica di creare un passaggio d'informazioni tramite \textit{callback}. Uno stile di programmazione di questo tipo però rischiava di portare a una bassa qualità di codice. Aiutandosi però con i metodi offerti dalla classe \textbf{Future}, si è mantenuto il codice il più possibile appiattito, senza ricadere in eventuali \textit{pyramid of doom}.
+          \\
+          A estendere questi \texttt{trait} vi sono le classi: \texttt{RedisUtils}, \texttt{RedisGame}, \texttt{RedisUser}, queste implementano i metodi definiti nelle rispettive interfacce eseguendo, in base alle esigenze, le apposite query su \textbf{Redis}.
+          \\
+          Per quanto riguarda l'esecuzione di comandi sul database, inizialmente, vi era una continua ripetizione di codice, data la necessità a ogni interazione di:
+
+          \begin{enumerate}
+           \item Ottenere la connessione con il database;
+           \item Eseguire una o più query;
+           \item Chiudere la connessione se non più utilizzata.
+          \end{enumerate}
+
+          Per evitare tutto questo, dato che poteva portare anche facilmente all'errore, sono nate le classi \texttt{Query} e \texttt{BlockingQuery}. Queste hanno esattamente lo stesso funzionamento, si differenziano solamente per il \textit{client} usato per eseguire i comandi, nel primo caso si tratta di \textbf{Rediscala}, libreria scala reattiva e non bloccante, mentre nel secondo di \textbf{Jedis}, principale \textit{client} Redis per Java che però non sfrutta per il meccanismo delle \texttt{Future}.
+          \\
+          Proprio ispirandosi a quest'ultime nascono le due classi sopraccitate. \\
+          \texttt{Query} e \texttt{BlockingQuery} non fanno altro che offrire uno \textit{spazio} delineato per eseguire i comandi. Prendono infatti in ingresso un \textit{body}, che non è altro che una funzione alla quale è offerta come parametro una connessione aperta con il database. Terminato il \textbf{body} queste classi offrono anche la possibilità di definire una \textit{callback} per ottenerne il valore di ritorno ed eseguire eventuali altre operazioni.
+          Al termine del suo utilizzo la connesisone verrà poi automaticamente chiusa, tramite il metodo comune \texttt{closeConnection()}, implementato per entrambe le classi per facilitarne la chiusura.
+          La funzione è stata definita tramite il costrutto \textbf{Pimp-my-Library}, pattern che, con il senno di poi, mi sono pentito di non aver utilizzato più spesso all'interno del progetto, perché personalmente ritenuto decisamente efficiente e dalle tante potenzialità.
+
+
+
+
+
+
+
+
+      \clearpage
+
+
+        \subsection{Componenti creati in cooperazione}\label{subsec:cooperation}
+        Nel corso dello sviluppo di questo progetto, è capitato che due membri abbiano dovuto interagire per poter integrare quanto sviluppato fino a quel momento o semplicemente per poter prendere delle decisioni che avrebbero avuto un impatto deciso sullo sviluppo futuro del proprio codice. Di seguito elenchiamo le principali attività di coordinazione tra i membri del team.
+
+
+        \subsubsection{Brasini e Jakova}\label{subsub:cooperation:brasinijakova}
+        Gli studenti Brasini e Jakova hanno collaborato alle seguenti parti:
+
+        \begin {itemize}
+        \item \textbf{Integrazione della versione core}. Gli studenti, terminati gli sprint relativi alla versione core, hanno preso in mano tutto il progetto integrando tra loro le diverse parti di codice prodotte dai quattro membri del team. Grazie al \textit{testing} effettuato hanno potuto constatare la correttezza della versione core e l'hanno pubblicata sul branch \texttt{master}.
+        \item \textbf{Planning per la realizzazione dell'oggetto \texttt{ClientMessages}}. E' stata una fase piuttosto lunga, durante la quale i due studenti hanno collaborato per valutare quali fossero i messaggi più appropriati e comuni da dover inserire all'interno dell'oggetto \texttt{ClientMessages}. Si è deciso di realizzare un oggetto comune dal momento in cui sia il \texttt{GameActor}, ad opera di Jakova, che \texttt{PlayerActorClient, ViewerActor e ReplayActor} sviluppati da Brasini avevano una forte interazione e un continuo scambio di messaggi.
+        \item \textbf{Realizzazione del canale di comunicazione tra attori mediante pattern \\ \texttt{Publish-Subscribe}}. Si è deciso di sfruttare questo particolare pattern che ha permesso ai due studenti di semplificare enormemente la vita dei propri attori. Grazie al canale realizzato, il \texttt{GameActor} ha avuto la libertà di comunicare i messaggi diretti a tutti i player (e ad eventuali viewer) un'unica volta. La scelta se considerare i messaggi oppure meno pertanto è stata presa dagli altri tre attori in gioco, che sulla base del player di destinazione dei diversi messaggi hanno deciso se ricevere il messaggio oppure scartarlo.
+        \item \textbf{Gestione dello stash dei messaggi tra gli attori e relativi ACK di conferma}. I due studenti, in conclusione, hanno notato che, a causa di possibili ritardi della rete, bisognava poter gestire le situazioni pericolose. Il principale problema è stato arginato utilizzando messaggi ACK di conferma: ad esempio nel \texttt{PlayerActorClient} nel momento in cui viene comunicata sul canale la briscola del turno, bisognava rispondere al \texttt{GameActor} con un messaggio di tipo \texttt{BriscolaACK} per confermare l'avvenuta ricezione dello stesso messaggio. Fino a quando il \texttt{GameActor} non avesse ricevuto tutte e quattro le conferme, non sarebbe andato avanti con l'invio dei messaggi successivi. In questo modo è stato prevenuto anche il fatto che le conferme stesse potessero ritardare: in quel caso in realtà il problema non si pone, poiché fino a quando il \texttt{GameActor} non avesse ricevuto le conferme, non avrebbe fatto nulla. Oltre alle conferme è stato utilizzato anche il meccanismo dello \texttt{stash}, in particolar modo nella situazione in cui il player avesse dovuto decidere la briscola senza però aver ancora ricevuto il messaggio contenente le sue carte. Per evitare di far scegliere la briscola senza poter nemmeno osservare le proprie carte, si è deciso di \textit{stashare} il messaggio fino a quando non fosse giunto quello contenente le carte. A quel punto si sarebbe proceduto con la \texttt{unstashAll} per poter riprocessare il messaggio relativo alla scelta della briscola.
+   	\end {itemize}
+
+        \clearpage
+
+ \section*{\Huge {\textbf Capitolo 6}\label{chapter6}}
+    \section{Retrospettiva}\label{sec:retrospective}
+\subsection{Andamento degli sprint}
+A progetto concluso possiamo per certo dire di essere abbastanza soddisfatti con l’andamento del progetto in generale. Siamo partiti inizialmente un po’ lenti per vari motivi però questo non ci ha penalizzati per concludere con successo il tutto, anzi ci ha spinto successivamente di dare di più.
+Avendo adottato un approccio Agile simil Scrum  ci ha facilitato molto il lavoro in team, permettendoci di avere dei risultati immediati e costante miglioramento del prodotto in periodi brevi. Tale approccio permette di essere sempre in contatto diretto e immediato con tutti gli altri componenti del team, conoscere il loro comportamento e le loro idee, invece di limitarsi ad immaginare quali saranno le loro necessità future. In totale sono stati svolti 5 sprint. Gli sprint backlog dettagliati sono reperibili qui.
+
+\subsubsection{Sprint 1}
+I punti principali del primo sprint erano:
+ \begin {itemize}
+  \item Analisi del problema
+  \item Formalizzazione dei requisiti
+  \item Creazione repository su GitHub
+  \item Configurazione Gradle e GitFlow
+  \item Creazione board su Trello
+  \item Integrazione Travis CI
+  \item Poter giocare a Marafone con tutte le regole in una prima versione non-distribuita.
+\end {itemize}
+
+\subsubsection{Sprint 2 e 3}
+Nel secondo e terzo sprint gli obiettivi erano i seguenti:
+ \begin {itemize}
+  \item Avere un sistema con un'architettura distribuita, in modo che gli utenti potessero giocare in remoto
+  \item Trovare una stanza random per poter giocare con giocatori casuali
+  \item Aggiungere un paio di regole non gestite nel primo sprint
+\end {itemize}
+
+\subsubsection{Sprint 4}
+Nel quarto sprint invece ci siamo focalizzati nei seguenti punti:
+ \begin {itemize}
+  \item Integrazione totale del sotto-progetto Core
+  \item Avere una schermata di autenticazione per cui poter registrarsi e loggarsi
+  \item Avere la possibilità di aggiungere un giocatore come amico
+  \item Avere la possibilità di giocare con un amico
+\end {itemize}
+
+\subsubsection{Sprint 5}
+Nell’ultimo sprint siamo riusciti ad aggiungere altre features utili per il gioco come:
+ \begin {itemize}
+  \item Avere una schermata per l’utente loggato ed un’altra per il guest
+  \item Avere la possibilità di guardare una partita già finita(replay)
+  \item Avere la possibilità di unirsi a una partita come spettatore
+  \item Per tutti i giocatori che giocano una partita competitiva sulla base dell'esito avere un'influenza sul proprio punteggio globale
+  \item Integrazione finale
+\end {itemize}
+
+Una volta finito ciò ci siamo occupati del refactoring del codice e della stesura della relazione.
+\bigskip
+\subsection{Commenti finali}
+
+A progetto concluso possiamo dire che siamo riusciti a completare tutti i requisiti posti all’inizio del progetto. La feature opzionale, ossia lo sviluppo di una semplice IA per permettere le partite in single-player, non siamo riusciti ad implementarla per motivi temporali.
+La coverage generale dei test risulta un po’ bassa poiché mancano i test inerenti alla View. La parte restante invece è abbastanza coperta garantendo che la logica del gioco venga rispettata.
+
+Durante lo sviluppo del progetto, grazie anche a Trello, siamo riusciti a capire l’andamento del progetto. Il lavoro in team è andato abbastanza bene. Ognuno dei componenti del team era libero di scegliere un task a piacimento, però in generale non ci siamo limitati a scegliere soltanto cose che già conoscevamo ma nel corso di ogni sprint siamo riusciti ad imparare cose nuove.
+
+\begin{figure}[h!]
+ \centering
+  \includegraphics[width=0.8\textwidth]{trello.png}
+   \caption{Screen della board di Trello a fine progetto }
+\end{figure}
+
+\end{document}

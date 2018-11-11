@@ -1,11 +1,14 @@
 
 package it.unibo.pps2017.discovery
 
+import akka.actor.{ActorRef, Props}
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.core.http.HttpServerOptions
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import it.unibo.pps2017.commons.remote.akka.AkkaClusterUtils
 import it.unibo.pps2017.commons.remote.rest.RestUtils.Port
+import it.unibo.pps2017.discovery.actors.RegistryActor
+import it.unibo.pps2017.discovery.actors.RegistryActor.HeartBeatMessage
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI
 import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI._
 import it.unibo.pps2017.discovery.structures.{MatchesSet, ServerMap, SocialActorsMap}
@@ -24,7 +27,7 @@ trait ServerDiscovery extends ScalaVerticle{
   /**
     * Starts the seed for the cluster.
     */
-  def startAkkaCluster(ipAddress: String): Unit = AkkaClusterUtils.startSeedCluster(ipAddress)
+  def startAkkaCluster(ipAddress: String): Unit
 
 }
 
@@ -33,6 +36,8 @@ object ServerDiscovery {
     * Alias for a request handler.
     */
   type APIHandler = (RoutingContext, RouterResponse) => Unit
+
+  val REGISTRATION_START_MESSAGE = "Registration started"
 
   def apply(port: Port, timeout: Int): ServerDiscovery = new ServerDiscoveryImpl(port, timeout)
 
@@ -43,6 +48,45 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   val serverMap: ServerMap = ServerMap()
   val matchesSet: MatchesSet = MatchesSet()
   val socialActorsMap: SocialActorsMap = SocialActorsMap()
+  var actorRef: ActorRef = _
+
+  override def start(): Unit = developAPI()
+
+  override def developAPI(): Unit = {
+    val router = Router.router(vertx)
+    DiscoveryAPI.values.map({
+      case api@GetServerAPI => api.asRequest(router, getServerAPIHandler)
+      case api@RegisterServerAPI => api.asRequest(router,
+        registerServerAPIHandler)
+      case api@IncreaseServerMatchesAPI => api.asRequest(router,
+        increaseServerMatchesAPIHandler)
+      case api@DecreaseServerMatchesAPI => api.asRequest(router,
+        decreaseServerMatchesAPIHandler)
+      case api@GetAllMatchesAPI => api.asRequest(router,
+        getMatchesSetAPIHandler)
+      case api@RegisterMatchAPI => api.asRequest(router,
+        registerMatchAPIHandler)
+      case api@RemoveMatchAPI => api.asRequest(router,
+        removeMatchAPIHandler)
+      case api@RegisterSocialIDAPI => api.asRequest(router,
+        registerSocialIDAPI)
+      case api@_ => api.asRequest(router, mockHandler)
+    })
+
+    val options = HttpServerOptions()
+    options.setCompressionSupported(true)
+      .setIdleTimeout(timeout)
+
+    vertx.createHttpServer(options)
+      .requestHandler(router.accept _).listen(port)
+  }
+
+
+  override def startAkkaCluster(ipAddress: String): Unit = {
+    AkkaClusterUtils.startSeedCluster(ipAddress)
+    val system = AkkaClusterUtils.startJoiningActorSystemWithRemoteSeed(ipAddress, "0", ipAddress)
+    actorRef = system.actorOf(Props(new RegistryActor()))
+  }
 
   /**
     * Handler for the GetServerAPI
@@ -125,38 +169,9 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   /**
     * Handler for RegisterSocialIDAPI
     */
-  private val registerSocialIDAPI: APIHandler = (router, response) => {
-    try {
-      val playerID = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ID)
-        .getOrElse(throw new NoSuchFieldException())
-      val actorRef = router.request().getFormAttribute(RegisterSocialIDAPI.SOCIAL_ACTOR)
-        .getOrElse(throw new NoSuchFieldException())
-      socialActorsMap.registerUser(playerID, actorRef)
-      setMessageAndRespond(response, RegisterSocialIDAPI.okMessage)
-    } catch {
-      case _: NoSuchFieldException => setErrorAndRespond(response, RegisterSocialIDAPI.errorMessage)
-    }
-  }
-
-  /**
-    * Handler for UnregisterSocialIDAPI
-    */
-  private val unregisterSocialIDAPI: APIHandler = (router, response) => {
-    try {
-      val playerID = router.request().getFormAttribute(UnregisterSocialIDAPI.SOCIAL_ID)
-        .getOrElse(throw new NoSuchFieldException())
-      socialActorsMap.unregisterUser(playerID)
-      setMessageAndRespond(response, UnregisterSocialIDAPI.okMessage)
-    } catch {
-      case _: NoSuchFieldException => setErrorAndRespond(response, UnregisterSocialIDAPI.errorMessage)
-    }
-  }
-
-  /**
-    * Handler for GetAllOnlinePlayersAPI.
-    */
-  private val getAllOnlinePlayersAPI: APIHandler = (_, response) => {
-    response.sendResponse(socialActorsMap.getCurrentOnlinePlayerMap)
+  private val registerSocialIDAPI: APIHandler = (_, response) => {
+    actorRef ! HeartBeatMessage(actorRef)
+    setMessageAndRespond(response, REGISTRATION_START_MESSAGE)
   }
 
   /**
@@ -187,40 +202,7 @@ private class ServerDiscoveryImpl(port: Port, timeout: Int) extends ServerDiscov
   private def mockHandler: (RoutingContext, RouterResponse) => Unit = (_, res) =>
     res.sendResponse(Message("RestAPI CALLED"))
 
-  override def start(): Unit = developAPI()
 
-  override def developAPI(): Unit = {
-    val router = Router.router(vertx)
-    DiscoveryAPI.values.map({
-      case api@GetServerAPI => api.asRequest(router, getServerAPIHandler)
-      case api@RegisterServerAPI => api.asRequest(router,
-        registerServerAPIHandler)
-      case api@IncreaseServerMatchesAPI => api.asRequest(router,
-        increaseServerMatchesAPIHandler)
-      case api@DecreaseServerMatchesAPI => api.asRequest(router,
-        decreaseServerMatchesAPIHandler)
-      case api@GetAllMatchesAPI => api.asRequest(router,
-        getMatchesSetAPIHandler)
-      case api@RegisterMatchAPI => api.asRequest(router,
-        registerMatchAPIHandler)
-      case api@RemoveMatchAPI => api.asRequest(router,
-        removeMatchAPIHandler)
-      case api@RegisterSocialIDAPI => api.asRequest(router,
-        registerSocialIDAPI)
-      case api@UnregisterSocialIDAPI => api.asRequest(router,
-        unregisterSocialIDAPI)
-      case api@GetAllOnlinePlayersAPI => api.asRequest(router,
-        getAllOnlinePlayersAPI)
-      case api@_ => api.asRequest(router, mockHandler)
-    })
-
-    val options = HttpServerOptions()
-    options.setCompressionSupported(true)
-      .setIdleTimeout(timeout)
-
-    vertx.createHttpServer(options)
-      .requestHandler(router.accept _).listen(port)
-  }
 
 }
 }

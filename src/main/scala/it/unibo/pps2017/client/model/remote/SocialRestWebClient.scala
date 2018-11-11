@@ -1,23 +1,28 @@
 
 package it.unibo.pps2017.client.model.remote
 
-import it.unibo.pps2017.client.controller.SocialController
+import it.unibo.pps2017.client.controller.socialcontroller.SocialController
 import it.unibo.pps2017.commons.remote.rest.API
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
-import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.{GetAllOnlinePlayersAPI, RegisterSocialIDAPI, UnregisterSocialIDAPI}
-import it.unibo.pps2017.server.model.OnlinePlayersMapEncoder
+import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.RegisterSocialIDAPI
+import it.unibo.pps2017.server.model.ServerApi.{AddFriendAPI, GetFriendsAPI, GetUserAPI}
+import it.unibo.pps2017.server.model.{User, UserFriends}
 import org.json4s.jackson.Serialization.read
 
 /**
-  * This class takes care of all the rest call executed by the social structure of the architecture.
+  * This class takes care of all the rest call executed by the socialcontroller structure of the architecture.
   */
 class SocialRestWebClient(val socialController: SocialController, val discoveryContext: ServerContext)
   extends AbstractRestWebClient(discoveryContext) {
 
-  override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]]): Unit = api match {
+  override def executeAPICall(api: API.RestAPI, paramMap: Option[Map[String, Any]], parameterPath: String): Unit = api match {
     case RegisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
-    case UnregisterSocialIDAPI => invokeAPI(api, paramMap, registerAndUnregisterSocialIDCallBack, discoveryContext)
-    case GetAllOnlinePlayersAPI => invokeAPI(api, paramMap, getAllOnlinePlayersCallback, discoveryContext)
+    case AddFriendAPI => invokeAPI(api, paramMap, addAFriendCallBack, assignedServerContext.get,
+      AddFriendAPI.path.replace(AddFriendAPI.parameterPath, parameterPath))
+    case GetUserAPI => invokeAPI(api, paramMap, getUserCallBack, assignedServerContext.get,
+      GetUserAPI.path.replace(GetUserAPI.parameterPath, parameterPath))
+    case GetFriendsAPI => invokeAPI(api, paramMap, getAllFriendsCallBack, assignedServerContext.get,
+      GetFriendsAPI.path.replace(GetFriendsAPI.parameterPath, parameterPath))
   }
 
   /**
@@ -26,17 +31,35 @@ class SocialRestWebClient(val socialController: SocialController, val discoveryC
     * @param responseBody the body of the response.
     */
   private def registerAndUnregisterSocialIDCallBack(responseBody: Option[String]): Unit =
-    socialController.notifyCallResultToGUI(responseBody)
-
+    println(responseBody.get)
 
   /**
-    * Callback for the GetAllOnlinePlayers API.
+    * CallBack for the GetAllFriends API
     *
     * @param responseBody the body of the response.
     */
-  private def getAllOnlinePlayersCallback(responseBody: Option[String]): Unit = {
-    val playerMap = read[OnlinePlayersMapEncoder](responseBody.get).map
-    socialController.setAndDisplayOnlinePlayerList(playerMap)
+  private def getAllFriendsCallBack(responseBody: Option[String]): Unit = {
+    val friendList = read[UserFriends](responseBody.get).friends.toList
+    socialController.setFriendsList(friendList)
+  }
+
+  /**
+    * CallBack for the AddAFriend API
+    *
+    * @param responseBody the body of the response.
+    */
+  private def addAFriendCallBack(responseBody: Option[String]): Unit = {
+    socialController.notifyCallResultToGUI(responseBody)
+  }
+
+  /**
+    * CallBack for the GetUser API
+    *
+    * @param responseBody the body of the response.
+    */
+  private def getUserCallBack(responseBody: Option[String]): Unit = {
+    val scores = read[User](responseBody.get).score
+    socialController.setScoreInsideGUI(scores)
   }
 }
 

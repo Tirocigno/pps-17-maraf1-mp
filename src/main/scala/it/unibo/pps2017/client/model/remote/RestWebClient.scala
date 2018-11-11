@@ -1,10 +1,8 @@
 
 package it.unibo.pps2017.client.model.remote
 
-import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod
-import io.vertx.scala.ext.web.client.HttpResponse
-import it.unibo.pps2017.client.controller.ClientController
+import it.unibo.pps2017.client.controller.clientcontroller.ClientController
 import it.unibo.pps2017.commons.remote.exceptions.NotValidHttpMethodException
 import it.unibo.pps2017.commons.remote.rest.API.RestAPI
 import it.unibo.pps2017.commons.remote.rest.RestUtils.{ServerContext, formats}
@@ -12,11 +10,10 @@ import it.unibo.pps2017.discovery.restAPI.DiscoveryAPI.GetServerAPI
 import it.unibo.pps2017.server.model.{GetRequest, PostRequest, ServerContextEncoder}
 import org.json4s.jackson.Serialization.read
 
-import scala.concurrent.Future
 import scala.language.postfixOps
 
 /**
-  * This module is responsable for sending remote calls via rest apis and
+  * This module is responsible for sending remote calls via rest apis and
   * handle their responses.
   */
 sealed trait RestWebClient {
@@ -26,25 +23,37 @@ sealed trait RestWebClient {
   var assignedServerContext: Option[ServerContext] = None
 
   /**
-    * Start a Rest RestAPI call.
+    * Start a RestAPI call with a parameter to pass inside url.
     *
-    * @param apiToCall the RestAPI to call.
+    * @param apiToCall     the RestAPI to call.
+    * @param parameterPath path of RestAPI to invoke.
+    * @param paramMap      parameters map.
+    */
+  def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]], parameterPath: String): Unit
+
+  /**
+    * Start a RestAPI call without a parameter to pass inside url.
+    *
+    * @param apiToCall     the RestAPI to call.
+    * @param paramMap      parameters map.
     */
   def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]]): Unit
 
+  /**
+    * Getter for the assigned server context, if present.
+    *
+    * @return a ServerContext object containing the reference server IP and Port.
+    */
   def getCurrentServerContext: ServerContext = assignedServerContext.get
 }
 
-object RestWebClient {
-
-  type AsyncResponse = Future[HttpResponse[Buffer]]
-}
 
 abstract class AbstractRestWebClient(override val discoveryServerContext: ServerContext) extends RestWebClient {
 
+  val NO_PARAMETER_PATH = ""
 
     override def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]]): Unit =
-      checkOrSetServer(apiToCall, paramMap)
+      checkOrSetServer(apiToCall, paramMap, NO_PARAMETER_PATH)
 
     /**
       * Check if assigned server is setted, if not, makes a Rest call to the discovery server in order to get one,
@@ -52,10 +61,11 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       *
       * @param restAPI the RestAPI to call.
       */
-    def checkOrSetServer(restAPI: RestAPI, paramMap: Option[Map[String, Any]]): Unit = assignedServerContext match {
-      case Some(_) => executeAPICall(restAPI, paramMap)
+    def checkOrSetServer(restAPI: RestAPI, paramMap: Option[Map[String, Any]],
+                         parameterPath: String): Unit = assignedServerContext match {
+      case Some(_) => executeAPICall(restAPI, paramMap, parameterPath)
       case None => GetRequest(discoveryServerContext.ipAddress, GetServerAPI.path,
-        getServerAPIHandler(restAPI)(paramMap), reportErrorToController, None, Some(discoveryServerContext.port))
+        getServerAPIHandler(restAPI)(paramMap)(parameterPath), reportErrorToController, None, Some(discoveryServerContext.port))
     }
 
     /**
@@ -67,10 +77,14 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       * @param jsonSource           the result of the GetServer call as a string.
       */
     private def getServerAPIHandler(apiToInvokeWhenReady: RestAPI)(paramMap: Option[Map[String, Any]])
-                                   (jsonSource: Option[String]): Unit = {
+                                   (parameterPath: String)(jsonSource: Option[String]): Unit = {
       assignedServerContext = Some(deserializeServerContext(jsonSource.get))
-      executeAPICall(apiToInvokeWhenReady, paramMap)
+      executeAPICall(apiToInvokeWhenReady, paramMap, parameterPath)
     }
+
+  override def callRemoteAPI(apiToCall: RestAPI, paramMap: Option[Map[String, Any]],
+                             parameterPath: String): Unit =
+    checkOrSetServer(apiToCall, paramMap, parameterPath)
 
 
     /**
@@ -79,13 +93,6 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       * @param throwable the throwable to notify.
       */
     private def reportErrorToController(throwable: Throwable): Unit = clientController.notifyError(throwable)
-
-
-    /**
-      * Retrieve the body of an async response as a Future[String], if body is not present, throw NoSuchField exception.
-      */
-    private def getResponseBody(response: HttpResponse[Buffer]): String =
-      response.bodyAsString().getOrElse(throw new NoSuchFieldException("Response body not found"))
 
     /**
       * Deserialize a json string and return a ServerContext.
@@ -102,7 +109,7 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       * @param api             the api to execute.
       * @param paramMap        the parameters to pass to the request.
       */
-    def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]]): Unit
+    def executeAPICall(api: RestAPI, paramMap: Option[Map[String, Any]], parameterPath: String): Unit
 
     /**
       * Create a request and send it to the specified server.
@@ -113,16 +120,39 @@ abstract class AbstractRestWebClient(override val discoveryServerContext: Server
       * @param context         the server to contact.
       */
     def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
-                  successCallBack: Option[String] => Unit, context: ServerContext): Unit = {
+                  successCallBack: Option[String] => Unit, context: ServerContext): Unit =
+      invokeAPI(api, paramMap, successCallBack, context, NO_PARAMETER_PATH)
+
+  /**
+    * Create a request and send it to the specified server.
+    *
+    * @param api             the api to call
+    * @param paramMap        the parameters inside the request.
+    * @param successCallBack the callback to resume when the response is ready.
+    * @param context         the server to contact.
+    * @param pathParameter   parameters passed in the path.
+    */
+  def invokeAPI(api: RestAPI, paramMap: Option[Map[String, Any]],
+                successCallBack: Option[String] => Unit, context: ServerContext, pathParameter: String): Unit = {
+    {
+      var path: String = NO_PARAMETER_PATH
+      if (pathParameter == NO_PARAMETER_PATH) {
+        path = api.path
+      } else {
+        path = pathParameter
+      }
       api.httpMethod match {
-        case HttpMethod.POST => PostRequest(context.ipAddress, api.path, successCallBack, reportErrorToController,
+        case HttpMethod.POST => PostRequest(context.ipAddress, path, successCallBack, reportErrorToController,
           paramMap, Some(context.port))
-        case HttpMethod.GET => GetRequest(context.ipAddress, api.path, successCallBack, reportErrorToController,
+        case HttpMethod.GET => GetRequest(context.ipAddress, path, successCallBack, reportErrorToController,
           paramMap, Some(context.port))
         case _ => throw new NotValidHttpMethodException()
       }
 
     }
+  }
+
+
 
 
 }
